@@ -38,6 +38,8 @@ import com.qualcomm.hardware.lynx.commands.LynxMessage;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 
+import org.firstinspires.ftc.robotcore.internal.opmode.OpModeManagerImpl;
+
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -59,6 +61,7 @@ public class MessageKeyedLock
     private          int           lockCount;
     private          long          lockAquisitionTime;
     private          long          nanoLockAquisitionTimeMax;
+    private volatile boolean hangAllFutureAcquisitions;
 
     //----------------------------------------------------------------------------------------------
     // Construction
@@ -71,13 +74,30 @@ public class MessageKeyedLock
 
     public MessageKeyedLock(String name, int msAquisitionTimeout)
         {
+        /**
+         * Note: this lock needs to be "fair" (threads are served in a first-come, first-serve manner)
+         * to prevent a rogue user OpMode from continually "barging in" on the lock and thus never letting
+         * anyone else grab it. The primary use case for this lock needing to be fair is to allow the code
+         * that gives the robot controller a "lethal injection" (I love Bob's comments :D) to bust its way
+         * in here and try to send failsafe commands to all the Lynx modules as a last ditch effort to
+         * shutdown the robot before the app is restarted. The Java documentation states that a "fair" lock
+         * is considerably slower than a non-fair one, but I tested loop speed both before this modification
+         * and after, and found no quantifiable difference.
+         *
+         * Also see: {@link OpModeManagerImpl.OpModeStuckCodeMonitor.Runner#run()} // Arrghh 'protected' breaks JavaDocs
+         *           {@link #synchronizeTo()}
+         *           {@link #unsynchronizeFrom()}
+         *           {@link #hangAllFutureAcquisitionAttempts()}
+         *
+         */
+        this.lock       = new ReentrantLock(true);
         this.name       = name;
-        this.lock       = new ReentrantLock();
         this.condition  = this.lock.newCondition();
         this.lockOwner  = null;
         this.lockCount  = 0;
         this.lockAquisitionTime        = 0;
         this.nanoLockAquisitionTimeMax = msAquisitionTimeout * ElapsedTime.MILLIS_IN_NANO;
+        hangAllFutureAcquisitions = false;
         }
 
     //----------------------------------------------------------------------------------------------
@@ -112,7 +132,31 @@ public class MessageKeyedLock
         {
         if (message == null) throw new IllegalArgumentException("MessageKeyedLock.acquire: null message");
 
-        this.lock.lockInterruptibly();
+        if(hangAllFutureAcquisitions)
+            {
+            /*
+             * Ok, we need to hang all future acquisitions. This INCLUDES us now. To accomplish this,
+             * we first lock() UN-interruptibly. Then, we UN-interruptibly sleep forever. This causes the
+             * first thread to call this method after the 'hangAllFutureAcquisitions' flag has been set
+             * to sleep forever, and any subsequent threads to hang on lock() because the first thread
+             * will never have released the lock (since it's sleeping forever). Basically, we're creating
+             * a scenario where no thread will ever escape this 'if' statement.
+             */
+            this.lock.lock();
+
+            while (true)
+                {
+                try {
+                     Thread.sleep(10000);
+                    }
+                catch (InterruptedException ignored) {}
+                }
+            }
+        else
+            {
+            this.lock.lockInterruptibly();
+            }
+
         try {
             if (this.lockOwner != message)
                 {
@@ -190,4 +234,32 @@ public class MessageKeyedLock
             this.lock.unlock();
             }
         }
+
+    public void synchronizeTo()
+        {
+        if(LynxUsbDeviceImpl.DEBUG_LOG_DATAGRAMS_LOCK)
+            {
+            logv("Synchronizing to thread %s", Thread.currentThread().getName());
+            }
+        this.lock.lock();
+        }
+
+    public void unsynchronizeFrom()
+        {
+        if(LynxUsbDeviceImpl.DEBUG_LOG_DATAGRAMS_LOCK)
+            {
+            logv("Unsynchronizing from thread %s", Thread.currentThread().getName());
+            }
+        this.lock.unlock();
+        }
+
+    public void hangAllFutureAcquisitionAttempts()
+        {
+        if(LynxUsbDeviceImpl.DEBUG_LOG_DATAGRAMS_LOCK)
+            {
+            logv("***HANGING ALL FUTURE ACQUISITION ATTEMPTS!***");
+            }
+        this.hangAllFutureAcquisitions = true;
+        }
+
     }

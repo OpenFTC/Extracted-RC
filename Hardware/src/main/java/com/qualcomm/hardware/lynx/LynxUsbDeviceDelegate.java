@@ -146,6 +146,18 @@ public class LynxUsbDeviceDelegate implements LynxUsbDevice, HardwareDeviceClose
         assertOpen();
         delegate.failSafe();
         }
+    @Override public void synchronizeToNetworkLock()
+        {
+        delegate.synchronizeToNetworkLock();
+        }
+    @Override public void unsynchronizeFromNetworkLock()
+        {
+        delegate.unsynchronizeFromNetworkLock();
+        }
+    @Override public void hangAllFutureNetworkLockAcquisitionAttempts()
+        {
+        delegate.hangAllFutureNetworkLockAcquisitionAttempts();
+        }
     @Override public void changeModuleAddress(LynxModule module, int newAddress, Runnable runnable)
         {
         assertOpen();

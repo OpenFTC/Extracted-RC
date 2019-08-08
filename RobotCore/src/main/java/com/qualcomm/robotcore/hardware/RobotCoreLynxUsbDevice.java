@@ -41,6 +41,9 @@ import com.qualcomm.robotcore.exception.RobotCoreException;
 public interface RobotCoreLynxUsbDevice
     {
     void failSafe();
+    void synchronizeToNetworkLock();
+    void unsynchronizeFromNetworkLock();
+    void hangAllFutureNetworkLockAcquisitionAttempts();
     LynxModuleMetaList discoverModules() throws RobotCoreException, InterruptedException;
     void close();
     }

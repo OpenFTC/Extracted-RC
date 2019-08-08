@@ -477,6 +477,62 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
             errorWasSet = RobotLog.setGlobalErrorMsg(message);
             RobotLog.e(message);
 
+            try
+            {
+              /*
+               * We make a last ditch effort to put any Lynx modules into failsafe
+               * mode before we restart the app. This has the effect of the modules
+               * entering failsafe mode up to 2500ms (though in reality >3000ms has
+               * been observed) before they otherwise would as induced by the no-comms
+               * timeout.
+               */
+
+              final CountDownLatch lastDitchEffortFailsafeDone = new CountDownLatch(1);
+
+              new Thread(new Runnable() {
+                @Override
+                public void run() {
+                  for (RobotCoreLynxUsbDevice dev : hardwareMap.getAll(RobotCoreLynxUsbDevice.class)) {
+                    /*
+                     * First, we synchronize to the USB networkTransmissionLock.
+                     * This has the effect of blocking any other threads from being
+                     * able to acquire or release it. Then, we send a failsafe command
+                     * to the module. Once that's done, we tell the lock to hang any
+                     * future acquisition attempts. Otherwise, the rogue OpMode could
+                     * just get right back in and send, say, another setPower command
+                     * after we *JUST* put the module into failsafe mode. Finally, we
+                     * unsynchornize from the networkTransmission lock, which allows
+                     * it to once again process acquisition/release calls from other
+                     * threads - though any acquisition calls will just hang, since
+                     * we told it hang any future acquisition calls.
+                     */
+                    dev.synchronizeToNetworkLock();
+                    dev.failSafe();
+                    dev.hangAllFutureNetworkLockAcquisitionAttempts();
+                    dev.unsynchronizeFromNetworkLock();
+                  }
+                  lastDitchEffortFailsafeDone.countDown();
+                }
+              }).start();
+
+              /*
+               * We only wait 250ms before proceeding with the restart anyway. That way if
+               * for some reason the transmission code is in deadlock (or some other condition
+               * has happened which would cause the the above to hang) we won't HANG the code
+               * that's supposed to restart the app BECAUSE something hung :)
+               */
+              if(lastDitchEffortFailsafeDone.await(250, TimeUnit.MILLISECONDS))
+              {
+                RobotLog.e("Successfully sent failsafe commands to Lynx modules before app restart");
+              }
+              else
+              {
+                RobotLog.e("Timed out while sending failsafe commands to Lynx modules before app restart");
+              }
+            }
+            /* Paranoia (in honor of Bob :D) */
+            catch (Exception ignored){}
+
             /*
              * We are giving the Robot Controller a lethal injection, try to help its operator figure out why.
              */
