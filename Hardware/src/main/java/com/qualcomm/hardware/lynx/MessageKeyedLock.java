@@ -56,12 +56,13 @@ public class MessageKeyedLock
 
     private final    String        name;
     private final    Lock          lock;
+    private final    Lock          acquisitionsLock;
+    private volatile boolean       tryingToHangAcquisitions;
     private final    Condition     condition;
     private volatile LynxMessage   lockOwner;
     private          int           lockCount;
     private          long          lockAquisitionTime;
     private          long          nanoLockAquisitionTimeMax;
-    private volatile boolean hangAllFutureAcquisitions;
 
     //----------------------------------------------------------------------------------------------
     // Construction
@@ -85,19 +86,17 @@ public class MessageKeyedLock
          * and after, and found no quantifiable difference.
          *
          * Also see: {@link OpModeManagerImpl.OpModeStuckCodeMonitor.Runner#run()} // Arrghh 'protected' breaks JavaDocs
-         *           {@link #synchronizeTo()}
-         *           {@link #unsynchronizeFrom()}
-         *           {@link #hangAllFutureAcquisitionAttempts()}
-         *
+         *           {@link #lockAcquisitions()}
          */
-        this.lock       = new ReentrantLock(true);
+        this.acquisitionsLock = new ReentrantLock(true);
+        this.tryingToHangAcquisitions = false;
+        this.lock       = new ReentrantLock();
         this.name       = name;
         this.condition  = this.lock.newCondition();
         this.lockOwner  = null;
         this.lockCount  = 0;
         this.lockAquisitionTime        = 0;
         this.nanoLockAquisitionTimeMax = msAquisitionTimeout * ElapsedTime.MILLIS_IN_NANO;
-        hangAllFutureAcquisitions = false;
         }
 
     //----------------------------------------------------------------------------------------------
@@ -132,30 +131,34 @@ public class MessageKeyedLock
         {
         if (message == null) throw new IllegalArgumentException("MessageKeyedLock.acquire: null message");
 
-        if(hangAllFutureAcquisitions)
-            {
-            /*
-             * Ok, we need to hang all future acquisitions. This INCLUDES us now. To accomplish this,
-             * we first lock() UN-interruptibly. Then, we UN-interruptibly sleep forever. This causes the
-             * first thread to call this method after the 'hangAllFutureAcquisitions' flag has been set
-             * to sleep forever, and any subsequent threads to hang on lock() because the first thread
-             * will never have released the lock (since it's sleeping forever). Basically, we're creating
-             * a scenario where no thread will ever escape this 'if' statement.
-             */
-            this.lock.lock();
-
-            while (true)
-                {
-                try {
-                     Thread.sleep(10000);
-                    }
-                catch (InterruptedException ignored) {}
-                }
-            }
+        /*
+         * We check whether we're supposed to lock 'acquisitionsLock' interruptibly or
+         * not. Basically, we want user code to be able to gracefully exit when interrupted
+         * whenever possible. However, in the case of a rogue OpMode (that we're attempting
+         * to block from sending further commands to the Lynx module), rather than letting
+         * it burn a ridiculous amount of CPU cycles continually eating interrupted exceptions,
+         * we choose to instead lock un-interruptibly, so as to hang it here peacefully until
+         * the JVM kills it when we restart the app.
+         *
+         */
+        if(tryingToHangAcquisitions)
+        {
+            this.acquisitionsLock.lock();
+        }
         else
-            {
+        {
+            this.acquisitionsLock.lockInterruptibly();
+        }
+
+        try
+        {
             this.lock.lockInterruptibly();
-            }
+        }
+        catch (Exception e)
+        {
+            this.acquisitionsLock.unlock();
+            throw e;
+        }
 
         try {
             if (this.lockOwner != message)
@@ -188,6 +191,7 @@ public class MessageKeyedLock
         finally
             {
             this.lock.unlock();
+            this.acquisitionsLock.unlock();
             }
         }
 
@@ -195,6 +199,23 @@ public class MessageKeyedLock
         {
         if (message == null) throw new IllegalArgumentException("MessageKeyedLock.release: null message");
 
+        /**
+         * NOTE: because lockInterruptibly() is used, this has the potential to cause
+         * a message to never release its lock, because if we were interrupted while a
+         * command was in flight, then ann InterruptedException will be thrown and we
+         * will not ever get to the part where we clear the lock owner and release.
+         *
+         * This is never really an issue, since any messages after interruption are
+         * simply suppressed - see https://github.com/FIRST-Tech-Challenge/SkyStone/issues/20
+         * (Since the lockInterruptibly() call in {@link #acquire(LynxMessage)} would immediately throw).
+         *
+         * However, now that we try to send a failsafe command restarting the app if the user code
+         * doesn't exit on time, (see {@link OpModeManagerImpl.OpModeStuckCodeMonitor.Runner#run()}),
+         * one might think this would be an issue. (I.e. that the last ditch effort failsafe would
+         * have to wait until an old lock was abandoned). However, that is actually not the case,
+         * because the last ditch effort failsafe only runs 1000ms after a stop is requested, and
+         * the timeout for abandoning a lock is 500ms, so the lock will be immediately abandoned.
+         */
         this.lock.lockInterruptibly();
         try {
             if (this.lockOwner == message)
@@ -235,31 +256,14 @@ public class MessageKeyedLock
             }
         }
 
-    public void synchronizeTo()
+    public void lockAcquisitions()
         {
         if(LynxUsbDeviceImpl.DEBUG_LOG_DATAGRAMS_LOCK)
             {
-            logv("Synchronizing to thread %s", Thread.currentThread().getName());
+            logv("***ALL FUTURE ACQUISITION ATTEMPTS FROM THREADS OTHER THAN %s WILL NOW HANG!***", Thread.currentThread().getName());
             }
-        this.lock.lock();
-        }
-
-    public void unsynchronizeFrom()
-        {
-        if(LynxUsbDeviceImpl.DEBUG_LOG_DATAGRAMS_LOCK)
-            {
-            logv("Unsynchronizing from thread %s", Thread.currentThread().getName());
-            }
-        this.lock.unlock();
-        }
-
-    public void hangAllFutureAcquisitionAttempts()
-        {
-        if(LynxUsbDeviceImpl.DEBUG_LOG_DATAGRAMS_LOCK)
-            {
-            logv("***HANGING ALL FUTURE ACQUISITION ATTEMPTS!***");
-            }
-        this.hangAllFutureAcquisitions = true;
+        this.acquisitionsLock.lock();
+        this.tryingToHangAcquisitions = true;
         }
 
     }

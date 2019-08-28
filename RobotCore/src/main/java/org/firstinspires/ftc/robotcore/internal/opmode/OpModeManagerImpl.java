@@ -494,22 +494,23 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
                 public void run() {
                   for (RobotCoreLynxUsbDevice dev : hardwareMap.getAll(RobotCoreLynxUsbDevice.class)) {
                     /*
-                     * First, we synchronize to the USB networkTransmissionLock.
-                     * This has the effect of blocking any other threads from being
-                     * able to acquire or release it. Then, we send a failsafe command
-                     * to the module. Once that's done, we tell the lock to hang any
-                     * future acquisition attempts. Otherwise, the rogue OpMode could
-                     * just get right back in and send, say, another setPower command
-                     * after we *JUST* put the module into failsafe mode. Finally, we
-                     * unsynchornize from the networkTransmission lock, which allows
-                     * it to once again process acquisition/release calls from other
-                     * threads - though any acquisition calls will just hang, since
-                     * we told it hang any future acquisition calls.
+                     * First, we lock network lock acquisitions. This has the effect
+                     * of blocking any other threads from being able to acquire the network
+                     * lock, and thus preventing anyone else from being able to send commands
+                     * to the module behind our back.
+                     *
+                     * Once that's done (and that may take a bit, since there may be other
+                     * guys queued ahead of us), we send failsafe commands to all the modules
+                     * attached to this LynxUsbDevice (well, it does that internally, all we
+                     * have to do is call failsafe())
+                     *
+                     * Then, notice that we DO NOT unlock network lock acquisitions. If we
+                     * did, the rogue OpMode could just get right back in there and send, say,
+                     * another setPower command after we *JUST* put the module into failsafe
+                     * mode!
                      */
-                    dev.synchronizeToNetworkLock();
+                    dev.lockNetworkLockAcquisitions();
                     dev.failSafe();
-                    dev.hangAllFutureNetworkLockAcquisitionAttempts();
-                    dev.unsynchronizeFromNetworkLock();
                   }
                   lastDitchEffortFailsafeDone.countDown();
                 }

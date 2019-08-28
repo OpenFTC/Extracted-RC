@@ -694,19 +694,9 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
     // Transmitting and receiving
     //----------------------------------------------------------------------------------------------
 
-    @Override public void synchronizeToNetworkLock()
+    @Override public void lockNetworkLockAcquisitions()
         {
-        this.networkTransmissionLock.synchronizeTo();
-        }
-
-    @Override public void unsynchronizeFromNetworkLock()
-        {
-        this.networkTransmissionLock.unsynchronizeFrom();
-        }
-
-    @Override public void hangAllFutureNetworkLockAcquisitionAttempts()
-        {
-        this.networkTransmissionLock.hangAllFutureAcquisitionAttempts();
+        this.networkTransmissionLock.lockAcquisitions();
         }
 
     protected void resetNetworkTransmissionLock() throws InterruptedException
