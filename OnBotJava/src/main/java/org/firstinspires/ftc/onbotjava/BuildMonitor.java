@@ -58,6 +58,7 @@ public class BuildMonitor {
     // Status variables
     private final FileModifyObserver runningObserver;
     private final FileModifyObserver completedObserver;
+    private final OnBotJavaBroadcastManager webSocketBroadcastManager;
 
     /*
      *      <li>status: As the build progresses, several src are written. These src may be
@@ -94,10 +95,12 @@ public class BuildMonitor {
         }
     }
 
-    BuildMonitor() {
-        //final String statusDirPath = OnBotJavaManager.statusDir;
+    BuildMonitor(OnBotJavaBroadcastManager broadcastManager) {
+        webSocketBroadcastManager = broadcastManager;
         File statusDir = OnBotJavaManager.statusDir;
-        if (!statusDir.isDirectory()) statusDir.mkdirs();
+        if (!statusDir.isDirectory()) {
+            statusDir.mkdirs();
+        }
 
         runningObserver = new FileModifyObserver(buildStartedFile,
             new FileModifyObserver.Listener() {
@@ -113,6 +116,7 @@ public class BuildMonitor {
                         buildStatus = CurrentBuildStatus.RUNNING;
                     }
 
+                    broadcastUpdateToWebsocket();
                     RobotLog.ii(TAG, "Build " + lastStartedBuild + " has successfully started");
                 }
             }
@@ -136,14 +140,21 @@ public class BuildMonitor {
                         buildCompletionNotifier.notifyAll();
                     }
 
+                    broadcastUpdateToWebsocket();
                     RobotLog.ii(TAG, "Build " + lastStartedBuild + " completed with status " + newBuildStatus);
                 }
             }
         );
     }
 
+    private void broadcastUpdateToWebsocket() {
+        webSocketBroadcastManager.broadcast(BuildStatusReportWebsocket.TAG, new BuildStatusReportWebsocket(buildStatus, lastStartedBuild));
+    }
+
     public BuildStatusReport currentBuildStatus() {
-        if (closed) throw new IllegalStateException("BuildMonitor has been closed!");
+        if (closed) {
+            throw new IllegalStateException("BuildMonitor has been closed!");
+        }
         synchronized (buildInformationUpdateLock) {
             return new BuildStatusReport(lastStartedBuild,
                     buildStatus.isCurrentlyRunning(),
@@ -214,6 +225,7 @@ public class BuildMonitor {
             lastStartedBuild = startTime;
         }
 
+        broadcastUpdateToWebsocket();
         ReadWriteFile.writeFile(buildStartFile, startTime + " - begin build");
         RobotLog.ii(TAG, "Build " + lastStartedBuild + " is pending");
         return startTime;
@@ -232,6 +244,17 @@ public class BuildMonitor {
             this.successful = successful;
             this.startTimestamp = startTimestamp;
             this.timestamp = System.nanoTime();
+        }
+    }
+
+    public static class BuildStatusReportWebsocket {
+        public static final transient String TAG = OnBotJavaProgrammingMode.WS_BUILD_STATUS;
+        final CurrentBuildStatus status;
+        final long startTimestamp;
+
+        public BuildStatusReportWebsocket(CurrentBuildStatus status, long startTimestamp) {
+            this.status = status;
+            this.startTimestamp = startTimestamp;
         }
     }
 }

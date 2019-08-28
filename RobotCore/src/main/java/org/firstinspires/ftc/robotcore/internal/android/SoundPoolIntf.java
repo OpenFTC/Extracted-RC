@@ -17,6 +17,7 @@ limitations under the License.
 package org.firstinspires.ftc.robotcore.internal.android;
 
 import android.content.Context;
+import android.support.annotation.RawRes;
 import java.io.File;
 
 /**
@@ -24,8 +25,10 @@ import java.io.File;
  * and implemented by {@link com.qualcomm.ftccommon.SoundPlayer}.
  */
 public interface SoundPoolIntf {
+  boolean preload(Context context, @RawRes int resourceId);
   boolean preload(Context context, File file);
 
+  void play(Context context, @RawRes int resourceId, float volume, int loop, float rate);
   void play(Context context, File file, float volume, int loop, float rate);
 
   void stopPlayingAll();

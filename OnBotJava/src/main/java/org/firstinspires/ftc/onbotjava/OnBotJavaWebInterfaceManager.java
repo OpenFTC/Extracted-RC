@@ -41,6 +41,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
+import org.firstinspires.ftc.robotcore.internal.webserver.websockets.WebSocketManager;
 
 import java.util.Arrays;
 import java.util.List;
@@ -62,6 +63,7 @@ public class OnBotJavaWebInterfaceManager {
     );
 
     private final BuildMonitor buildMonitor;
+    private final OnBotJavaBroadcastManager broadcastManager;
     private final Gson gson;
     private final SharedPreferences sharedPrefs;
     private final EditorSettings editorSettings;
@@ -74,7 +76,8 @@ public class OnBotJavaWebInterfaceManager {
                 .create();
         sharedPrefs = AppUtil.getDefContext().getSharedPreferences(OnBotJavaProgrammingMode.class.getName(), Context.MODE_PRIVATE);
         editorSettings = new EditorSettings(sharedPrefs);
-        buildMonitor = new BuildMonitor();
+        broadcastManager = new OnBotJavaBroadcastManager();
+        buildMonitor = new BuildMonitor(broadcastManager);
     }
 
     public static OnBotJavaWebInterfaceManager instance() {
@@ -89,6 +92,10 @@ public class OnBotJavaWebInterfaceManager {
 
     public BuildMonitor buildMonitor() {
         return buildMonitor;
+    }
+
+    public OnBotJavaBroadcastManager broadcastManager() {
+        return broadcastManager;
     }
 
     public Gson gson() {

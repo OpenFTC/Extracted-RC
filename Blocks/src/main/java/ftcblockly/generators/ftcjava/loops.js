@@ -146,25 +146,40 @@ Blockly.FtcJava['controls_forEach'] = function(block) {
   // For each loop.
   var variable0 = Blockly.FtcJava.variableDB_.getName(
       block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
-  var argument0 = Blockly.FtcJava.valueToCode(block, 'LIST',
+  var variable0Type = '';
+  var listCode = Blockly.FtcJava.valueToCode(block, 'LIST',
       Blockly.FtcJava.ORDER_ASSIGNMENT);
-  if (!argument0) {
+  var listType;
+  if (listCode) {
+    listType = Blockly.FtcJava.getOutputType_(block.getInputTargetBlock('LIST'));
+    var matches = listType.match(/^List<(.*)>$/);
+    if (matches) {
+      variable0Type = matches[1];
+    }
+  } else {
     Blockly.FtcJava.generateImport_('Collections');
-    argument0 = 'Collections.emptyList()';
+    Blockly.FtcJava.generateImport_('List');
+    listCode = 'Collections.emptyList()';
+    listType = 'List';
+    variable0Type = 'Object';
   }
   var branch = Blockly.FtcJava.statementToCode(block, 'DO');
   branch = Blockly.FtcJava.addLoopTrap(branch, block.id);
   var code = '';
   // Cache non-trivial values to variables to prevent repeated look-ups.
-  var listVar = argument0;
-  if (!argument0.match(/^\w+$/)) {
+  var listVar;
+  if (listCode.match(/^\w+$/)) {
+    listVar = listCode;
+  } else {
     listVar = Blockly.FtcJava.variableDB_.getDistinctName(
         variable0 + '_list', Blockly.Variables.NAME_TYPE);
-    Blockly.FtcJava.generateImport_('List');
-    code += 'List ' + listVar + ' = ' + argument0 + ';\n';
+    code += listType + ' ' + listVar + ' = ' + listCode + ';\n';
   }
-  code += '// TODO: Enter the type for variable named ' + variable0 + '\n' +
-      'for (UNKNOWN_TYPE ' + variable0 + ' : ' + listVar + ') {\n' + branch + '}\n';
+  if (!variable0Type) {
+    code += '// TODO: Enter the type for variable named ' + variable0 + '\n';
+    variable0Type = 'UNKNOWN_TYPE';
+  }
+  code += 'for (' + variable0Type + ' ' + variable0 + ' : ' + listVar + ') {\n' + branch + '}\n';
   return code;
 };
 

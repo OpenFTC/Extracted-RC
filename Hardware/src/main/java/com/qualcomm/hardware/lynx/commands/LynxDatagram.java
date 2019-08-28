@@ -57,7 +57,7 @@ public class LynxDatagram
     //----------------------------------------------------------------------------------------------
 
     /**
-     * All integral data is exchanged in “little endian” format, least significant byte first (at
+     * All integral data is exchanged in 'little endian' format, least significant byte first (at
      * lowest address/offset.
      */
     public static final ByteOrder LYNX_ENDIAN = ByteOrder.LITTLE_ENDIAN;

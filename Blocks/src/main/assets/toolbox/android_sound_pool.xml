@@ -1,7 +1,13 @@
 <category name="SoundPool">
   <block type="androidSoundPool_initialize"></block>
   <block type="androidSoundPool_preloadSound">
+    <value name="SOUND_NAME"><shadow type="androidSoundPoolSkyStone_typedEnum_soundResource"></shadow></value>
+  </block>
+  <block type="androidSoundPool_preloadSound">
     <value name="SOUND_NAME"><shadow type="text"><field name="TEXT">click.wav</field></shadow></value>
+  </block>
+  <block type="androidSoundPool_play">
+    <value name="SOUND_NAME"><shadow type="androidSoundPoolSkyStone_typedEnum_soundResource"></shadow></value>
   </block>
   <block type="androidSoundPool_play">
     <value name="SOUND_NAME"><shadow type="text"><field name="TEXT">click.wav</field></shadow></value>

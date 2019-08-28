@@ -66,9 +66,13 @@ abstract class VuforiaBaseAccess<T extends VuforiaBase> extends Access {
     Pair<Boolean, CameraMonitorFeedback> cameraMonitorFeedback =
         checkCameraMonitorFeedback(cameraMonitorFeedbackString);
     if (cameraDirection != null && cameraMonitorFeedback.first && checkAndSetVuforiaBase()) {
-      vuforiaBase.initialize(vuforiaLicenseKey, cameraDirection,
-          useExtendedTracking, enableCameraMonitoring, cameraMonitorFeedback.second,
-          dx, dy, dz, xAngle, yAngle, zAngle, useCompetitionFieldTargetLocations);
+      try {
+        vuforiaBase.initialize(vuforiaLicenseKey, cameraDirection,
+            useExtendedTracking, enableCameraMonitoring, cameraMonitorFeedback.second,
+            dx, dy, dz, xAngle, yAngle, zAngle, useCompetitionFieldTargetLocations);
+      } catch (Exception e) {
+        blocksOpMode.throwException(e);
+      }
     }
   }
 
@@ -85,9 +89,13 @@ abstract class VuforiaBaseAccess<T extends VuforiaBase> extends Access {
         checkCameraMonitorFeedback(cameraMonitorFeedbackString);
     if (cameraName != null && cameraMonitorFeedback.first && checkAndSetVuforiaBase()) {
       String vuforiaLicenseKey = "";
-      vuforiaBase.initialize(vuforiaLicenseKey, cameraName, webcamCalibrationFilename,
-          useExtendedTracking, enableCameraMonitoring, cameraMonitorFeedback.second,
-          dx, dy, dz, xAngle, yAngle, zAngle, useCompetitionFieldTargetLocations);
+      try {
+        vuforiaBase.initialize(vuforiaLicenseKey, cameraName, webcamCalibrationFilename,
+            useExtendedTracking, enableCameraMonitoring, cameraMonitorFeedback.second,
+            dx, dy, dz, xAngle, yAngle, zAngle, useCompetitionFieldTargetLocations);
+      } catch (Exception e) {
+        blocksOpMode.throwException(e);
+      }
     }
   }
 

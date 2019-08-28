@@ -74,11 +74,11 @@ public class SoundPlayingRobotMonitor implements RobotStateMonitor
 
     // Identity of the sounds played by this monitor. Users can change these
     // instance variables in order to cause different sounds to be played.
-    public @RawRes int soundConnect    = R.raw.chimeconnect;
-    public @RawRes int soundDisconnect = R.raw.chimedisconnect;
-    public @RawRes int soundRunning    = R.raw.nxtstartupsound;
-    public @RawRes int soundWarning    = R.raw.warningmessage;
-    public @RawRes int soundError      = R.raw.errormessage;
+    public static @RawRes int soundConnect    = R.raw.ss_r2d2_up;
+    public static @RawRes int soundDisconnect = R.raw.ss_bb8_down;
+    public static @RawRes int soundRunning    = R.raw.ss_light_speed;
+    public static @RawRes int soundWarning    = R.raw.ss_mine;
+    public static @RawRes int soundError      = R.raw.ss_mf_fail;
 
     protected enum Sound { None, Connect, Disconnect, Running, Warning, Error }
 
@@ -97,7 +97,7 @@ public class SoundPlayingRobotMonitor implements RobotStateMonitor
 
     public static void prefillSoundCache()
         {
-        SoundPlayer.getInstance().prefillSoundCache(R.raw.chimeconnect, R.raw.chimedisconnect, R.raw.nxtstartupsound, R.raw.warningmessage, R.raw.errormessage);
+        SoundPlayer.getInstance().prefillSoundCache(soundConnect, soundDisconnect, soundRunning, soundWarning, soundError);
         }
 
     //----------------------------------------------------------------------------------------------

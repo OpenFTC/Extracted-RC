@@ -30,11 +30,15 @@
 
 package com.qualcomm.robotcore.util;
 
+import android.app.UiModeManager;
+import android.content.Context;
+import android.content.res.Configuration;
 import android.os.Build;
 
 import com.qualcomm.robotcore.hardware.configuration.LynxConstants;
 
 import org.firstinspires.ftc.robotcore.internal.network.WifiUtil;
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.robotcore.internal.system.SystemProperties;
 
 /**
@@ -77,6 +81,11 @@ public final class Device {
 
   public static boolean isMotorolaE4() {
     return Build.MANUFACTURER.equalsIgnoreCase(MANUFACTURER_MOTOROLA) && Build.MODEL.equalsIgnoreCase(MODEL_E4);
+  }
+
+  public static boolean deviceHasBackButton() {
+    UiModeManager uiManager = (UiModeManager) AppUtil.getDefContext().getSystemService(Context.UI_MODE_SERVICE);
+    return uiManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_NORMAL;
   }
 
   /*

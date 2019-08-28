@@ -36,6 +36,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.widget.FrameLayout;
 
 import com.qualcomm.robotcore.util.Device;
 import com.qualcomm.robotcore.util.RobotLog;
@@ -58,6 +59,7 @@ public class FtcAdvancedRCSettingsActivity extends ThemedActivity
 
     public static final String TAG = "FtcAdvancedRCSettingsActivity";
     @Override public String getTag() { return TAG; }
+    @Override protected FrameLayout getBackBar() { return findViewById(org.firstinspires.inspection.R.id.backbar); }
 
     //----------------------------------------------------------------------------------------------
     // Life Cycle
@@ -135,8 +137,7 @@ public class FtcAdvancedRCSettingsActivity extends ThemedActivity
 
         getFragmentManager()
                 .beginTransaction()
-                .replace(android.R.id.content, settingsFragment)
+                .replace(R.id.container, settingsFragment)
                 .commit();
         }
-
     }

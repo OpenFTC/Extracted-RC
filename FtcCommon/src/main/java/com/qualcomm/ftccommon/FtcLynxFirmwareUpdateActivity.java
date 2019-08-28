@@ -40,6 +40,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -83,6 +84,7 @@ public class FtcLynxFirmwareUpdateActivity extends ThemedActivity
 
     public static final String TAG = "FtcLynxFirmwareUpdateActivity";
     @Override public String getTag() { return TAG; }
+    @Override protected FrameLayout getBackBar() { return findViewById(org.firstinspires.inspection.R.id.backbar); }
 
     protected NetworkConnectionHandler              networkConnectionHandler = NetworkConnectionHandler.getInstance();
     protected RecvLoopRunnable.RecvLoopCallback     recvLoopCallback        = new ReceiveLoopCallback();

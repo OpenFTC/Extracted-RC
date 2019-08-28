@@ -62,11 +62,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package com.qualcomm.ftccommon;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.net.wifi.WifiManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.AnyRes;
 import android.support.annotation.LayoutRes;
@@ -78,6 +76,7 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckedTextView;
+import android.widget.FrameLayout;
 import android.widget.ListView;
 
 import com.qualcomm.robotcore.util.RobotLog;
@@ -101,6 +100,7 @@ public class FtcWifiDirectChannelSelectorActivity extends ThemedActivity impleme
 
     public static final String TAG = "FtcWifiDirectChannelSelectorActivity";
     @Override public String getTag() { return TAG; }
+    @Override protected FrameLayout getBackBar() { return findViewById(org.firstinspires.inspection.R.id.backbar); }
 
     private boolean                  remoteConfigure = AppUtil.getInstance().isDriverStation();
     private PreferencesHelper        preferencesHelper = new PreferencesHelper(TAG);

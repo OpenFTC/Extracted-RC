@@ -50,6 +50,7 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.android.AndroidSoundPool;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaRoverRuckus;
 import org.firstinspires.ftc.robotcore.external.tfod.TfodRoverRuckus;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
@@ -172,6 +173,51 @@ public class HardwareUtil {
         .append("\n")
         .append(blinkinPatternFromTextTooltip)
         .append("\n");
+
+    // SkyStone sound resources
+    StringBuilder createSkyStoneSoundResourceDropdown = new StringBuilder();
+    StringBuilder skyStoneSoundResourceTooltips = new StringBuilder();
+    createSkyStoneSoundResourceDropdown
+        .append("function createSkyStoneSoundResourceDropdown() {\n")
+        .append("  var CHOICES = [\n");
+    skyStoneSoundResourceTooltips
+        .append("var SKY_STONE_SOUND_RESOURCE_TOOLTIPS = [\n");
+    List<String> resourceNames = new ArrayList<String>();
+    for (java.lang.reflect.Field field : com.qualcomm.ftccommon.R.raw.class.getFields()) {
+      String resourceName = field.getName();
+      if (resourceName.toUpperCase().startsWith("SS_")) {
+        resourceNames.add(resourceName);
+      }
+    }
+    Collections.sort(resourceNames);
+    for (String resourceName : resourceNames) {
+      createSkyStoneSoundResourceDropdown
+          .append("      ['")
+          .append(escapeSingleQuotes(makeVisibleNameForDropdownItem(resourceName)))
+          .append("', '")
+          .append(escapeSingleQuotes(resourceName))
+          .append("'],\n");
+      skyStoneSoundResourceTooltips
+          .append("  ['")
+          .append(escapeSingleQuotes(resourceName))
+          .append("', 'The SoundResource value ")
+          .append(escapeSingleQuotes(resourceName))
+          .append(".'],\n");
+    }
+    createSkyStoneSoundResourceDropdown.append("  ];\n")
+        .append("  return createFieldDropdown(CHOICES);\n")
+        .append("}\n\n");
+    skyStoneSoundResourceTooltips
+        .append("];\n");
+    jsHardware
+        .append(createSkyStoneSoundResourceDropdown)
+        .append(skyStoneSoundResourceTooltips)
+        .append("\n");
+
+    jsHardware
+        .append("var androidSoundPoolRawResPrefix = '")
+        .append(AndroidSoundPool.RAW_RES_PREFIX)
+        .append("';\n");
 
     // Identifiers
     for (Identifier identifier : Identifier.values()) {

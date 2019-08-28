@@ -58,10 +58,8 @@ public class MimeTypesUtil {
     MIME_TYPES_BY_EXT.put("zip", "application/octet-stream");
     // Java Editor MIME types
     MIME_TYPES_BY_EXT.put("map", "application/json map");
-    MIME_TYPES_BY_EXT.put("java", "text/plain");
     MIME_TYPES_BY_EXT.put("jar", "application/octet-stream");
     MIME_TYPES_BY_EXT.put("log", "text/plain");
-    MIME_TYPES_BY_EXT.put("svg", "image/svg+xml");
     MIME_TYPES_BY_EXT.put("ttf", "application/x-font-truetype");
     MIME_TYPES_BY_EXT.put("otf", "application/x-font-opentype");
     MIME_TYPES_BY_EXT.put("woff", "application/font-woff");

@@ -34,12 +34,12 @@ import com.qualcomm.robotcore.hardware.configuration.annotations.DevicePropertie
 import com.qualcomm.robotcore.hardware.configuration.annotations.ServoType;
 
 /**
- * Support for the REV Robotics SPARK Mini Motor Controller.
+ * Support for the REV Robotics SPARKmini Motor Controller.
  *
  * For full details see: http://www.revrobotics.com/rev-31-1230/
  *
- * To use a SPARK Mini, connect your SPARK Mini to a servo port, then on the Robot Controller or
- * Driver Station, configure the port you connected the SPARK Mini as a REV SPARK Mini Motor Controller.
+ * To use a SPARKmini, connect your SPARKmini to a servo port, then on the Robot Controller or
+ * Driver Station, configure the port you connected the SPARKmini as a REV SPARKmini Motor Controller.
  *
  */
 @ServoType(flavor = ServoFlavor.CONTINUOUS, usPulseLower = 500, usPulseUpper = 2500)

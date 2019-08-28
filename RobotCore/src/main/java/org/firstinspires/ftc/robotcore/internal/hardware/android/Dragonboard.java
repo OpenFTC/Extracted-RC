@@ -100,8 +100,8 @@ public class Dragonboard extends AndroidBoard {
 
     private static File findSerialDevTty()
     {
-        // Older versions of Dragonboard software have the serial port named “/dev/ttyHS0”, while new
-        // versions have the name “/dev/ttyHS4”. Try that guy explicitly, first.
+        // Older versions of Dragonboard software have the serial port named '/dev/ttyHS0', while new
+        // versions have the name '/dev/ttyHS4'. Try that guy explicitly, first.
         File result = new File("/dev/ttyHS4");
         if (result.exists())
         {

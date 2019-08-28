@@ -52,6 +52,7 @@ import org.firstinspires.ftc.robotcore.external.function.Consumer;
 import org.firstinspires.ftc.robotcore.external.function.Continuation;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.Camera;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
+import org.firstinspires.ftc.robotcore.external.stream.CameraStreamSource;
 
 import java.io.File;
 import java.util.Arrays;
@@ -65,7 +66,7 @@ import java.util.concurrent.BlockingQueue;
  *
  * @see <a href="https://en.wikipedia.org/wiki/Mobile_robot_navigation">Mobile robot navigation</a>
  */
-public interface VuforiaLocalizer
+public interface VuforiaLocalizer extends CameraStreamSource
     {
     /**
      * Loads a Vuforia dataset from the indicated application asset, which must be of

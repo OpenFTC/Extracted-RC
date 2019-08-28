@@ -25,7 +25,6 @@ import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
 import android.os.Build;
@@ -36,10 +35,15 @@ import android.view.Surface;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+
+import org.firstinspires.ftc.robotcore.external.function.Consumer;
+import org.firstinspires.ftc.robotcore.external.function.Continuation;
+import org.firstinspires.ftc.robotcore.external.function.ContinuationResult;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection;
+import org.firstinspires.ftc.robotcore.external.stream.CameraStreamServer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
@@ -100,6 +104,9 @@ public class TFObjectDetectorImpl implements TFObjectDetector {
   private AnnotatedYuvRgbFrame annotatedFrame;
   private long lastReturnedFrameTime = 0;
 
+  private final Object bitmapFrameLock = new Object();
+  private Continuation<? extends Consumer<Bitmap>> bitmapContinuation;
+
   /**
    * Return true if this device is compatible with TensorFlow Object Detection, false otherwise.
    */
@@ -147,6 +154,8 @@ public class TFObjectDetectorImpl implements TFObjectDetector {
     if (imageView != null) {
       updateImageView(annotatedFrame);
     }
+
+    CameraStreamServer.getInstance().setSource(this);
   }
 
   private static TfodParameters makeTfodParameters(Parameters parameters) {
@@ -292,6 +301,18 @@ public class TFObjectDetectorImpl implements TFObjectDetector {
       frameManager.drawDebug(canvas);
     }
 
+    synchronized (bitmapFrameLock) {
+      if (bitmapContinuation != null) {
+        bitmapContinuation.dispatch(new ContinuationResult<Consumer<Bitmap>>() {
+          @Override
+          public void handle(Consumer<Bitmap> bitmapConsumer) {
+            bitmapConsumer.accept(bitmap);
+          }
+        });
+        bitmapContinuation = null;
+      }
+    }
+
     appUtil.synchronousRunOnUiThread(new Runnable() {
       @Override
       public void run() {
@@ -429,6 +450,13 @@ public class TFObjectDetectorImpl implements TFObjectDetector {
     }
 
     return null;
+  }
+
+  @Override
+  public void getFrameBitmap(Continuation<? extends Consumer<Bitmap>> continuation) {
+    synchronized (bitmapFrameLock) {
+      bitmapContinuation = continuation;
+    }
   }
 
   private static List<Recognition> makeRecognitionsList(@NonNull AnnotatedYuvRgbFrame frame) {

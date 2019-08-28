@@ -41,7 +41,6 @@ import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.util.ThreadPool;
 
 import org.firstinspires.ftc.robotcore.internal.network.WifiDirectAgent;
-import org.firstinspires.ftc.robotcore.internal.network.WifiUtil;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -97,16 +96,6 @@ public abstract class AccessPointAssistant extends NetworkConnection {
         return  address;
     }
 
-    /**
-     * getConnectionOwnerName
-     *
-     * Returns the ssid of the access point we are currently connected to.
-     */
-    @Override
-    public String getConnectionOwnerName()
-    {
-        return WifiUtil.getConnectedSsid();
-    }
 
     /**
      * getConnectionOwnerMacAddress
@@ -156,28 +145,16 @@ public abstract class AccessPointAssistant extends NetworkConnection {
     {
         StringBuilder s = new StringBuilder();
 
-        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-
         s.append("Name: ").append(getDeviceName());
-        s.append("\nIP Address: ").append(getIpAddressAsString(wifiInfo.getIpAddress()));
+        s.append("\nIP Address: ").append(getIpAddress());
         s.append("\nAccess Point SSID: ").append(getConnectionOwnerName());
-        s.append("\nPassphrase: ").append(getPassphrase());
+        String passphrase = getPassphrase();
+
+        if (passphrase != null) {
+            s.append("\nPassphrase: ").append(getPassphrase());
+        }
 
         return s.toString();
-    }
-
-    /**
-     * getIpAddressAsString
-     */
-    private String getIpAddressAsString(int ipAddress)
-    {
-        String address =
-                String.format("%d.%d.%d.%d",
-                        (ipAddress & 0xff),
-                        (ipAddress >> 8 & 0xff),
-                        (ipAddress >> 16 & 0xff),
-                        (ipAddress >> 24 & 0xff));
-        return address;
     }
 
     /**
@@ -243,6 +220,8 @@ public abstract class AccessPointAssistant extends NetworkConnection {
     {
         doContinuousScans = false;
     }
+
+    protected abstract String getIpAddress();
 
     /**
      * Degenerate implementations.

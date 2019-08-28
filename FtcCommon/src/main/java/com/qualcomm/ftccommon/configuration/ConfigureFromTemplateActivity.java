@@ -37,6 +37,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.qualcomm.ftccommon.CommandList;
@@ -80,6 +81,7 @@ public class ConfigureFromTemplateActivity extends EditActivity implements RecvL
     public static final RequestCode requestCode = RequestCode.CONFIG_FROM_TEMPLATE;
     public static final String      TAG = "ConfigFromTemplate";
     @Override public String getTag() { return TAG; }
+    @Override protected FrameLayout getBackBar() { return findViewById(org.firstinspires.inspection.R.id.backbar); }
 
     protected NetworkConnectionHandler  networkConnectionHandler    = NetworkConnectionHandler.getInstance();
     protected List<RobotConfigFile>     configurationList           = new CopyOnWriteArrayList<RobotConfigFile>();

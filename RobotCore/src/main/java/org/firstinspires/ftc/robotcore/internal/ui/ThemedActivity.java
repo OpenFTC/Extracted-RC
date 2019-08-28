@@ -50,14 +50,8 @@ import org.firstinspires.ftc.robotcore.internal.system.PreferencesHelper;
  * on API 19
  */
 @SuppressWarnings("WeakerAccess")
-public abstract class ThemedActivity extends Activity
+public abstract class ThemedActivity extends BaseActivity
     {
-    //----------------------------------------------------------------------------------------------
-    // State
-    //----------------------------------------------------------------------------------------------
-
-    public abstract String getTag();
-
     //----------------------------------------------------------------------------------------------
     // Life Cycle
     //----------------------------------------------------------------------------------------------

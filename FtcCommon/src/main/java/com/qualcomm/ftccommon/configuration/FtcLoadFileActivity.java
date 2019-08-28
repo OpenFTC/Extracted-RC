@@ -40,6 +40,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -75,6 +76,7 @@ public class FtcLoadFileActivity extends EditActivity implements RecvLoopRunnabl
   // Also in Android.manifest
   public  static final String TAG = FtcConfigurationActivity.TAG;
   @Override public String getTag() { return TAG; }
+  @Override protected FrameLayout getBackBar() { return findViewById(R.id.backbar); }
 
   private List<RobotConfigFile> fileList = new CopyOnWriteArrayList<RobotConfigFile>();
   private NetworkConnectionHandler networkConnectionHandler = NetworkConnectionHandler.getInstance();

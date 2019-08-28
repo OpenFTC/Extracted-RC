@@ -134,6 +134,7 @@ import com.qualcomm.robotcore.util.WebServer;
 
 import org.firstinspires.ftc.robotcore.external.Consumer;
 import org.firstinspires.ftc.robotcore.external.function.Supplier;
+import org.firstinspires.ftc.robotcore.external.stream.CameraStreamServer;
 import org.firstinspires.ftc.robotcore.internal.collections.SimpleGson;
 import org.firstinspires.ftc.robotcore.internal.network.CallbackResult;
 import org.firstinspires.ftc.robotcore.internal.network.NetworkConnectionHandler;
@@ -359,6 +360,10 @@ public abstract class FtcEventLoopBase implements EventLoop
             {
             result = SoundPlayer.getInstance().handleCommandStopPlayingSounds(command);
             }
+        else if (name.equals(CommandList.CMD_REQUEST_FRAME))
+            {
+            result = CameraStreamServer.getInstance().handleRequestFrame();
+            }
         else if (name.equals(CommandList.CmdVisuallyIdentify.Command))
             {
             result = handleCommandVisuallyIdentify(command);
@@ -554,7 +559,7 @@ public abstract class FtcEventLoopBase implements EventLoop
         {
         RobotLog.vv(TAG, "updateLynxFirmware(%s, %s)", serialNumber, imageFileName.getName());
 
-        boolean success = true;
+        boolean success = false;
 
         try {
             final LynxUsbDeviceContainer lynxUsbDevice = getLynxUsbDeviceForFirmwareUpdate(serialNumber);
@@ -576,7 +581,8 @@ public abstract class FtcEventLoopBase implements EventLoop
                                 RobotLog.vv(TAG, "trying firmware update: count=%d", i);
                                 if (updateFirmwareOnce(lynxUsbDevice, imageFileName.getName(), firmwareImage, serialNumber))
                                     {
-                                    break; // success
+                                    success = true;
+                                    break;
                                     }
                                 }
                             }
@@ -588,7 +594,6 @@ public abstract class FtcEventLoopBase implements EventLoop
                         }
                     else
                         {
-                        success = false;
                         RobotLog.ee(TAG, "firmware image file unexpectedly empty");
                         }
                     }
@@ -599,13 +604,11 @@ public abstract class FtcEventLoopBase implements EventLoop
                 }
             else
                 {
-                success = false;
                 RobotLog.ee(TAG, "unable to obtain lynx usb device for fw update: %s", serialNumber);
                 }
             }
         catch (RuntimeException e)
             {
-            success = false;
             RobotLog.ee(TAG, e, "RuntimeException in updateLynxFirmware()");
             }
         RobotLog.vv(TAG, "updateLynxFirmware(%s, %s): success=%s", serialNumber, imageFileName.getName(), success);
@@ -655,6 +658,7 @@ public abstract class FtcEventLoopBase implements EventLoop
         else
             {
             RobotLog.ee(TAG, "failed to enter firmware update mode");
+            success = false;
             }
         return success;
         }

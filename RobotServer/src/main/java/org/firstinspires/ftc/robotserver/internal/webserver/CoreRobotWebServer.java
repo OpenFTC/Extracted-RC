@@ -38,6 +38,8 @@ import com.qualcomm.robotcore.wifi.NetworkConnectionFactory;
 import com.qualcomm.robotcore.wifi.NetworkType;
 import com.qualcomm.robotcore.wifi.WifiDirectAssistant;
 
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
+import org.firstinspires.ftc.robotcore.internal.webserver.R;
 import org.firstinspires.ftc.robotcore.internal.webserver.RobotControllerWebInfo;
 import org.firstinspires.ftc.robotcore.internal.webserver.websockets.WebSocketManager;
 import org.firstinspires.ftc.robotserver.internal.webserver.tempfile.UploadedTempFileManagerFactory;
@@ -206,8 +208,9 @@ public class CoreRobotWebServer implements WebServer {
             }
 
             return new RobotControllerWebInfo(
-                    networkName, networkConnection.getPassphrase(), serverUrl,
-                    serverIsAlive, timeServerStartedMillis);
+                    networkName,
+                    networkConnection != null ? networkConnection.getPassphrase() : AppUtil.getDefContext().getString(R.string.manage_page_no_network),
+                    serverUrl, serverIsAlive, timeServerStartedMillis);
         }
     }
 

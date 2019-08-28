@@ -76,17 +76,28 @@
         return currentUri.substring(0, currentUri.indexOf(env.urls.URI_JAVA_PREFIX) + env.urls.URI_JAVA_PREFIX.length);
     })();
 
-    env.documentId = (function getDocumentId() {
-        const currentUri = document.URL;
+    function extractDocumentIdFromUri(currentUri) {
         const javaEditorWithParamQuery = env.urls.URI_JAVA_EDITOR + '?';
-        if (currentUri.indexOf(javaEditorWithParamQuery) !== -1) {
-            var paramFileName = env.getParameterByName("f");
-            if (paramFileName) return paramFileName;
-            paramFileName = currentUri.substring(currentUri.indexOf(javaEditorWithParamQuery) + (javaEditorWithParamQuery).length);
-            if (paramFileName !== '.java') return paramFileName;
+        if (currentUri.indexOf(javaEditorWithParamQuery) === -1) {
+            return '';
+        }
+
+        var paramFileName = env.getParameterByName("f");
+        if (paramFileName) {
+            return paramFileName;
+        }
+
+        paramFileName = currentUri.substring(currentUri.indexOf(javaEditorWithParamQuery) + (javaEditorWithParamQuery).length);
+        if (paramFileName !== '.java') {
+            return paramFileName;
         }
 
         return '';
+    }
+
+    env.documentId = (function getDocumentId() {
+        const currentUri = document.URL;
+        return extractDocumentIdFromUri(currentUri);
     })();
 
     env._isFtcRobotController = (function () {
@@ -129,7 +140,17 @@
                 showBorder: false,
                 multiSelect: true,
                 onNodeSelected: nodeSelected,
-                onNodeUnselected: nodeUnselected
+                onNodeUnselected: nodeUnselected,
+                onRendered: function() {
+                    $('li.node-file-tree a').click(e => {
+                        var target = $(e.target);
+                        var targetId = extractDocumentIdFromUri(target.attr('href'));
+                        if (env.changeDocument && targetId) {
+                            e.preventDefault();
+                            env.changeDocument(targetId);
+                        }
+                    });
+                }
             };
         },
         callbacks: { // for the UI system
@@ -258,10 +279,9 @@
             const treeUri = env.urls.URI_FILE_TREE;
 
             $.get(treeUri, function (data) {
-                callback(env.trees.parse.sourceTree(data)/*, env.parseLibrariesTree(data)*/, callbackFinished);
+                callback(env.trees.parse.sourceTree(data), callbackFinished);
             }).fail(function () {
                 console.error("Getting file tree failed!");
-                //callCallback(fileTree);
             });
         },
         srcFiles: null,
@@ -270,7 +290,6 @@
 
     env.resizeLeftHandPanel = function resizeLeftHandPanel(handle, leftAmt, $editor, $file, shown) {
         handle.offset({
-            //top: e.pageY,
             left: leftAmt
         });
 
@@ -289,12 +308,14 @@
                 }
             });
 
-            if (attrs.lastIndexOf(' ') === attrs.length - 1) attrs = attrs.substr(0, attrs.length - 1);
+            if (attrs.lastIndexOf(' ') === attrs.length - 1) {
+                attrs = attrs.substr(0, attrs.length - 1);
+            }
             return attrs;
         });
 
         shown = !shown;
-        return shown;
+        return !shown;
     };
 
     env.resizeBuildLogPane = function resizeBuildLogPane(y, buildLogHandle) {
@@ -352,7 +373,7 @@
 
     env.setup = {
         projectView: function setupFileBrowsers(callback) {
-            const treeSetupCallback = function treeSetupCallback(srcTree/*, jarsTree*/, callback) {
+            const treeSetupCallback = function treeSetupCallback(srcTree, callback) {
                 var selectedNodes = function selectedNodes(treeView) {
                     return treeView.treeview('getSelected', 0);
                 };
@@ -424,13 +445,13 @@
                     if (typeof backColor !== 'undefined' && typeof hoverColor !== 'undefined') {
                         window.clearInterval(intervalId);
                         const $file = $('#file-tree');
-                        //var $library = $('#library-tree');
                         const nodeSelected = generateTreeViewNodeSelectionHandler([$file]);
                         const nodeUnselected = generateTreeViewNodeUnselectionHandler([$file]);
                         $file.treeview(env.trees.defaultParameters(srcTree, nodeSelected, nodeUnselected, backColor, hoverColor));
-                        //$library.treeview(defaultTreeParameters(jarsTree, nodeSelected));
 
-                        if (typeof callback === 'function') callback();
+                        if (typeof callback === 'function') {
+                            callback();
+                        }
                     }
                 }, 20);
             };
@@ -447,14 +468,16 @@
             $(window).on('resize', function () {
                 (function resizeThrottler() {
                     // ignore resize events as long as an actualResizeHandler execution is in the queue
-                    if (!resizeTimeout) {
-                        resizeTimeout = setTimeout(function () {
-                            resizeTimeout = null;
-                            actualResizeHandler();
-
-                            // The actualResizeHandler will execute at a rate of 15fps
-                        }, 66);
+                    if (resizeTimeout) {
+                        return;
                     }
+
+                    resizeTimeout = setTimeout(function () {
+                        resizeTimeout = null;
+                        actualResizeHandler();
+
+                        // The actualResizeHandler will execute at a rate of 15fps
+                    }, 66);
                 })();
 
                 function actualResizeHandler() {
@@ -532,14 +555,10 @@
 
             // https://jsfiddle.net/Jge9z/
             $(document.body).on("mousemove", function (e) {
-                //e.preventDefault();
-                //console.log('Touch Move');
-                //console.log(e.changedTouches);
                 const x = e.clientX;
                 const y = e.clientY;
                 if ($dragging) {
                     const projectFileTree = ($('#file-tree-container'));
-                    //var libraryFileTree = ($('#library-tree-container'));
                     const buildLogHandler = $('#build-log-handle');
                     if (target === "left-pane-handle") {
                         shown = env.resizeLeftHandPanel($dragging, x, $editor, $file, shown);
@@ -551,8 +570,6 @@
                     }
                 }
             }).on('mouseup', function () {
-                //e.preventDefault();
-                //console.log('Touch End');
                 $dragging = null;
                 target = "";
             });
@@ -660,11 +677,14 @@
             const markFilesToBeCut = function () {
                 $('#file-tree').find('a[href]').each(function () {
                     var $this = $(this);
-                    if ($this.attr('href') === 'javaScript:void(0);')
+                    if ($this.attr('href') === 'javaScript:void(0);') {
                         $this.changeElementType('span');
+                    }
                 });
                 if (nodesToCopy === null || typeof nodesToCopy.nodes === 'undefined' ||
-                    typeof nodesToCopy.op === 'undefined' || nodesToCopy.op !== 'cut') return;
+                    typeof nodesToCopy.op === 'undefined' || nodesToCopy.op !== 'cut') {
+                    return;
+                }
                 var nodes = nodesToCopy.nodes;
                 nodes.forEach(function (node) {
                     var nodeId = node.nodeId;
@@ -977,7 +997,21 @@
          displayOnBotJava: function () {
              $('#page-load-container').css('display', 'none');
              $('#editor-container').css('visibility', 'visible');
-         }
+         },
+        websocket: function() {
+            WEBSOCKET_LIB.webSocketManager.subscribeToNamespace(env.urls.WS_NAMESPACE);
+            env.ws = {
+                send: function sendOnBotJavaWsMessage(type, msg) {
+                    WEBSOCKET_LIB.webSocketManager.sendMessage(new WEBSOCKET_LIB.WebSocketMessage(env.urls.WS_NAMESPACE, type, msg));
+                },
+                register: function registerOnBotJavaWsHandler(type, handler) {
+                    WEBSOCKET_LIB.webSocketManager.registerTypeHandler(env.urls.WS_NAMESPACE, type, handler);
+                },
+                connectionHandlers: function registerOnBotJavaConnectionHandlers(onConnect, onDisconnect) {
+                    WEBSOCKET_LIB.webSocketManager.registerConnectionStateListeners(onConnect, onDisconnect);
+                }
+            }
+        }
     };
 
     env.keys = (function () {
@@ -1104,5 +1138,6 @@
         env.setup.teamInformation();
         env.setup.keyboardShortcuts();
         env.setup.print();
+        env.setup.websocket();
     })();
 })(env, jQuery, console);

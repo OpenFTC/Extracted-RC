@@ -1116,7 +1116,7 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
         {
         RobotLog.vv(LynxModule.TAG, "enterFirmwareUpdateModeUSB() serial=%s", robotUsbDevice.getSerialNumber());
 
-        if (!LynxConstants.isRevControlHub())
+        if (!LynxConstants.isEmbeddedSerialNumber(robotUsbDevice.getSerialNumber()))
             {
             RobotUsbDeviceFtdi deviceFtdi = accessCBus(robotUsbDevice);
             if (deviceFtdi != null)
@@ -1158,7 +1158,7 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
             }
         else
             {
-            RobotLog.ee(TAG, "enterFirmwareUpdateModeUSB() issued on Control Hub");
+            RobotLog.ee(TAG, "enterFirmwareUpdateModeUSB() issued on Control Hub's embedded Expansion Hub");
             }
 
         return false;

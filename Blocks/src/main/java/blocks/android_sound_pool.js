@@ -5,6 +5,9 @@
 
 // The following are generated dynamically in HardwareUtil.fetchJavaScriptForHardware():
 // androidSoundPoolIdentifierForJavaScript
+// androidSoundPoolRawResPrefix
+// createSkyStoneSoundResourceDropdown
+// SKY_STONE_SOUND_RESOURCE_TOOLTIPS
 // The following are defined in vars.js:
 // getPropertyColor
 // functionColor
@@ -41,7 +44,7 @@ Blockly.Blocks['androidSoundPool_preloadSound'] = {
         .appendField(createNonEditableField('AndroidSoundPool'))
         .appendField('.')
         .appendField(createNonEditableField('preloadSound'));
-    this.appendValueInput('SOUND_NAME').setCheck('String')
+    this.appendValueInput('SOUND_NAME').setCheck(['String', 'SoundResource'])
         .appendField('soundName')
         .setAlign(Blockly.ALIGN_RIGHT);
     this.setColour(functionColor);
@@ -65,7 +68,6 @@ Blockly.FtcJava['androidSoundPool_preloadSound'] = function(block) {
   return [code, Blockly.FtcJava.ORDER_FUNCTION_CALL];
 };
 
-
 Blockly.Blocks['androidSoundPool_play'] = {
   init: function() {
     this.appendDummyInput()
@@ -73,7 +75,7 @@ Blockly.Blocks['androidSoundPool_play'] = {
         .appendField(createNonEditableField('AndroidSoundPool'))
         .appendField('.')
         .appendField(createNonEditableField('play'));
-    this.appendValueInput('SOUND_NAME').setCheck('String')
+    this.appendValueInput('SOUND_NAME').setCheck(['String', 'SoundResource'])
         .appendField('soundName')
         .setAlign(Blockly.ALIGN_RIGHT);
     this.setPreviousStatement(true);
@@ -249,4 +251,38 @@ Blockly.FtcJava['androidSoundPool_getProperty_Number'] = function(block) {
   var property = block.getFieldValue('PROP');
   var code = identifier + '.get' + property + '()';
   return [code, Blockly.FtcJava.ORDER_FUNCTION_CALL];
+};
+
+Blockly.Blocks['androidSoundPoolSkyStone_typedEnum_soundResource'] = {
+  init: function() {
+    this.setOutput(true, 'SoundResource');
+    this.appendDummyInput()
+        .appendField(createNonEditableField('SoundResource'))
+        .appendField('.')
+        .appendField(createSkyStoneSoundResourceDropdown(), 'SOUND_RESOURCE');
+    this.setColour(getPropertyColor);
+    // Assign 'this' to a variable for use in the tooltip closure below.
+    var thisBlock = this;
+    var TOOLTIPS = SKY_STONE_SOUND_RESOURCE_TOOLTIPS;
+    this.setTooltip(function() {
+      var key = thisBlock.getFieldValue('SOUND_RESOURCE');
+      for (var i = 0; i < TOOLTIPS.length; i++) {
+        if (TOOLTIPS[i][0] == key) {
+          return TOOLTIPS[i][1];
+        }
+      }
+      return '';
+    });
+  }
+};
+
+Blockly.JavaScript['androidSoundPoolSkyStone_typedEnum_soundResource'] = function(block) {
+  var code = '"' + androidSoundPoolRawResPrefix + block.getFieldValue('SOUND_RESOURCE') + '"';
+  return [code, Blockly.JavaScript.ORDER_ATOMIC];
+};
+
+Blockly.FtcJava['androidSoundPoolSkyStone_typedEnum_soundResource'] = function(block) {
+  // Even in Java, a sound resource is actually just a string, not an enum.
+  var code = '"' + androidSoundPoolRawResPrefix + block.getFieldValue('SOUND_RESOURCE') + '"';
+  return [code, Blockly.FtcJava.ORDER_ATOMIC];
 };

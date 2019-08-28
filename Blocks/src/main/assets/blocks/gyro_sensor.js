@@ -424,6 +424,16 @@ Blockly.Blocks['gyroSensor_getProperty_Array'] = {
       }
       return '';
     });
+    this.getFtcJavaOutputType = function() {
+      var property = thisBlock.getFieldValue('PROP');
+      switch (property) {
+        case 'AngularOrientationAxes':
+        case 'AngularVelocityAxes':
+          return 'List<Axis>';
+        default:
+          throw 'Unexpected property ' + property + ' (gyroSensor_getProperty_Array getOutputType).';
+      }
+    };
   }
 };
 

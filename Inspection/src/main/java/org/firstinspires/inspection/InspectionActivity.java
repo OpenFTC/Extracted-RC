@@ -39,19 +39,17 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.robocol.Command;
 import com.qualcomm.robotcore.util.Device;
 import com.qualcomm.robotcore.util.ThreadPool;
 import com.qualcomm.robotcore.wifi.NetworkType;
 
-import org.firstinspires.ftc.robotcore.internal.network.DeviceNameManager;
 import org.firstinspires.ftc.robotcore.internal.network.DeviceNameManagerFactory;
-import org.firstinspires.ftc.robotcore.internal.network.WifiDirectDeviceNameManager;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.robotcore.internal.network.NetworkConnectionHandler;
 import org.firstinspires.ftc.robotcore.internal.network.RobotCoreCommandList;
@@ -60,7 +58,6 @@ import org.firstinspires.ftc.robotcore.internal.network.WifiDirectAgent;
 import org.firstinspires.ftc.robotcore.internal.ui.ThemedActivity;
 import org.firstinspires.ftc.robotcore.internal.ui.UILocation;
 
-import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
@@ -73,6 +70,7 @@ public abstract class InspectionActivity extends ThemedActivity
 
     public static final String TAG = "InspectionActivity";
     @Override public String getTag() { return TAG; }
+    @Override protected FrameLayout getBackBar() { return findViewById(R.id.backbar); }
 
     /*
      * To turn on traffic stats on the inspection activities, set this

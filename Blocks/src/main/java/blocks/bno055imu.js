@@ -672,7 +672,7 @@ Blockly.Blocks['bno055imu_getProperty_Array'] = {
     var thisBlock = this;
     var TOOLTIPS = [
         ['AngularOrientationAxes', 'Returns a List of the axes on which the sensor measures ' +
-            'angular orientation..'],
+            'angular orientation.'],
         ['AngularVelocityAxes', 'Returns a List of the axes on which the sensor measures ' +
             'angular velocity. Some sensors measure angular velocity on all three axes ' +
             '(X, Y, & Z) while others measure on only a subset, typically the Z axis. This block ' +
@@ -688,6 +688,16 @@ Blockly.Blocks['bno055imu_getProperty_Array'] = {
       }
       return '';
     });
+    this.getFtcJavaOutputType = function() {
+      var property = thisBlock.getFieldValue('PROP');
+      switch (property) {
+        case 'AngularOrientationAxes':
+        case 'AngularVelocityAxes':
+          return 'List<Axis>';
+        default:
+          throw 'Unexpected property ' + property + ' (bno055imu_getProperty_Array getOutputType).';
+      }
+    };
   }
 };
 

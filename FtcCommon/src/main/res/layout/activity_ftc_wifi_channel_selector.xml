@@ -9,6 +9,12 @@
                 android:paddingTop="@dimen/activity_vertical_margin"
                 tools:context=".FtcWifiDirectChannelSelectorActivity" >
 
+    <include
+        layout="@layout/backbar_layout"
+        android:id="@+id/backbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="0dp" />
 
     <TextView
         android:layout_width="match_parent"

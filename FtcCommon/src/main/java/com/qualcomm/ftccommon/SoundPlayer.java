@@ -372,6 +372,7 @@ public class SoundPlayer implements SoundPool.OnLoadCompleteListener, SoundPoolI
     /**
      * Preloads the sound so as to to reduce delays if the sound is subsequently played.
      */
+    @Override
     public boolean preload(Context context, @RawRes int resourceId)
         {
         boolean result = false;
@@ -1306,6 +1307,16 @@ public class SoundPlayer implements SoundPool.OnLoadCompleteListener, SoundPoolI
                     }
                 }
             }
+        }
+
+    @Override
+    public void play(Context context, @RawRes int resourceId, float volume, int loop, float rate)
+        {
+        PlaySoundParams params = new PlaySoundParams(false);
+        params.volume = volume;
+        params.loopControl = loop;
+        params.rate = rate;
+        startPlaying(context, resourceId, params, null, null);
         }
 
     @Override

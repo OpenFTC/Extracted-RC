@@ -164,6 +164,9 @@ Blockly.Blocks['tfodRoverRuckus_getRecognitions'] = {
         .appendField(createNonEditableField('getRecognitions'));
     this.setColour(functionColor);
     this.setTooltip('Returns a List of the current recognitions.');
+    this.getFtcJavaOutputType = function() {
+      return 'List<Recognition>';
+    };
   }
 };
 

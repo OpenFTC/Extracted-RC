@@ -21,8 +21,7 @@
 </value>
 <value name="WEBCAM_CALIBRATION_FILE">
 <shadow type="text" id="fLsk`.w~xh+nUFrA$=ye">
-<field name="TEXT">
-</field>
+<field name="TEXT"></field>
 </shadow>
 </value>
 <value name="USE_EXTENDED_TRACKING">

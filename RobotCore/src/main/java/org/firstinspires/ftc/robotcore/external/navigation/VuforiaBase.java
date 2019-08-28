@@ -173,10 +173,15 @@ public abstract class VuforiaBase {
       // Vuforia.UpdateCallbackInterface.Vuforia_onUpdate method is called on the JavaBridge
       // thread and the camera monitor view won't update until after waitForStart is finished.
       final AtomicReference<VuforiaLocalizer> vuforiaLocalizerReference = new AtomicReference<>();
+      final AtomicReference<RuntimeException> exceptionReference = new AtomicReference<>();
       Thread thread = new Thread(new Runnable() {
         @Override
         public void run() {
-          vuforiaLocalizerReference.set(ClassFactory.getInstance().createVuforia(parameters));
+          try {
+            vuforiaLocalizerReference.set(ClassFactory.getInstance().createVuforia(parameters));
+          } catch (RuntimeException e) {
+            exceptionReference.set(e);
+          }
         }
       });
       thread.start();
@@ -185,6 +190,14 @@ public abstract class VuforiaBase {
       } catch (InterruptedException e) {
         Thread.currentThread().interrupt();
       }
+
+      // If an exception was caught on the other thread, rethrow it now.
+      RuntimeException e = exceptionReference.get();
+      if (e != null) {
+        e.fillInStackTrace();
+        throw e;
+      }
+
       vuforiaLocalizer = vuforiaLocalizerReference.get();
     } else {
       vuforiaLocalizer = ClassFactory.getInstance().createVuforia(parameters);

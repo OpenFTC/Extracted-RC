@@ -164,7 +164,7 @@ public class CachingFocusControl implements FocusControl, DelegatingCameraContro
             {
             // 4.2.2.1.6 Focus (Absolute) Control
             // When the Auto-Focus Mode control is enabled, attempts to programmatically set this control
-            // shall result in a protocol STALL and an error code of bRequestErrorCode = “Wrong state”.
+            // shall result in a protocol STALL and an error code of bRequestErrorCode = 'Wrong state'.
             if (mode != null && mode != Mode.Unknown && mode != Mode.Auto && mode != Mode.Fixed)
                 {
                 delegatedFocusControl.setFocusLength(focusLength);

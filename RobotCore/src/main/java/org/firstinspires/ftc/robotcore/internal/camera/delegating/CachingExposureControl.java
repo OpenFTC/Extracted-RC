@@ -180,7 +180,7 @@ public class CachingExposureControl implements ExposureControl, DelegatingCamera
             // 4.2.2.1.4 Exposure Time (Absolute) Control
             // When the Auto-Exposure Mode control is in Auto mode or Aperture Priority mode attempts
             // to programmatically set this control shall result in a protocol STALL and an error code
-            // of bRequestErrorCode = “Wrong state”.
+            // of bRequestErrorCode = 'Wrong state'.
             if (mode != null && mode != Mode.Unknown && mode != Mode.Auto && mode != Mode.AperturePriority)
                 {
                 delegatedExposureControl.setExposure(nsExposure, TimeUnit.NANOSECONDS);

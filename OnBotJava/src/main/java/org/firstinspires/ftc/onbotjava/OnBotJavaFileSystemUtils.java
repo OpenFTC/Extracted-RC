@@ -287,12 +287,12 @@ public final class OnBotJavaFileSystemUtils {
             FileInputStream reader = new FileInputStream(file);
             if (lineEnding != null) {
                 StringBuilder builder = readFile(lineEnding, reader);
-
                 return newFixedLengthResponse(NanoHTTPD.Response.Status.OK, mime, builder.toString());
             } else {
                 return newChunkedResponse(NanoHTTPD.Response.Status.OK, mime, reader);
             }
         }
+
         return StandardResponses.fileNotFound();
     }
 

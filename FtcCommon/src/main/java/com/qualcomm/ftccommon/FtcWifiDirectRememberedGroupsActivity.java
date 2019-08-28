@@ -39,6 +39,7 @@ import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
 import android.widget.ListView;
 
 import com.qualcomm.robotcore.exception.RobotCoreException;
@@ -71,6 +72,7 @@ public class FtcWifiDirectRememberedGroupsActivity extends ThemedActivity
 
     public static final String TAG = "FtcWifiDirectRememberedGroupsActivity";
     @Override public String getTag() { return TAG; }
+    @Override protected FrameLayout getBackBar() { return findViewById(org.firstinspires.inspection.R.id.backbar); }
 
     private final boolean                       remoteConfigure = AppUtil.getInstance().isDriverStation();
     private final NetworkConnectionHandler      networkConnectionHandler = NetworkConnectionHandler.getInstance();

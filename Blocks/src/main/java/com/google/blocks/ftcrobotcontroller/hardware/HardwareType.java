@@ -29,8 +29,9 @@ import com.qualcomm.hardware.modernrobotics.ModernRoboticsTouchSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cCompassSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
-import com.qualcomm.hardware.rev.RevTouchSensor;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
+import com.qualcomm.hardware.rev.RevColorSensorV3;
+import com.qualcomm.hardware.rev.RevTouchSensor;
 import com.qualcomm.robotcore.hardware.AccelerationSensor;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.AnalogOutput;
@@ -95,7 +96,8 @@ public enum HardwareType {
       ToolboxFolder.SENSORS, "ColorSensor", ToolboxIcon.COLOR_SENSOR,
       ColorSensor.class,
       BuiltInConfigurationType.COLOR_SENSOR.getXmlTag(),
-      BuiltInConfigurationType.ADAFRUIT_COLOR_SENSOR.getXmlTag()),
+      BuiltInConfigurationType.ADAFRUIT_COLOR_SENSOR.getXmlTag(),
+      ConfigurationTypeManager.getXmlTag(RevColorSensorV3.class)),
   COMPASS_SENSOR( // see compass_sensor.js
       "createCompassSensorDropdown", "compassSensor", "", "_CompassSensor",
       ToolboxFolder.SENSORS, "CompassSensor", ToolboxIcon.COMPASS_SENSOR,
@@ -120,7 +122,8 @@ public enum HardwareType {
       "createDistanceSensorDropdown", "distanceSensor", "", "_DistanceSensor",
       ToolboxFolder.SENSORS, "DistanceSensor", ToolboxIcon.ULTRASONIC_SENSOR, // Need to make artwork but the ultrasonic sensor is close to what we want.
       DistanceSensor.class,
-      ConfigurationTypeManager.getXmlTag(Rev2mDistanceSensor.class)),
+      ConfigurationTypeManager.getXmlTag(Rev2mDistanceSensor.class),
+      ConfigurationTypeManager.getXmlTag(RevColorSensorV3.class)),
   GYRO_SENSOR( // see gyro_sensor.js
       "createGyroSensorDropdown", "gyroSensor", "", "_GyroSensor",
       ToolboxFolder.SENSORS, "GyroSensor", ToolboxIcon.GYRO_SENSOR,
@@ -166,7 +169,8 @@ public enum HardwareType {
       "createOpticalDistanceSensorDropdown", "opticalDistanceSensor", "AsOpticalDistanceSensor", "_OpticalDistanceSensor",
       ToolboxFolder.SENSORS, "OpticalDistanceSensor", ToolboxIcon.OPTICAL_DISTANCE_SENSOR,
       OpticalDistanceSensor.class,
-      ConfigurationTypeManager.getXmlTag(ModernRoboticsAnalogOpticalDistanceSensor.class)),
+      ConfigurationTypeManager.getXmlTag(ModernRoboticsAnalogOpticalDistanceSensor.class),
+      ConfigurationTypeManager.getXmlTag(RevColorSensorV3.class)),
   REV_BLINKIN_LED_DRIVER( // see rev_blinkin_led_driver.js
       "createRevBlinkinLedDriverDropdown", "revBlinkinLedDriver", "AsRevBlinkinLedDriver", "_RevBlinkinLedDriver",
       ToolboxFolder.ACTUATORS, "RevBlinkinLedDriver", ToolboxIcon.LED,

@@ -381,7 +381,7 @@ public class ModernRoboticsI2cGyro extends I2cDeviceSynchDevice<I2cDeviceSynch>
          *  direction and CCW is in the negative direction.
          *
          *  The integrated Z value is subject to scaling based on the Z axis scaling coefficient. This
-         *  value defaults to 0x0100 which has a binary “decimal point” between bits 7 and 8. Thus
+         *  value defaults to 0x0100 which has a binary 'decimal point' between bits 7 and 8. Thus
          *  the 0x0100 represents a value of 1.0. This value may be adjusted to ensure that a
          *  reading of 360° corresponds to one exact revolution of the sensor. The Z axis scaling
          *  coefficient must be calculated using the below formula. Once the value is entered into

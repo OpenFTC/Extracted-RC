@@ -58,6 +58,7 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.FrameLayout;
 
 import com.qualcomm.ftccommon.LaunchActivityConstantsList;
 import com.qualcomm.ftccommon.R;
@@ -98,6 +99,7 @@ public class ProgramAndManageActivity extends ThemedActivity
 
     public static final String TAG = "Console";
     @Override public String getTag() { return TAG; }
+    @Override protected FrameLayout getBackBar() { return findViewById(org.firstinspires.inspection.R.id.backbar); }
 
     protected RobotControllerWebInfo webInfo;
     protected WebView webView;
@@ -509,6 +511,7 @@ public class ProgramAndManageActivity extends ThemedActivity
 
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
+        webSettings.setDomStorageEnabled(true);
         webSettings.setUserAgentString(FtcUserAgentCategory.addToUserAgent(WebSettings.getDefaultUserAgent(this)));
 
         webView.setWebChromeClient(webChromeClient);

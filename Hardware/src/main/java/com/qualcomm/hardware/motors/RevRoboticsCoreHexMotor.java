@@ -33,19 +33,19 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package com.qualcomm.hardware.motors;
 
 import com.qualcomm.robotcore.hardware.configuration.DistributorInfo;
-import com.qualcomm.robotcore.hardware.configuration.ExpansionHubMotorControllerPositionParams;
-import com.qualcomm.robotcore.hardware.configuration.ExpansionHubMotorControllerVelocityParams;
 import com.qualcomm.robotcore.hardware.configuration.annotations.DeviceProperties;
+import com.qualcomm.robotcore.hardware.configuration.annotations.ExpansionHubPIDFPositionParams;
+import com.qualcomm.robotcore.hardware.configuration.annotations.ExpansionHubPIDFVelocityParams;
 import com.qualcomm.robotcore.hardware.configuration.annotations.MotorType;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Rotation;
 
 // We use CCW as the (default) orientation to match the silk-screening on the front of the motor
-@MotorType(ticksPerRev=290, gearing=36.25, maxRPM=137, orientation=Rotation.CCW)
+@MotorType(ticksPerRev=288, gearing=36.25, maxRPM=137, orientation=Rotation.CCW)
 @DeviceProperties(xmlTag="RevRoboticsCoreHexMotor", name="@string/rev_core_hex_name", builtIn = true)
 @DistributorInfo(distributor="@string/rev_distributor", model="REV-41-1300", url="http://www.revrobotics.com/rev-41-1300")
-@ExpansionHubMotorControllerVelocityParams(P=10, I=3, D=0)
-@ExpansionHubMotorControllerPositionParams(P=10, I=0.05, D=0)
+@ExpansionHubPIDFVelocityParams(P=4.96, I=0.496, F=49.6)
+@ExpansionHubPIDFPositionParams(P=5.0)
 public interface RevRoboticsCoreHexMotor
     {
     }

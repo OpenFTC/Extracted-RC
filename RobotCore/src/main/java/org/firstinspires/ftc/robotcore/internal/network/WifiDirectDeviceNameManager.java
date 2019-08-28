@@ -197,7 +197,7 @@ public class WifiDirectDeviceNameManager extends WifiStartStoppable implements D
 
     // The official rules of the FIRST Tech Challenge require that you
     // change the Wi-Fi name of your smartphones to include your team
-    // number and “-RC” if the phone is a Robot Controller or “-DS” if
+    // number and '-RC' if the phone is a Robot Controller or '-DS' if
     // it is a Driver Station. A team can insert an additional dash and
     // a letter (starting with 'B' and continuing up the alphabet) if
     // the team has more than one set of Android phones.

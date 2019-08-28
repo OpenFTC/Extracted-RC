@@ -111,8 +111,111 @@
             $scope.outsideSource = false;
             $scope.changed = false;
             $scope.code = "";
+            $scope.codeError = null;
             $scope.projectViewHasNodesSelected = false;
             env.loadError = false;
+
+            env.ws.connectionHandlers(() => {
+                $scope.disabled = false;
+                var $build = $('#build-button');
+                $build.html('<i class="fa fa-2x fa-wrench"></i>');
+                loadLogsFromLocalStorage();
+            }, () => {
+                $scope.disabled = true;
+                var $buildContent = $('#build-log-content');
+                var $build = $('#build-button');
+                $build.html('<i class="fa fa-2x fa-warning"></i>');
+                $buildContent.html("Could not access the build system.\n" +
+                    "Please verify you are still connected to the Robot Controller and check your logs.");
+            });
+
+            $scope.currentBuildStatus = null;
+
+            env.ws.register(env.urls.WS_BUILD_STATUS, msg => {
+               var buildStatusPayload = angular.fromJson(msg.payload);
+               if ($scope.currentBuildStatus &&
+                   $scope.currentBuildStatus.rcDrift &&
+                   $scope.currentBuildStatus.startTimestamp === buildStatusPayload.startTimestamp) {
+                   buildStatusPayload.rcDrift = $scope.currentBuildStatus.rcDrift;
+
+               }
+               $scope.currentBuildStatus = buildStatusPayload;
+               var currentBuildStatus = buildStatusPayload.status;
+               var $build = $('#build-button');
+               var $buildContent = $('#build-log-content');
+               var getBuildLogHandler = function getBuildLogContent() {
+                   return $.get(env.urls.URI_BUILD_WAIT, function (data) {
+                       $buildContent.append('\n');
+                       var dataString = data.toString();
+                       dataString = dataString.replace(/[<>]/g, function (a) {
+                           return {'<': '&lt;', '>': '&gt;'}[a];
+                       });
+                       var srcDir = env.urls.URI_JAVA_EDITOR + '?/src/';
+                       dataString = dataString
+                           .replace(/([\w/\d.]+)\((\d+):(\d+)\): ([^:]+):/g,
+                               '<a class="obj-error-link" href="' + srcDir + '$1" data-obj-line="$2" data-obj-col="$3">$1</a> line $2, column $3: $4:')
+                           .replace(/ERROR/g, '<span class="error">ERROR</span>')
+                           .replace(/WARNING/g, '<span class="warning">WARNING</span>');
+                       $buildContent.append(dataString);
+                       $('a.obj-error-link').click(function (e) {
+                           e.preventDefault();
+                           var target = $(e.target);
+                           $scope.error = {
+                               line: Number.parseInt(target.attr('data-obj-line')),
+                               col: Number.parseInt(target.attr('data-obj-col')) - 1,
+                           };
+                           env.changeDocument('/src/' + target.html());
+                       });
+                   });
+               };
+
+               var postBuildHandler = function postBuild() {
+                   $build.removeClass('disabled');
+                   $build.html('<i class="fa fa-2x fa-wrench"></i>');
+                   $buildContent.append("\n\nBuild finished in " + Math.floor((Date.now() - buildStatusPayload.startTimestamp - $scope.currentBuildStatus.rcDrift) / 100) / 10 + " seconds");
+                   $scope.building = false;
+                   localStorage.setItem(buildLogKey, btoa($buildContent.html()));
+               };
+
+               if (currentBuildStatus === "SUCCESSFUL") {
+                    getBuildLogHandler().then(() => {
+                        $buildContent.append("\nBuild SUCCESSFUL!");
+                    }).always(postBuildHandler);
+               } else if (currentBuildStatus === "FAILED") {
+                   getBuildLogHandler().then(() => {
+                       $buildContent.append("\nBuild <span class=\"error\">FAILED!</span>");
+                   }).always(postBuildHandler);
+               } else if (currentBuildStatus === "PENDING") {
+                   console.log(`Build ${buildStatusPayload.startTimestamp} queued`);
+                   $build.html('<i class="fa fa-3x fa-spin fa-circle-o-notch"></i>');
+                   $build.addClass('disabled');
+                   $buildContent.html(`\nBuild ${buildStatusPayload.startTimestamp} queued.\n`);
+                   var count = 0;
+                   $scope.currentBuildStatus.rcDrift = Date.now() - buildStatusPayload.startTimestamp;
+                   console.log(`Detected RC time difference of ${$scope.currentBuildStatus.rcDrift}ms`);
+                   var interval = setInterval(() => {
+                       if ($scope.currentBuildStatus.status === 'FAILED' ||
+                           $scope.currentBuildStatus.status === 'SUCCESSFUL' ||
+                           $scope.currentBuildStatus.status === 'RUNNING') {
+                           clearInterval(interval);
+                           return;
+                       }
+
+                       $buildContent.append('.');
+                       count++;
+                       if (count === 50) {
+                           clearInterval(interval);
+                           $build.html('<i class="fa fa-2x fa-warning"></i>');
+                           $buildContent.append("\nThe build system is not responding. Please restart the FTC Robot Controller.");
+                       }
+                   }, 100);
+
+               } else if (currentBuildStatus === "RUNNING") {
+                   $scope.building = true;
+                   console.log('Build running');
+                   $buildContent.html("Build started at " + new Date(buildStatusPayload.startTimestamp + $scope.currentBuildStatus.rcDrift));
+               }
+            });
 
             $scope.isAutocompleteDisabledForPerformance = function () {
                 return env.ftcLangTools.autoCompleteDisabled && env.ftcLangTools.autoCompleteDisabledReason === 'perf';
@@ -135,13 +238,14 @@
                 }
             }
 
-            function getFromRawSource(url, _editor, whitespace, readonly) {
+            function getFromRawSource(url, _editor, readonly) {
                 if (url === null) {
                     console.error("Cowardly refusing to attempt to fetch from self!");
                     return;
                 }
 
                 if (typeof readonly === 'undefined' || readonly === null) readonly = false;
+                var whitespace = ace.require("ace/ext/whitespace");
 
                 console.log("Getting " + url);
                 function setupEditorWithData(data, readonly) {
@@ -152,18 +256,29 @@
                     // Normalize any Windows line-endings to Nix style, otherwise our auto-complete parser is thrown off
                     data = data.replace(/\r\n/g, '\n');
 
+                    _editor.setReadOnly(false);
                     _editor.setValue(data);
                     _editor.getSession().setUndoManager(new ace.UndoManager());
                     _editor.clearSelection();
 
                     $scope.code = data;
                     _editor.setReadOnly(readonly);
+                    if ($scope.error) {
+                        if ($scope.error.col === 0) {
+                            $scope.error.col = 1;
+                        }
+
+                        _editor.gotoLine($scope.error.line, $scope.error.col - 1);
+                        $scope.error = null;
+                    } else {
+                        _editor.gotoLine(1, 1);
+                    }
                 }
 
                 $.get(url, function (data) {
                     if (data !== null) { // Sanity check
                         setupEditorWithData(data, readonly);
-
+                        env.loadError = false;
                         whitespace.detectIndentation(_editor.session);
                         if (document.URL.indexOf(env.javaUrlRoot) === -1) $scope.outsideSource = true;
                     } else {
@@ -178,88 +293,87 @@
                 });
             }
 
+            function loadLogsFromLocalStorage() {
+                var buildLog = localStorage.getItem(buildLogKey);
+                if (buildLog === null) {
+                    localStorage.setItem(buildLogKey, btoa($('#build-log-content').html()));
+                } else {
+                    $('#build-log-content').html(atob(buildLog));
+                }
+
+                $('a.obj-error-link').click(function (e) {
+                    e.preventDefault();
+                    var target = $(e.target);
+                    $scope.error = {
+                        line: target.attr('data-obj-line'),
+                        col: target.attr('data-obj-col')
+                    };
+                    env.changeDocument('/src/' + $(e.target).html());
+                });
+            }
+
+            function detectAndLoadJavaProgrammingModeFile() {
+                var documentId = env.documentId;
+                if (document.URL.indexOf(env.urls.URI_JAVA_EDITOR) + env.urls.URI_JAVA_EDITOR.length !== document.URL.length || (documentId !== null && documentId !== '')) {
+                    var fetchLocation = env.urls.URI_FILE_GET + '?' + env.urls.REQUEST_KEY_FILE + '=' + documentId;
+                    loadFromUrlAddress(fetchLocation);
+                    var fileName = documentId.substring(documentId.lastIndexOf("/") + 1);
+                    if (typeof setDocumentTitle === 'undefined') {
+                        document.title = fileName + " | FTC Code Editor";
+                        console.warn('util.js not loaded correctly');
+                    } else {
+                        setDocumentTitle(fileName + ' | FTC Code Editor');
+                    }
+                } else {
+                    configureEditorToDefaults();
+                    env.loadError = true;
+                    configureEditorLang('.md', env.editor);
+                }
+            }
+
+            function configureEditorToDefaults() {
+                getFromRawSource(env.urls.URI_JAVA_README_FILE, env.editor, true);
+            }
+
+            function loadFromUrlAddress(url) {
+                getFromRawSource(url, env.editor);
+                configureEditorLang(url, env.editor);
+            }
+
+            env.changeDocument = function changeOnBotJavaDocument(newDocumentId) {
+                if (!newDocumentId) {
+                    console.warn("Can't change document id. newDocumentId is invalid");
+                }
+                if (env.documentId === newDocumentId) {
+                    if ($scope.error) {
+                        env.editor.gotoLine($scope.error.line, $scope.error.col - 1, true);
+                        $scope.error = false;
+                    }
+
+                    return;
+                }
+
+                var oldDocumentId = env.documentId;
+                env.documentId = newDocumentId;
+
+                var newUrl;
+                if (oldDocumentId === null || oldDocumentId === '') {
+                    newUrl = document.URL + '?' + newDocumentId;
+                } else {
+                    newUrl = document.URL.replace(oldDocumentId, newDocumentId);
+                }
+
+                window.history.pushState('', document.title, newUrl);
+                detectAndLoadJavaProgrammingModeFile();
+                var parentUrl = parent.document.URL;
+                var parentPrefix = parentUrl.substring(0, parentUrl.indexOf('java/editor.html'));
+                var childPage = newUrl.substring(newUrl.indexOf(('java/editor.html')));
+                parent.history.pushState('', document.title, parentPrefix + childPage + '&pop=true');
+            };
+
             $scope.aceLoaded = function (_editor) {
                 var whitespace = ace.require("ace/ext/whitespace");
                 _editor.$blockScrolling = Infinity;
-                function detectAndLoadJavaProgrammingModeFile() {
-                    var documentId = env.documentId;
-                    if (document.URL.indexOf(env.urls.URI_JAVA_EDITOR) + env.urls.URI_JAVA_EDITOR.length !== document.URL.length && documentId !== null) {
-                        var fetchLocation = env.urls.URI_FILE_GET + '?' + env.urls.REQUEST_KEY_FILE + '=' + documentId;
-                        loadFromUrlAddress(fetchLocation);
-                        var fileName = documentId.substring(documentId.lastIndexOf("/") + 1);
-                        if (typeof setDocumentTitle === 'undefined') {
-                            document.title = fileName + " | FTC Code Editor";
-                            console.warn('util.js not loaded correctly');
-                        } else {
-                            setDocumentTitle(fileName + ' | FTC Code Editor');
-                        }
-                    } else {
-                        configureEditorToDefaults();
-                        env.loadError = true;
-                        configureEditorLang('.md', _editor);
-                    }
-                }
-
-                function configureEditorToDefaults() {
-                    getFromRawSource(env.urls.URI_JAVA_README_FILE, _editor, whitespace, true);
-                }
-
-                function loadFromUrlAddress(url) {
-                    getFromRawSource(url, _editor, whitespace);
-                    configureEditorLang(url, _editor);
-                }
-
-                function loadFromGitHub(gitHub, gitHubBranch) {
-                    function getBranch() {
-                        if (gitHub.includes('!')) {
-                            gitHubBranch = gitHub.substr(gitHub.lastIndexOf('!') + 1);
-                            if (gitHubBranch.includes('>')) {
-                                gitHubBranch = gitHubBranch.substr(0, gitHubBranch.lastIndexOf('>'));
-                            }
-
-                            gitHub = gitHub.replace('!' + gitHubBranch, "");
-                        } else {
-                            console.log("No branch was specified! Defaulting to 'master'");
-                            gitHubBranch = 'master';
-                        }
-                    }
-
-                    function resolvePath() {
-                        if (gitHub.includes('>')) {
-                            path = gitHub.substr(gitHub.lastIndexOf('>') + 1);
-                            gitHub = gitHub.replace('>' + path, '');
-                        }
-
-                        if (path === null || path === "") {
-                            path = 'README.md';
-                        }
-
-                        return path;
-                    }
-
-                    if (gitHub === null && gitHubBranch !== null) {
-                        _editor.setValue("// A Git branch was specified, but no repo. I also need the repo! Thanks ;)");
-                    } else if (gitHub !== null && gitHubBranch === null) {
-                        gitHub = gitHub.replace('%3E', '>'); // Resolve the html escape sequence to the proper symbol
-                        console.log(gitHub);
-                        getBranch();
-                    }
-
-                    if (gitHub !== null && gitHubBranch !== null) {
-                        var path = env.getParameterByName('gp');
-                        if (path === null) {
-                            path = resolvePath();
-                        }
-                        // url = 'https://raw.githubusercontent.com/' + gitHub + "/" + gitHubBranch + "/" + path
-                        getFromRawSource('https://raw.githubusercontent.com/' + gitHub + "/" + gitHubBranch + "/" + path,
-                            _editor, whitespace);
-                        configureEditorLang(path, _editor);
-
-                        return path;
-                    }
-
-                    return null;
-                }
 
                 $scope.editorReady = true;
                 $scope.editor = _editor;
@@ -268,15 +382,6 @@
                 $('#build-log-pane').addClass('ace-' + env.editorTheme);
 
                 detectAndLoadJavaProgrammingModeFile();
-
-                var gitHub = env.getParameterByName('gh');
-                var gitHubBranch = env.getParameterByName('br');
-                var url = env.getParameterByName('url');
-                if (url !== null) {
-                    loadFromUrlAddress(url);
-                } else if (gitHub !== null || gitHubBranch !== null) {
-                    loadFromGitHub(gitHub, gitHubBranch);
-                }
 
                 _editor.clearSelection();
                 _editor.commands.addCommand({
@@ -402,12 +507,7 @@
 
                 $scope.code = $scope.editor.getValue();
 
-                var buildLog = localStorage.getItem(buildLogKey);
-                if (buildLog === null) {
-                    localStorage.setItem(buildLogKey, btoa($('#build-log-content').html()));
-                } else {
-                    $('#build-log-content').html(atob(buildLog));
-                }
+                loadLogsFromLocalStorage();
             };
 
             function save() {
@@ -502,10 +602,9 @@
                         .one('click', '#new-file-okay', okayF);
                 },
                 buildCode: function () {
-                    $scope.disabled = true;
                     $('#build-button').tooltip('hide');
                     $scope.tools.saveCode($scope.editor);
-                    var buildStartUrl = env.urls.URI_BUILD_LAUNCH;
+                    var buildStartUrl = env.urls.WS_BUILD_LAUNCH;
                     if (typeof buildStartUrl === 'undefined' || buildStartUrl === null) {
                         console.error('Build Start URL is invalid');
                         alert('An application error occurred\n\nDetails: \'start build uri is invalid\'');
@@ -514,52 +613,8 @@
                     if ($scope.building) {
                         return;
                     }
-                    $scope.building = true;
-                    $.post(buildStartUrl)
-                        .done(function () {
-                            console.log('Build started!');
-                            var $build = $('#build-button');
-                            $build.html('<i class="fa fa-3x fa-spin fa-circle-o-notch"></i>');
-                            $build.addClass('disabled');
-                            var startDate = new Date();
-                            var $buildContent = $('#build-log-content');
-                            $buildContent.html("Build started at " + new Date());
-                            $.get(env.urls.URI_BUILD_WAIT, function (data) {
-                                var buildLogContent = $('#build-log-content');
-                                buildLogContent.append('\n');
-                                var dataString = data.toString();
-                                dataString = dataString.replace(/[<>]/g, function (a) {
-                                    return {'<': '&lt;', '>': '&gt;'}[a];
-                                });
-                                var srcDir = env.urls.URI_JAVA_EDITOR + '?/src/';
-                                dataString = dataString
-                                    .replace(/([\w/\d.]+)\((\d+):(\d+)\): ([^:]+):/g,
-                                        '<a href="' + srcDir + '$1">$1</a> line $2, column $3: $4:')
-                                    .replace(/ERROR/g, '<span class="error">ERROR</span>')
-                                    .replace(/WARNING/g, '<span class="warning">WARNING</span>');
-
-                                buildLogContent.append(dataString);
-                                // Now get build status
-                                $.get(env.urls.URI_BUILD_STATUS, function (data) {
-                                    var buildStatus = angular.fromJson(data);
-                                    if (buildStatus.successful) {
-                                        $buildContent.append("\nBuild succeeded!");
-                                    } else {
-                                        $buildContent.append('\nBuild <span class="error">FAILED!</span>');
-                                    }
-
-                                    localStorage.setItem(buildLogKey, btoa($buildContent.html()));
-                                });
-                            }).fail(function () {
-                                $buildContent.append("\nCould not access build system URL.\n" +
-                                    "Please verify you are still connected to the Robot Controller and check your logs.");
-                            }).always(function () {
-                                $build.removeClass('disabled');
-                                $build.html('<i class="fa fa-2x fa-wrench"></i>');
-                                $buildContent.append("\n\nBuild finished in " + Math.round((new Date() - startDate) / 100) / 10 + " seconds");
-                                $scope.building = false;
-                            });
-                        });
+                    $scope.disabled = true;
+                    env.ws.send(env.urls.WS_BUILD_LAUNCH);
                 },
                 _copy: null,
                 copyFiles: function (params) {

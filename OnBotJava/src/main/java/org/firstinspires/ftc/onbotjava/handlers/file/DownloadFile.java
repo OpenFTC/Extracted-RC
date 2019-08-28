@@ -43,6 +43,7 @@ import org.firstinspires.ftc.onbotjava.OnBotJavaManager;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.robotcore.internal.webserver.WebHandler;
 
+import java.nio.file.Path;
 import java.util.Date;
 
 import fi.iki.elonen.NanoHTTPD;
@@ -64,6 +65,8 @@ public class DownloadFile implements WebHandler {
             fileName = fileName.substring(0, fileName.length() - 1);
             fileName = fileName.substring(fileName.lastIndexOf(OnBotJavaFileSystemUtils.PATH_SEPARATOR) + 1);
             fileName +=  OnBotJavaFileSystemUtils.EXT_ZIP_FILE;
+        } else if (fileName.contains(OnBotJavaFileSystemUtils.PATH_SEPARATOR)) {
+            fileName = fileName.substring(fileName.lastIndexOf(OnBotJavaFileSystemUtils.PATH_SEPARATOR) + 1);
         }
 
         file.addHeader("Content-Disposition", "attachment; filename=" + fileName);

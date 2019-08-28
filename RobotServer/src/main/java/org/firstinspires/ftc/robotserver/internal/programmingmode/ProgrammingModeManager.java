@@ -39,6 +39,8 @@ import com.qualcomm.robotcore.eventloop.opmode.FtcRobotControllerServiceState;
 import com.qualcomm.robotcore.util.WebHandlerManager;
 import com.qualcomm.robotcore.util.WebServer;
 import org.firstinspires.ftc.robotcore.internal.webserver.WebHandler;
+import org.firstinspires.ftc.robotcore.internal.webserver.websockets.WebSocketManager;
+import org.firstinspires.ftc.robotcore.internal.webserver.websockets.WebSocketNamespaceHandler;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -51,6 +53,7 @@ import java.util.List;
 public class ProgrammingModeManager {
     public static final String TAG = ProgrammingModeManager.class.getSimpleName();
     private volatile WebServer webServer;
+    private volatile WebSocketManager webSocketManager;
     private volatile WebHandlerManager webHandlerManager;
     private volatile ProgrammingModeLog programmingModeLog;
     private final List<ProgrammingMode> registeredProgrammingModes;
@@ -81,6 +84,17 @@ public class ProgrammingModeManager {
      */
     public void register(String uri, WebHandler webHandler) {
         webHandlerManager.register(uri, webHandler);
+    }
+
+    /**
+     * Registers a {@link WebSocketNamespaceHandler} to be associated with a given namespace
+     *
+     * This overwrites any previously associated handler for the given namespace
+     *
+     * @param webHandler a websocket namespace handler for a given namespace
+     */
+    public void register(@NonNull WebSocketNamespaceHandler webHandler) {
+        webSocketManager.registerNamespaceHandler(webHandler);
     }
 
     /**
@@ -128,6 +142,7 @@ public class ProgrammingModeManager {
     public void setState(FtcRobotControllerServiceState rcServiceState) {
         webServer = rcServiceState.getWebServer();
         webHandlerManager = webServer.getWebHandlerManager();
+        webSocketManager = webServer.getWebSocketManager();
         for (ProgrammingMode programmingMode : registeredProgrammingModes) {
             programmingMode.register(this);
         }

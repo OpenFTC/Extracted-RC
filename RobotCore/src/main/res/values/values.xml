@@ -433,12 +433,14 @@
     <string name="rev_40_hd_hex_name">REV Robotics 40:1 HD Hex Motor</string>
     <string name="rev_blinkin_description">a REV Blinkin LED Driver</string>
     <string name="rev_blinkin_name">REV Blinkin LED Driver</string>
+    <string name="rev_color_sensor_v3_description">a Rev Color Sensor v3</string>
+    <string name="rev_color_sensor_v3_name">Rev Color Sensor v3</string>
     <string name="rev_core_hex_name">REV Robotics Core Hex Motor</string>
     <string name="rev_distributor">REV Robotics</string>
     <string name="rev_laser_sensor_description">a REV 2M (Time of Flight) Distance Sensor</string>
     <string name="rev_laser_sensor_name">REV 2M Distance Sensor</string>
-    <string name="rev_spark_mini_description">a REV SPARK Mini Motor Controller</string>
-    <string name="rev_spark_mini_name">REV SPARK Mini Controller</string>
+    <string name="rev_spark_mini_description">a REV SPARKmini Motor Controller</string>
+    <string name="rev_spark_mini_name">REV SPARKmini Controller</string>
     <string name="rev_touch_sensor_description">a REV touch sensor</string>
     <string name="robotStateEmergencyStop">EMERGENCY STOP</string>
     <string name="robotStateInit">initializing</string>

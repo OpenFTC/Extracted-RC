@@ -610,6 +610,9 @@ Blockly.FtcJava.checkTypes_ = function(type, expectedType) {
 
     case 'MatrixF':
       return type == 'MatrixF' || type == 'OpenGLMatrix';
+
+    case 'List':
+      return type.match(/^List<(.*)>$/) ? true : false;
   }
   return false;
 };
@@ -760,6 +763,14 @@ Blockly.FtcJava.getTypeValue_ = function(type) {
       return 10;
     case 'OpenGLMatrix':
       return 11;
+
+    case 'Array':
+    case 'List':
+      return 12;
+    default:
+      if (type.match(/^List<(.*)>$/)) {
+        return 13;
+      }
   }
   return 100;
 };
@@ -1234,6 +1245,14 @@ Blockly.FtcJava.generateImport_ = function(type) {
     case 'TfodBase':
     case 'TfodRoverRuckus':
       importCode = 'import org.firstinspires.ftc.robotcore.external.tfod.' + type + ';';
+      break;
+    default:
+      var matches = type.match(/^List<(.*)>$/);
+      if (matches) {
+        Blockly.FtcJava.generateImport_('List');
+        Blockly.FtcJava.generateImport_(matches[1]);
+        return true;
+      }
   }
   if (importCode) {
     Blockly.FtcJava.definitions_['import_' + type] = importCode;

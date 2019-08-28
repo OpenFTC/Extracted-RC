@@ -38,7 +38,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class WebSocketNamespaceHandler {
-    private final Map<String, WebSocketMessageTypeHandler> messageTypeHandlerMap;
+    private Map<String, WebSocketMessageTypeHandler> messageTypeHandlerMap;
     private final String namespace;
 
     /**
@@ -48,8 +48,7 @@ public abstract class WebSocketNamespaceHandler {
      */
     public WebSocketNamespaceHandler(String namespace) {
         this.namespace = namespace;
-        messageTypeHandlerMap = new ConcurrentHashMap<>();
-        registerMessageTypeHandlers(messageTypeHandlerMap);
+        registerMessageTypeHandlers(new ConcurrentHashMap<String, WebSocketMessageTypeHandler>());
     }
 
     /**
@@ -59,7 +58,7 @@ public abstract class WebSocketNamespaceHandler {
      * This should be called ONLY from the WebSocketNamespaceHandler constructor.
      */
     protected void registerMessageTypeHandlers(Map<String, WebSocketMessageTypeHandler> messageTypeHandlerMap) {
-
+        this.messageTypeHandlerMap = messageTypeHandlerMap;
     }
 
     /**

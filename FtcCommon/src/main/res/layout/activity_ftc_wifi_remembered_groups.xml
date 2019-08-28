@@ -9,7 +9,14 @@
                 android:paddingTop="@dimen/activity_vertical_margin"
                 tools:context=".FtcWifiDirectRememberedGroupsActivity" >
 
-
+    <include
+        layout="@layout/backbar_layout"
+        android:id="@+id/backbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="0dp" />
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

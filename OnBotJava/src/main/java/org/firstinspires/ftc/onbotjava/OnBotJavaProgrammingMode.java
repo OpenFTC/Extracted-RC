@@ -35,6 +35,8 @@ package org.firstinspires.ftc.onbotjava;
 
 import com.qualcomm.robotcore.util.RobotLog;
 
+import org.firstinspires.ftc.onbotjava.handlers.OnBotJavaWebSocketHandler;
+import org.firstinspires.ftc.onbotjava.handlers.OnBotJavaWebSocketTypedMessageHandler;
 import org.firstinspires.ftc.onbotjava.handlers.admin.Clean;
 import org.firstinspires.ftc.onbotjava.handlers.admin.Rearm;
 import org.firstinspires.ftc.onbotjava.handlers.admin.ResetOnBotJava;
@@ -55,12 +57,20 @@ import org.firstinspires.ftc.onbotjava.handlers.objbuild.LaunchBuild;
 import org.firstinspires.ftc.onbotjava.handlers.objbuild.WaitForBuild;
 import org.firstinspires.ftc.onbotjava.handlers.javascript.FetchAutocompleteJavaScript;
 import org.firstinspires.ftc.onbotjava.handlers.javascript.FetchJavaScriptSettings;
+import org.firstinspires.ftc.onbotjava.handlers.websocket.LaunchBuildWs;
 import org.firstinspires.ftc.robotcore.internal.webserver.WebHandler;
+import org.firstinspires.ftc.robotcore.internal.webserver.websockets.FtcWebSocket;
+import org.firstinspires.ftc.robotcore.internal.webserver.websockets.FtcWebSocketMessage;
+import org.firstinspires.ftc.robotcore.internal.webserver.websockets.WebSocketManager;
+import org.firstinspires.ftc.robotcore.internal.webserver.websockets.WebSocketMessageTypeHandler;
 import org.firstinspires.ftc.robotserver.internal.programmingmode.ProgrammingMode;
 import org.firstinspires.ftc.robotserver.internal.programmingmode.ProgrammingModeManager;
+import org.firstinspires.ftc.robotserver.internal.webserver.websockets.WebSocketNamespaceHandlerRegistry;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @SuppressWarnings("ResultOfMethodCallIgnored")
 public class OnBotJavaProgrammingMode implements ProgrammingMode {
@@ -92,6 +102,11 @@ public class OnBotJavaProgrammingMode implements ProgrammingMode {
     public static final String URI_ADMIN_SETTINGS = URI_JAVA_PREFIX + "/admin/settings";
     public static final String URI_ADMIN_SETTINGS_RESET = URI_ADMIN_SETTINGS + "/reset";
     public static final String URI_ADMIN_RESET_ONBOTJAVA = URI_JAVA_PREFIX + "/admin/factory_reset";
+
+    public static final String WS_NAMESPACE = "ONBOTJAVA";
+    public static final String WS_BUILD_LAUNCH = "build:launch";
+    public static final String WS_BUILD_STATUS = "build:status";
+
     private final String TAG = OnBotJavaProgrammingMode.class.getSimpleName();
 
     public void close() {
@@ -114,10 +129,21 @@ public class OnBotJavaProgrammingMode implements ProgrammingMode {
                 manager.register(uri, manager.decorate(paramGenerator, webHandler));
             }
 
+            OnBotJavaWebInterfaceManager.instance().broadcastManager().registerWebSocketManager(manager.getWebServer().getWebSocketManager());
+            OnBotJavaWebSocketTypedMessageHandler[] wsHandlers = {
+                    new LaunchBuildWs()
+            };
+            Map<String, WebSocketMessageTypeHandler> webSocketHandlerMap = new ConcurrentHashMap<>();
+            for (OnBotJavaWebSocketTypedMessageHandler handler : wsHandlers) {
+                webSocketHandlerMap.put(handler.type(), handler);
+            }
+            manager.register(new OnBotJavaWebSocketHandler(webSocketHandlerMap));
+
             //RobotLog.dd(TAG, "It took %.3f s. to setup OnBotJava web handlers", (System.currentTimeMillis() - start) / 1000d);
         } catch (Exception ex) {
             RobotLog.ee(TAG, ex, "Failed to register OnBotJava web handlers");
         }
     }
+
 }
 

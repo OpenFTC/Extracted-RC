@@ -32,7 +32,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.qualcomm.ftccommon;
 
 import android.support.annotation.NonNull;
+import android.util.Base64;
 
+import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.util.SerialNumber;
 
 import org.firstinspires.ftc.robotcore.internal.collections.SimpleGson;

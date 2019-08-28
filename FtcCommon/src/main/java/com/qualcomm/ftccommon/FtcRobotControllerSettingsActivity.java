@@ -36,6 +36,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.widget.FrameLayout;
 
 import com.qualcomm.robotcore.util.RobotLog;
 
@@ -48,6 +49,7 @@ import org.firstinspires.ftc.robotcore.internal.ui.ThemedActivity;
 public class FtcRobotControllerSettingsActivity extends ThemedActivity {
 
   @Override public String getTag() { return this.getClass().getSimpleName(); }
+  @Override protected FrameLayout getBackBar() { return findViewById(R.id.backbar); }
 
   public static class SettingsFragment extends PreferenceFragment {
     @Override
@@ -109,13 +111,14 @@ public class FtcRobotControllerSettingsActivity extends ThemedActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_generic_settings);
 
     // Always make sure we have a real device name before we launch
     DeviceNameManagerFactory.getInstance().initializeDeviceNameIfNecessary();
 
     // Display the fragment as the main content.
     getFragmentManager().beginTransaction()
-        .replace(android.R.id.content, new SettingsFragment())
+        .replace(R.id.container, new SettingsFragment())
         .commit();
   }
 }

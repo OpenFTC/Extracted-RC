@@ -29,6 +29,7 @@
     <string name="common_result_type_file_does_not_exist">The specified file does not exist.</string>
     <string name="common_result_type_no_update_file">No update file provided.</string>
     <string name="common_result_type_performing_startup_operations">The device has not finished startup operations.</string>
+    <string name="manage_page_no_network">Unavailable. Is WiFi on?</string>
     <string name="ota_result_type_device_not_supported">This update file does not support this device.</string>
     <string name="ota_result_type_downgrade_not_authorized">This update file is older than the currently running operating system.\nAre you sure you want to install it?</string>
     <string name="ota_result_type_error_reading_file">Error reading the uploaded update file. Please try again.</string>

@@ -57,6 +57,7 @@ public final class BlocksOpMode extends LinearOpMode {
   private static final String BLOCK_EXECUTION_ERROR = "Error: Error calling method on NPObject.";
   private static final String LOG_PREFIX = "BlocksOpMode - ";
 
+  private static final AtomicReference<RuntimeException> fatalExceptionHolder = new AtomicReference<RuntimeException>();
   private static final AtomicReference<String> fatalErrorMessageHolder = new AtomicReference<String>();
 
   @SuppressLint("StaticFieldLeak")
@@ -116,6 +117,17 @@ public final class BlocksOpMode extends LinearOpMode {
       case FUNCTION:
         return "call " + currentBlockFirstName + currentBlockLastName;
     }
+  }
+
+  // TODO(lizlooney): Consider changeing existing code in *Access.java that catches exception to
+  // call throwException instead of reportWarning.
+  void throwException(Exception e) {
+    String errorMessage = e.getClass().getSimpleName() + (e.getMessage() != null ? " - " + e.getMessage() : "");
+    RuntimeException re = new RuntimeException(
+        "Fatal error occurred while executing the block labeled \"" + getFullBlockLabel() + "\". " +
+        errorMessage, e);
+    fatalExceptionHolder.set(re);
+    throw re; // This will cause the opmode to stop.
   }
 
   private void checkIfStopRequested() {
@@ -182,6 +194,7 @@ public final class BlocksOpMode extends LinearOpMode {
     RobotLog.i(getLogPrefix() + "runOpMode - start");
     cleanUpPreviousBlocksOpMode();
     try {
+      fatalExceptionHolder.set(null);
       fatalErrorMessageHolder.set(null);
 
       currentBlockType = BlockType.EVENT;
@@ -278,8 +291,13 @@ public final class BlocksOpMode extends LinearOpMode {
         Thread.currentThread().interrupt();
       }
 
-      // If there was a fatal error in the WebView component, set the global error message.
+      // If there was an exception, throw it now.
+      RuntimeException fatalException = fatalExceptionHolder.getAndSet(null);
+      if (fatalException != null) {
+        throw fatalException;
+      }
 
+      // If there was a fatal error in the WebView component, set the global error message.
       String fatalErrorMessage = fatalErrorMessageHolder.getAndSet(null);
       if (fatalErrorMessage != null) {
         RobotLog.setGlobalErrorMsg(fatalErrorMessage);
@@ -404,8 +422,8 @@ public final class BlocksOpMode extends LinearOpMode {
         new TfodRoverRuckusAccess(this, Identifier.TFOD_ROVER_RUCKUS.identifierForJavaScript, hardwareMap));
     javascriptInterfaces.put(Identifier.VECTOR_F.identifierForJavaScript,
         new VectorFAccess(this, Identifier.VECTOR_F.identifierForJavaScript));
-    javascriptInterfaces.put(Identifier.VELOCITY.identifierForJavaScript,	
-        new VelocityAccess(this, Identifier.VELOCITY.identifierForJavaScript));    
+    javascriptInterfaces.put(Identifier.VELOCITY.identifierForJavaScript,
+        new VelocityAccess(this, Identifier.VELOCITY.identifierForJavaScript));
     javascriptInterfaces.put(Identifier.VUFORIA_RELIC_RECOVERY.identifierForJavaScript,
         new VuforiaRelicRecoveryAccess(this, Identifier.VUFORIA_RELIC_RECOVERY.identifierForJavaScript, hardwareMap));
     javascriptInterfaces.put(Identifier.VUFORIA_ROVER_RUCKUS.identifierForJavaScript,
@@ -482,12 +500,10 @@ public final class BlocksOpMode extends LinearOpMode {
           return;
         }
 
-        // If an exception occurs while a block is executed, the message is "Error: Error calling
-        // method on NPObject."
-        if (message.equals("Error: Error calling method on NPObject.")) {
-          fatalErrorMessageHolder.compareAndSet(null,
-              "Fatal error occurred while executing the block labeled \"" + getFullBlockLabel() + "\".");
-        }
+        // An exception occured while a block was executed. The message varies (depending on the
+        // version of Android?) so we don't bother checking it.
+        fatalErrorMessageHolder.compareAndSet(null,
+            "Fatal error occurred while executing the block labeled \"" + getFullBlockLabel() + "\".");
       }
 
       RobotLog.e(getLogPrefix() + "caughtException - message is " + message);

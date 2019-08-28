@@ -19,6 +19,7 @@ package org.firstinspires.ftc.robotcore.external.android;
 import static org.firstinspires.ftc.robotcore.internal.system.AppUtil.BLOCKS_SOUNDS_DIR;
 
 import android.content.Context;
+import android.support.annotation.RawRes;
 import org.firstinspires.ftc.robotcore.internal.android.SoundPoolIntf;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import java.io.File;
@@ -32,21 +33,41 @@ import java.util.Map;
  */
 public class AndroidSoundPool {
   private static final String SOUNDS_DIR = "sounds";
-  private final Map<String, File> soundMap = new HashMap<String, File>();
+  public static final String RAW_RES_PREFIX = "RawRes:";
+  private final Map<String, File> soundFileMap = new HashMap<>();
+  private final Map<String, Integer> soundResIdMap = new HashMap<>();
   private volatile SoundPoolIntf soundPool;
   private volatile float volume = 1.0f;
   private volatile float rate = 1.0f;
   private volatile int loop = 0;
 
   private File getSoundFile(String soundName) {
-    File preloadedSoundFile = soundMap.get(soundName);
+    File preloadedSoundFile = soundFileMap.get(soundName);
     if (preloadedSoundFile != null) {
       return preloadedSoundFile;
     }
     File soundFile = new File(BLOCKS_SOUNDS_DIR, soundName);
     if (soundPool.preload(getContext(), soundFile)) {
-      soundMap.put(soundName, soundFile);
+      soundFileMap.put(soundName, soundFile);
       return soundFile;
+    }
+    return null;
+  }
+
+  private @RawRes Integer getSoundResId(String soundName) {
+    @RawRes Integer preloadedSoundResId = soundResIdMap.get(soundName);
+    if (preloadedSoundResId != null) {
+      return preloadedSoundResId;
+    }
+
+    Context context = getContext();
+    @RawRes int soundResId = context.getResources().getIdentifier(
+        soundName, "raw", context.getPackageName());
+    if (soundResId != 0) {
+      if (soundPool.preload(context, soundResId)) {
+        soundResIdMap.put(soundName, soundResId);
+        return soundResId;
+      }
     }
     return null;
   }
@@ -75,6 +96,12 @@ public class AndroidSoundPool {
     if (soundPool == null) {
       throw new IllegalStateException("You forgot to call AndroidSoundPool.initialize!");
     }
+
+    if (soundName.startsWith(RAW_RES_PREFIX)) {
+      @RawRes Integer soundResId = getSoundResId(soundName.substring(RAW_RES_PREFIX.length()));
+      return soundResId != null;
+    }
+
     File soundFile = getSoundFile(soundName);
     return soundFile != null;
   }
@@ -89,6 +116,16 @@ public class AndroidSoundPool {
     if (soundPool == null) {
       throw new IllegalStateException("You forgot to call AndroidSoundPool.initialize!");
     }
+
+    if (soundName.startsWith(RAW_RES_PREFIX)) {
+      @RawRes Integer soundResId = getSoundResId(soundName.substring(RAW_RES_PREFIX.length()));
+      if (soundResId != null) {
+        soundPool.play(getContext(), soundResId, volume, loop, rate);
+        return true;
+      }
+      return false;
+    }
+
     File soundFile = getSoundFile(soundName);
     if (soundFile != null) {
       soundPool.play(getContext(), soundFile, volume, loop, rate);
@@ -161,7 +198,8 @@ public class AndroidSoundPool {
     if (soundPool != null) {
       soundPool.stopPlayingAll();
 
-      soundMap.clear();
+      soundFileMap.clear();
+      soundResIdMap.clear();
 
       // We don't call soundPool.close() here because we didn't create the soundPool instance.
       soundPool = null;

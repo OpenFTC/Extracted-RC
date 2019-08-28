@@ -76,11 +76,19 @@ function vuforia_initialize_withCameraDirection_FtcJava(block, vuforiaLicenseKey
   if (useCompetitionFieldTargetLocations == '') {
     useCompetitionFieldTargetLocations = 'true';
   }
-  return identifier + '.initialize(' + vuforiaLicenseKey + ', ' + cameraDirection + ',\n' +
-      Blockly.FtcJava.INDENT_CONTINUE +
-      useExtendedTracking + ', ' + enableCameraMonitoring + ', ' + cameraMonitorFeedback + ',\n' +
-      Blockly.FtcJava.INDENT_CONTINUE +
-      dx + ', ' + dy + ', ' + dz + ', ' + xAngle + ', ' + yAngle + ', ' + zAngle + ', ' + useCompetitionFieldTargetLocations + ');\n';
+  return identifier + '.initialize(\n' +
+      Blockly.FtcJava.INDENT_CONTINUE + vuforiaLicenseKey + ', // vuforiaLicenseKey\n' +
+      Blockly.FtcJava.INDENT_CONTINUE + cameraDirection + ', // cameraDirection\n' +
+      Blockly.FtcJava.INDENT_CONTINUE + useExtendedTracking + ', // useExtendedTracking\n' +
+      Blockly.FtcJava.INDENT_CONTINUE + enableCameraMonitoring + ', // enableCameraMonitoring\n' +
+      Blockly.FtcJava.INDENT_CONTINUE + cameraMonitorFeedback + ', // cameraMonitorFeedback\n' +
+      Blockly.FtcJava.INDENT_CONTINUE + dx + ', // dx\n' +
+      Blockly.FtcJava.INDENT_CONTINUE + dy + ', // dy\n' +
+      Blockly.FtcJava.INDENT_CONTINUE + dz + ', // dz\n' +
+      Blockly.FtcJava.INDENT_CONTINUE + xAngle + ', // xAngle\n' +
+      Blockly.FtcJava.INDENT_CONTINUE + yAngle + ', // yAngle\n' +
+      Blockly.FtcJava.INDENT_CONTINUE + zAngle + ', // zAngle\n' +
+      Blockly.FtcJava.INDENT_CONTINUE + useCompetitionFieldTargetLocations + '); // useCompetitionFieldTargetLocations\n';
 }
 
 function vuforia_initialize_withWebcam_JavaScript(block, vuforiaLicenseKey, identifier) {
@@ -141,11 +149,20 @@ function vuforia_initialize_withWebcam_FtcJava(block, className) {
       block, 'CAMERA_LOCATION_ON_ROBOT_Z_ANGLE', Blockly.FtcJava.ORDER_COMMA);
   var useCompetitionFieldTargetLocations = Blockly.FtcJava.valueToCode(
       block, 'USE_COMPETITION_FIELD_TARGET_LOCATIONS', Blockly.FtcJava.ORDER_COMMA);
-  return identifier + '.initialize("", ' + cameraName + ', ' + webcamCalibrationFilename + ',\n' +
-      Blockly.FtcJava.INDENT_CONTINUE +
-      useExtendedTracking + ', ' + enableCameraMonitoring + ', ' + cameraMonitorFeedback + ',\n' +
-      Blockly.FtcJava.INDENT_CONTINUE +
-      dx + ', ' + dy + ', ' + dz + ', ' + xAngle + ', ' + yAngle + ', ' + zAngle + ', ' + useCompetitionFieldTargetLocations + ');';
+  return identifier + '.initialize(\n' +
+      Blockly.FtcJava.INDENT_CONTINUE + '"", // vuforiaLicenseKey\n' +
+      Blockly.FtcJava.INDENT_CONTINUE + cameraName + ', // cameraName\n' +
+      Blockly.FtcJava.INDENT_CONTINUE + webcamCalibrationFilename + ', // webcamCalibrationFilename\n' +
+      Blockly.FtcJava.INDENT_CONTINUE + useExtendedTracking + ', // useExtendedTracking\n' +
+      Blockly.FtcJava.INDENT_CONTINUE + enableCameraMonitoring + ', // enableCameraMonitoring\n' +
+      Blockly.FtcJava.INDENT_CONTINUE + cameraMonitorFeedback + ', // cameraMonitorFeedback\n' +
+      Blockly.FtcJava.INDENT_CONTINUE + dx + ', // dx\n' +
+      Blockly.FtcJava.INDENT_CONTINUE + dy + ', // dy\n' +
+      Blockly.FtcJava.INDENT_CONTINUE + dz + ', // dz\n' +
+      Blockly.FtcJava.INDENT_CONTINUE + xAngle + ', // xAngle\n' +
+      Blockly.FtcJava.INDENT_CONTINUE + yAngle + ', // yAngle\n' +
+      Blockly.FtcJava.INDENT_CONTINUE + zAngle + ', // zAngle\n' +
+      Blockly.FtcJava.INDENT_CONTINUE + useCompetitionFieldTargetLocations + '); // useCompetitionFieldTargetLocations\n';
 }
 
 // TrackingResults

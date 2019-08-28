@@ -9,6 +9,7 @@ import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.support.annotation.StringRes;
 import android.text.TextUtils;
+import android.widget.FrameLayout;
 
 import com.qualcomm.robotcore.hardware.configuration.LynxConstants;
 import com.qualcomm.robotcore.robocol.Command;
@@ -43,6 +44,7 @@ public class FtcAboutActivity extends ThemedActivity
 
     public static final String TAG = "FtcDriverStationAboutActivity";
 	@Override public String getTag() { return TAG; }
+    @Override protected FrameLayout getBackBar() { return findViewById(org.firstinspires.inspection.R.id.backbar); }
 
     protected final Context         context = AppUtil.getDefContext();
     protected final boolean         remoteConfigure = AppUtil.getInstance().isDriverStation();
@@ -291,7 +293,7 @@ public class FtcAboutActivity extends ThemedActivity
         {
         RobotLog.vv(TAG, "onCreate()");
         super.onCreate(savedInstanceState);
-        setContentView(com.qualcomm.ftccommon.R.layout.activity_generic_settings);
+        setContentView(R.layout.activity_generic_settings);
 
         // Always make sure we have a real device name before we launch
         DeviceNameManagerFactory.getInstance().initializeDeviceNameIfNecessary();
@@ -301,7 +303,7 @@ public class FtcAboutActivity extends ThemedActivity
 
         getFragmentManager()
                 .beginTransaction()
-                .replace(android.R.id.content, aboutFragment)
+                .replace(R.id.container, aboutFragment)
                 .commit();
 
         NetworkConnectionHandler.getInstance().pushReceiveLoopCallback(recvLoopCallback);

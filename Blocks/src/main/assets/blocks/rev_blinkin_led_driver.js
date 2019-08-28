@@ -8,7 +8,6 @@
 // BLINKIN_PATTERN_TOOLTIPS
 // BLINKIN_PATTERN_FROM_TEXT_TOOLTIP
 // The following are defined in vars.js:
-// createFieldScrollableDropdown
 // functionColor
 // getPropertyColor
 // setPropertyColor

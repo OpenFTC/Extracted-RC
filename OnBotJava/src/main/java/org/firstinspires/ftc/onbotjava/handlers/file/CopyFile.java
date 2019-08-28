@@ -33,6 +33,7 @@
 
 package org.firstinspires.ftc.onbotjava.handlers.file;
 
+import com.qualcomm.robotcore.util.ClassUtil;
 import org.firstinspires.ftc.onbotjava.JavaSourceFile;
 import org.firstinspires.ftc.onbotjava.OnBotJavaFileSystemUtils;
 import org.firstinspires.ftc.onbotjava.OnBotJavaManager;
@@ -48,6 +49,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
+import java.util.ArrayList;
+import java.util.List;
 
 import fi.iki.elonen.NanoHTTPD;
 
@@ -55,6 +58,16 @@ import static org.firstinspires.ftc.onbotjava.StandardResponses.badRequest;
 
 @RegisterWebHandler(uri = OnBotJavaProgrammingMode.URI_FILE_COPY)
 public class CopyFile implements WebHandler {
+    private static class RecursiveCopyOperation {
+        private File src;
+        private File dest;
+
+        private RecursiveCopyOperation(File src, File dest) {
+            this.src = src;
+            this.dest = dest;
+        }
+    }
+
     @Override
     public NanoHTTPD.Response getResponse(NanoHTTPD.IHTTPSession session) {
         if (!RequestConditions.containsParameters(session, RequestConditions.REQUEST_KEY_COPY_TO, RequestConditions.REQUEST_KEY_COPY_FROM)) {
@@ -70,7 +83,9 @@ public class CopyFile implements WebHandler {
         File origin = new File(OnBotJavaManager.javaRoot, fromFileName);
         File dest = new File(OnBotJavaManager.javaRoot, destFileName);
         try {
-            recursiveCopy(origin, dest);
+            List<RecursiveCopyOperation> opsList = new ArrayList<>();
+            generateRecursiveCopyList(origin, dest, opsList);
+            executeRecursiveCopy(opsList);
         } catch (IOException ex) {
             return StandardResponses.badRequest("cannot copy files");
         }
@@ -78,26 +93,41 @@ public class CopyFile implements WebHandler {
         return StandardResponses.successfulRequest();
     }
 
-    private void recursiveCopy(File origin, File dest) throws IOException {
+    private void generateRecursiveCopyList(File origin, File dest, List<? super RecursiveCopyOperation> filesToCopy) throws IOException {
         if (origin.isDirectory()) {
-            if (dest.exists() && !dest.isDirectory()) throw new IOException("Cannot merge origin and destination");
-            dest.mkdirs();
+            //if (dest.exists() && !dest.isDirectory()) throw new IOException("Cannot merge origin and destination");
+            dest = checkForSameNameConflicts(dest);
+            filesToCopy.add(new RecursiveCopyOperation(origin, dest));
             final String[] files = origin.list();
             for (String file : files) {
                 File src = new File(origin, file);
                 File destFile = new File(dest, file);
-
+                destFile = checkForSameNameConflicts(destFile);
                 // Prevent a file from being copied endlessly, if we are copying the parent folder to the inside of itself
-                if (src.getAbsolutePath().equals(dest.getAbsolutePath())) continue;
-
-                if (src.isDirectory()) {
-                    destFile.mkdirs();
+                if (src.getAbsolutePath().equals(dest.getAbsolutePath())) {
+                    continue;
                 }
 
-                recursiveCopy(src, destFile);
+                if (src.isDirectory()) {
+                    filesToCopy.add(new RecursiveCopyOperation(src, destFile));
+                }
+
+                generateRecursiveCopyList(src, destFile, filesToCopy);
             }
         } else {
-            copyFile(origin, dest);
+            filesToCopy.add(new RecursiveCopyOperation(origin, dest));
+        }
+    }
+
+    private void executeRecursiveCopy(List<? extends RecursiveCopyOperation> ops) throws IOException {
+        for (RecursiveCopyOperation op : ops) {
+            File src = op.src;
+            File dst = op.dest;
+            if (src.isDirectory()) {
+                dst.mkdirs();
+            } else {
+                copyFile(src, dst);
+            }
         }
     }
 
@@ -105,16 +135,7 @@ public class CopyFile implements WebHandler {
      * Copies the given source File to the given dest File.
      */
     private void copyFile(File source, File dest) throws IOException {
-        if (dest.exists()) {
-            String originalName = dest.getName();
-            String ext = originalName.substring(originalName.lastIndexOf('.'));
-            originalName = originalName.substring(0, originalName.lastIndexOf('.'));
-            String suffix = "_Copy";
-            dest = new File(dest.getParentFile(), originalName + suffix + ext);
-            for (int i = 2; i < 1000 && dest.exists(); i++) {
-                dest = new File(dest.getParentFile(), originalName + suffix + i + ext);
-            }
-        }
+        dest = checkForSameNameConflicts(dest);
 
         if (source.getPath().endsWith(OnBotJavaFileSystemUtils.EXT_JAVA_FILE)) {
             JavaSourceFile.forFile(source).copyTo(dest);
@@ -124,5 +145,25 @@ public class CopyFile implements WebHandler {
                 destChannel.transferFrom(sourceChannel, 0, sourceChannel.size());
             }
         }
+    }
+
+    private File checkForSameNameConflicts(File dest) {
+        if (dest.exists()) {
+            String originalName = dest.getName();
+            String ext = "";
+            if (originalName.contains(".")) {
+                ext = originalName.substring(originalName.lastIndexOf('.'));
+                originalName = originalName.substring(0, originalName.lastIndexOf('.'));
+            }
+            String suffix = "_Copy";
+            if (originalName.endsWith(suffix)) {
+                suffix = "";
+            }
+            dest = new File(dest.getParentFile(), originalName + suffix + ext);
+            for (int i = 2; i < 1000 && dest.exists(); i++) {
+                dest = new File(dest.getParentFile(), originalName + suffix + i + ext);
+            }
+        }
+        return dest;
     }
 }

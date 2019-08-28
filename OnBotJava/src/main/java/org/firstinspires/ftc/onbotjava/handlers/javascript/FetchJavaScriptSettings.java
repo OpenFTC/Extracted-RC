@@ -44,6 +44,7 @@ import java.util.HashMap;
 import java.util.Locale;
 
 import fi.iki.elonen.NanoHTTPD;
+import org.firstinspires.ftc.robotserver.internal.webserver.MimeTypesUtil;
 
 @RegisterWebHandler(uri = OnBotJavaProgrammingMode.URI_JS_SETTINGS)
 public class FetchJavaScriptSettings implements WebHandler {
@@ -76,25 +77,11 @@ public class FetchJavaScriptSettings implements WebHandler {
         HashMap<String, String> onBotJavaUrls = new HashMap<>();
 
         for (Field field : OnBotJavaProgrammingMode.class.getDeclaredFields()) {
-            int modifiers = field.getModifiers();
-            if (!Modifier.isStatic(modifiers) || !Modifier.isFinal(modifiers) || !field.getType().equals(String.class)) continue;
-            field.setAccessible(true);
-            try {
-                onBotJavaUrls.put(field.getName(), (String) field.get(null));
-            } catch (IllegalAccessException ignored) { /// should not be thrown
-
-            }
+            recordField(onBotJavaUrls, field);
         }
 
         for (Field field : RequestConditions.class.getDeclaredFields()) {
-            int modifiers = field.getModifiers();
-            if (!Modifier.isStatic(modifiers) || !Modifier.isFinal(modifiers) || !field.getType().equals(String.class)) continue;
-            field.setAccessible(true);
-            try {
-                onBotJavaUrls.put(field.getName(), (String) field.get(null));
-            } catch (IllegalAccessException ignored) { /// should not be thrown
-
-            }
+            recordField(onBotJavaUrls, field);
         }
 
         final String result = String.format(Locale.ENGLISH,
@@ -123,6 +110,20 @@ public class FetchJavaScriptSettings implements WebHandler {
                 "   _urls: '%s'\n" +
                 "});",
                 editorSettings, OnBotJavaProgrammingMode.URI_ADMIN_SETTINGS, SimpleGson.getInstance().toJson(onBotJavaUrls).replace("\\", "\\\\"));
-        return StandardResponses.successfulJsonRequest(result);
+        return StandardResponses.successfulRequest(MimeTypesUtil.MIME_JAVASCRIPT, result);
+    }
+
+    private void recordField(HashMap<? super String, ? super String> onBotJavaUrls, Field field) {
+        int modifiers = field.getModifiers();
+        if (!Modifier.isStatic(modifiers) || !Modifier.isFinal(modifiers) || !field.getType().equals(String.class)){
+            return;
+        }
+
+        field.setAccessible(true);
+        try {
+            onBotJavaUrls.put(field.getName(), (String) field.get(null));
+        } catch (IllegalAccessException ignored) { /// should not be thrown
+
+        }
     }
 }

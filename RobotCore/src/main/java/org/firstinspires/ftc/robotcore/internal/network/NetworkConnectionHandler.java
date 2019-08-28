@@ -530,7 +530,6 @@ public class NetworkConnectionHandler {
             removeCommand(command);
             return CallbackResult.HANDLED;
         }
-        // Note: this is an expensive approach to exactly-once datagram transmission. We should avoid (re)sending the message body in the ack
         command.acknowledge();
         sendCommand(command);
         return CallbackResult.NOT_HANDLED;

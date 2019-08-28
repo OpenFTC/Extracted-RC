@@ -229,6 +229,10 @@ public class RobotControllerAccessPointAssistant extends AccessPointAssistant {
         }
     }
 
+    @Override protected String getIpAddress() {
+        return getConnectionOwnerAddress().getHostAddress();
+    }
+
     /**
      * createConnection
      *
@@ -255,6 +259,15 @@ public class RobotControllerAccessPointAssistant extends AccessPointAssistant {
             Intent wifiResetIntent = new Intent(Intents.ACTION_FTC_WIFI_FACTORY_RESET);
             context.sendBroadcast(wifiResetIntent);
         }
+    }
+
+    /**
+     * getConnectionOwnerName
+     *
+     * Returns the ssid of the access point we are currently broadcasting.
+     */
+    @Override public String getConnectionOwnerName() {
+        return DeviceNameManagerFactory.getInstance().getDeviceName();
     }
 
     @Override

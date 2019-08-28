@@ -53,13 +53,18 @@ public final class StandardResponses {
     }
 
     @NonNull
-    public static NanoHTTPD.Response successfulJsonRequest(String message) {
-        return newFixedLengthResponse(NanoHTTPD.Response.Status.OK, MIME_JSON, message);
+    public static NanoHTTPD.Response successfulRequest(String mimeType, String message) {
+        return newFixedLengthResponse(NanoHTTPD.Response.Status.OK, mimeType, message);
     }
 
     @NonNull
     public static NanoHTTPD.Response successfulRequest(String message) {
-        return newFixedLengthResponse(NanoHTTPD.Response.Status.OK, MIME_PLAINTEXT, message);
+        return successfulRequest(MIME_PLAINTEXT, message);
+    }
+
+    @NonNull
+    public static NanoHTTPD.Response successfulJsonRequest(String message) {
+        return successfulRequest(MIME_JSON, message);
     }
 
     @NonNull
@@ -69,7 +74,7 @@ public final class StandardResponses {
 
     @NonNull
     public static NanoHTTPD.Response serverError(@NonNull final String message) {
-        return newFixedLengthResponse(NanoHTTPD.Response.Status.INTERNAL_ERROR, MIME_JSON, message);
+        return newFixedLengthResponse(NanoHTTPD.Response.Status.INTERNAL_ERROR, MIME_PLAINTEXT, message);
     }
 
     @NonNull

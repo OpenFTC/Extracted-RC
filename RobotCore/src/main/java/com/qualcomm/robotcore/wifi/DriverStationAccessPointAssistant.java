@@ -36,25 +36,20 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.net.NetworkInfo;
 import android.net.wifi.ScanResult;
 import android.net.wifi.SupplicantState;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
-import android.preference.PreferenceManager;
 
 import com.qualcomm.robotcore.R;
-import com.qualcomm.robotcore.robot.Robot;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.internal.network.NetworkConnectionHandler;
-import org.firstinspires.ftc.robotcore.internal.network.WifiDirectAgent;
+import org.firstinspires.ftc.robotcore.internal.network.WifiUtil;
 import org.firstinspires.ftc.robotcore.internal.system.PreferencesHelper;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -133,6 +128,15 @@ public class DriverStationAccessPointAssistant extends AccessPointAssistant {
         if (receiver != null) {
             context.unregisterReceiver(receiver);
         }
+    }
+
+    /**
+     * getConnectionOwnerName
+     *
+     * Returns the ssid of the access point we are currently connected to.
+     */
+    @Override public String getConnectionOwnerName() {
+        return WifiUtil.getConnectedSsid();
     }
 
     /**
@@ -240,6 +244,11 @@ public class DriverStationAccessPointAssistant extends AccessPointAssistant {
         return true;
     }
 
+    @Override
+    protected String getIpAddress() {
+        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+        return getIpAddressAsString(wifiInfo.getIpAddress());
+    }
 
     /**
      * handleWifiDisconnect()
@@ -271,5 +280,20 @@ public class DriverStationAccessPointAssistant extends AccessPointAssistant {
         PreferencesHelper prefs = new PreferencesHelper(TAG, context);
         prefs.writePrefIfDifferent(context.getString(R.string.pref_last_known_ssid), ssid);
         prefs.writePrefIfDifferent(context.getString(R.string.pref_last_known_macaddr), macAddr);
+    }
+
+
+    /**
+     * getIpAddressAsString
+     */
+    private static String getIpAddressAsString(int ipAddress)
+    {
+        String address =
+                String.format("%d.%d.%d.%d",
+                        (ipAddress & 0xff),
+                        (ipAddress >> 8 & 0xff),
+                        (ipAddress >> 16 & 0xff),
+                        (ipAddress >> 24 & 0xff));
+        return address;
     }
 }

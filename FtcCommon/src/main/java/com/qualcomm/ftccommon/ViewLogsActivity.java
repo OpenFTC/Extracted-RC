@@ -40,6 +40,7 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -58,6 +59,7 @@ import java.util.Calendar;
 public class ViewLogsActivity extends ThemedActivity {
 
   @Override public String getTag() { return this.getClass().getSimpleName(); }
+  @Override protected FrameLayout getBackBar() { return findViewById(org.firstinspires.inspection.R.id.backbar); }
 
   TextView textAdbLogs;
   int DEFAULT_NUMBER_OF_LINES = 300;
