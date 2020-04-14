@@ -272,43 +272,66 @@ public class CameraManagerImpl extends DestructOnFinalize/*no parent*/ implement
 
     @Override @NonNull public List<LibUsbDevice> getMatchingLibUsbDevices(Function<SerialNumber, Boolean> matcher)
         {
-        if (CameraManagerInternal.avoidKitKatLegacyPaths || Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-            {
+
             List<LibUsbDevice> result = new ArrayList<>();
             for (UsbDevice usbDevice : usbManager.getDeviceList().values())
-                {
+            {
                 SerialNumber candidate = getRealOrVendorProductSerialNumber(usbDevice);
                 if (candidate != null && matcher.apply(candidate))
-                    {
-                    LibUsbDevice libUsbDevice = getOrMakeUvcContext().getLibUsbDeviceFromUsbDeviceName(usbDevice.getDeviceName(), true);
+                {
+                    LibUsbDevice libUsbDevice = getOrMakeUvcContext().getLibUsbDeviceFromUsbDevice(usbDevice, true);
                     result.add(libUsbDevice);
-                    }
                 }
+            }
             return result;
-            }
-        else
-            {
-            return getOrMakeUvcContext().getMatchingLibUsbDevicesKitKat(matcher);
-            }
+
+//        if (CameraManagerInternal.avoidKitKatLegacyPaths || Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+//            {
+//            List<LibUsbDevice> result = new ArrayList<>();
+//            for (UsbDevice usbDevice : usbManager.getDeviceList().values())
+//                {
+//                SerialNumber candidate = getRealOrVendorProductSerialNumber(usbDevice);
+//                if (candidate != null && matcher.apply(candidate))
+//                    {
+//                    LibUsbDevice libUsbDevice = getOrMakeUvcContext().getLibUsbDeviceFromUsbDeviceName(usbDevice.getDeviceName(), true);
+//                    result.add(libUsbDevice);
+//                    }
+//                }
+//            return result;
+//            }
+//        else
+//            {
+//            return getOrMakeUvcContext().getMatchingLibUsbDevicesKitKat(matcher);
+//            }
         }
 
     @Override public void enumerateAttachedSerialNumbers(Consumer<SerialNumber> consumer)
         {
-        if (CameraManagerInternal.avoidKitKatLegacyPaths || Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-            {
+
             for (UsbDevice usbDevice : usbManager.getDeviceList().values())
-                {
+            {
                 SerialNumber candidate = getRealOrVendorProductSerialNumber(usbDevice);
                 if (candidate != null)
-                    {
+                {
                     consumer.accept(candidate);
-                    }
                 }
             }
-        else
-            {
-            getOrMakeUvcContext().enumerateAttachedSerialNumbersKitKat(consumer);
-            }
+
+//        if (CameraManagerInternal.avoidKitKatLegacyPaths || Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+//            {
+//            for (UsbDevice usbDevice : usbManager.getDeviceList().values())
+//                {
+//                SerialNumber candidate = getRealOrVendorProductSerialNumber(usbDevice);
+//                if (candidate != null)
+//                    {
+//                    consumer.accept(candidate);
+//                    }
+//                }
+//            }
+//        else
+//            {
+//            getOrMakeUvcContext().enumerateAttachedSerialNumbersKitKat(consumer);
+//            }
         }
 
     @Override public WebcamName webcamNameFromDevice(UsbDevice usbDevice)
@@ -324,7 +347,7 @@ public class CameraManagerImpl extends DestructOnFinalize/*no parent*/ implement
 
     @Override public WebcamName webcamNameFromDevice(LibUsbDevice libUsbDevice)
         {
-        return WebcamNameImpl.forSerialNumber(libUsbDevice.getRealOrVendorProductSerialNumber());
+        return WebcamNameImpl.forSerialNumber(libUsbDevice.getRealOrVendorProductSerialNumberUsingJava());
         }
 
     @Override public BuiltinCameraName nameFromCameraDirection(VuforiaLocalizer.CameraDirection cameraDirection)

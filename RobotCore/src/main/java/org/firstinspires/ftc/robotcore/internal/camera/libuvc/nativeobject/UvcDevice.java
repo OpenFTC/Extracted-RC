@@ -85,7 +85,7 @@ public class UvcDevice extends NativeObject<UvcContext>
         super(thisPointer);
         try {
             setParent(uvcContext);
-            this.libUsbDevice = new LibUsbDevice(nativeGetLibUsbDevice(pointer));
+            this.libUsbDevice = new LibUsbDevice(nativeGetLibUsbDevice(pointer), usbDevice);
             this.usbDevice = usbDevice==null ? findUsbDevice() : usbDevice;
             this.webcamName = null;
             this.usbDeviceConnection = null;

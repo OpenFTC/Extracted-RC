@@ -189,65 +189,86 @@ public class WebcamNameImpl extends CameraNameImplBase implements WebcamNameInte
         {
         String result = null;
         if (isDuplicate != null) isDuplicate.setValue(false);
-        if (CameraManagerInternal.avoidKitKatLegacyPaths || Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-            {
+
             boolean found = false;
             for (UsbDevice usbDevice : getUsbManager().getDeviceList().values())
-                {
+            {
                 SerialNumber candidate = cameraManagerInternal.getRealOrVendorProductSerialNumber(usbDevice);
                 if (candidate != null && candidate.matches(serialNumberPattern))
-                    {
+                {
                     if (!found)
-                        {
+                    {
                         result = usbDevice.getDeviceName();
                         found = true;
-                        }
+                    }
                     else
-                        {
+                    {
                         RobotLog.ee(TAG, "more than one webcam attached matching serial number %s: ignoring them all", serialNumberPattern);
                         result = null;
                         if (isDuplicate != null) isDuplicate.setValue(true);
-                        }
                     }
                 }
             }
-        else
-            {
-            List<LibUsbDevice> libUsbDevices = cameraManagerInternal.getMatchingLibUsbDevices(new Function<SerialNumber, Boolean>()
-                {
-                @Override public Boolean apply(SerialNumber candidate)
-                    {
-                    return candidate.matches(serialNumberPattern);
-                    }
-                });
-            try {
-                if (libUsbDevices.size()==0)
-                    {
-                    result = null; // device is not found
-                    }
-                else if (libUsbDevices.size()==1)
-                    {
-                    result = libUsbDevices.get(0).getUsbDeviceName();
-                    }
-                else
-                    {
-                    RobotLog.ee(TAG, "more than one webcam attached matching serial number %s: ignoring them all", serialNumberPattern);
-                    for (LibUsbDevice libUsbDevice : libUsbDevices)
-                        {
-                        RobotLog.ee(TAG, "libUsbDevice: name=%s connection=%s serial=%s", libUsbDevice.getUsbDeviceName(), libUsbDevice.getUsbConnectionPath(), libUsbDevice.getRealOrVendorProductSerialNumber());
-                        }
-                    result = null;
-                    if (isDuplicate != null) isDuplicate.setValue(true);
-                    }
-                }
-            finally
-                {
-                for (LibUsbDevice libUsbDevice : libUsbDevices)
-                    {
-                    libUsbDevice.releaseRef();
-                    }
-                }
-            }
+
+//        if (CameraManagerInternal.avoidKitKatLegacyPaths || Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+//            {
+//            boolean found = false;
+//            for (UsbDevice usbDevice : getUsbManager().getDeviceList().values())
+//                {
+//                SerialNumber candidate = cameraManagerInternal.getRealOrVendorProductSerialNumber(usbDevice);
+//                if (candidate != null && candidate.matches(serialNumberPattern))
+//                    {
+//                    if (!found)
+//                        {
+//                        result = usbDevice.getDeviceName();
+//                        found = true;
+//                        }
+//                    else
+//                        {
+//                        RobotLog.ee(TAG, "more than one webcam attached matching serial number %s: ignoring them all", serialNumberPattern);
+//                        result = null;
+//                        if (isDuplicate != null) isDuplicate.setValue(true);
+//                        }
+//                    }
+//                }
+//            }
+//        else
+//            {
+//            List<LibUsbDevice> libUsbDevices = cameraManagerInternal.getMatchingLibUsbDevices(new Function<SerialNumber, Boolean>()
+//                {
+//                @Override public Boolean apply(SerialNumber candidate)
+//                    {
+//                    return candidate.matches(serialNumberPattern);
+//                    }
+//                });
+//            try {
+//                if (libUsbDevices.size()==0)
+//                    {
+//                    result = null; // device is not found
+//                    }
+//                else if (libUsbDevices.size()==1)
+//                    {
+//                    result = libUsbDevices.get(0).getUsbDeviceName();
+//                    }
+//                else
+//                    {
+//                    RobotLog.ee(TAG, "more than one webcam attached matching serial number %s: ignoring them all", serialNumberPattern);
+//                    for (LibUsbDevice libUsbDevice : libUsbDevices)
+//                        {
+//                        RobotLog.ee(TAG, "libUsbDevice: name=%s connection=%s serial=%s", libUsbDevice.getUsbDeviceName(), libUsbDevice.getUsbConnectionPath(), libUsbDevice.getRealOrVendorProductSerialNumberUsingJava());
+//                        }
+//                    result = null;
+//                    if (isDuplicate != null) isDuplicate.setValue(true);
+//                    }
+//                }
+//            finally
+//                {
+//                for (LibUsbDevice libUsbDevice : libUsbDevices)
+//                    {
+//                    libUsbDevice.releaseRef();
+//                    }
+//                }
+//            }
         return result;
         }
 

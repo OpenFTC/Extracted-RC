@@ -58,7 +58,7 @@ public interface CameraManagerInternal extends CameraManager
     {
     /* In early developmental work, there were paths necessary on KitKat that subsequent work
     * no longer requires (most had to do with serial numbers). Which should we use? */
-    boolean avoidKitKatLegacyPaths = true;
+    //boolean avoidKitKatLegacyPaths = true;
 
     /*If KitKat *has to* use one path, but there's a non-native one post KitKat, should we use it?*/
     boolean useNonKitKatPaths = true;

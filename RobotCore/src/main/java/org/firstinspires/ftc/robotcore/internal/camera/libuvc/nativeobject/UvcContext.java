@@ -182,24 +182,24 @@ public class UvcContext extends NativeObject
             }
         if (serialNumber==null) // Device lacks real serial number: go the long route so we make up a VendorProductSerialNumber
             {
-            LibUsbDevice libUsbDevice = getLibUsbDeviceFromUsbDeviceName(usbDevice.getDeviceName(), false);
+            LibUsbDevice libUsbDevice = getLibUsbDeviceFromUsbDevice(usbDevice, false);
             if (libUsbDevice != null)
                 {
-                serialNumber = libUsbDevice.getRealOrVendorProductSerialNumber();
+                serialNumber = libUsbDevice.getRealOrVendorProductSerialNumberUsingJava();
                 libUsbDevice.releaseRef();
                 }
             }
         return serialNumber;
         }
 
-    public @Nullable LibUsbDevice getLibUsbDeviceFromUsbDeviceName(String usbDeviceName, boolean traceEnabled)
+    public @Nullable LibUsbDevice getLibUsbDeviceFromUsbDevice(UsbDevice usbDevice, boolean traceEnabled)
         {
         synchronized (lock)
             {
-            long libUsbDevicePointer = nativeGetLibUsbDeviceFromUsbDeviceName(pointer, usbDeviceName);
+            long libUsbDevicePointer = nativeGetLibUsbDeviceFromUsbDeviceName(pointer, usbDevice.getDeviceName());
             if (libUsbDevicePointer != 0)
                 {
-                return new LibUsbDevice(libUsbDevicePointer, traceEnabled);
+                return new LibUsbDevice(libUsbDevicePointer, usbDevice, traceEnabled);
                 }
             return null;
             }
@@ -310,61 +310,61 @@ public class UvcContext extends NativeObject
         void accept(long value);
         }
 
-    public @NonNull List<LibUsbDevice> getMatchingLibUsbDevicesKitKat(final Function<SerialNumber, Boolean> matcher)
-        {
-        synchronized (lock)
-            {
-            final List<LibUsbDevice> result = new ArrayList<>();
-
-            nativeEnumerateAttachedLibUsbDevicesKitKat(pointer, new LongConsumer()
-                {
-                @Override public void accept(long libusbPointer)
-                    {
-                    LibUsbDevice libUsbDevice = new LibUsbDevice(libusbPointer, false); // takes ownership of the pointer
-                    try {
-                        SerialNumber candidate = libUsbDevice.getRealOrVendorProductSerialNumber();
-                        if (candidate != null && matcher.apply(candidate))
-                            {
-                            libUsbDevice.addRef();
-                            result.add(libUsbDevice);
-                            }
-                        }
-                    finally
-                        {
-                        libUsbDevice.releaseRef();
-                        }
-                    }
-                });
-
-            return result;
-            }
-        }
+//    public @NonNull List<LibUsbDevice> getMatchingLibUsbDevicesKitKat(final Function<SerialNumber, Boolean> matcher)
+//        {
+//        synchronized (lock)
+//            {
+//            final List<LibUsbDevice> result = new ArrayList<>();
+//
+//            nativeEnumerateAttachedLibUsbDevicesKitKat(pointer, new LongConsumer()
+//                {
+//                @Override public void accept(long libusbPointer)
+//                    {
+//                    LibUsbDevice libUsbDevice = new LibUsbDevice(libusbPointer, false); // takes ownership of the pointer
+//                    try {
+//                        SerialNumber candidate = libUsbDevice.getRealOrVendorProductSerialNumber();
+//                        if (candidate != null && matcher.apply(candidate))
+//                            {
+//                            libUsbDevice.addRef();
+//                            result.add(libUsbDevice);
+//                            }
+//                        }
+//                    finally
+//                        {
+//                        libUsbDevice.releaseRef();
+//                        }
+//                    }
+//                });
+//
+//            return result;
+//            }
+//        }
 
     /**
      * We're forced to do more work on KitKat. The world is much more efficient
      * on Lollipop and beyond: see the callers of this method.
      */
-    public void enumerateAttachedSerialNumbersKitKat(final Consumer<SerialNumber> consumer)
-        {
-        synchronized (lock)
-            {
-            nativeEnumerateAttachedLibUsbDevicesKitKat(pointer, new LongConsumer()
-                {
-                @Override public void accept(long libusbPointer)
-                    {
-                    LibUsbDevice libUsbDevice = new LibUsbDevice(libusbPointer, false); // takes ownership of the pointer
-                    try {
-                        SerialNumber candidate = libUsbDevice.getRealOrVendorProductSerialNumber();
-                        consumer.accept(candidate);
-                        }
-                    finally
-                        {
-                        libUsbDevice.releaseRef();
-                        }
-                    }
-                });
-            }
-        }
+//    public void enumerateAttachedSerialNumbersKitKat(final Consumer<SerialNumber> consumer)
+//        {
+//        synchronized (lock)
+//            {
+//            nativeEnumerateAttachedLibUsbDevicesKitKat(pointer, new LongConsumer()
+//                {
+//                @Override public void accept(long libusbPointer)
+//                    {
+//                    LibUsbDevice libUsbDevice = new LibUsbDevice(libusbPointer, false); // takes ownership of the pointer
+//                    try {
+//                        SerialNumber candidate = libUsbDevice.getRealOrVendorProductSerialNumber();
+//                        consumer.accept(candidate);
+//                        }
+//                    finally
+//                        {
+//                        libUsbDevice.releaseRef();
+//                        }
+//                    }
+//                });
+//            }
+//        }
 
     //----------------------------------------------------------------------------------------------
     // UVC device enumeration
@@ -511,14 +511,16 @@ public class UvcContext extends NativeObject
 
     public List<UvcDevice> getDeviceList() // throws NOTHING
         {
-        if (CameraManagerInternal.avoidKitKatLegacyPaths || Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-            {
             return getUvcDeviceListUsingJava();
-            }
-        else
-            {
-            return getUvcDeviceListKitKat();
-            }
+
+//        if (CameraManagerInternal.avoidKitKatLegacyPaths || Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+//            {
+//            return getUvcDeviceListUsingJava();
+//            }
+//        else
+//            {
+//            return getUvcDeviceListKitKat();
+//            }
         }
 
     //----------------------------------------------------------------------------------------------
