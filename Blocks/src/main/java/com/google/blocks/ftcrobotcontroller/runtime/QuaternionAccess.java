@@ -30,12 +30,9 @@ class QuaternionAccess extends Access {
     super(blocksOpMode, identifier, "Quaternion");
   }
 
-  private Quaternion checkQuaternion(Object quaternionArg) {
-    return checkArg(quaternionArg, Quaternion.class, "quaternion");
-  }
-
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Quaternion.class, fieldName = "w")
   public float getW(Object quaternionArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".W");
@@ -54,6 +51,7 @@ class QuaternionAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Quaternion.class, fieldName = "x")
   public float getX(Object quaternionArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".X");
@@ -72,6 +70,7 @@ class QuaternionAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Quaternion.class, fieldName = "y")
   public float getY(Object quaternionArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".Y");
@@ -90,6 +89,7 @@ class QuaternionAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Quaternion.class, fieldName = "z")
   public float getZ(Object quaternionArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".Z");
@@ -108,6 +108,7 @@ class QuaternionAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Quaternion.class, fieldName = "acquisitionTime")
   public long getAcquisitionTime(Object quaternionArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".AcquisitionTime");
@@ -126,6 +127,7 @@ class QuaternionAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Quaternion.class, methodName = "magnitude")
   public float getMagnitude(Object quaternionArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".Magnitude");
@@ -144,6 +146,7 @@ class QuaternionAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Quaternion.class, constructor = true)
   public Quaternion create() {
     try {
       startBlockExecution(BlockType.CREATE, "");
@@ -158,6 +161,7 @@ class QuaternionAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Quaternion.class, constructor = true)
   public Quaternion create_withArgs(float w, float x, float y, float z, long acquisitionTime) {
     try {
       startBlockExecution(BlockType.CREATE, "");
@@ -172,6 +176,22 @@ class QuaternionAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Quaternion.class, constructor = true)
+  public Quaternion create_withArgs2(float w, float x, float y, float z) {
+    try {
+      startBlockExecution(BlockType.CREATE, "");
+      return new Quaternion(w, x, y, z, 0);
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(classes = Quaternion.class, methodName = "normalized")
   public Quaternion normalized(Object quaternionArg) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".normalized");
@@ -190,14 +210,41 @@ class QuaternionAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Quaternion.class, methodName = "congugate")
   public Quaternion congugate(Object quaternionArg) {
+    return conjugate(quaternionArg);
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(classes = Quaternion.class, methodName = "conjugate")
+  public Quaternion conjugate(Object quaternionArg) {
     try {
-      startBlockExecution(BlockType.FUNCTION, ".congugate");
+      startBlockExecution(BlockType.FUNCTION, ".conjugate");
       Quaternion quaternion = checkQuaternion(quaternionArg);
       if (quaternion != null) {
-        return quaternion.congugate();
+        return quaternion.conjugate();
       }
       return null;
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(classes = Quaternion.class, methodName = "toString")
+  public String toText(Object quaternionArg) {
+    try {
+      startBlockExecution(BlockType.FUNCTION, ".toText");
+      Quaternion quaternion = checkQuaternion(quaternionArg);
+      if (quaternion != null) {
+        return quaternion.toString();
+      }
+      return "";
     } catch (Throwable e) {
       blocksOpMode.handleFatalException(e);
       throw new AssertionError("impossible", e);

@@ -33,6 +33,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.qualcomm.robotcore.R;
+import com.qualcomm.robotcore.hardware.LynxModuleImuType;
 
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
@@ -71,11 +72,11 @@ public class CachedLynxModulesInfo {
         public final int moduleAddress;
         public final String imuType;
 
-        public LynxModuleInfo(@NonNull String name, @Nullable String rawFirmwareVersion, @NonNull String parentSerial, int moduleAddress, String imuType) {
+        public LynxModuleInfo(@NonNull String name, @Nullable String rawFirmwareVersion, @NonNull String parentSerial, int moduleAddress, LynxModuleImuType imuType) {
             this.name = name;
             this.moduleAddress = moduleAddress;
             this.parentSerial = parentSerial;
-            this.imuType = imuType;
+            this.imuType = imuType.toString();
             if (rawFirmwareVersion == null) {
                 this.firmwareVersion = AppUtil.getDefContext().getString(R.string.lynxUnavailableFWVersionString);
             } else {

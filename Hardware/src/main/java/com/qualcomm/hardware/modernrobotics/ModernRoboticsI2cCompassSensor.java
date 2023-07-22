@@ -136,9 +136,9 @@ public class ModernRoboticsI2cCompassSensor extends I2cDeviceSynchDevice<I2cDevi
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public ModernRoboticsI2cCompassSensor(I2cDeviceSynch deviceClient)
+    public ModernRoboticsI2cCompassSensor(I2cDeviceSynch deviceClient, boolean deviceClientIsOwned)
         {
-        super(deviceClient, true);
+        super(deviceClient, deviceClientIsOwned);
 
         this.setOptimalReadWindow();
         this.deviceClient.setI2cAddress(ADDRESS_I2C_DEFAULT);

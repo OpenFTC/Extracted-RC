@@ -1075,7 +1075,13 @@
                                         if (selectedNode.folder) url += '/';
                                     }
 
-                                    window.open(url, '_blank');
+                                    // This is used instead of window.open to support the REV Hardware Client
+                                    var downloadUrl = $('#download-link');
+                                    downloadUrl.attr('href', url);
+                                    downloadUrl.prop('download', true)
+                                    // Clicks are not correctly handled for the element using standard jQuery, send a click to the
+                                    // HTML element instead
+                                    downloadUrl[0].click();
                                 },
                                 disabled: function () {
                                     return isInExternalLibrariesTree(this);

@@ -64,6 +64,7 @@ abstract class TfodBaseAccess<T extends TfodBase> extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = TfodBase.class, methodName = "initialize")
   public void initialize(VuforiaBaseAccess vuforiaBaseAccess, float minimumConfidence,
       boolean useObjectTracker, boolean enableCameraMonitoring) {
     try {
@@ -86,6 +87,7 @@ abstract class TfodBaseAccess<T extends TfodBase> extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = TfodBase.class, methodName = "initializeWithIsModelTensorFlow2")
   public void initializeWithIsModelTensorFlow2(VuforiaBaseAccess vuforiaBaseAccess, float minimumConfidence,
       boolean useObjectTracker, boolean enableCameraMonitoring, boolean isModelTensorFlow2) {
     try {
@@ -109,6 +111,7 @@ abstract class TfodBaseAccess<T extends TfodBase> extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = TfodBase.class, methodName = "initializeWithAllArgs")
   public void initializeWithAllArgs(VuforiaBaseAccess vuforiaBaseAccess,
       float minimumConfidence, boolean useObjectTracker, boolean enableCameraMonitoring,
       boolean isModelTensorFlow2, boolean isModelQuantized, int inputSize,
@@ -142,6 +145,7 @@ abstract class TfodBaseAccess<T extends TfodBase> extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = TfodBase.class, methodName = "activate")
   public void activate() {
     try {
       startBlockExecution(BlockType.FUNCTION, ".activate");
@@ -164,6 +168,7 @@ abstract class TfodBaseAccess<T extends TfodBase> extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = TfodBase.class, methodName = "deactivate")
   public void deactivate() {
     try {
       startBlockExecution(BlockType.FUNCTION, ".deactivate");
@@ -186,6 +191,7 @@ abstract class TfodBaseAccess<T extends TfodBase> extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = TfodBase.class, methodName = "setClippingMargins")
   public void setClippingMargins(int left, int top, int right, int bottom) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".setClippingMargins");
@@ -208,6 +214,7 @@ abstract class TfodBaseAccess<T extends TfodBase> extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = TfodBase.class, methodName = "setZoom")
   public void setZoom(double magnification, double aspectRatio) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".setZoom");
@@ -230,6 +237,7 @@ abstract class TfodBaseAccess<T extends TfodBase> extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = TfodBase.class, methodName = "getRecognitions")
   public String getRecognitions() {
     try {
       startBlockExecution(BlockType.FUNCTION, ".getRecognitions");

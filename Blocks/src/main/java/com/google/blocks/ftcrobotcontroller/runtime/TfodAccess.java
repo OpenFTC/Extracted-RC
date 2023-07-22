@@ -42,6 +42,7 @@ final class TfodAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Tfod.class, methodName = "useDefaultModel")
   public void useDefaultModel() {
     try {
       startBlockExecution(BlockType.FUNCTION, ".useDefaultModelFor" + TFOD_CURRENT_GAME_NAME_NO_SPACES);
@@ -56,6 +57,7 @@ final class TfodAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Tfod.class, methodName = "useModelFromAsset")
   public void useModelFromAsset(String assetName, String jsonLabels,
       boolean isModelTensorFlow2, boolean isModelQuantized, int inputSize) {
     try {
@@ -76,6 +78,7 @@ final class TfodAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Tfod.class, methodName = "useModelFromFile")
   public void useModelFromFile(String fileName, String jsonLabels,
       boolean isModelTensorFlow2, boolean isModelQuantized, int inputSize) {
     try {
@@ -96,6 +99,7 @@ final class TfodAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Tfod.class, methodName = "initialize")
   public void initialize(VuforiaBaseAccess vuforiaBaseAccess,
       float minimumConfidence, boolean useObjectTracker, boolean enableCameraMonitoring) {
     try {
@@ -118,6 +122,7 @@ final class TfodAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Tfod.class, methodName = "initialize")
   public void initializeWithMoreArgs(VuforiaBaseAccess vuforiaBaseAccess,
       float minimumConfidence, boolean useObjectTracker, boolean enableCameraMonitoring,
       int numInterpreterThreads, int numExecutorThreads,
@@ -147,6 +152,7 @@ final class TfodAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Tfod.class, methodName = "activate")
   public void activate() {
     try {
       startBlockExecution(BlockType.FUNCTION, ".activate");
@@ -165,6 +171,7 @@ final class TfodAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Tfod.class, methodName = "deactivate")
   public void deactivate() {
     try {
       startBlockExecution(BlockType.FUNCTION, ".deactivate");
@@ -183,6 +190,7 @@ final class TfodAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Tfod.class, methodName = "setClippingMargins")
   public void setClippingMargins(int left, int top, int right, int bottom) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".setClippingMargins");
@@ -201,6 +209,7 @@ final class TfodAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Tfod.class, methodName = "setZoom")
   public void setZoom(double magnification, double aspectRatio) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".setZoom");
@@ -219,6 +228,7 @@ final class TfodAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Tfod.class, methodName = "getRecognitions")
   public String getRecognitions() {
     try {
       startBlockExecution(BlockType.FUNCTION, ".getRecognitions");
@@ -267,6 +277,7 @@ final class TfodAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Tfod.class, methodName = "useModelFromAsset")
   public void setModelFromAssetLegacy(String assetName, String jsonLabels) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".useModelFromAsset");
@@ -286,6 +297,7 @@ final class TfodAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Tfod.class, methodName = "useModelFromFile")
   public void setModelFromFileLegacy(String fileName, String jsonLabels) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".useModelFromFile");
@@ -305,6 +317,7 @@ final class TfodAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Tfod.class, methodName = "initialize")
   public void initializeWithIsModelTensorFlow2Legacy(
       VuforiaBaseAccess vuforiaBaseAccess,
       float minimumConfidence, boolean useObjectTracker, boolean enableCameraMonitoring,
@@ -331,6 +344,7 @@ final class TfodAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Tfod.class, methodName = "initialize")
   public void initializeWithAllArgsLegacy(VuforiaBaseAccess vuforiaBaseAccess,
       float minimumConfidence, boolean useObjectTracker, boolean enableCameraMonitoring,
       boolean isModelTensorFlow2, boolean isModelQuantized, int inputSize,

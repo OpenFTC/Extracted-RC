@@ -53,7 +53,7 @@ public class HardwareItem {
     }
     this.hardwareType = hardwareType;
     this.deviceName = deviceName;
-    identifier = makeIdentifier(deviceName) + hardwareType.identifierSuffixForJavaScript;
+    identifier = hardwareType.makeIdentifier(deviceName);
     visibleName = HardwareUtil.makeVisibleNameForDropdownItem(deviceName);
   }
 

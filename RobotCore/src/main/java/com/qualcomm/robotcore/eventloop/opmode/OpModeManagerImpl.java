@@ -36,6 +36,8 @@ import android.content.Context;
 import android.os.Debug;
 import android.util.Log;
 
+import androidx.annotation.Nullable;
+
 import com.qualcomm.robotcore.R;
 import com.qualcomm.robotcore.eventloop.EventLoopManager;
 import com.qualcomm.robotcore.exception.RobotCoreException;
@@ -124,14 +126,13 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
   public static final String TAG = "OpModeManager";
 
   public static final String DEFAULT_OP_MODE_NAME    = OpModeManager.DEFAULT_OP_MODE_NAME;
-  public static final OpMode DEFAULT_OP_MODE         = new DefaultOpMode();
 
   protected enum OpModeState { INIT, LOOPING }
 
   protected static int            matchNumber          = 0;
   protected Context               context;
   protected String                activeOpModeName     = DEFAULT_OP_MODE_NAME;
-  protected OpMode                activeOpMode         = DEFAULT_OP_MODE;
+  protected @Nullable OpModeInternal activeOpMode      = null;
   protected String                queuedOpModeName     = DEFAULT_OP_MODE_NAME;
   protected HardwareMap           hardwareMap          = null;
   protected EventLoopManager      eventLoopManager     = null;
@@ -144,7 +145,6 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
   protected boolean               callToStartNeeded    = false;
   protected boolean               gamepadResetNeeded   = false;
   protected boolean               telemetryClearNeeded = false;
-  protected boolean               skipCallToStop       = false;
   protected AtomicReference<OpModeStateTransition> nextOpModeState = new AtomicReference<OpModeStateTransition>(null);
 
   protected static final WeakHashMap<Activity,OpModeManagerImpl> mapActivityToOpModeManager = new WeakHashMap<Activity,OpModeManagerImpl>();
@@ -191,7 +191,7 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
   public OpMode registerListener(OpModeManagerNotifier.Notifications listener) {
     synchronized (this.listeners) {
       this.listeners.add(listener);
-      return this.activeOpMode;
+      return (OpMode) this.activeOpMode;
     }
   }
 
@@ -238,7 +238,7 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
 
   // called on the event loop thread
   public OpMode getActiveOpMode() {
-    return activeOpMode;
+    return (OpMode) activeOpMode;
   }
 
   protected void doMatchLoggingWork(String opModeName) {
@@ -255,7 +255,7 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
   }
 
   public void setMatchNumber(int matchNumber) {
-    this.matchNumber = matchNumber;
+    OpModeManagerImpl.matchNumber = matchNumber;
   }
 
   // called on DS receive thread
@@ -303,22 +303,31 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
   }
 
   // called on the event loop thread
-  public void runActiveOpMode(Gamepad[] gamepads) {
+  public void runActiveOpMode(Gamepad[] opModeGamepads, Gamepad latestGamepad1Data, Gamepad latestGamepad2Data) {
 
     // Apply a state transition if one is pending
     OpModeStateTransition transition = nextOpModeState.getAndSet(null);
     if (transition != null)
       transition.apply(); // Sets up the transition to happen later in this method (runActiveOpMode)
 
-    activeOpMode.time = activeOpMode.getRuntime();
-    activeOpMode.gamepad1 = gamepads[0];
-    activeOpMode.gamepad2 = gamepads[1];
+    if (activeOpMode != null) {
+      activeOpMode.gamepad1 = opModeGamepads[0];
+      activeOpMode.gamepad2 = opModeGamepads[1];
 
-    // Robustly ensure that gamepad state from previous opmodes doesn't
-    // leak into new opmodes.
+      if (!latestGamepad1Data.equals(activeOpMode.previousGamepad1Data) ||
+              !latestGamepad2Data.equals(activeOpMode.previousGamepad2Data)) {
+        activeOpMode.newGamepadDataAvailable(latestGamepad1Data, latestGamepad2Data);
+        activeOpMode.previousGamepad1Data = latestGamepad1Data;
+        activeOpMode.previousGamepad2Data = latestGamepad2Data;
+      }
+    }
+
+
+    // Robustly ensure that gamepad state from previous Op Modes doesn't
+    // leak into new Op Modes.
     if (gamepadResetNeeded) {
-      activeOpMode.gamepad1.reset();
-      activeOpMode.gamepad2.reset();
+      opModeGamepads[0].reset();
+      opModeGamepads[1].reset();
 
       // So basically the only reason that this exists is so that rumble effects will work
       // if no stick or button has been touched on the gamepad yet. The thing is, sending
@@ -329,8 +338,8 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
       // work. And we can't just make the DS retransmit the gamepads when it issues a start OpMode
       // command, either: since we're using UDP we have no guarantee of command delivery order.
       // So instead we just have this little workaround...
-      activeOpMode.gamepad1.setUserForEffects(GamepadUser.ONE.id);
-      activeOpMode.gamepad2.setUserForEffects(GamepadUser.TWO.id);
+      opModeGamepads[0].setUserForEffects(GamepadUser.ONE.id);
+      opModeGamepads[1].setUserForEffects(GamepadUser.TWO.id);
       gamepadResetNeeded = false;
     }
 
@@ -351,17 +360,21 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
     }
 
     if (opModeSwapNeeded) {
-      if(!skipCallToStop || /*Paranoia*/(activeOpMode instanceof LinearOpMode)) { //Skipping call to stop() would be VERY bad for linear
-        callActiveOpModeStop();
+      callActiveOpModeStop();
+      boolean swapSucceeded = performOpModeSwap();
+      if (swapSucceeded) {
+        opModeSwapNeeded = false;
+      } else {
+        failedToSwapOpMode();
+        // GET OUT OF DODGE. failedToSwapOpMode() just set up a new OpMode transition, that NEEDS to
+        // be applied before any of the rest of this method runs.
+        return;
       }
-      skipCallToStop = false;
-      performOpModeSwap();
-      opModeSwapNeeded = false;
     }
 
-    if (callToInitNeeded) {
-      activeOpMode.gamepad1    = gamepads[0];
-      activeOpMode.gamepad2    = gamepads[1];
+    if (callToInitNeeded && activeOpMode != null) {
+      activeOpMode.gamepad1    = opModeGamepads[0];
+      activeOpMode.gamepad2    = opModeGamepads[1];
       activeOpMode.hardwareMap = hardwareMap;
       activeOpMode.internalOpModeServices = this;
 
@@ -372,19 +385,12 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
         resetHardwareForOpMode();
       }
 
-      activeOpMode.resetRuntime();
+      ((OpMode) activeOpMode).resetRuntime();
       callActiveOpModeInit();
       opModeState = OpModeState.INIT;
       callToInitNeeded = false;
       NetworkConnectionHandler.getInstance().sendCommand(new Command(RobotCoreCommandList.CMD_NOTIFY_INIT_OP_MODE, activeOpModeName)); // send *truth* to DS
     }
-
-    /*
-     * NOTE: it's important that we use else if here, to avoid more than one user method
-     * being called during any one iteration. That, in turn, is important to make sure
-     * that if the force-stop logic manages to capture rogue user code, we can cleanly
-     * terminate the Op Mode immediately, without any other user methods being called.
-     */
 
     else if (callToStartNeeded) {
       callActiveOpModeStart();
@@ -393,10 +399,8 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
       NetworkConnectionHandler.getInstance().sendCommand(new Command(RobotCoreCommandList.CMD_NOTIFY_RUN_OP_MODE, activeOpModeName)); // send *truth* to DS
     }
 
-    else if (opModeState==OpModeState.INIT) {
-      callActiveOpModeInitLoop();
-    } else if (opModeState==OpModeState.LOOPING) {
-      callActiveOpModeLoop();
+    else if (opModeState == OpModeState.INIT || opModeState == OpModeState.LOOPING) {
+      checkOnActiveOpMode();
     }
   }
 
@@ -419,49 +423,43 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
     }
   }
 
-
-  private void performOpModeSwap() {
+  /** @return {@code true} if the Op Mode swap succeeded */
+  private boolean performOpModeSwap() {
     RobotLog.i("Attempting to switch to op mode " + queuedOpModeName);
 
     OpMode opMode = RegisteredOpModes.getInstance().getOpMode(queuedOpModeName);
     if (opMode != null) {
       setActiveOpMode(opMode, queuedOpModeName);
+      return true;
+    } else {
+      return false;
     }
-    else {
-      failedToSwapOpMode();
-    }
-  }
-
-  private void failedToSwapOpMode(Exception e) {
-    RobotLog.ee(TAG, e, "Unable to start op mode " + activeOpModeName);
-    setActiveOpMode(DEFAULT_OP_MODE, DEFAULT_OP_MODE_NAME);
   }
 
   private void failedToSwapOpMode() {
-    RobotLog.ee(TAG, "Unable to start op mode " + activeOpModeName);
-    setActiveOpMode(DEFAULT_OP_MODE, DEFAULT_OP_MODE_NAME);
+    RobotLog.ee(TAG, "Unable to start op mode " + queuedOpModeName);
+    initActiveOpMode(DEFAULT_OP_MODE_NAME);
   }
 
   protected void callActiveOpModeStop() {
+    if (activeOpMode == null) { return; }
     try {
-      detectStuck(activeOpMode.msStuckDetectStop, "stop()", new Runnable() {
+      detectStuck(OpModeInternal.MS_BEFORE_FORCE_STOP_AFTER_STOP_REQUESTED, "stop()", new Runnable() {
         @Override public void run() {
-          activeOpMode.stop();
+          activeOpMode.internalStop();
         }});
     } catch (ForceStopException e) {
       //We're already stopping, nothing to do
-    } catch (Exception e) {
-      handleUserCodeException(e);
     }
 
     synchronized (this.listeners) {
       for (OpModeManagerNotifier.Notifications listener : this.listeners) {
-        listener.onOpModePostStop(activeOpMode);
+        listener.onOpModePostStop((OpMode) activeOpMode);
       }
     }
     for (HardwareDevice device : this.hardwareMap.unsafeIterable()) {
       if (device instanceof OpModeManagerNotifier.Notifications) {
-        ((OpModeManagerNotifier.Notifications)device).onOpModePostStop(activeOpMode);
+        ((OpModeManagerNotifier.Notifications)device).onOpModePostStop((OpMode) activeOpMode);
       }
     }
   }
@@ -670,122 +668,72 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
   }
 
   protected void callActiveOpModeInit() {
+    if (activeOpMode == null) { return; }
     synchronized (this.listeners) {
       for (OpModeManagerNotifier.Notifications listener : this.listeners) {
-        listener.onOpModePreInit(activeOpMode);
+        listener.onOpModePreInit((OpMode) activeOpMode);
       }
     }
     for (HardwareDevice device : this.hardwareMap.unsafeIterable()) {
       if (device instanceof OpModeManagerNotifier.Notifications) {
-        ((OpModeManagerNotifier.Notifications)device).onOpModePreInit(activeOpMode);
+        ((OpModeManagerNotifier.Notifications)device).onOpModePreInit((OpMode) activeOpMode);
       }
     }
 
-    activeOpMode.internalPreInit();
-    try {
-        // In this interim period where we have lazy I2C device initialization but iterative Op Modes
-        // still run on the event loop thread, we add 2 seconds to the max runtime for init()
-        detectStuck(activeOpMode.msStuckDetectInit + 2000, "init()", new Runnable() {
-            @Override public void run() {
-                activeOpMode.init();
-            }}, true);
-    } catch (ForceStopException e) {
-        /**
-         * OpMode ran away in init() but we were able force stop him.
-         * Get out of dodge with a switch to the StopRobot OpMode.
-         *
-         * (We also now use ForceStopException to support {@link OpMode#terminateOpModeNow()})
-         */
-      initActiveOpMode(DEFAULT_OP_MODE_NAME);
-      skipCallToStop = true;
-    } catch (Exception e) {
-      initActiveOpMode(DEFAULT_OP_MODE_NAME);
-      skipCallToStop = true;
-      handleUserCodeException(e);
-    }
+    activeOpMode.internalInit();
   }
 
   protected void callActiveOpModeStart() {
+    if (activeOpMode == null) { return; }
     synchronized (this.listeners) {
       for (OpModeManagerNotifier.Notifications listener : this.listeners) {
-        listener.onOpModePreStart(activeOpMode);
+        listener.onOpModePreStart((OpMode) activeOpMode);
       }
     }
     for (HardwareDevice device : this.hardwareMap.unsafeIterable()) {
       if (device instanceof OpModeManagerNotifier.Notifications) {
-        ((OpModeManagerNotifier.Notifications)device).onOpModePreStart(activeOpMode);
+        ((OpModeManagerNotifier.Notifications)device).onOpModePreStart((OpMode) activeOpMode);
       }
     }
 
+    // Check for any exceptions that occurred during the init phase
     try {
-        detectStuck(activeOpMode.msStuckDetectStart, "start()", new Runnable() {
-            @Override public void run() {
-                activeOpMode.start();
-            }});
+      activeOpMode.internalThrowOpModeExceptionIfPresent();
     } catch (ForceStopException e) {
-        /**
-         * OpMode ran away in start() but we were able force stop him.
+        /*
+         * OpMode ran away during the init phase, but we were able to force stop him.
          * Get out of dodge with a switch to the StopRobot OpMode.
          *
          * (We also now use ForceStopException to support {@link OpMode#terminateOpModeNow()})
          */
       initActiveOpMode(DEFAULT_OP_MODE_NAME);
-      skipCallToStop = true;
     } catch (Exception e) {
       initActiveOpMode(DEFAULT_OP_MODE_NAME);
-      skipCallToStop = true;
       handleUserCodeException(e);
     }
+
+    // Actually put the OpMode into the Start phase
+    activeOpMode.internalStart();
   }
 
-  protected void callActiveOpModeInitLoop() {
-   try {
-       detectStuck(activeOpMode.msStuckDetectInitLoop, "init_loop()", new Runnable() {
-           @Override public void run() {
-               activeOpMode.init_loop();
-           }});
-   } catch (ForceStopException e) {
-       /**
-        * OpMode ran away in init_loop() but we were able force stop him.
-        * Now, to avoid the same thing just happening again on the next
-        * init_loop() call, we switch to the StopRobot OpMode.
-        *
-        * (We also now use ForceStopException to support {@link OpMode#terminateOpModeNow()})
-        */
-     initActiveOpMode(DEFAULT_OP_MODE_NAME);
-     skipCallToStop = true;
-   } catch (Exception e) {
-     initActiveOpMode(DEFAULT_OP_MODE_NAME);
-     skipCallToStop = true;
-     handleUserCodeException(e);
-   }
-
-    activeOpMode.internalPostInitLoop();
-  }
-
-  protected void callActiveOpModeLoop() {
+  protected void checkOnActiveOpMode() {
+    if (activeOpMode == null) { return; }
     try {
-      detectStuck(activeOpMode.msStuckDetectLoop, "loop()", new Runnable() {
-        @Override public void run() {
-          activeOpMode.loop();
-        }});
+      activeOpMode.internalThrowOpModeExceptionIfPresent();
     } catch (ForceStopException e) {
-      /**
-       * OpMode ran away in loop() but we were able force stop him.
-       * Now, to avoid the same thing just happening again on the next
-       * loop() call, we switch to the StopRobot OpMode.
+      /*
+       * OpMode ran away, but we were able to force stop him.
+       * Get out of dodge with a switch to the StopRobot OpMode.
        *
        * (We also now use ForceStopException to support {@link OpMode#terminateOpModeNow()})
        */
       initActiveOpMode(DEFAULT_OP_MODE_NAME);
-      skipCallToStop = true;
     } catch (Exception e) {
       initActiveOpMode(DEFAULT_OP_MODE_NAME);
-      skipCallToStop = true;
       handleUserCodeException(e);
     }
 
-    activeOpMode.internalPostLoop();
+    activeOpMode.internalOnEventLoopIteration();
   }
 
   protected void handleUserCodeException(Exception e) {

@@ -35,9 +35,14 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.qualcomm.robotcore.R;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpModeManagerNotifier;
+import com.qualcomm.robotcore.util.Device;
 import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.util.SerialNumber;
 
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.robotcore.internal.system.Assert;
 
 import java.util.ArrayList;
@@ -48,6 +53,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -101,6 +108,10 @@ public class HardwareMap implements Iterable<HardwareDevice> {
   protected List<HardwareDevice>              allDevicesList        = null;   // cache for iteration
   protected Map<HardwareDevice, Set<String>>  deviceNames           = new HashMap<HardwareDevice, Set<String>>();
   protected Map<SerialNumber, HardwareDevice> serialNumberMap       = new HashMap<SerialNumber, HardwareDevice>();
+  // We need a List to allow for multiple configuration entries that have the same name.
+  protected Map<String, List<DeviceInstancesFromSingleConfigEntry>> devicesWithMultipleDriversMap = new HashMap<>();
+  // WE MUST hold on to a reference to this so that it doesn't get garbage-collected before the HardwareMap.
+  private final OpModeManagerNotifier.Notifications opModeNotifications;
 
   public final List<DeviceMapping<? extends HardwareDevice>> allDeviceMappings;
 
@@ -115,7 +126,7 @@ public class HardwareMap implements Iterable<HardwareDevice> {
   // Construction
   //------------------------------------------------------------------------------------------------
 
-  public HardwareMap(Context appContext) {
+  public HardwareMap(Context appContext, OpModeManagerNotifier notifier) {
     this.appContext = appContext;
 
     this.allDeviceMappings = new ArrayList<DeviceMapping<? extends HardwareDevice>>(30);  // 30 is approximate
@@ -146,6 +157,28 @@ public class HardwareMap implements Iterable<HardwareDevice> {
     this.allDeviceMappings.add(this.lightSensor);
     this.allDeviceMappings.add(this.ultrasonicSensor);
     this.allDeviceMappings.add(this.voltageSensor);
+
+    opModeNotifications = new OpModeManagerNotifier.Notifications() {
+      @Override public void onOpModePreInit(OpMode opMode) {
+        synchronized (lock) {
+          RobotLog.dd(TAG, "Clearing which device instances have been retrieved");
+          for (List<DeviceInstancesFromSingleConfigEntry> configEntries: devicesWithMultipleDriversMap.values()) {
+            for (DeviceInstancesFromSingleConfigEntry configEntryDriverInstances: configEntries) {
+              for (DeviceInstanceHolder deviceInstanceHolder : configEntryDriverInstances.deviceInstanceHolders) {
+                deviceInstanceHolder.hasBeenRetrieved = false;
+              }
+            }
+          }
+        }
+      }
+      @Override public void onOpModePreStart(OpMode opMode) { }
+      @Override public void onOpModePostStop(OpMode opMode) { }
+    };
+
+    // notifier should ONLY be null for a HardwareMap that won't be used by user code.
+    if (notifier != null) {
+      notifier.registerListener(opModeNotifications);
+    }
   }
 
   //------------------------------------------------------------------------------------------------
@@ -185,10 +218,10 @@ public class HardwareMap implements Iterable<HardwareDevice> {
   /**
    * Retrieves the (first) device with the indicated name which is also an instance of the
    * indicated class or interface. If no such device is found, null is returned.
-   * 
+   * <p>
    * This is not commonly used; {@link #get} is the usual method for retrieving items from
    * the map.
-   *
+   * <p>
    * If the device has not already been initialized, calling this method will initialize it, which
    * may take some time. As a result, you should ONLY call this method during the Init phase of your
    * Op Mode.
@@ -211,14 +244,36 @@ public class HardwareMap implements Iterable<HardwareDevice> {
         }
       }
 
-      // Show a warning if the user tried to get the BNO055 IMU when a BHI260 IMU is configured
-      if (result == null && (classOrInterface.getSimpleName().contains("BNO055") || classOrInterface.getSimpleName().contains("LynxEmbeddedIMU"))) {
-        // Unfortunately, we can't check which IMU is physically present from RobotCore. Instead, we'll just check if the hardware map contains a BHI260 IMU.
+      // Show a warning if the user tried to get the BNO055 IMU when a BHI260 IMU is configured on
+      // a Control Hub (Expansion Hubs never have a BHI260)
+      if (Device.isRevControlHub() && result == null &&
+              (classOrInterface.getSimpleName().contains("BNO055") ||
+                      classOrInterface.getSimpleName().contains("LynxEmbeddedIMU"))) {
+        // Unfortunately, we can't check which IMU is physically present from RobotCore.
+        // Instead, we'll just check if the hardware map contains a BHI260 IMU, but no BNO055 IMU.
+        boolean foundBno055 = false;
+        boolean foundBhi260 = false;
         for (HardwareDevice device : this) {
-          if (device.getClass().getSimpleName().contains("BHI260")) {
-            // TODO(Noah): Update this text when we add the new IMU driver
-            RobotLog.addGlobalWarningMessage("You attempted to use a BNO055 IMU when only a BHI260AP IMU is configured. Most likely, this Control Hub contains a BHI260AP IMU, " +
-                    "and you need to migrate your IMU code to the new driver when it becomes available in version 8.1 of the FTC Robot Controller app.");
+          String className = device.getClass().getSimpleName();
+          if (className.contains("BHI260")) {
+            foundBhi260 = true;
+          } else if (className.contains("BNO055") || className.equals("LynxEmbeddedIMU")) {
+            foundBno055 = true;
+          }
+        }
+
+        if (foundBhi260 && !foundBno055) {
+          RobotLog.addGlobalWarningMessage("You attempted to use the BNO055 interface when " +
+                  "only a BHI260AP IMU is configured. This Control Hub contains a BHI260AP IMU, " +
+                  "and you need to update your code to use the IMU interface rather than the BNO055 interface.");
+        }
+      }
+
+      // Show a warning if the user previously retrieved an instance of a different driver for the
+      // same physical hardware device
+      if (result != null && devicesWithMultipleDriversMap.containsKey(deviceName)) {
+        for (DeviceInstancesFromSingleConfigEntry configEntry: devicesWithMultipleDriversMap.get(deviceName)) {
+          if (configEntry.warnIfOtherDriverHasBeenRetrieved((HardwareDevice) result, deviceName)) {
             break;
           }
         }
@@ -231,7 +286,7 @@ public class HardwareMap implements Iterable<HardwareDevice> {
   /**
    * (Advanced) Returns the device with the indicated {@link SerialNumber}, if it exists,
    * cast to the indicated class or interface; otherwise, null.
-   *
+   * <p>
    * If the device has not already been initialized, calling this method will initialize it, which
    * may take some time. As a result, you should ONLY call this method during the Init phase of your
    * Op Mode.
@@ -253,7 +308,7 @@ public class HardwareMap implements Iterable<HardwareDevice> {
    * Returns the (first) device with the indicated name. If no such device is found, an exception is
    * thrown. If the found device is an I2C device, it will be initialized at this time if it has not
    * already been initialized, which for some devices may take a second or more.
-   *
+   * <p>
    * Note that the compile-time type of the return value of this method is {@link HardwareDevice},
    * which is usually not what is desired in user code. Thus, the programmer usually casts the
    * return type to the target type that the programmer knows the returned value to be:
@@ -290,7 +345,7 @@ public class HardwareMap implements Iterable<HardwareDevice> {
    * Returns all the devices which are instances of the indicated class or interface. Any I2C
    * devices that are found will be initialized at this time if they have not already been
    * initialized, which for some devices may take a second or more.
-   *
+   * <p>
    * Any matching devices that have not already been initialized wil be initialized now, which may
    * take some time. As a result, you should ONLY call this method during the Init phase of your
    * Op Mode.
@@ -312,6 +367,30 @@ public class HardwareMap implements Iterable<HardwareDevice> {
     }
   }
 
+
+  /**
+   * Returns all the names of all the devices which are instances of the indicated class or interface.
+   *
+   * @param classOrInterface the class or interface indicating the type of the device object to be retrieved
+   * @return all the names of all the devices registered in the map which are instances of classOrInterface
+   * @see #getAll(Class)
+   */
+  public SortedSet<String> getAllNames(Class<? extends HardwareDevice> classOrInterface) {
+    synchronized (lock) {
+      rebuildDeviceNamesIfNecessary();
+      SortedSet<String> result = new TreeSet<>();
+      for (HardwareDevice device : unsafeIterable()) {
+        if (classOrInterface.isInstance(device)) {
+          Set<String> names = deviceNames.get(device);
+          if (names != null) {
+            result.addAll(names);
+          }
+        }
+      }
+      return result;
+    }
+  }
+
   /**
    * Puts a device in the overall map without having it also reside in a type-specific DeviceMapping.
    * @param deviceName the name by which the device is to be known (case sensitive)
@@ -322,7 +401,30 @@ public class HardwareMap implements Iterable<HardwareDevice> {
   }
 
   /**
+   * (Advanced) Puts multiple {@link HardwareDevice} instances for the same configuration entry in
+   * the overall map without having them also reside in a type-specific DeviceMapping.
+   *
+   * @param deviceName      the name by which the device is to be known (case sensitive)
+   * @param deviceInstances the HardwareDevice instances to be stored by that name
+   */
+  public void put(String deviceName, List<HardwareDevice> deviceInstances) {
+    synchronized (lock) {
+      for (HardwareDevice device: deviceInstances) {
+        internalPut(null, deviceName, device);
+      }
+
+      List<DeviceInstancesFromSingleConfigEntry> configEntries = devicesWithMultipleDriversMap.get(deviceName);
+      if (configEntries == null) {
+        configEntries = new ArrayList<>(1);
+        devicesWithMultipleDriversMap.put(deviceName, configEntries);
+      }
+      configEntries.add(new DeviceInstancesFromSingleConfigEntry(deviceInstances));
+    }
+  }
+
+  /**
    * (Advanced) Puts a device in the overall map without having it also reside in a type-specific DeviceMapping.
+   *
    * @param serialNumber the {@link SerialNumber} of the device
    * @param deviceName   the name by which the device is to be known (case sensitive)
    * @param device       the device to be stored by that name
@@ -402,6 +504,7 @@ public class HardwareMap implements Iterable<HardwareDevice> {
   /**
    * Returns all the names by which the device is known. Virtually always, there is but
    * a single name.
+   *
    * @param device the device whose names are desired.
    * @return the set of names by which that device is known
    */
@@ -448,7 +551,6 @@ public class HardwareMap implements Iterable<HardwareDevice> {
   }
 
   /**
-   * Returns the number of unique device objects currently found in this HardwareMap.
    * @return the number of unique device objects currently found in this HardwareMap.
    * @see #iterator()
    */
@@ -518,7 +620,7 @@ public class HardwareMap implements Iterable<HardwareDevice> {
   /**
    * A DeviceMapping contains a subcollection of the devices registered in a {@link HardwareMap}
    * comprised of all the devices of a particular device type.
-   *
+   * <p>
    * Retrieving devices from a DeviceMapping will initialize them if they have not already been
    * initialized, which may take some time. As a result, you should ONLY access a DeviceMapping from
    * the Init phase of your Op Mode.
@@ -548,7 +650,7 @@ public class HardwareMap implements Iterable<HardwareDevice> {
     /**
      * Retrieves the device in this DeviceMapping with the indicated name. If no such device is
      * found, an exception is thrown.
-     *
+     * <p>
      * If the device has not already been initialized, calling this method will initialize it, which
      * may take some time. As a result, you should ONLY call this method during the Init phase of
      * your Op Mode.
@@ -696,7 +798,6 @@ public class HardwareMap implements Iterable<HardwareDevice> {
     }
 
     /**
-     * Returns the number of devices currently in this DeviceMapping
      * @return the number of devices currently in this DeviceMapping
      */
     public int size() {
@@ -723,6 +824,50 @@ public class HardwareMap implements Iterable<HardwareDevice> {
         String name = entry.getKey();
         String type = d.getDeviceName();
         RobotLog.i(String.format(LOG_FORMAT, type, name, conn));
+      }
+    }
+  }
+
+  protected static class DeviceInstanceHolder {
+    boolean hasBeenRetrieved = false;
+    final HardwareDevice instance;
+
+    protected DeviceInstanceHolder(HardwareDevice instance) {
+      this.instance = instance;
+    }
+  }
+
+  /**
+   * ALL device instances in this data structure come from the SAME configuration entry. Each
+   * instance was created from a different driver class.
+   */
+  protected static class DeviceInstancesFromSingleConfigEntry {
+    final List<DeviceInstanceHolder> deviceInstanceHolders;
+
+    protected DeviceInstancesFromSingleConfigEntry(List<HardwareDevice> driverInstances) {
+      this.deviceInstanceHolders = new ArrayList<>(driverInstances.size());
+      for (HardwareDevice driverInstance: driverInstances) {
+        deviceInstanceHolders.add(new DeviceInstanceHolder(driverInstance));
+      }
+    }
+
+    public boolean warnIfOtherDriverHasBeenRetrieved(HardwareDevice hardwareDevice, String name) {
+      boolean containsProvidedInstance = false;
+      boolean anotherInstanceWasRetrieved = false;
+      for (DeviceInstanceHolder instanceHolder: deviceInstanceHolders) {
+        if (instanceHolder.instance == hardwareDevice) {
+          containsProvidedInstance = true;
+          instanceHolder.hasBeenRetrieved = true;
+        } else if (instanceHolder.hasBeenRetrieved) {
+          anotherInstanceWasRetrieved = true;
+        }
+      }
+
+      if (containsProvidedInstance && anotherInstanceWasRetrieved) {
+        RobotLog.addGlobalWarningMessage(AppUtil.getDefContext().getString(R.string.warningRetrievedMultipleDeviceInstances, name));
+        return true;
+      } else {
+        return false;
       }
     }
   }

@@ -80,6 +80,8 @@ public @interface DeviceProperties {
 
     /**
      * Specifies additional XML tags that will map to this device
+     *
+     * @deprecated This is now ignored.
      */
-    String[] xmlTagAliases() default {};
+    @Deprecated String[] xmlTagAliases() default {};
 }

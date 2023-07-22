@@ -35,7 +35,6 @@ package com.qualcomm.hardware.lynx;
 import com.qualcomm.hardware.bosch.BNO055IMUImpl;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
 import com.qualcomm.robotcore.hardware.configuration.LynxConstants;
-import com.qualcomm.robotcore.hardware.configuration.typecontainers.UserConfigurationType;
 import com.qualcomm.robotcore.hardware.configuration.annotations.DeviceProperties;
 import com.qualcomm.robotcore.hardware.configuration.annotations.I2cDeviceType;
 
@@ -58,9 +57,9 @@ public class LynxEmbeddedIMU extends BNO055IMUImpl
     /**
      * This constructor is used internally by the FTC SDK
      */
-    public LynxEmbeddedIMU(I2cDeviceSynch deviceClient)
+    public LynxEmbeddedIMU(I2cDeviceSynch deviceClient, boolean deviceClientIsOwned)
         {
-        super(deviceClient);
+        super(deviceClient, deviceClientIsOwned);
         }
 
     @Override public String getDeviceName()

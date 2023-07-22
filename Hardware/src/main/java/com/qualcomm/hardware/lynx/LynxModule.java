@@ -38,6 +38,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.qualcomm.hardware.R;
+import com.qualcomm.hardware.bosch.BHI260IMU;
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.BNO055IMUImpl;
 import com.qualcomm.hardware.lynx.commands.LynxCommand;
 import com.qualcomm.hardware.lynx.commands.LynxDatagram;
 import com.qualcomm.hardware.lynx.commands.LynxInterface;
@@ -46,6 +49,7 @@ import com.qualcomm.hardware.lynx.commands.LynxMessage;
 import com.qualcomm.hardware.lynx.commands.LynxRespondable;
 import com.qualcomm.hardware.lynx.commands.LynxResponse;
 import com.qualcomm.hardware.lynx.commands.core.LynxDekaInterfaceCommand;
+import com.qualcomm.hardware.lynx.commands.core.LynxFirmwareVersionManager;
 import com.qualcomm.hardware.lynx.commands.core.LynxFtdiResetControlCommand;
 import com.qualcomm.hardware.lynx.commands.core.LynxGetADCCommand;
 import com.qualcomm.hardware.lynx.commands.core.LynxGetADCResponse;
@@ -75,6 +79,7 @@ import com.qualcomm.robotcore.exception.RobotCoreException;
 import com.qualcomm.robotcore.hardware.Blinker;
 import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.HardwareDeviceHealth;
+import com.qualcomm.robotcore.hardware.LynxModuleImuType;
 import com.qualcomm.robotcore.hardware.VisuallyIdentifiableHardwareDevice;
 import com.qualcomm.robotcore.hardware.RobotConfigNameable;
 import com.qualcomm.robotcore.hardware.configuration.LynxConstants;
@@ -339,6 +344,10 @@ public class LynxModule extends LynxCommExceptionHandler implements LynxModuleIn
                 stopFtdiResetWatchdog(); // This must be done while the module is still open
                 this.isOpen = false;
                 RobotLog.vv(TAG, "close(#%d)", moduleAddress);
+                for (LynxController controller: controllers)
+                    {
+                    controller.close();
+                    }
                 unregisterCallback(this);
                 lynxUsbDevice.removeConfiguredModule(this);
                 stopAttentionRequired();
@@ -1727,6 +1736,50 @@ public class LynxModule extends LynxCommExceptionHandler implements LynxModuleIn
             handleException(e);
             }
         return LynxUsbUtil.makePlaceholderValue(0.0);
+        }
+
+    public LynxModuleImuType getImuType()
+        {
+        warnIfClosed();
+        LynxI2cDeviceSynch rawImuI2c = LynxFirmwareVersionManager.createLynxI2cDeviceSynch(AppUtil.getDefContext(), this, 0);
+        try
+            {
+            LynxModuleImuType result = LynxModuleImuType.NONE;
+
+            // BHI260 IMUs will only ever exist on the parent module of a Control Hub
+            if (lynxUsbDevice.getSerialNumber().isEmbedded() && isParent())
+                {
+                if (BHI260IMU.imuIsPresent(rawImuI2c))
+                    {
+                    result = LynxModuleImuType.BHI260;
+                    }
+                }
+
+            // If we've found a BHI260 IMU, we don't need to look for a BNO055
+            if (result == LynxModuleImuType.NONE)
+                {
+                // The BNO055 version of imuIsPresent() doesn't set the I2C address because there is
+                // more than one possible address.
+                rawImuI2c.setI2cAddress(BNO055IMU.I2CADDR_DEFAULT);
+                if (BNO055IMUImpl.imuIsPresent(rawImuI2c, false))
+                    {
+                    result = LynxModuleImuType.BNO055;
+                    }
+                }
+
+            // If the module isn't currently responding, then most likely our I2C operations failed,
+            // and we don't know which IMU we have.
+            if (result == LynxModuleImuType.NONE && isNotResponding)
+                {
+                result = LynxModuleImuType.UNKNOWN;
+                }
+
+            return result;
+            }
+        finally
+            {
+            rawImuI2c.close();
+            }
         }
 
     //----------------------------------------------------------------------------------------------

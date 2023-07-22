@@ -45,6 +45,8 @@ import com.qualcomm.robotcore.util.SerialNumber;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraManager;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 
+import java.util.List;
+
 @SuppressWarnings("javadoc")
 public interface DeviceManager {
 
@@ -101,29 +103,22 @@ public interface DeviceManager {
    * @param portNumber physical port number on the controller
    * @return an instance of a Servo
    */
-  Servo createServo(ServoController controller, int portNumber, String name);
   Servo createServoEx(ServoControllerEx controller, int portNumber, String name, ServoConfigurationType servoType);
-
-  CRServo createCRServo(ServoController controller, int portNumber, String name);
   CRServo createCRServoEx(ServoControllerEx controller, int portNumber, String name, ServoConfigurationType servoType);
-
-  HardwareDevice createCustomServoDevice(ServoController controller, int portNumber, ServoConfigurationType servoConfigurationType);
-  HardwareDevice createLynxCustomServoDevice(ServoControllerEx controller, int portNumber, ServoConfigurationType servoConfigurationType);
+  List<HardwareDevice> createCustomServoDeviceInstances(ServoControllerEx controller, int portNumber, ServoConfigurationType servoConfigurationType);
 
   /**
-   *
    * @param controller Analog Input Controller Module this device is connected to
-   * @return - an instance of an Analog Input device
+   * @return Instances of an Analog Input device
    */
-  HardwareDevice createAnalogSensor(AnalogInputController controller, int channel, AnalogSensorConfigurationType type);
+  List<HardwareDevice> createAnalogSensorInstances(AnalogInputController controller, int channel, AnalogSensorConfigurationType type);
 
   /**
-   *
    * @param controller Device Interface Module this device is connected to
    * @param type
-   * @return - an instance of an Digital Channel device
+   * @return Instances of an Digital Channel device
    */
-  HardwareDevice createDigitalDevice(DigitalChannelController controller, int channel, DigitalIoDeviceConfigurationType type);
+  List<HardwareDevice> createDigitalDeviceInstances(DigitalChannelController controller, int channel, DigitalIoDeviceConfigurationType type);
 
   /**
    *
@@ -141,9 +136,9 @@ public interface DeviceManager {
   I2cDeviceSynch createI2cDeviceSynch(RobotCoreLynxModule module, DeviceConfiguration.I2cChannel channel, String name);
 
   /**
-   * Returns a new instance of a user-defined sensor type.
+   * @return Instances of a user-defined sensor type.
    */
-  @Nullable HardwareDevice createUserI2cDevice(RobotCoreLynxModule lynxModule, DeviceConfiguration.I2cChannel channel, I2cDeviceConfigurationType type, String name);
+  List<HardwareDevice> createI2cDeviceInstances(RobotCoreLynxModule lynxModule, DeviceConfiguration.I2cChannel channel, I2cDeviceConfigurationType type, String name);
 
   /**
    * Creates an instance of a Lynx USB device

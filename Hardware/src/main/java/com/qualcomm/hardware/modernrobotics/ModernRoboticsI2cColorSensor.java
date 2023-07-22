@@ -152,9 +152,9 @@ public class ModernRoboticsI2cColorSensor extends I2cDeviceSynchDevice<I2cDevice
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public ModernRoboticsI2cColorSensor(I2cDeviceSynch deviceClient)
+    public ModernRoboticsI2cColorSensor(I2cDeviceSynch deviceClient, boolean deviceClientIsOwned)
         {
-        super(deviceClient, true);
+        super(deviceClient, deviceClientIsOwned);
 
         I2cDeviceSynch.ReadWindow readWindow = new I2cDeviceSynch.ReadWindow(
               Register.READ_WINDOW_FIRST.bVal,

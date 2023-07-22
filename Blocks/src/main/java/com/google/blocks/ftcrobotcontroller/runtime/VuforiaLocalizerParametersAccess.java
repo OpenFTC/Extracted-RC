@@ -43,6 +43,7 @@ class VuforiaLocalizerParametersAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Parameters.class, constructor = true)
   public Parameters create() {
     try {
       startBlockExecution(BlockType.CREATE, "");
@@ -57,6 +58,7 @@ class VuforiaLocalizerParametersAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Parameters.class, fieldName = "vuforiaLicenseKey")
   public void setVuforiaLicenseKey(Object parametersArg, String vuforiaLicenseKey) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".setVuforiaLicenseKey");
@@ -74,6 +76,7 @@ class VuforiaLocalizerParametersAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Parameters.class, fieldName = "vuforiaLicenseKey")
   public String getVuforiaLicenseKey(Object parametersArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".VuforiaLicenseKey");
@@ -92,6 +95,7 @@ class VuforiaLocalizerParametersAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Parameters.class, fieldName = "cameraDirection")
   public void setCameraDirection(Object parametersArg, String cameraDirectionString) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".setCameraDirection");
@@ -110,6 +114,7 @@ class VuforiaLocalizerParametersAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Parameters.class, fieldName = "cameraDirection")
   public String getCameraDirection(Object parametersArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".CameraDirection");
@@ -131,6 +136,7 @@ class VuforiaLocalizerParametersAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Parameters.class, fieldName = "cameraName")
   public void setCameraName(Object parametersArg, String cameraNameString) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".setCameraName");
@@ -148,6 +154,7 @@ class VuforiaLocalizerParametersAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Parameters.class, fieldName = "cameraName")
   public String getCameraName(Object parametersArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".CameraName");
@@ -166,6 +173,7 @@ class VuforiaLocalizerParametersAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Parameters.class, methodName = "addWebcamCalibrationFile")
   public void addWebcamCalibrationFile(Object parametersArg, String webcamCalibrationFilename) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".addWebcamCalibrationFile");
@@ -183,6 +191,7 @@ class VuforiaLocalizerParametersAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Parameters.class, fieldName = "useExtendedTracking")
   public void setUseExtendedTracking(Object parametersArg, boolean useExtendedTracking) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".setUseExtendedTracking");
@@ -200,6 +209,7 @@ class VuforiaLocalizerParametersAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Parameters.class, fieldName = "useExtendedTracking")
   public boolean getUseExtendedTracking(Object parametersArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".UseExtendedTracking");
@@ -218,6 +228,7 @@ class VuforiaLocalizerParametersAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Parameters.class, fieldName = "cameraMonitorViewIdParent")
   public boolean getEnableCameraMonitoring(Object parametersArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".EnableCameraMonitoring");
@@ -236,6 +247,7 @@ class VuforiaLocalizerParametersAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Parameters.class, fieldName = "cameraMonitorFeedback")
   public void setCameraMonitorFeedback(Object parametersArg, String cameraMonitorFeedbackString) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".setCameraMonitorFeedback");
@@ -255,6 +267,7 @@ class VuforiaLocalizerParametersAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Parameters.class, fieldName = "cameraMonitorFeedback")
   public String getCameraMonitorFeedback(Object parametersArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".CameraMonitorFeedback");
@@ -275,6 +288,7 @@ class VuforiaLocalizerParametersAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Parameters.class, fieldName = "fillCameraMonitorViewParent")
   public void setFillCameraMonitorViewParent(Object parametersArg, boolean fillCameraMonitorViewParent) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".setFillCameraMonitorViewParent");
@@ -292,6 +306,7 @@ class VuforiaLocalizerParametersAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Parameters.class, fieldName = "fillCameraMonitorViewParent")
   public boolean getFillCameraMonitorViewParent(Object parametersArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".FillCameraMonitorViewParent");
@@ -310,6 +325,7 @@ class VuforiaLocalizerParametersAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Parameters.class, fieldName = "cameraMonitorViewIdParent")
   public void setEnableCameraMonitoring(Object parametersArg, boolean enableCameraMonitoring) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".setEnableCameraMonitoring");

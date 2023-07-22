@@ -33,6 +33,7 @@ class NavigationAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = AngleUnit.class, methodName = "normalize")
   public double angleUnit_normalize(double angle, String angleUnitString) {
     try {
       startBlockExecution(BlockType.FUNCTION, "AngleUnit", ".normalize");
@@ -51,6 +52,7 @@ class NavigationAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = AngleUnit.class, methodName = "fromUnit")
   public double angleUnit_convert(double angle, String fromAngleUnitString, String toAngleUnitString) {
     try {
       startBlockExecution(BlockType.FUNCTION, "AngleUnit", ".convert");
@@ -70,6 +72,7 @@ class NavigationAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = UnnormalizedAngleUnit.class, methodName = "fromUnit")
   public double unnormalizedAngleUnit_convert(double angle, String fromAngleUnitString, String toAngleUnitString) {
     try {
       startBlockExecution(BlockType.FUNCTION, "UnnormalizedAngleUnit", ".convert");

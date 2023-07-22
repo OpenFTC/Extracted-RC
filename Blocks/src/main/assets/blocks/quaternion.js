@@ -162,7 +162,7 @@ Blockly.JavaScript['quaternion_getProperty_Number'] =
 Blockly.FtcJava['quaternion_getProperty_Number'] =
     Blockly.FtcJava['quaternion_getProperty'];
 
-  // Functions
+// Functions
 
 Blockly.Blocks['quaternion_create'] = {
   init: function() {
@@ -255,6 +255,68 @@ Blockly.FtcJava['quaternion_create_withArgs'] = function(block) {
   return [code, Blockly.FtcJava.ORDER_NEW];
 };
 
+Blockly.Blocks['quaternion_create_withArgs2'] = {
+  init: function() {
+    this.setOutput(true, 'Quaternion');
+    this.appendDummyInput()
+        .appendField('new')
+        .appendField(createNonEditableField('Quaternion'));
+    this.appendValueInput('W').setCheck('Number')
+        .appendField('w')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('X').setCheck('Number')
+        .appendField('x')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('Y').setCheck('Number')
+        .appendField('y')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('Z').setCheck('Number')
+        .appendField('z')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.setColour(functionColor);
+    this.setTooltip('Creates a new Quaternion object.');
+    this.getFtcJavaInputType = function(inputName) {
+      switch (inputName) {
+        case 'X':
+        case 'Y':
+        case 'Z':
+          return 'float';
+        case 'ACQUISITION_TIME':
+          return 'long';
+      }
+      return '';
+    };
+  }
+};
+
+Blockly.JavaScript['quaternion_create_withArgs2'] = function(block) {
+  var w = Blockly.JavaScript.valueToCode(
+      block, 'W', Blockly.JavaScript.ORDER_COMMA);
+  var x = Blockly.JavaScript.valueToCode(
+      block, 'X', Blockly.JavaScript.ORDER_COMMA);
+  var y = Blockly.JavaScript.valueToCode(
+      block, 'Y', Blockly.JavaScript.ORDER_COMMA);
+  var z = Blockly.JavaScript.valueToCode(
+      block, 'Z', Blockly.JavaScript.ORDER_COMMA);
+  var code = quaternionIdentifierForJavaScript + '.create_withArgs2(' + w + ', ' + x + ', ' + y + ', ' + z + ')';
+  return [code, Blockly.JavaScript.ORDER_FUNCTION_CALL];
+};
+
+Blockly.FtcJava['quaternion_create_withArgs2'] = function(block) {
+  var w = Blockly.FtcJava.valueToCode(
+      block, 'W', Blockly.FtcJava.ORDER_COMMA);
+  var x = Blockly.FtcJava.valueToCode(
+      block, 'X', Blockly.FtcJava.ORDER_COMMA);
+  var y = Blockly.FtcJava.valueToCode(
+      block, 'Y', Blockly.FtcJava.ORDER_COMMA);
+  var z = Blockly.FtcJava.valueToCode(
+      block, 'Z', Blockly.FtcJava.ORDER_COMMA);
+  var acquisitionTime = '0';
+  var code = 'new Quaternion(' + w + ', ' + x + ', ' + y + ', ' + z + ', ' + acquisitionTime + ')';
+  Blockly.FtcJava.generateImport_('Quaternion');
+  return [code, Blockly.FtcJava.ORDER_NEW];
+};
+
 Blockly.Blocks['quaternion_normalized'] = {
   init: function() {
     this.setOutput(true, 'Quaternion');
@@ -285,32 +347,62 @@ Blockly.FtcJava['quaternion_normalized'] = function(block) {
   return [code, Blockly.FtcJava.ORDER_FUNCTION_CALL];
 };
 
-Blockly.Blocks['quaternion_congugate'] = {
+Blockly.Blocks['quaternion_congugate'] = Blockly.Blocks['quaternion_conjugate'] = {
   init: function() {
     this.setOutput(true, 'Quaternion');
     this.appendDummyInput()
         .appendField('call')
         .appendField(createNonEditableField('Quaternion'))
         .appendField('.')
-        .appendField(createNonEditableField('congugate'));
+        .appendField(createNonEditableField('conjugate'));
     this.appendValueInput('QUATERNION').setCheck('Quaternion')
         .appendField('quaternion')
         .setAlign(Blockly.ALIGN_RIGHT);
     this.setColour(functionColor);
-    this.setTooltip('Returns a new Quaternion object that is congugate from the given Quaternion object.');
+    this.setTooltip('Returns a new Quaternion object that is conjugate from the given Quaternion object.');
   }
 };
 
-Blockly.JavaScript['quaternion_congugate'] = function(block) {
+Blockly.JavaScript['quaternion_congugate'] = Blockly.JavaScript['quaternion_conjugate'] = function(block) {
   var quaternion = Blockly.JavaScript.valueToCode(
       block, 'QUATERNION', Blockly.JavaScript.ORDER_NONE);
-  var code = quaternionIdentifierForJavaScript + '.congugate(' + quaternion + ')';
+  var code = quaternionIdentifierForJavaScript + '.conjugate(' + quaternion + ')';
   return [code, Blockly.JavaScript.ORDER_FUNCTION_CALL];
 };
 
-Blockly.FtcJava['quaternion_congugate'] = function(block) {
+Blockly.FtcJava['quaternion_congugate'] = Blockly.FtcJava['quaternion_conjugate'] = function(block) {
   var quaternion = Blockly.FtcJava.valueToCode(
       block, 'QUATERNION', Blockly.FtcJava.ORDER_MEMBER);
-  var code = quaternion + '.congugate()';
+  var code = quaternion + '.conjugate()';
+  return [code, Blockly.FtcJava.ORDER_FUNCTION_CALL];
+};
+
+Blockly.Blocks['quaternion_toText'] = {
+  init: function() {
+    this.setOutput(true, 'String');
+    this.appendDummyInput()
+        .appendField('call')
+        .appendField(createNonEditableField('Quaternion'))
+        .appendField('.')
+        .appendField(createNonEditableField('toText'));
+    this.appendValueInput('QUATERNION').setCheck('Quaternion')
+        .appendField('quaternion')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.setColour(functionColor);
+    this.setTooltip('Returns a text representation of the given Quaternion object.');
+  }
+};
+
+Blockly.JavaScript['quaternion_toText'] = function(block) {
+  var quaternion = Blockly.JavaScript.valueToCode(
+      block, 'QUATERNION', Blockly.JavaScript.ORDER_NONE);
+  var code = quaternionIdentifierForJavaScript + '.toText(' + quaternion + ')';
+  return [code, Blockly.JavaScript.ORDER_FUNCTION_CALL];
+};
+
+Blockly.FtcJava['quaternion_toText'] = function(block) {
+  var quaternion = Blockly.FtcJava.valueToCode(
+      block, 'QUATERNION', Blockly.FtcJava.ORDER_MEMBER);
+  var code = quaternion + '.toString()';
   return [code, Blockly.FtcJava.ORDER_FUNCTION_CALL];
 };

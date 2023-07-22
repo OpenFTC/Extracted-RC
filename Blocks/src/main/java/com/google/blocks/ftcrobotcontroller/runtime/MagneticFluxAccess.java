@@ -36,6 +36,7 @@ class MagneticFluxAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = MagneticFlux.class, fieldName = "x")
   public double getX(Object magneticFluxArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".X");
@@ -55,6 +56,7 @@ class MagneticFluxAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = MagneticFlux.class, fieldName = "y")
   public double getY(Object magneticFluxArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".Y");
@@ -74,6 +76,7 @@ class MagneticFluxAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = MagneticFlux.class, fieldName = "z")
   public double getZ(Object magneticFluxArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".Z");
@@ -92,6 +95,7 @@ class MagneticFluxAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = MagneticFlux.class, fieldName = "acquisitionTime")
   public long getAcquisitionTime(Object magneticFluxArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".AcquisitionTime");
@@ -110,6 +114,7 @@ class MagneticFluxAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = MagneticFlux.class, constructor = true)
   public MagneticFlux create() {
     try {
       startBlockExecution(BlockType.CREATE, "");
@@ -124,6 +129,7 @@ class MagneticFluxAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = MagneticFlux.class, constructor = true)
   public MagneticFlux create_withArgs(double x, double y, double z, long acquisitionTime) {
     try {
       startBlockExecution(BlockType.CREATE, "");
@@ -138,6 +144,7 @@ class MagneticFluxAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = MagneticFlux.class, methodName = "toString")
   public String toText(Object magneticFluxArg) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".toText");

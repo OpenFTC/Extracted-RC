@@ -34,7 +34,6 @@ package com.qualcomm.hardware.adafruit;
 
 import com.qualcomm.hardware.bosch.BNO055IMUImpl;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
-import com.qualcomm.robotcore.hardware.configuration.typecontainers.I2cDeviceConfigurationType;
 import com.qualcomm.robotcore.hardware.configuration.annotations.DeviceProperties;
 import com.qualcomm.robotcore.hardware.configuration.annotations.I2cDeviceType;
 
@@ -53,13 +52,11 @@ public class AdafruitBNO055IMU extends BNO055IMUImpl
     //----------------------------------------------------------------------------------------------
 
     /**
-     * This constructor is used by {@link I2cDeviceConfigurationType#createInstance}
-     * @see I2cDeviceConfigurationType#createInstance
-     * @see I2cDeviceType
+     * This constructor is called internally by the FTC SDK.
      */
-    public AdafruitBNO055IMU(I2cDeviceSynch deviceClient)
+    public AdafruitBNO055IMU(I2cDeviceSynch deviceClient, boolean deviceClientIsOwned)
         {
-        super(deviceClient);
+        super(deviceClient, deviceClientIsOwned);
         }
 
     @Override public String getDeviceName()

@@ -120,9 +120,9 @@ public class ModernRoboticsI2cIrSeekerSensorV3 extends I2cDeviceSynchDevice<I2cD
     // Construction
     //------------------------------------------------------------------------------------------------
 
-    public ModernRoboticsI2cIrSeekerSensorV3(I2cDeviceSynch deviceClient)
+    public ModernRoboticsI2cIrSeekerSensorV3(I2cDeviceSynch deviceClient, boolean deviceClientIsOwned)
         {
-        super(deviceClient, true);
+        super(deviceClient, deviceClientIsOwned);
 
         this.setOptimalReadWindow();
         this.deviceClient.setI2cAddress(ADDRESS_I2C_DEFAULT);

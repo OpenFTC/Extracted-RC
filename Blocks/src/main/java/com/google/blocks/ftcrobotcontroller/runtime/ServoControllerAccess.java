@@ -37,6 +37,7 @@ class ServoControllerAccess extends HardwareAccess<ServoController> {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = ServoController.class, methodName = "getPwmStatus")
   public String getPwmStatus() {
     try {
       startBlockExecution(BlockType.GETTER, ".PwmStatus");
@@ -55,6 +56,7 @@ class ServoControllerAccess extends HardwareAccess<ServoController> {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = ServoController.class, methodName = "pwmEnable")
   public void pwmEnable() {
     try {
       startBlockExecution(BlockType.FUNCTION, ".pwmEnable");
@@ -69,6 +71,7 @@ class ServoControllerAccess extends HardwareAccess<ServoController> {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = ServoController.class, methodName = "pwmDisable")
   public void pwmDisable() {
     try {
       startBlockExecution(BlockType.FUNCTION, ".pwmDisable");

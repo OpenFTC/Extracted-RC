@@ -63,9 +63,9 @@ import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.robotcore.internal.network.CallbackResult;
 import org.firstinspires.ftc.robotcore.internal.ui.ThemedActivity;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.SortedSet;
 
 /**
  * {@link EditActivity} is a base class that provides support for various configuration
@@ -373,23 +373,16 @@ public abstract class EditActivity extends ThemedActivity
         return name;
         }
 
-    public String displayNameOfConfigurationType(ConfigurationType.DisplayNameFlavor flavor, ConfigurationType type)
-        {
-        return type.getDisplayName(flavor);
-        }
-
     // Localization technique from http://www.katr.com/article_android_spinner01.php
-    protected class ConfigurationTypeAndDisplayName
+    protected static class ConfigurationTypeAndDisplayName
         {
-        public final ConfigurationType.DisplayNameFlavor flavor;
         public final ConfigurationType configurationType;
         public final String            displayName;
 
-        public ConfigurationTypeAndDisplayName(ConfigurationType.DisplayNameFlavor flavor, ConfigurationType configurationType)
+        public ConfigurationTypeAndDisplayName(ConfigurationType configurationType)
             {
-            this.flavor            = flavor;
             this.configurationType = configurationType;
-            this.displayName       = displayNameOfConfigurationType(this.flavor, configurationType);
+            this.displayName       = configurationType.getName();
             }
 
         @Override public String toString()
@@ -401,38 +394,14 @@ public abstract class EditActivity extends ThemedActivity
     //----------------------------------------------------------------------------------------------
     // Spinner support for those classes that use spinners
     //----------------------------------------------------------------------------------------------
-
-    protected void localizeConfigTypeSpinner(ConfigurationType.DisplayNameFlavor flavor, Spinner spinner)
-    // Localize the strings in the spinner. What's there now is the string form of the BuiltInConfigurationType
-        {
-        ArrayAdapter<String> existingAdapter = (ArrayAdapter<String>) spinner.getAdapter();
-        List<String> strings = new ArrayList<String>();
-        for (int i = 0; i < existingAdapter.getCount(); i++)
-            {
-            strings.add(existingAdapter.getItem(i));
-            }
-        localizeConfigTypeSpinnerStrings(flavor, spinner, strings);
-        }
-
-    protected void localizeConfigTypeSpinnerStrings(ConfigurationType.DisplayNameFlavor flavor, Spinner spinner, List<String> strings)
-    // Localize the strings in the spinner, where a list of string forms of BuiltInConfigurationType are passed
-        {
-        List<ConfigurationType> types = new LinkedList<ConfigurationType>();
-        for (String string : strings)
-            {
-            types.add(BuiltInConfigurationType.fromString(string)); // NB: string is the enum string constant, not the XML tag
-            }
-        localizeConfigTypeSpinnerTypes(flavor, spinner, types);
-        }
-
-    protected void localizeConfigTypeSpinnerTypes(ConfigurationType.DisplayNameFlavor flavor, Spinner spinner, List<ConfigurationType> types)
+    protected void localizeConfigTypeSpinnerTypes(Spinner spinner, SortedSet<ConfigurationType> types)
     // Localize the strings in the spinner
         {
         ConfigurationTypeAndDisplayName[] pairs = new ConfigurationTypeAndDisplayName[types.size()];
-        for (int i = 0; i < types.size(); i++)
+        int i = 0;
+        for (ConfigurationType type: types)
             {
-            ConfigurationType type = types.get(i);
-            pairs[i] = new ConfigurationTypeAndDisplayName(flavor, type);
+            pairs[i++] = new ConfigurationTypeAndDisplayName(type);
             }
 
         ConfigurationTypeArrayAdapter newAdapter = new ConfigurationTypeArrayAdapter(this, pairs);

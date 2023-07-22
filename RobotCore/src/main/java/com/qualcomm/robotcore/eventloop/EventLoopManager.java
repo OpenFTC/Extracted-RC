@@ -58,6 +58,7 @@ import org.firstinspires.ftc.robotcore.internal.network.RobotCoreCommandList;
 import org.firstinspires.ftc.robotcore.internal.opmode.OnBotJavaHelper;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeManagerImpl;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
+import org.firstinspires.ftc.robotcore.internal.ui.GamepadUser;
 
 import java.util.Set;
 import java.util.concurrent.CancellationException;
@@ -112,7 +113,11 @@ public class EventLoopManager implements RecvLoopRunnable.RecvLoopCallback, Netw
   private               ElapsedTime           lastHeartbeatReceived     = new ElapsedTime();
   private               EventLoop             eventLoop                 = null;
   private final         Object                eventLoopLock             = new Object();
-  private final         Gamepad               gamepads[]                = { new Gamepad(), new Gamepad() };
+  // The instances in the opModeGampads array must NOT be replaced, as they hold the user's effect data
+  private final         Gamepad[]             opModeGamepads            = { new Gamepad(), new Gamepad() };
+  // latestGamepad1Data and latestGamepad2Data are defined separately instead of in an array because they need to be defined as volatile
+  private volatile      Gamepad               latestGamepad1Data        = new Gamepad();
+  private volatile      Gamepad               latestGamepad2Data        = new Gamepad();
   private               Heartbeat             heartbeat                 = new Heartbeat();
   private               boolean               receivedTimeFromCurrentPeer = false;
   private               EventLoopMonitor      callback                  = null;
@@ -194,17 +199,33 @@ public class EventLoopManager implements RecvLoopRunnable.RecvLoopCallback, Netw
    */
   public Gamepad getGamepad(int port) {
     Range.throwIfRangeIsInvalid(port, 0, 1);
-    return gamepads[port];
+    return opModeGamepads[port];
   }
 
   /**
-   * Get the gamepads
+   * Get the {@link Gamepad} instances used by user code
    * <p>
-   * Array index will match the user number
+   * Array index will match the user number minus 1
    * @return gamepad
    */
-  public Gamepad[] getGamepads() {
-    return gamepads;
+  public Gamepad[] getOpModeGamepads() {
+    return opModeGamepads;
+  }
+
+  /**
+   * Get a {@link Gamepad} instance with the latest gamepad data available for user 1
+   * @return gamepad
+   */
+  public Gamepad getLatestGamepad1Data() {
+    return latestGamepad1Data;
+  }
+
+  /**
+   * Get a {@link Gamepad} instance with the latest gamepad data available for user 1
+   * @return gamepad
+   */
+  public Gamepad getLatestGamepad2Data() {
+    return latestGamepad2Data;
   }
 
   /**
@@ -243,7 +264,7 @@ public class EventLoopManager implements RecvLoopRunnable.RecvLoopCallback, Netw
   private class EventLoopRunnable implements Runnable {
     @Override
     public void run() {
-      ThreadPool.logThreadLifeCycle("opmode loop()", new Runnable() { @Override public void run() {
+      ThreadPool.logThreadLifeCycle("EventLoop", new Runnable() { @Override public void run() {
 
       try {
         ElapsedTime loopTime = new ElapsedTime();
@@ -651,9 +672,13 @@ public class EventLoopManager implements RecvLoopRunnable.RecvLoopCallback, Netw
       return CallbackResult.HANDLED;
     }
 
-    // swap out old state of the gamepad for the new one
-    int position = gamepad.getUser().id - 1;
-    gamepads[position].copy(gamepad);
+    // Store the new gamepad data for later use by the OpMode (iterative Op Modes need to wait to
+    // update the gamepad data until the currently-running user method finishes).
+    if (gamepad.getUser() == GamepadUser.ONE) {
+      latestGamepad1Data = gamepad;
+    } else {
+      latestGamepad2Data = gamepad;
+    }
 
     // When the driver station sends a synthetic gamepad, that comes in with a defined and
     // definite user but an unusual gamepad identity. The DS always sends a synthetic gamepad

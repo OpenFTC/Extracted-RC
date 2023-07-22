@@ -40,6 +40,7 @@ class VuforiaLocalizerAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = VuforiaLocalizer.class, constructor = true)
   public VuforiaLocalizer create(Object vuforiaLocalizerParameters) {
     try {
       startBlockExecution(BlockType.CREATE, "");
@@ -75,6 +76,7 @@ class VuforiaLocalizerAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = VuforiaLocalizer.class, methodName = "loadTrackablesFromAsset")
   public VuforiaTrackables loadTrackablesFromAsset(Object vuforiaLocalizerArg, String assetName) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".loadTrackablesFromAsset");
@@ -93,6 +95,7 @@ class VuforiaLocalizerAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = VuforiaLocalizer.class, methodName = "loadTrackablesFromFile")
   public VuforiaTrackables loadTrackablesFromFile(Object vuforiaLocalizerArg, String absoluteFileName) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".loadTrackablesFromFile");

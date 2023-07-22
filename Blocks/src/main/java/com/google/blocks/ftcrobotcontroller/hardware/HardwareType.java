@@ -43,6 +43,7 @@ import com.qualcomm.robotcore.hardware.DigitalChannelImpl;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.hardware.HardwareDevice;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.IrSeekerSensor;
 import com.qualcomm.robotcore.hardware.LED;
 import com.qualcomm.robotcore.hardware.LightSensor;
@@ -54,8 +55,9 @@ import com.qualcomm.robotcore.hardware.UltrasonicSensor;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.BuiltInConfigurationType;
 import com.qualcomm.robotcore.hardware.configuration.ConfigurationType;
-import com.qualcomm.robotcore.hardware.configuration.ServoFlavor;
 import com.qualcomm.robotcore.hardware.configuration.ConfigurationTypeManager;
+import com.qualcomm.robotcore.hardware.configuration.LynxConstants;
+import com.qualcomm.robotcore.hardware.configuration.ServoFlavor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.ServoConfigurationType;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -82,7 +84,7 @@ public enum HardwareType {
       ConfigurationTypeManager.getXmlTag(AnalogInput.class)),
   BNO055IMU( // see bno055imu.js
       "createBNO055IMUDropdown", "bno055imu", "AsBNO055IMU", "_IMU_BNO055",
-      ToolboxFolder.SENSORS, "IMU-BNO055", null, // No toolbox icon yet.
+      ToolboxFolder.SENSORS, "IMU-BNO055 (legacy)", null, // No toolbox icon yet.
       BNO055IMUImpl.class,
       ConfigurationTypeManager.getXmlTag(AdafruitBNO055IMU.class),
       ConfigurationTypeManager.getXmlTag(LynxEmbeddedIMU.class)),
@@ -133,6 +135,13 @@ public enum HardwareType {
       ToolboxFolder.SENSORS, "GyroSensor", ToolboxIcon.GYRO_SENSOR,
       GyroSensor.class,
       BuiltInConfigurationType.GYRO.getXmlTag()),
+  IMU( // see imu.js
+      "createImuDropdown", "imu", "AsIMU", "_IMU",
+      ToolboxFolder.SENSORS, "IMU", null, // No toolbox icon yet.
+      IMU.class,
+      LynxConstants.EMBEDDED_BNO055_IMU_XML_TAG,
+      LynxConstants.EMBEDDED_BHI260AP_IMU_XML_TAG,
+      ConfigurationTypeManager.getXmlTag(AdafruitBNO055IMU.class)),
   IR_SEEKER_SENSOR( // see ir_seeker_sensor.js
       "createIrSeekerSensorDropdown", "irSeekerSensor", "AsIrSeekerSensor", "_IrSeekerSensor",
       ToolboxFolder.SENSORS, "IrSeekerSensor", ToolboxIcon.IR_SEEKER_SENSOR,
@@ -214,10 +223,8 @@ public enum HardwareType {
     for (ConfigurationType type : ConfigurationTypeManager.getInstance().getApplicableConfigTypes(ConfigurationType.DeviceFlavor.MOTOR, null, false)) {
       if (type == BuiltInConfigurationType.NOTHING) continue;
       tags.add(type.getXmlTag());
-      for (String xmlTagAlias : type.getXmlTagAliases()) {
-        tags.add(xmlTagAlias);
-      }
     }
+    tags.add(ConfigurationTypeManager.LEGACY_HD_HEX_MOTOR_TAG);
     String[] result = new String[tags.size()];
     return tags.toArray(result);
   }
@@ -227,9 +234,6 @@ public enum HardwareType {
     for (ConfigurationType type : ConfigurationTypeManager.getInstance().getApplicableConfigTypes(ConfigurationType.DeviceFlavor.SERVO, null, false)) {
       if (type == BuiltInConfigurationType.NOTHING || ((ServoConfigurationType)type).getServoFlavor() != ServoFlavor.STANDARD) continue;
       tags.add(type.getXmlTag());
-      for (String xmlTagAlias : type.getXmlTagAliases()) {
-        tags.add(xmlTagAlias);
-      }
     }
     String[] result = new String[tags.size()];
     return tags.toArray(result);
@@ -240,9 +244,6 @@ public enum HardwareType {
     for (ConfigurationType type : ConfigurationTypeManager.getInstance().getApplicableConfigTypes(ConfigurationType.DeviceFlavor.SERVO, null, false)) {
       if (type == BuiltInConfigurationType.NOTHING || ((ServoConfigurationType)type).getServoFlavor() != ServoFlavor.CONTINUOUS) continue;
       tags.add(type.getXmlTag());
-      for (String xmlTagAlias : type.getXmlTagAliases()) {
-        tags.add(xmlTagAlias);
-      }
     }
     String[] result = new String[tags.size()];
     return tags.toArray(result);
@@ -324,5 +325,18 @@ public enum HardwareType {
     // TODO(lizlooney): if we add more controllers, add them here.
     return deviceType == LynxModule.class ||
         deviceType == ServoController.class;
+  }
+
+  public String makeIdentifier(String deviceName) {
+    return HardwareItem.makeIdentifier(deviceName) + identifierSuffixForJavaScript;
+  }
+
+  public static HardwareType fromIdentifierSuffixForJavaScript(String identifierSuffixForJavaScript) {
+    for (HardwareType hardwareType : HardwareType.values()) {
+      if (hardwareType.identifierSuffixForJavaScript.equals(identifierSuffixForJavaScript)) {
+        return hardwareType;
+      }
+    }
+    return null;
   }
 }

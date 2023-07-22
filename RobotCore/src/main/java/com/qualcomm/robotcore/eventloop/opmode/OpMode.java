@@ -32,57 +32,36 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.qualcomm.robotcore.eventloop.opmode;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.robocol.TelemetryMessage;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.internal.opmode.TelemetryImpl;
-import org.firstinspires.ftc.robotcore.internal.opmode.TelemetryInternal;
-import org.firstinspires.ftc.robotcore.internal.opmode.OpModeServices;
 
 import java.util.concurrent.TimeUnit;
 
 /**
  * Base class for user defined operation modes (op modes).
+ * <p>
+ * The op mode name should be unique. It will be the name displayed on the driver station. If
+ * multiple op modes have the same name, only one will be available.
  */
-public abstract class OpMode {
-
-  /**
-   * Gamepad 1
-   */
-  public Gamepad gamepad1 = null;   // will be set in OpModeManager.runActiveOpMode
-
-  /**
-   * Gamepad 2
-   */
-  public Gamepad gamepad2 = null;   // will be set in OpModeManager.runActiveOpMode
-
-  /**
-   * The {@link #telemetry} field contains an object in which a user may accumulate data which
-   * is to be transmitted to the driver station. This data is automatically transmitted to the
-   * driver station on a regular, periodic basis.
-   */
-  public Telemetry telemetry = new TelemetryImpl(this);
-
-  /**
-   * Hardware Mappings
-   */
-  public HardwareMap hardwareMap = null; // will be set in OpModeManager.runActiveOpMode
-
+public abstract class OpMode extends OpModeInternal {
   /**
    * number of seconds this op mode has been running, this is
    * updated before every call to loop.
    */
-  public double time = 0.0;
+  public volatile double time = 0.0;
+  // time is volatile because LinearOpMode updates this on the main event loop thread instead of
+  // the Op Mode thread
 
   // internal time tracking
-  private long startTime = 0; // in nanoseconds
+  private volatile long startTime = 0; // in nanoseconds
+
+  // Latest gamepad data (used to update gamepad1 and gamepad2 in between user code callbacks)
+  private volatile Gamepad latestGamepad1Data = new Gamepad();
+  private volatile Gamepad latestGamepad2Data = new Gamepad();
 
   /**
    * OpMode constructor
-   * <p>
-   * The op mode name should be unique. It will be the name displayed on the driver station. If
-   * multiple op modes have the same name, only one will be available.
    */
   public OpMode() {
     startTime = System.nanoTime();
@@ -123,24 +102,11 @@ public abstract class OpMode {
   /**
    * User defined stop method
    * <p>
-   * This method will be called when this op mode is first disabled
-   *
+   * This method will be called when this op mode is first disabled.
+   * <p>
    * The stop method is optional. By default this method takes no action.
    */
   public void stop() {};
-
-  /**
-   * Requests that this OpMode be shut down if it the currently active opMode, much as if the stop
-   * button had been pressed on the driver station; if this is not the currently active OpMode,
-   * then this function has no effect. Note as part of this processing, the OpMode's {@link #stop()}
-   * method will be called, as that is part of the usual shutdown logic. Note that {@link #requestOpModeStop()}
-   * may be called from <em>any</em> thread.
-   *
-   * @see #stop()
-   */
-  public final void requestOpModeStop() {
-    this.internalOpModeServices.requestOpModeStop(this);
-  }
 
   /**
    * Immediately stops execution of the calling OpMode; and transitions to the STOP state.
@@ -153,7 +119,7 @@ public abstract class OpMode {
   /**
    * Get the number of seconds this op mode has been running
    * <p>
-   * This method has sub millisecond accuracy.
+   * This method has sub-millisecond accuracy.
    * @return number of seconds this op mode has been running
    */
   public double getRuntime() {
@@ -162,7 +128,7 @@ public abstract class OpMode {
   }
 
   /**
-   * Reset the runtime to zreo.
+   * Reset the runtime to zero.
    */
   public void resetRuntime() {
     startTime = System.nanoTime();
@@ -187,42 +153,77 @@ public abstract class OpMode {
 
   //----------------------------------------------------------------------------------------------
   // Safety Management
-  //
-  // These constants manage the duration we allow for callbacks to user code to run for before
-  // such code is considered to be stuck (in an infinite loop, or wherever) and consequently
-  // the robot controller application is restarted. They SHOULD NOT be modified except as absolutely
-  // necessary as poorly chosen values might inadvertently compromise safety.
   //----------------------------------------------------------------------------------------------
 
-  public int msStuckDetectInit     = 5000;
-  public int msStuckDetectInitLoop = 5000;
-  public int msStuckDetectStart    = 5000;
-  public int msStuckDetectLoop     = 5000;
-  public int msStuckDetectStop     = 900;
+  /** Op Modes no longer have a time limit for init() */
+  @Deprecated public int msStuckDetectInit     = 5000;
+  /** Op Modes no longer have a time limit for init_loop()  */
+  @Deprecated public int msStuckDetectInitLoop = 5000;
+  /** Op Modes no longer have a time limit for start()  */
+  @Deprecated public int msStuckDetectStart    = 5000;
+  /** Op Modes no longer have a time limit for loop() */
+  @Deprecated public int msStuckDetectLoop     = 5000;
+
+  //----------------------------------------------------------------------------------------------
+  // OpModeInternal hooks
+  //----------------------------------------------------------------------------------------------
+
+  // Package-private, called on the OpModeThread when the Op Mode is initialized
+  // Doesn't actually throw InterruptedException, but the LinearOpMode version does
+  @Override
+  void internalRunOpMode() throws InterruptedException {
+    // If user code in an iterative OpMode throws an exception at any point, no further callback
+    // methods will be called because this function will immediately exit.
+
+    // Until we delete the deprecated hooks entirely, we keep calling them.
+    internalPreInit();
+
+    init();
+
+    while (!isStarted && !stopRequested) {
+      internalPreUserCode();
+      init_loop();
+      internalPostUserCode();
+      // Until we delete the deprecated hooks entirely, we keep calling them.
+      internalPostInitLoop();
+
+      //noinspection BusyWait
+      Thread.sleep(1);
+    }
+
+    if (isStarted) {
+      internalPreUserCode();
+      start();
+      internalPostUserCode();
+
+      while (!stopRequested) {
+        internalPreUserCode();
+        loop();
+        internalPostUserCode();
+        // Until we delete the deprecated hooks entirely, we keep calling them.
+        internalPostLoop();
+
+        //noinspection BusyWait
+        Thread.sleep(1);
+      }
+    }
+
+
+    internalPreUserCode();
+    stop();
+    internalPostUserCode();
+  }
+
+  @Override
+  void newGamepadDataAvailable(Gamepad latestGamepad1Data, Gamepad latestGamepad2Data) {
+    // Save the gamepad data for use after the current user method finishes running
+    this.latestGamepad1Data = latestGamepad1Data;
+    this.latestGamepad2Data = latestGamepad2Data;
+  }
 
   //----------------------------------------------------------------------------------------------
   // Internal
   //----------------------------------------------------------------------------------------------
-
-  public void internalPreInit() {
-    // Reset telemetry in case opmode instance gets reused from run to run
-    if (telemetry instanceof TelemetryInternal) {
-      ((TelemetryInternal)telemetry).resetTelemetryForOpMode();
-    }
-  }
-
-  /** automatically update telemetry in a non-linear opmode */
-  public void internalPostInitLoop() {
-    telemetry.update();
-    }
-
-  /** automatically update telemetry in a non-linear opmode */
-  public void internalPostLoop() {
-    telemetry.update();
-    }
-
-  /** this is logically an internal field. DO NOT USE */
-  public OpModeServices internalOpModeServices = null;
 
   /**
    * This is an internal SDK method, not intended for use by user opmodes.
@@ -235,4 +236,19 @@ public abstract class OpMode {
     this.internalOpModeServices.refreshUserTelemetry(telemetry, 0);
   }
 
+  private void internalPreUserCode() {
+    time = getRuntime();
+    // We copy the gamepad data instead of replacing the gamepad instances because the gamepad
+    // instances may contain queued effect data.
+    gamepad1.copy(latestGamepad1Data);
+    gamepad2.copy(latestGamepad2Data);
+  }
+
+  private void internalPostUserCode() {
+    telemetry.update();
+  }
+
+  @Deprecated public void internalPreInit() { }
+  @Deprecated public void internalPostInitLoop() { }
+  @Deprecated public void internalPostLoop() { }
 }

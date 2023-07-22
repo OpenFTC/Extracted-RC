@@ -180,9 +180,9 @@ public class ModernRoboticsI2cGyro extends I2cDeviceSynchDevice<I2cDeviceSynch>
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public ModernRoboticsI2cGyro(I2cDeviceSynch deviceClient)
+    public ModernRoboticsI2cGyro(I2cDeviceSynch deviceClient, boolean deviceClientIsOwned)
         {
-        super(deviceClient, true);
+        super(deviceClient, deviceClientIsOwned);
 
         setOptimalReadWindow();
         this.deviceClient.setI2cAddress(ADDRESS_I2C_DEFAULT);

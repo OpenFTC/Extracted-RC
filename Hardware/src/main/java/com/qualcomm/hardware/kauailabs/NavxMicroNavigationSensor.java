@@ -117,9 +117,9 @@ public class NavxMicroNavigationSensor extends I2cDeviceSynchDeviceWithParameter
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public NavxMicroNavigationSensor(I2cDeviceSynch deviceClient)
+    public NavxMicroNavigationSensor(I2cDeviceSynch deviceClient, boolean deviceClientIsOwned)
         {
-        super(deviceClient, true, new Parameters());
+        super(deviceClient, deviceClientIsOwned, new Parameters());
 
         setReadWindow();
         this.deviceClient.setI2cAddress(ADDRESS_I2C_DEFAULT);

@@ -36,6 +36,7 @@ class VoltageSensorAccess extends HardwareAccess<VoltageSensor> {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = VoltageSensor.class, methodName = "getVoltage")
   public double getVoltage() {
     try {
       startBlockExecution(BlockType.GETTER, ".Voltage");

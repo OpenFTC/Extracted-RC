@@ -36,6 +36,7 @@ class MatrixFAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = MatrixF.class, methodName = "numRows")
   public int getNumRows(Object matrixArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".NumRows");
@@ -54,6 +55,7 @@ class MatrixFAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = MatrixF.class, methodName = "numCols")
   public int getNumCols(Object matrixArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".NumCols");
@@ -72,6 +74,7 @@ class MatrixFAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = MatrixF.class, methodName = "slice")
   public MatrixF slice(Object matrixArg, int row, int col, int numRows, int numCols) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".slice");
@@ -90,6 +93,7 @@ class MatrixFAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = MatrixF.class, methodName = "identityMatrix")
   public MatrixF identityMatrix(int dim) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".identityMatrix");
@@ -104,6 +108,7 @@ class MatrixFAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = MatrixF.class, methodName = "diagonalMatrix")
   public MatrixF diagonalMatrix(int dim, int scale) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".diagonalMatrix");
@@ -118,6 +123,7 @@ class MatrixFAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = MatrixF.class, methodName = "diagonalMatrix")
   public MatrixF diagonalMatrix_withVector(Object vectorArg) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".diagonalMatrix");
@@ -136,6 +142,7 @@ class MatrixFAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = MatrixF.class, methodName = "get")
   public float get(Object matrixArg, int row, int col) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".get");
@@ -154,6 +161,7 @@ class MatrixFAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = MatrixF.class, methodName = "put")
   public void put(Object matrixArg, int row, int col, float value) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".put");
@@ -171,6 +179,7 @@ class MatrixFAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = MatrixF.class, methodName = "getRow")
   public VectorF getRow(Object matrixArg, int row) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".getRow");
@@ -189,6 +198,7 @@ class MatrixFAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = MatrixF.class, methodName = "getColumn")
   public VectorF getColumn(Object matrixArg, int col) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".getColumn");
@@ -207,6 +217,7 @@ class MatrixFAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = MatrixF.class, methodName = "toString")
   public String toText(Object matrixArg) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".toText");
@@ -225,6 +236,7 @@ class MatrixFAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = MatrixF.class, methodName = "transform")
   public VectorF transform(Object matrixArg, Object vectorArg) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".transform");
@@ -244,6 +256,7 @@ class MatrixFAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = MatrixF.class, methodName = "formatAsTransform")
   public String formatAsTransform(Object matrixArg) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".formatAsTransform");
@@ -262,6 +275,7 @@ class MatrixFAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = MatrixF.class, methodName = "formatAsTransform")
   public String formatAsTransform_withArgs(Object matrixArg, String axesReferenceString, String axesOrderString, String angleUnitString) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".formatAsTransform");
@@ -283,6 +297,7 @@ class MatrixFAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = MatrixF.class, methodName = "transposed")
   public MatrixF transposed(Object matrixArg) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".transposed");
@@ -301,6 +316,7 @@ class MatrixFAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = MatrixF.class, methodName = "multiplied")
   public MatrixF multiplied_withMatrix(Object matrix1Arg, Object matrix2Arg) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".multiplied");
@@ -320,6 +336,7 @@ class MatrixFAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = MatrixF.class, methodName = "multiplied")
   public MatrixF multiplied_withScale(Object matrixArg, float scale) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".multiplied");
@@ -338,6 +355,7 @@ class MatrixFAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = MatrixF.class, methodName = "multiplied")
   public VectorF multiplied_withVector(Object matrixArg, Object vectorArg) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".multiplied");
@@ -357,6 +375,7 @@ class MatrixFAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = MatrixF.class, methodName = "multiply")
   public void multiply_withMatrix(Object matrix1Arg, Object matrix2Arg) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".multiply");
@@ -375,6 +394,7 @@ class MatrixFAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = MatrixF.class, methodName = "multiply")
   public void multiply_withScale(Object matrixArg, float scale) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".multiply");
@@ -392,6 +412,7 @@ class MatrixFAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = MatrixF.class, methodName = "multiply")
   public void multiply_withVector(Object matrixArg, Object vectorArg) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".multiply");
@@ -410,6 +431,7 @@ class MatrixFAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = MatrixF.class, methodName = "toVector")
   public VectorF toVector(Object matrixArg) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".toVector");
@@ -428,6 +450,7 @@ class MatrixFAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = MatrixF.class, methodName = "added")
   public MatrixF added_withMatrix(Object matrix1Arg, Object matrix2Arg) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".added");
@@ -447,6 +470,7 @@ class MatrixFAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = MatrixF.class, methodName = "added")
   public MatrixF added_withVector(Object matrixArg, Object vectorArg) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".added");
@@ -466,6 +490,7 @@ class MatrixFAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = MatrixF.class, methodName = "add")
   public void add_withMatrix(Object matrix1Arg, Object matrix2Arg) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".add");
@@ -484,6 +509,7 @@ class MatrixFAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = MatrixF.class, methodName = "add")
   public void add_withVector(Object matrixArg, Object vectorArg) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".add");
@@ -502,6 +528,7 @@ class MatrixFAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = MatrixF.class, methodName = "subtracted")
   public MatrixF subtracted_withMatrix(Object matrix1Arg, Object matrix2Arg) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".subtracted");
@@ -521,6 +548,7 @@ class MatrixFAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = MatrixF.class, methodName = "subtracted")
   public MatrixF subtracted_withVector(Object matrixArg, Object vectorArg) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".subtracted");
@@ -540,6 +568,7 @@ class MatrixFAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = MatrixF.class, methodName = "subtract")
   public void subtract_withMatrix(Object matrix1Arg, Object matrix2Arg) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".subtract");
@@ -558,6 +587,7 @@ class MatrixFAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = MatrixF.class, methodName = "subtract")
   public void subtract_withVector(Object matrixArg, Object vectorArg) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".subtract");
@@ -576,6 +606,7 @@ class MatrixFAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = MatrixF.class, methodName = "getTranslation")
   public VectorF getTranslation(Object matrixArg) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".getTranslation");
@@ -594,6 +625,7 @@ class MatrixFAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = MatrixF.class, methodName = "inverted")
   public MatrixF inverted(Object matrixArg) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".inverted");

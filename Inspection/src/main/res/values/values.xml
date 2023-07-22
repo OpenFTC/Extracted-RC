@@ -12,7 +12,7 @@
     <string name="controlHubOsVersionLabel">Control Hub OS Version:</string>
     <string name="driverHubOsVersionLabel">Driver Hub OS Version:</string>
     <string name="driverStationLabel">Driver Station:</string>
-    <string name="dsVersionMismatch">No, the DS version is %d.%d</string>
+    <string name="dsVersionMismatch">No, the DS version is %1$d.%2$d</string>
     <string name="hubFirmwareLabel">Hub Firmware:</string>
     <string name="inspection_activity">Inspection Mode</string>
     <string name="locationLabel">Location services:</string>

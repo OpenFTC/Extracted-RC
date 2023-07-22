@@ -36,6 +36,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.qualcomm.robotcore.hardware.I2cAddr;
+import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngularVelocity;
@@ -170,7 +171,7 @@ public interface BNO055IMU
         /** debugging aid: enable logging for this device? */
         public boolean          loggingEnabled      = false;
         /** debugging aid: the logging tag to use when logging */
-        public String           loggingTag          = "AdaFruitIMU";
+        public String           loggingTag          = "BNO055IMU";
 
         public Parameters clone()
             {
@@ -680,6 +681,22 @@ public interface BNO055IMU
                 default:
                     return false;
                 }
+            }
+
+        public static SensorMode fromByte(byte b)
+            {
+            // Ignore the reserved bits
+            b = (byte) (b & 0x0F);
+
+            for (SensorMode sensorMode: SensorMode.values())
+                {
+                if (sensorMode.bVal == b)
+                    {
+                    return sensorMode;
+                    }
+                }
+            RobotLog.ee("BNO055", new RuntimeException(), "Unexpected SensorMode value: 0x%X", b);
+            return IMU;
             }
         }
 

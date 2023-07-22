@@ -37,6 +37,7 @@ class VelocityAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Velocity.class, fieldName = "unit")
   public String getDistanceUnit(Object velocityArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".DistanceUnit");
@@ -58,6 +59,7 @@ class VelocityAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Velocity.class, fieldName = "xVeloc")
   public double getXVeloc(Object velocityArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".XVeloc");
@@ -76,6 +78,7 @@ class VelocityAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Velocity.class, fieldName = "yVeloc")
   public double getYVeloc(Object velocityArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".YVeloc");
@@ -94,6 +97,7 @@ class VelocityAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Velocity.class, fieldName = "zVeloc")
   public double getZVeloc(Object velocityArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".ZVeloc");
@@ -112,6 +116,7 @@ class VelocityAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Velocity.class, fieldName = "acquisitionTime")
   public long getAcquisitionTime(Object velocityArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".AcquisitionTime");
@@ -130,6 +135,7 @@ class VelocityAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Velocity.class, constructor = true)
   public Velocity create() {
     try {
       startBlockExecution(BlockType.CREATE, "");
@@ -144,6 +150,7 @@ class VelocityAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Velocity.class, constructor = true)
   public Velocity create_withArgs(
       String distanceUnitString, double xVeloc, double yVeloc, double zVeloc,
       long acquisitionTime) {
@@ -164,6 +171,7 @@ class VelocityAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Velocity.class, methodName = "toUnit")
   public Velocity toDistanceUnit(Object velocityArg, String distanceUnitString) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".toDistanceUnit");
@@ -183,6 +191,7 @@ class VelocityAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Velocity.class, methodName = "toString")
   public String toText(Object velocityArg) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".toText");

@@ -50,6 +50,8 @@ import java.util.Collection;
  * here.
  */
 public class ClassManagerFactory {
+    private static RobotConfigResFilter idResFilter;
+    private static RobotConfigResFilter idTemplateResFilter;
 
     /** Register all them that wants to see the classes in our APK */
     public static void registerFilters()
@@ -67,23 +69,29 @@ public class ClassManagerFactory {
     {
         ClassManager classManager = ClassManager.getInstance();
 
-        final RobotConfigResFilter idResFilter = new RobotConfigResFilter(RobotConfigFileManager.getRobotConfigTypeAttribute());
-        RobotConfigFileManager.setXmlResourceIdSupplier(new Supplier<Collection<Integer>>()
+        if (idResFilter == null)
+        {
+            idResFilter = new RobotConfigResFilter(RobotConfigFileManager.getRobotConfigTypeAttribute());
+            RobotConfigFileManager.setXmlResourceIdSupplier(new Supplier<Collection<Integer>>()
             {
-            @Override public Collection<Integer> get()
+                @Override public Collection<Integer> get()
                 {
-                return idResFilter.getXmlIds();
+                    return idResFilter.getXmlIds();
                 }
             });
+        }
 
-        final RobotConfigResFilter idTemplateResFilter = new RobotConfigResFilter(RobotConfigFileManager.getRobotConfigTemplateAttribute());
-        RobotConfigFileManager.setXmlResourceTemplateIdSupplier(new Supplier<Collection<Integer>>()
+        if (idTemplateResFilter == null)
+        {
+            idTemplateResFilter = new RobotConfigResFilter(RobotConfigFileManager.getRobotConfigTemplateAttribute());
+            RobotConfigFileManager.setXmlResourceTemplateIdSupplier(new Supplier<Collection<Integer>>()
             {
-            @Override public Collection<Integer> get()
+                @Override public Collection<Integer> get()
                 {
-                return idTemplateResFilter.getXmlIds();
+                    return idTemplateResFilter.getXmlIds();
                 }
             });
+        }
 
         classManager.registerFilter(idResFilter);
         classManager.registerFilter(idTemplateResFilter);

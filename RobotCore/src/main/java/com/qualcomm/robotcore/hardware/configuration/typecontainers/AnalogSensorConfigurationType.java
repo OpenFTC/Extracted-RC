@@ -32,14 +32,16 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package com.qualcomm.robotcore.hardware.configuration.typecontainers;
 
-import androidx.annotation.Nullable;
-
 import com.qualcomm.robotcore.hardware.AnalogInputController;
 import com.qualcomm.robotcore.hardware.HardwareDevice;
+import com.qualcomm.robotcore.hardware.configuration.ConfigurationTypeManager.ClassSource;
 import com.qualcomm.robotcore.hardware.configuration.ConstructorPrototype;
+import com.qualcomm.robotcore.util.RobotLog;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * {@link AnalogSensorConfigurationType} contains the meta-data for a user-defined analog sensor driver.
@@ -55,11 +57,12 @@ public final class AnalogSensorConfigurationType extends InstantiableUserConfigu
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public AnalogSensorConfigurationType(Class<? extends HardwareDevice> clazz, String xmlTag) {
-        super(clazz, DeviceFlavor.ANALOG_SENSOR, xmlTag, new ConstructorPrototype[]{ctorAnalogSensor});
+    public AnalogSensorConfigurationType(Class<? extends HardwareDevice> clazz, String xmlTag, ClassSource classSource) {
+        super(clazz, DeviceFlavor.ANALOG_SENSOR, xmlTag, new ConstructorPrototype[]{ctorAnalogSensor}, classSource);
     }
 
     // Used by gson deserialization
+    @SuppressWarnings("unused")
     public AnalogSensorConfigurationType() {
         super(DeviceFlavor.ANALOG_SENSOR);
     }
@@ -68,19 +71,23 @@ public final class AnalogSensorConfigurationType extends InstantiableUserConfigu
     // Instance creation
     //----------------------------------------------------------------------------------------------
 
-    public @Nullable HardwareDevice createInstance(AnalogInputController controller, int port) {
-        try {
-            Constructor<HardwareDevice> ctor;
+    public List<HardwareDevice> createInstances(AnalogInputController controller, int port) {
+        final List<HardwareDevice> result = new ArrayList<>(additionalTypesToInstantiate.size() + 1);
+        forThisAndAllAdditionalTypes(type -> {
+            try {
+                Constructor<HardwareDevice> ctor;
 
-            ctor = findMatch(ctorAnalogSensor);
-            if (null != ctor) {
-                return ctor.newInstance(controller, port);
+                ctor = type.findMatch(ctorAnalogSensor);
+                if (ctor == null) {
+                    RobotLog.e("unable to locate constructor for device class " + type.getClazz().getName());
+                } else {
+                    result.add(ctor.newInstance(controller, port));
+                }
+            } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
+                handleConstructorExceptions(e, type.getClazz());
             }
-        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            handleConstructorExceptions(e);
-            return null;
-        }
-        throw new RuntimeException("internal error: unable to locate constructor for user sensor type " + getName());
+        });
+        return result;
     }
 
     //----------------------------------------------------------------------------------------------

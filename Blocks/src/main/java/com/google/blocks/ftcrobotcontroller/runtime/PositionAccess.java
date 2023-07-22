@@ -37,6 +37,7 @@ class PositionAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Position.class, fieldName = "unit")
   public String getDistanceUnit(Object positionArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".DistanceUnit");
@@ -58,6 +59,7 @@ class PositionAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Position.class, fieldName = "x")
   public double getX(Object positionArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".X");
@@ -76,6 +78,7 @@ class PositionAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Position.class, fieldName = "y")
   public double getY(Object positionArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".Y");
@@ -94,6 +97,7 @@ class PositionAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Position.class, fieldName = "z")
   public double getZ(Object positionArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".Z");
@@ -112,6 +116,7 @@ class PositionAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Position.class, fieldName = "acquisitionTime")
   public long getAcquisitionTime(Object positionArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".AcquisitionTime");
@@ -130,6 +135,7 @@ class PositionAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Position.class, constructor = true)
   public Position create() {
     try {
       startBlockExecution(BlockType.CREATE, "");
@@ -144,6 +150,7 @@ class PositionAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Position.class, constructor = true)
   public Position create_withArgs(
       String distanceUnitString, double x, double y, double z, long acquisitionTime) {
     try {
@@ -163,6 +170,7 @@ class PositionAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Position.class, methodName = "toUnit")
   public Position toDistanceUnit(Object positionArg, String distanceUnitString) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".toDistanceUnit");
@@ -182,6 +190,7 @@ class PositionAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Position.class, methodName = "toString")
   public String toText(Object positionArg) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".toText");

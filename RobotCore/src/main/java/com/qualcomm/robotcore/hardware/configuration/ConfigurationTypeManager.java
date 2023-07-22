@@ -65,19 +65,18 @@ import org.firstinspires.ftc.robotcore.external.Predicate;
 import org.firstinspires.ftc.robotcore.internal.network.NetworkConnectionHandler;
 import org.firstinspires.ftc.robotcore.internal.network.RobotCoreCommandList;
 import org.firstinspires.ftc.robotcore.internal.opmode.ClassFilter;
+import org.firstinspires.ftc.robotcore.internal.opmode.OnBotJavaDeterminer;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * {@link ConfigurationTypeManager} is responsible for managing configuration types.
@@ -96,33 +95,65 @@ public final class ConfigurationTypeManager implements ClassFilter
     // State
     //----------------------------------------------------------------------------------------------
 
+    public enum ClassSource
+        {
+        /**
+         * Classes that are baked into the APK file. These may have come from the FTC SDK,
+         * libraries that were pulled in via Gradle, or user code.
+         */
+        APK,
+        /**
+         * Classes from OnBotJava user code.
+         */
+        ONBOTJAVA,
+        /**
+         * Classes from external JAR/AAR files uploaded through the OnBotJava web interface.
+         */
+        EXTERNAL_LIB
+        }
+
     public static final String TAG = "UserDeviceTypeManager";
     public static boolean DEBUG = true;
+
+    // TODO(Noah): Delete these fields and any code that uses them in an off-season or major release,
+    //             and note in the release notes that REV Robotics 40:1 HD Hex Motors
+    //             from configurations made in versions prior to 4.0 will no longer work.
+    public static String LEGACY_HD_HEX_MOTOR_TAG = "RevRoboticsHDHexMotor";
+    public static String NEW_HD_HEX_MOTOR_40_TAG = "RevRobotics40HDHexMotor";
 
     public static ConfigurationTypeManager getInstance()
         {
         return theInstance;
         }
 
-    private static ConfigurationTypeManager theInstance = new ConfigurationTypeManager();
-
-    private Gson gson = newGson();
-    private Map<String, UserConfigurationType> mapTagToUserType = new HashMap<>();
-    private Set<String>  existingXmlTags = new HashSet<>();
-    private Map<ConfigurationType.DeviceFlavor, Set<String>> existingTypeDisplayNamesMap = new HashMap<>();
-
-    private static String unspecifiedMotorTypeXmlTag = getXmlTag(UnspecifiedMotor.class);
-    private static String standardServoTypeXmlTag = getXmlTag(Servo.class);
-
+    private static final ConfigurationTypeManager theInstance = new ConfigurationTypeManager();
+    private static final String unspecifiedMotorTypeXmlTag = getXmlTag(UnspecifiedMotor.class);
+    private static final String standardServoTypeXmlTag = getXmlTag(Servo.class);
     private static final Class[] typeAnnotationsArray = { ServoType.class, AnalogSensorType.class, DigitalIoDeviceType.class, I2cDeviceType.class, com.qualcomm.robotcore.hardware.configuration.annotations.MotorType.class};
     private static final List<Class> typeAnnotationsList = Arrays.asList(typeAnnotationsArray);
 
-    private Comparator<? super ConfigurationType> simpleConfigTypeComparator = new Comparator<ConfigurationType>()
+    private final Gson gson = newGson();
+    private final Map<String, ConfigurationType> mapTagToConfigurationType = new HashMap<>();
+    /** Maps DeviceFlavors (creating a unique display namespace for each one) to display names to
+        the XML tag each one is associated with */
+    private final Map<ConfigurationType.DeviceFlavor, Map<String, String>> displayNamesMap = new HashMap<>();
+
+    private final Comparator<? super ConfigurationType> configTypeComparator = new Comparator<ConfigurationType>()
         {
         @Override
         public int compare(ConfigurationType lhs, ConfigurationType rhs)
             {
-            return lhs.getDisplayName(ConfigurationType.DisplayNameFlavor.Normal).compareTo(rhs.getDisplayName(ConfigurationType.DisplayNameFlavor.Normal));
+            if (lhs == BuiltInConfigurationType.NOTHING || rhs == BuiltInConfigurationType.NOTHING)
+                {
+                // NOTHING always comes first in the list, which means that it's the "smallest" value.
+                if (lhs == rhs) { return 0; }
+                else if (lhs == BuiltInConfigurationType.NOTHING) { return -1; }
+                else { return 1; }
+                }
+            else
+                {
+                return lhs.getName().compareTo(rhs.getName());
+                }
             }
         };
 
@@ -134,7 +165,7 @@ public final class ConfigurationTypeManager implements ClassFilter
         {
         for (ConfigurationType.DeviceFlavor flavor : ConfigurationType.DeviceFlavor.values())
             {
-            existingTypeDisplayNamesMap.put(flavor, new HashSet<String>());
+            displayNamesMap.put(flavor, new HashMap<>());
             }
         addBuiltinConfigurationTypes();
         }
@@ -155,14 +186,10 @@ public final class ConfigurationTypeManager implements ClassFilter
 
     public ConfigurationType configurationTypeFromTag(String xmlTag)
         {
-        ConfigurationType result = BuiltInConfigurationType.fromXmlTag(xmlTag);
-        if (result == BuiltInConfigurationType.UNKNOWN)
+        ConfigurationType result = mapTagToConfigurationType.get(xmlTag);
+        if (result == null)
             {
-            result = mapTagToUserType.get(xmlTag);
-            if (result == null)
-                {
-                result = BuiltInConfigurationType.UNKNOWN;
-                }
+            result = BuiltInConfigurationType.UNKNOWN;
             }
         return result;
         }
@@ -212,12 +239,11 @@ public final class ConfigurationTypeManager implements ClassFilter
      *               Ignored if you pass anything other than DeviceFlavor.I2C and ControlSystem.REV_HUB.
      * @return The list of types that can be selected from
      */
-    public @NonNull List<ConfigurationType> getApplicableConfigTypes(ConfigurationType.DeviceFlavor deviceFlavor, @Nullable ControlSystem controlSystem, boolean configuringControlHubParent, int i2cBus)
+    public @NonNull SortedSet<ConfigurationType> getApplicableConfigTypes(ConfigurationType.DeviceFlavor deviceFlavor, @Nullable ControlSystem controlSystem, boolean configuringControlHubParent, int i2cBus)
         {
-        LinkedList<ConfigurationType> result = new LinkedList<>();
-        for (UserConfigurationType type : mapTagToUserType.values())
+        SortedSet<ConfigurationType> result = new TreeSet<>(configTypeComparator);
+        for (ConfigurationType type : mapTagToConfigurationType.values())
             {
-            if (result.contains(type)) continue; // Prevent duplicate entries which would otherwise result from XML tag aliases
             if (type.getDeviceFlavor() == deviceFlavor && (controlSystem == null || type.isCompatibleWith(controlSystem)))
                 {
                 // Filter out the embedded BNO055 IMU from incompatible devices
@@ -237,10 +263,7 @@ public final class ConfigurationTypeManager implements ClassFilter
                 }
             }
 
-        result.addAll(getApplicableBuiltInTypes(deviceFlavor, controlSystem));
-        Collections.sort(result, simpleConfigTypeComparator);
-        result.addAll(getDeprecatedConfigTypes(deviceFlavor, controlSystem));
-        result.addFirst(BuiltInConfigurationType.NOTHING);
+        result.add(BuiltInConfigurationType.NOTHING);
         return result;
         }
 
@@ -253,33 +276,9 @@ public final class ConfigurationTypeManager implements ClassFilter
      *                                    Ignored if you pass anything other than DeviceFlavor.I2C.
      * @return The list of types that can be selected from
      */
-    public @NonNull List<ConfigurationType> getApplicableConfigTypes(ConfigurationType.DeviceFlavor deviceFlavor, @Nullable ControlSystem controlSystem, boolean configuringControlHubParent)
+    public @NonNull SortedSet<ConfigurationType> getApplicableConfigTypes(ConfigurationType.DeviceFlavor deviceFlavor, @Nullable ControlSystem controlSystem, boolean configuringControlHubParent)
         {
         return getApplicableConfigTypes(deviceFlavor, controlSystem, configuringControlHubParent, 0);
-        }
-
-    private List<BuiltInConfigurationType> getApplicableBuiltInTypes(ConfigurationType.DeviceFlavor flavor, @Nullable ControlSystem controlSystem)
-        {
-        List<BuiltInConfigurationType> result = new LinkedList<>();
-        switch (flavor)
-            {
-            case I2C:
-                result.add(BuiltInConfigurationType.IR_SEEKER_V3);
-                result.add(BuiltInConfigurationType.ADAFRUIT_COLOR_SENSOR);
-                result.add(BuiltInConfigurationType.COLOR_SENSOR);
-                result.add(BuiltInConfigurationType.GYRO);
-                if (controlSystem == ControlSystem.REV_HUB)
-                    {
-                    result.add(BuiltInConfigurationType.LYNX_COLOR_SENSOR);
-                    }
-            }
-        return result;
-        }
-
-    private List<BuiltInConfigurationType> getDeprecatedConfigTypes(ConfigurationType.DeviceFlavor flavor, @Nullable ControlSystem controlSystem)
-        {
-        List<BuiltInConfigurationType> result = new LinkedList<>();
-        return result;
         }
 
     //----------------------------------------------------------------------------------------------
@@ -301,20 +300,24 @@ public final class ConfigurationTypeManager implements ClassFilter
     // Replace the current user device types with the ones contained in the serialization
     public void deserializeUserDeviceTypes(String serialization) // Used on the DS
         {
-        clearUserTypes();
+        clearAllUserTypes();
         //
         ConfigurationType[] newTypes = gson.fromJson(serialization, ConfigurationType[].class);
         for (ConfigurationType deviceType : newTypes)
             {
-            if (deviceType.isDeviceFlavor(ConfigurationType.DeviceFlavor.BUILT_IN)) continue; // paranoia
+            // Ignore built-in types from the RC. We'll use our own instead.
+            if (deviceType.isDeviceFlavor(ConfigurationType.DeviceFlavor.BUILT_IN)) continue;
             add((UserConfigurationType) deviceType);
             }
 
         if (DEBUG)
             {
-            for (Map.Entry<String, UserConfigurationType> pair : mapTagToUserType.entrySet())
+            for (Map.Entry<String, ConfigurationType> pair : mapTagToConfigurationType.entrySet())
                 {
-                RobotLog.vv(TAG, "deserialized: xmltag=%s name=%s class=%s", pair.getValue().getXmlTag(), pair.getValue().getName(), pair.getValue().getClass().getSimpleName());
+                if (!(pair.getValue() instanceof BuiltInConfigurationType))
+                    {
+                    RobotLog.vv(TAG, "deserialized: xmltag=%s name=%s class=%s", pair.getValue().getXmlTag(), pair.getValue().getName(), pair.getValue().getClass().getSimpleName());
+                    }
                 }
             }
         }
@@ -340,7 +343,7 @@ public final class ConfigurationTypeManager implements ClassFilter
 
     private String serializeUserDeviceTypes()
         {
-        return gson.toJson(mapTagToUserType.values());
+        return gson.toJson(mapTagToConfigurationType.values());
         }
 
 
@@ -352,62 +355,113 @@ public final class ConfigurationTypeManager implements ClassFilter
         {
         for (BuiltInConfigurationType type : BuiltInConfigurationType.values())
             {
-            existingXmlTags.add(type.getXmlTag());
-            existingTypeDisplayNamesMap.get(type.getDeviceFlavor()).add(type.getDisplayName(ConfigurationType.DisplayNameFlavor.Normal));
+            mapTagToConfigurationType.put(type.getXmlTag(), type);
+            displayNamesMap.get(type.getDeviceFlavor()).put(type.getName(), type.getXmlTag());
             }
         }
 
     private void add(UserConfigurationType deviceType)
         {
-        mapTagToUserType.put(deviceType.getXmlTag(), deviceType);
-        existingTypeDisplayNamesMap.get(deviceType.getDeviceFlavor()).add(deviceType.getName());
-        existingXmlTags.add(deviceType.getXmlTag());
+        String xmlTag = deviceType.getXmlTag();
 
-        for (String xmlTagAlias : deviceType.getXmlTagAliases())
+        ConfigurationType existingConfigurationType = mapTagToConfigurationType.get(xmlTag);
+        if (existingConfigurationType == null)
             {
-            mapTagToUserType.put(xmlTagAlias, deviceType);
-            existingXmlTags.add(xmlTagAlias);
+            // This XML tag is not currently mapped to anything
+            mapTagToConfigurationType.put(deviceType.getXmlTag(), deviceType);
+            displayNamesMap.get(deviceType.getDeviceFlavor()).put(deviceType.getName(), deviceType.getXmlTag());
             }
-        }
-
-    private void clearUserTypes()
-        {
-        List<UserConfigurationType> extant = new ArrayList<>(mapTagToUserType.values()); // capture to avoid deleting while iterating
-
-        for (UserConfigurationType userType : extant)
+        else
             {
-            existingTypeDisplayNamesMap.get(userType.getDeviceFlavor()).remove(userType.getName());
-            existingXmlTags.remove(userType.getXmlTag());
-            mapTagToUserType.remove(userType.getXmlTag());
-            }
-        }
+            // This needs to execute BEFORE the call to addAdditionalTypeToInstantiate()
+            String originalDisplayName = existingConfigurationType.getName();
+            boolean nonMatchingDisplayName = !originalDisplayName.equals(deviceType.getName());
 
-    private void clearOnBotJavaTypes()
-        {
-        List<UserConfigurationType> extantUserTypes = new ArrayList<>(mapTagToUserType.values());  // capture to avoid deleting while iterating
+            // This XML tag is already mapped to another configuration type. Add this new type to
+            // the list of additional types to instantiate on the existing type.
 
-        for (UserConfigurationType userType : extantUserTypes)
-            {
-            if (userType.isOnBotJava())
+            // It should be safe to cast both the existing and new configuration types to
+            // InstantiableUserConfigurationType because checkAnnotationParameterConstraints() would
+            // have rejected the type if they weren't both instantiable.
+            ((InstantiableUserConfigurationType) existingConfigurationType)
+                    .addAdditionalTypeToInstantiate((InstantiableUserConfigurationType) deviceType);
+
+            // This needs to execute AFTER the call to addAdditionalTypeToInstantiate()
+            if (nonMatchingDisplayName)
                 {
-                existingTypeDisplayNamesMap.get(userType.getDeviceFlavor()).remove(userType.getName());
-                existingXmlTags.remove(userType.getXmlTag());
-                mapTagToUserType.remove(userType.getXmlTag());
+                boolean newDisplayNameIgnored = originalDisplayName.equals(existingConfigurationType.getName());
+                RobotLog.addGlobalWarningMessage("XML tag %s has multiple display names associated with it: \"%s\" and \"%s\". Ignoring \"%s\".",
+                        deviceType.getXmlTag(),
+                        originalDisplayName,
+                        deviceType.getName(),
+                        newDisplayNameIgnored ? deviceType.getName() : originalDisplayName);
                 }
+
+            // Calling addAdditionalTypeToInstantiate() may have changed existingConfigurationType's
+            // display name, but we do NOT want to update displayNamesMap to remove the old display
+            // name, so that there can never be ambiguity about which XML tag a given display name
+            // is associated with. Instead, we just make sure that the name of the newly-added type
+            // is represented (even if it's not actually used by the configuration UI).
+            displayNamesMap.get(deviceType.getDeviceFlavor()).put(deviceType.getName(), deviceType.getXmlTag());
+            }
+
+        if (deviceType.getXmlTag().equals(NEW_HD_HEX_MOTOR_40_TAG))
+            {
+            mapTagToConfigurationType.put(LEGACY_HD_HEX_MOTOR_TAG, deviceType);
             }
         }
 
-    private void clearExternalLibrariesTypes()
+    private void clearAllUserTypes()
         {
-        List<UserConfigurationType> extantUserTypes = new ArrayList<>(mapTagToUserType.values());  // capture to avoid deleting while iterating
-
-        for (UserConfigurationType userType : extantUserTypes)
+        mapTagToConfigurationType.clear();
+        for (Map<String, String> namespace: displayNamesMap.values())
             {
-            if (userType.isExternalLibraries())
+            namespace.clear();
+            }
+
+        addBuiltinConfigurationTypes();
+        }
+
+    private void clearUserTypesFromSource(ClassSource classSource)
+        {
+        List<ConfigurationType> extantTypes = new ArrayList<>(mapTagToConfigurationType.values());  // capture to avoid deleting while iterating
+
+        for (ConfigurationType configurationType : extantTypes)
+            {
+            if (configurationType instanceof InstantiableUserConfigurationType)
                 {
-                existingTypeDisplayNamesMap.get(userType.getDeviceFlavor()).remove(userType.getName());
-                existingXmlTags.remove(userType.getXmlTag());
-                mapTagToUserType.remove(userType.getXmlTag());
+                InstantiableUserConfigurationType.ClearTypesFromSourceResult result
+                        = ((InstantiableUserConfigurationType) configurationType).clearTypesFromSource(classSource);
+
+                // Free any newly-unused display names
+                for (String freedDisplayName: result.freedDisplayNames)
+                    {
+                    displayNamesMap.get(configurationType.getDeviceFlavor()).remove(freedDisplayName);
+                    }
+
+                if (result.newTopLevelType == null)
+                    {
+                    // This XML tag was entirely removed.
+                    mapTagToConfigurationType.remove(configurationType.getXmlTag());
+                    }
+                else
+                    {
+                    // Update the XML tag map with the new top-level type
+                    // (which may or may not be different from before)
+                    mapTagToConfigurationType.put(configurationType.getXmlTag(), result.newTopLevelType);
+                    }
+                }
+            else // configurationType is not an instance of InstantiableUserConfigurationType
+                {
+                if (configurationType.getClassSource() == classSource)
+                    {
+                    if (configurationType instanceof BuiltInConfigurationType)
+                        {
+                        continue; // This method only clears user types
+                        }
+                    mapTagToConfigurationType.remove(configurationType.getXmlTag());
+                    displayNamesMap.get(configurationType.getDeviceFlavor()).remove(configurationType.getName());
+                    }
                 }
             }
         }
@@ -418,42 +472,65 @@ public final class ConfigurationTypeManager implements ClassFilter
 
     @Override public void filterAllClassesStart()
         {
-        clearUserTypes();
+        clearAllUserTypes();
         }
 
     @Override public void filterOnBotJavaClassesStart()
         {
-        clearOnBotJavaTypes();
+        clearUserTypesFromSource(ClassSource.ONBOTJAVA);
         }
 
     @Override public void filterExternalLibrariesClassesStart()
         {
-        clearExternalLibrariesTypes();
+        clearUserTypesFromSource(ClassSource.EXTERNAL_LIB);
         }
 
-    @SuppressWarnings("unchecked")
     @Override public void filterClass(Class clazz)
         {
-        if (addMotorTypeFromDeprecatedAnnotation(clazz)) return;
+        // Unlike filterOnBotJavaClass() and filterExternalLibrariesClass(), filterClass() can be
+        // called for a class from any source.
+        ClassSource classSource = ClassSource.APK;
+        if (OnBotJavaDeterminer.isOnBotJava(clazz))
+            {
+            classSource = ClassSource.ONBOTJAVA;
+            }
+        else if (OnBotJavaDeterminer.isExternalLibraries(clazz))
+            {
+            classSource = ClassSource.EXTERNAL_LIB;
+            }
+        filterClass(clazz, classSource);
+        }
 
-        if (addI2cTypeFromDeprecatedAnnotation(clazz)) return;
+    @Override public void filterOnBotJavaClass(Class clazz)
+        {
+        filterClass(clazz, ClassSource.ONBOTJAVA);
+        }
+
+    @Override public void filterExternalLibrariesClass(Class clazz)
+        {
+        filterClass(clazz, ClassSource.EXTERNAL_LIB);
+        }
+
+    private void filterClass(Class<?> clazz, ClassSource classSource)
+        {
+        if (addMotorTypeFromDeprecatedAnnotation(clazz, classSource)) return;
+
+        if (addI2cTypeFromDeprecatedAnnotation(clazz, classSource)) return;
 
         Annotation specificTypeAnnotation = getTypeAnnotation(clazz);
         if (specificTypeAnnotation == null) return;
 
-        UserConfigurationType configurationType;
-
-        DeviceProperties devicePropertiesAnnotation = (DeviceProperties) clazz.getAnnotation(DeviceProperties.class);
+        DeviceProperties devicePropertiesAnnotation = clazz.getAnnotation(DeviceProperties.class);
         if (devicePropertiesAnnotation == null)
             {
             reportConfigurationError("Class " + clazz.getSimpleName() + " annotated with " + specificTypeAnnotation + " is missing @DeviceProperties annotation.");
             return;
             }
 
-        configurationType = createAppropriateConfigurationType(specificTypeAnnotation, devicePropertiesAnnotation, clazz);
+        UserConfigurationType configurationType = createAppropriateConfigurationType(specificTypeAnnotation, devicePropertiesAnnotation, clazz, classSource);
         configurationType.processAnnotation(devicePropertiesAnnotation);
         configurationType.finishedAnnotations(clazz);
-        if (configurationType instanceof InstantiableUserConfigurationType && ((InstantiableUserConfigurationType) configurationType).classMustBeInstantiable())
+        if (configurationType.annotatedClassIsInstantiable())
             {
             if (checkInstantiableTypeConstraints((InstantiableUserConfigurationType)configurationType))
                 {
@@ -469,15 +546,6 @@ public final class ConfigurationTypeManager implements ClassFilter
             }
         }
 
-    @Override public void filterOnBotJavaClass(Class clazz)
-        {
-        filterClass(clazz);
-        }
-
-    @Override public void filterExternalLibrariesClass(Class clazz)
-        {
-        filterClass(clazz);
-        }
 
     @Override public void filterAllClassesComplete()
         {
@@ -495,31 +563,31 @@ public final class ConfigurationTypeManager implements ClassFilter
         }
 
     @SuppressWarnings("unchecked")
-    private UserConfigurationType createAppropriateConfigurationType(Annotation specificTypeAnnotation, DeviceProperties devicePropertiesAnnotation, Class clazz)
+    private UserConfigurationType createAppropriateConfigurationType(Annotation specificTypeAnnotation, DeviceProperties devicePropertiesAnnotation, Class clazz, ClassSource classSource)
         {
         UserConfigurationType configurationType = null;
         if (specificTypeAnnotation instanceof ServoType)
             {
-            configurationType = new ServoConfigurationType(clazz, getXmlTag(devicePropertiesAnnotation));
+            configurationType = new ServoConfigurationType(clazz, getXmlTag(devicePropertiesAnnotation), classSource);
             ((ServoConfigurationType) configurationType).processAnnotation((ServoType) specificTypeAnnotation);
             }
         else if (specificTypeAnnotation instanceof com.qualcomm.robotcore.hardware.configuration.annotations.MotorType)
             {
-            configurationType = new MotorConfigurationType(clazz, getXmlTag(devicePropertiesAnnotation));
+            configurationType = new MotorConfigurationType(clazz, getXmlTag(devicePropertiesAnnotation), classSource);
             processMotorSupportAnnotations(clazz, (MotorConfigurationType) configurationType);
             ((MotorConfigurationType) configurationType).processAnnotation((com.qualcomm.robotcore.hardware.configuration.annotations.MotorType) specificTypeAnnotation);
             }
         else if (specificTypeAnnotation instanceof AnalogSensorType)
             {
-            configurationType = new AnalogSensorConfigurationType(clazz, getXmlTag(devicePropertiesAnnotation));
+            configurationType = new AnalogSensorConfigurationType(clazz, getXmlTag(devicePropertiesAnnotation), classSource);
             }
         else if (specificTypeAnnotation instanceof DigitalIoDeviceType)
             {
-            configurationType = new DigitalIoDeviceConfigurationType(clazz, getXmlTag(devicePropertiesAnnotation));
+            configurationType = new DigitalIoDeviceConfigurationType(clazz, getXmlTag(devicePropertiesAnnotation), classSource);
             }
         else if (specificTypeAnnotation instanceof I2cDeviceType)
             {
-            configurationType = new I2cDeviceConfigurationType(clazz, getXmlTag(devicePropertiesAnnotation));
+            configurationType = new I2cDeviceConfigurationType(clazz, getXmlTag(devicePropertiesAnnotation), classSource);
             }
         return configurationType;
         }
@@ -528,12 +596,13 @@ public final class ConfigurationTypeManager implements ClassFilter
      * @return true if a new MotorConfigurationType was added
      */
     @SuppressWarnings("deprecation")
-    private boolean addMotorTypeFromDeprecatedAnnotation(Class clazz)
+    private boolean addMotorTypeFromDeprecatedAnnotation(Class<?> clazz, ClassSource classSource)
         {
         if (clazz.isAnnotationPresent(MotorType.class))
             {
-            MotorType motorTypeAnnotation = (MotorType) clazz.getAnnotation(MotorType.class);
-            MotorConfigurationType motorType = new MotorConfigurationType(clazz, getXmlTag(motorTypeAnnotation));
+            MotorType motorTypeAnnotation = clazz.getAnnotation(MotorType.class);
+            //noinspection ConstantConditions
+            MotorConfigurationType motorType = new MotorConfigurationType(clazz, getXmlTag(motorTypeAnnotation), classSource);
             motorType.processAnnotation(motorTypeAnnotation);
             processMotorSupportAnnotations(clazz, motorType);
             motorType.finishedAnnotations(clazz);
@@ -550,15 +619,16 @@ public final class ConfigurationTypeManager implements ClassFilter
     /**
      * @return true if a new MotorConfigurationType was added
      */
-    @SuppressWarnings({"deprecation", "unchecked"})
-    private boolean addI2cTypeFromDeprecatedAnnotation(Class clazz)
+    @SuppressWarnings("deprecation")
+    private boolean addI2cTypeFromDeprecatedAnnotation(Class<?> clazz, ClassSource classSource)
         {
         if (isHardwareDevice(clazz))
             {
             if (clazz.isAnnotationPresent(I2cSensor.class))
                 {
-                I2cSensor i2cSensorAnnotation = (I2cSensor) clazz.getAnnotation(I2cSensor.class);
-                I2cDeviceConfigurationType sensorType = new I2cDeviceConfigurationType(clazz, getXmlTag(i2cSensorAnnotation));
+                I2cSensor i2cSensorAnnotation = clazz.getAnnotation(I2cSensor.class);
+                @SuppressWarnings({ "unchecked", "ConstantConditions" })
+                I2cDeviceConfigurationType sensorType = new I2cDeviceConfigurationType((Class<? extends HardwareDevice>) clazz, getXmlTag(i2cSensorAnnotation), classSource);
                 sensorType.processAnnotation(i2cSensorAnnotation);
                 sensorType.finishedAnnotations(clazz);
 
@@ -657,28 +727,77 @@ public final class ConfigurationTypeManager implements ClassFilter
 
     private boolean checkAnnotationParameterConstraints(UserConfigurationType deviceType)
         {
+        String xmlTag = deviceType.getXmlTag();
+        ConfigurationType.DeviceFlavor deviceFlavor = deviceType.getDeviceFlavor();
+
         // Check the user-visible form of the sensor name
         if (!isLegalDeviceTypeName(deviceType.getName()))
             {
             reportConfigurationError("\"%s\" is not a legal device type name", deviceType.getName());
             return false;
             }
-        if (existingTypeDisplayNamesMap.get(deviceType.getDeviceFlavor()).contains(deviceType.getName()))
+
+        // Check the XML tag
+        if (!isLegalXmlTag(xmlTag))
             {
-            reportConfigurationError("the device type \"%s\" is already defined", deviceType.getName());
+            reportConfigurationError("\"%s\" is not a legal XML tag for the device type \"%s\"", xmlTag, deviceType.getName());
             return false;
             }
 
-        // Check the XML tag
-        if (!isLegalXmlTag(deviceType.getXmlTag()))
+        if (deviceType.annotatedClassIsInstantiable())
             {
-            reportConfigurationError("\"%s\" is not a legal XML tag for the device type \"%s\"", deviceType.getXmlTag(), deviceType.getName());
-            return false;
+            // Instantiable configuration types can have duplicate XML tags and display names,
+            // but there are rules.
+
+            // For XML tags, any tags that this device type duplicates must also be for instantiable
+            // types and have the same DeviceFlavor. Having duplicated XML tags means that for a
+            // configuration that contains that XML tag, multiple different classes will be
+            // instantiated. The user will be able to retrieve an instance of their desired class
+            // from the HardwareMap. This allows for the user to switch which device driver they use
+            // to access a device without having to select a different type in the configuration.
+
+            ConfigurationType duplicatingType = mapTagToConfigurationType.get(xmlTag);
+            if (duplicatingType != null)
+                {
+                if (!duplicatingType.annotatedClassIsInstantiable())
+                    {
+                    // XML tags for instantiable types can only duplicate other instantiable types
+                    reportConfigurationError("the XML tag \"%s\" is already defined by a non-instantiable type", xmlTag);
+                    return false;
+                    }
+
+                if (!duplicatingType.isDeviceFlavor(deviceFlavor))
+                    {
+                    // XML tags for instantiable types can only duplicate types with the same device flavor
+                    reportConfigurationError("the XML tag \"%s\" cannot be registered as a %s device, because it is already registered as a %s device.", xmlTag, deviceFlavor, duplicatingType.getDeviceFlavor());
+                    return false;
+                    }
+                }
+
+            // For display names, we must never have ambiguity about which XML tag a given display
+            // name corresponds to. Therefore, any already-processed device type that shares this
+            // display name must also have the same XML tag.
+
+            String tagAssociatedWithDuplicateDisplayName = displayNamesMap.get(deviceFlavor).get(deviceType.getName());
+            if (tagAssociatedWithDuplicateDisplayName != null && !xmlTag.equals(tagAssociatedWithDuplicateDisplayName))
+                {
+                reportConfigurationError("the display name \"%s\" is already registered with the XML " +
+                        "tag \"%s\", and cannot be registered with the XML tag \"%s\"");
+                }
             }
-        if (existingXmlTags.contains(deviceType.getXmlTag()))
+        else
             {
-            reportConfigurationError("the XML tag \"%s\" is already defined", deviceType.getXmlTag());
-            return false;
+            // Non-instantiable device types must have fully unique names and XML tags.
+            if (displayNamesMap.get(deviceFlavor).containsKey(deviceType.getName()))
+                {
+                reportConfigurationError("the device type \"%s\" is already defined", deviceType.getName());
+                return false;
+                }
+            if (mapTagToConfigurationType.containsKey(xmlTag))
+                {
+                reportConfigurationError("the XML tag \"%s\" is already defined", xmlTag);
+                return false;
+                }
             }
 
         return true;

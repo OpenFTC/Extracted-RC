@@ -51,7 +51,7 @@ public abstract class I2cDeviceSynchDevice<DEVICE_CLIENT extends I2cDeviceSynchS
     protected boolean       deviceClientIsOwned;
     protected boolean       isInitialized;
 
-    private static String TAG = "I2C";
+    private static final String TAG = "I2C";
 
     //----------------------------------------------------------------------------------------------
     // Construction
@@ -123,7 +123,7 @@ public abstract class I2cDeviceSynchDevice<DEVICE_CLIENT extends I2cDeviceSynchS
         {
         if (!this.isInitialized)
             {
-            RobotLog.ii(TAG, "Automatically initializing I2C device %s %s", getClass().getSimpleName(), getConnectionInfo());
+            RobotLog.ii(TAG, "Automatically initializing I2C device %s (%s)", getClass().getSimpleName(), getConnectionInfo());
             this.initialize();
             }
         }
@@ -131,17 +131,14 @@ public abstract class I2cDeviceSynchDevice<DEVICE_CLIENT extends I2cDeviceSynchS
     public synchronized boolean initialize()
         {
         this.isInitialized = this.doInitialize();
-        if (this.deviceClientIsOwned)
+        if (this.isInitialized)
             {
-            if (this.isInitialized)
-                {
-                I2cWarningManager.removeProblemI2cDevice(deviceClient);
-                }
-            else
-                {
-                RobotLog.e("Marking I2C device %s %s as unhealthy because initialization failed", getClass().getSimpleName(), getConnectionInfo());
-                I2cWarningManager.notifyProblemI2cDevice(deviceClient);
-                }
+            I2cWarningManager.removeProblemI2cDevice(deviceClient);
+            }
+        else
+            {
+            RobotLog.e("Marking I2C device %s %s as unhealthy because initialization failed", getClass().getSimpleName(), getConnectionInfo());
+            I2cWarningManager.notifyProblemI2cDevice(deviceClient);
             }
         return this.isInitialized;
         }

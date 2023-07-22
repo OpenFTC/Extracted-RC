@@ -58,6 +58,8 @@
   <script type="text/javascript" src="blocks/gamepad.js"></script>
   <script type="text/javascript" src="blocks/gyro_sensor.js"></script>
   <script type="text/javascript" src="blocks/hardware_util.js"></script>
+  <script type="text/javascript" src="blocks/imu.js"></script>
+  <script type="text/javascript" src="blocks/imu_parameters.js"></script>
   <script type="text/javascript" src="blocks/ir_seeker_sensor.js"></script>
   <script type="text/javascript" src="blocks/led.js"></script>
   <script type="text/javascript" src="blocks/led_effect.js"></script>
@@ -79,6 +81,7 @@
   <script type="text/javascript" src="blocks/quaternion.js"></script>
   <script type="text/javascript" src="blocks/range.js"></script>
   <script type="text/javascript" src="blocks/rev_blinkin_led_driver.js"></script>
+  <script type="text/javascript" src="blocks/rev_hub_orientation_on_robot.js"></script>
   <script type="text/javascript" src="blocks/rumble_effect.js"></script>
   <script type="text/javascript" src="blocks/servo.js"></script>
   <script type="text/javascript" src="blocks/servo_controller.js"></script>
@@ -110,6 +113,7 @@
   <script type="text/javascript" src="blocks/vuforia_trackable.js"></script>
   <script type="text/javascript" src="blocks/vuforia_trackable_default_listener.js"></script>
   <script type="text/javascript" src="blocks/vuforia_trackables.js"></script>
+  <script type="text/javascript" src="blocks/yaw_pitch_roll_angles.js"></script>
 
   <title>FTC</title>
 </head>
@@ -208,7 +212,6 @@
       var a = document.getElementById('download_link');
       a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(javaCode);
       a.download = currentClassName + '.java';
-      a.target = '_blank';
       a.click();
     } else {
       alert('Unable to download Java. Sorry about that!');

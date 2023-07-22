@@ -37,6 +37,7 @@ class PIDFCoefficientsAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = PIDFCoefficients.class, constructor = true)
   public PIDFCoefficients create() {
     try {
       startBlockExecution(BlockType.CREATE, "");
@@ -51,6 +52,7 @@ class PIDFCoefficientsAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = PIDFCoefficients.class, constructor = true)
   public PIDFCoefficients create_withPIDFAlgorithm(double p, double i, double d, double f, String algorithmString) {
     try {
       startBlockExecution(BlockType.CREATE, "");
@@ -69,6 +71,7 @@ class PIDFCoefficientsAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = PIDFCoefficients.class, constructor = true)
   public PIDFCoefficients create_withPIDF(double p, double i, double d, double f) {
     try {
       startBlockExecution(BlockType.CREATE, "");
@@ -83,6 +86,7 @@ class PIDFCoefficientsAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = PIDFCoefficients.class, constructor = true)
   public PIDFCoefficients create_withPIDFCoefficients(Object pidfCoefficientsArg) {
     try {
       startBlockExecution(BlockType.CREATE, "");
@@ -101,6 +105,7 @@ class PIDFCoefficientsAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = PIDFCoefficients.class, fieldName = "p")
   public void setP(Object pidfCoefficientsArg, double p) {
     try {
       startBlockExecution(BlockType.SETTER, ".P");
@@ -118,6 +123,7 @@ class PIDFCoefficientsAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = PIDFCoefficients.class, fieldName = "p")
   public double getP(Object pidfCoefficientsArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".P");
@@ -136,6 +142,7 @@ class PIDFCoefficientsAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = PIDFCoefficients.class, fieldName = "i")
   public void setI(Object pidfCoefficientsArg, double i) {
     try {
       startBlockExecution(BlockType.SETTER, ".I");
@@ -153,6 +160,7 @@ class PIDFCoefficientsAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = PIDFCoefficients.class, fieldName = "i")
   public double getI(Object pidfCoefficientsArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".I");
@@ -171,6 +179,7 @@ class PIDFCoefficientsAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = PIDFCoefficients.class, fieldName = "d")
   public void setD(Object pidfCoefficientsArg, double d) {
     try {
       startBlockExecution(BlockType.SETTER, ".D");
@@ -188,6 +197,7 @@ class PIDFCoefficientsAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = PIDFCoefficients.class, fieldName = "d")
   public double getD(Object pidfCoefficientsArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".D");
@@ -206,6 +216,7 @@ class PIDFCoefficientsAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = PIDFCoefficients.class, fieldName = "f")
   public void setF(Object pidfCoefficientsArg, double f) {
     try {
       startBlockExecution(BlockType.SETTER, ".F");
@@ -223,6 +234,7 @@ class PIDFCoefficientsAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = PIDFCoefficients.class, fieldName = "f")
   public double getF(Object pidfCoefficientsArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".F");
@@ -241,6 +253,7 @@ class PIDFCoefficientsAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = PIDFCoefficients.class, fieldName = "algorithm")
   public void setAlgorithm(Object pidfCoefficientsArg, String algorithmString) {
     try {
       startBlockExecution(BlockType.SETTER, ".Algorithm");
@@ -259,6 +272,7 @@ class PIDFCoefficientsAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = PIDFCoefficients.class, fieldName = "algorithm")
   public String getAlgorithm(Object pidfCoefficientsArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".Algorithm");
@@ -277,6 +291,7 @@ class PIDFCoefficientsAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = PIDFCoefficients.class, methodName = "toString")
   public String toText(Object pidfCoefficientsArg) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".toText");

@@ -28,14 +28,12 @@ eg: The name's prefix describes the general purpose, which can be one of the fol
 * Sensor:   This is a Sample OpMode that shows how to use a specific sensor.
             It is not intended as a functioning robot, it is simply showing the minimal code
             required to read and display the sensor values.
-* Pushbot:  This is a Sample OpMode that uses the Pushbot robot structure as a base.
+* Robot:    This is a Sample OpMode that assumes a simple two-motor (differential) drive base.
+            It may be used to provide a common baseline driving OpMode, or
+            to demonstrate how a particular sensor or concept can be used to navigate.
 * Concept:	This is a sample OpMode that illustrates performing a specific function or concept.
             These may be complex, but their operation will be explained clearly in the comments,
             or the header should reference an external doc., guide or tutorial.
-* Hardware: This is not an actual OpMode, but a helper class that is used to describe
-            one particular robot's hardware devices. eg: A Pushbot.  Look at any
-            Pushbot sample to see how this can be used in an OpMode.
-            If you add a Hardware sample to your project, you MUST use the identical name.
 
 For more help, visit the FTC Control System Wiki (https://github.com/FIRST-Tech-Challenge/FtcRobotController/wiki)
 

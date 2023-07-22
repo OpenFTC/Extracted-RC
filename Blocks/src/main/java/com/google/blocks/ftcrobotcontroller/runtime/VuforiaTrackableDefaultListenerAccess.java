@@ -45,6 +45,7 @@ class VuforiaTrackableDefaultListenerAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = VuforiaTrackableDefaultListener.class, methodName = "setPhoneInformation")
   public void setPhoneInformation(
       Object vuforiaTrackableDefaultListenerArg, Object phoneLocationOnRobotArg,
       String cameraDirectionString) {
@@ -67,6 +68,7 @@ class VuforiaTrackableDefaultListenerAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = VuforiaTrackableDefaultListener.class, methodName = "setCameraLocationOnRobot")
   public void setCameraLocationOnRobot(
       Object vuforiaTrackableDefaultListenerArg, String cameraNameString, Object cameraLocationOnRobotArg) {
     try {
@@ -88,6 +90,7 @@ class VuforiaTrackableDefaultListenerAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = VuforiaTrackableDefaultListener.class, methodName = "isVisible")
   public boolean isVisible(Object vuforiaTrackableDefaultListenerArg) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".isVisible");
@@ -107,6 +110,7 @@ class VuforiaTrackableDefaultListenerAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = VuforiaTrackableDefaultListener.class, methodName = "getUpdatedRobotLocation")
   public OpenGLMatrix getUpdatedRobotLocation(Object vuforiaTrackableDefaultListenerArg) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".getUpdatedRobotLocation");
@@ -126,6 +130,7 @@ class VuforiaTrackableDefaultListenerAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = VuforiaTrackableDefaultListener.class, methodName = "getPose")
   public OpenGLMatrix getPose(Object vuforiaTrackableDefaultListenerArg) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".getPose");
@@ -145,6 +150,7 @@ class VuforiaTrackableDefaultListenerAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = RelicRecoveryVuMark.class, methodName = "from")
   public String getRelicRecoveryVuMark(Object vuforiaTrackableDefaultListenerArg) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".getRelicRecoveryVuMark");

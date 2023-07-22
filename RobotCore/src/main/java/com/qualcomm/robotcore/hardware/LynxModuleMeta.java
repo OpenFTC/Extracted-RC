@@ -44,13 +44,13 @@ public class LynxModuleMeta
     {
     protected int moduleAddress;
     protected boolean isParent;
-    @Nullable protected volatile ImuType imuType;
+    @Nullable protected volatile LynxModuleImuType imuType;
 
     public LynxModuleMeta(int moduleAddress, boolean isParent)
         {
         this.moduleAddress = moduleAddress;
         this.isParent = isParent;
-        this.imuType = ImuType.UNKNOWN;
+        this.imuType = LynxModuleImuType.UNKNOWN;
         }
 
     public LynxModuleMeta(LynxModuleMeta him)
@@ -70,12 +70,12 @@ public class LynxModuleMeta
         return isParent;
         }
 
-    @Nullable public ImuType imuType()
+    @Nullable public LynxModuleImuType imuType()
         {
         return imuType;
         }
 
-    public void setImuType(ImuType imuType)
+    public void setImuType(LynxModuleImuType imuType)
         {
         this.imuType = imuType;
         }
@@ -84,6 +84,4 @@ public class LynxModuleMeta
         {
         return Misc.formatForUser("LynxModuleMeta(#%d,%b,ImuType.%s)", moduleAddress, isParent, imuType);
         }
-
-    public enum ImuType { UNKNOWN, NONE, BNO055, BHI260 }
     }

@@ -32,6 +32,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.robotcore.external.navigation;
 
+import java.util.Locale;
+
 /**
  * Instances of {@link AngularVelocity} represent an instantaneous body-referenced 3D rotation rate.
  *
@@ -116,5 +118,11 @@ public class AngularVelocity
             }
         else
             return this;
+        }
+
+    @Override
+    public String toString()
+        {
+        return String.format(Locale.US, "{x=%.3f, y=%.3f, z=%.3f (%s)}", xRotationRate, yRotationRate, zRotationRate, unit);
         }
     }

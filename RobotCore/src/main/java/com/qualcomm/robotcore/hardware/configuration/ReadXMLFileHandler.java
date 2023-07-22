@@ -136,7 +136,7 @@ public class ReadXMLFileHandler extends ConfigurationUtility {
 
     int eventType = parser.next();
     while (eventType != XmlPullParser.END_TAG) {
-      if (eventType == XmlPullParser.START_TAG){
+      if (eventType == XmlPullParser.START_TAG) {
         String name = parser.getName();
         ConfigurationType configurationType = deform(name);
 
@@ -214,7 +214,7 @@ public class ReadXMLFileHandler extends ConfigurationUtility {
   private void handleDeprecation(DeviceConfiguration device) {
     if (device.getConfigurationType().isDeprecated()) {
       // TODO(i18n): Convert to XML string
-      warningManager.addWarning(String.format("%s is a deprecated configuration type and may be removed in a future release", device.getConfigurationType().getDisplayName(ConfigurationType.DisplayNameFlavor.Normal)));
+      warningManager.addWarning(String.format("%s is a deprecated configuration type and may be removed in a future release", device.getConfigurationType().getName()));
     }
   }
 

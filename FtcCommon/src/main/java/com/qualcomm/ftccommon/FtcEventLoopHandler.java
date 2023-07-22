@@ -40,6 +40,8 @@ import com.qualcomm.hardware.lynx.LynxUsbDevice;
 import com.qualcomm.hardware.lynx.LynxUsbDeviceImpl;
 import com.qualcomm.robotcore.eventloop.EventLoopManager;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;
+import com.qualcomm.robotcore.eventloop.opmode.OpModeManagerImpl;
+import com.qualcomm.robotcore.eventloop.opmode.OpModeManagerNotifier;
 import com.qualcomm.robotcore.exception.RobotCoreException;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -63,6 +65,7 @@ import com.qualcomm.robotcore.util.SerialNumber;
 import org.firstinspires.ftc.robotcore.external.function.Supplier;
 import org.firstinspires.ftc.robotcore.internal.network.NetworkConnectionHandler;
 import org.firstinspires.ftc.robotcore.internal.network.RobotCoreCommandList;
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -173,13 +176,12 @@ public class FtcEventLoopHandler implements BatteryChecker.BatteryWatcher {
     return eventLoopManager;
   }
 
-  public HardwareMap getHardwareMap() throws RobotCoreException, InterruptedException {
+  public HardwareMap getHardwareMap(OpModeManagerNotifier opModeNotifier) throws RobotCoreException, InterruptedException {
     synchronized (hardwareFactory) {
       if (hardwareMap==null) {
-
         // Create a newly-active hardware map
-        hardwareMap = hardwareFactory.createHardwareMap(eventLoopManager);
-        hardwareMapExtra = new HardwareMap(robotControllerContext);
+        hardwareMap = hardwareFactory.createHardwareMap(eventLoopManager, opModeNotifier);
+        hardwareMapExtra = new HardwareMap(robotControllerContext, opModeNotifier);
       }
       return hardwareMap;
     }
@@ -215,7 +217,7 @@ public class FtcEventLoopHandler implements BatteryChecker.BatteryWatcher {
    * @param serialNumber            the serial number of the object to retrieve
    * @param usbScanManagerSupplier  how to get a {@link USBScanManager} if it ends up we need one
    */
-  // TODO(Noah): Consider deleting this method, and related things like hardwareMapExtra.
+  // TODO(Noah): Consider deleting this method, and related things like hardwareMapExtra and instantiateConfiguration().
   //             This is only used for visual identification, so it is specifically used to get a
   //             LynxModule. The problem is that if no matching LynxModule is configured, it creates
   //             one in user mode, when this is actually for a system action. In addition, the
@@ -236,7 +238,7 @@ public class FtcEventLoopHandler implements BatteryChecker.BatteryWatcher {
     synchronized (hardwareFactory) {
       RobotLog.vv(TAG, "getHardwareDevice(%s)...", serialNumber);
       try {
-        getHardwareMap();
+        getHardwareMap(OpModeManagerImpl.getOpModeManagerOfActivity(AppUtil.getInstance().getActivity()));
       } catch (InterruptedException e) {
         Thread.currentThread().interrupt();
         return null;
@@ -317,25 +319,35 @@ public class FtcEventLoopHandler implements BatteryChecker.BatteryWatcher {
     if (updateUITimer.time() > updateUIInterval) {
       updateUITimer.reset();
 
-      // Get access to gamepad 1 and 2
-      Gamepad gamepads[] = getGamepads();
-      callback.updateUi(activeOpModeName, gamepads);
+      callback.updateUi(activeOpModeName, new Gamepad[] { getLatestGamepad1Data(), getLatestGamepad2Data() });
     }
   }
 
-  public Gamepad[] getGamepads() {
+  public Gamepad[] getOpModeGamepads() {
     return eventLoopManager != null
-            ? eventLoopManager.getGamepads()
+            ? eventLoopManager.getOpModeGamepads()
             : new Gamepad[2];
   }
-  
+
+  public Gamepad getLatestGamepad1Data() {
+    return eventLoopManager != null
+            ? eventLoopManager.getLatestGamepad1Data()
+            : new Gamepad();
+  }
+
+  public Gamepad getLatestGamepad2Data() {
+    return eventLoopManager != null
+            ? eventLoopManager.getLatestGamepad2Data()
+            : new Gamepad();
+  }
+
   public void gamepadEffects() {
     if (gamepadEffectsTimer.milliseconds() > gamepadEffectsInterval) {
-      Gamepad[] gamepads = getGamepads();
+      Gamepad[] gamepads = getOpModeGamepads();
 
       Gamepad.RumbleEffect rumble0 = gamepads[0].rumbleQueue.poll();
       Gamepad.RumbleEffect rumble1 = gamepads[1].rumbleQueue.poll();
-      
+
       if (rumble0 != null) {
         NetworkConnectionHandler.getInstance().sendCommand(new Command(RobotCoreCommandList.CMD_RUMBLE_GAMEPAD, rumble0.serialize()));
       }
@@ -352,11 +364,11 @@ public class FtcEventLoopHandler implements BatteryChecker.BatteryWatcher {
       if (led1 != null) {
         NetworkConnectionHandler.getInstance().sendCommand(new Command(RobotCoreCommandList.CMD_GAMEPAD_LED_EFFECT, led1.serialize()));
       }
-      
+
       gamepadEffectsTimer.reset();
     }
   }
-  
+
   /**
    * Updates the (indicated) user's telemetry: the telemetry is transmitted if a sufficient
    * interval has passed since the last transmission. If the telemetry is transmitted, the

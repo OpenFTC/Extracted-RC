@@ -22,6 +22,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver.BlinkinPattern;
 import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.RobotLog;
 import java.util.HashSet;
 import java.util.Locale;
@@ -36,6 +37,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.Quaternion;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.Parameters.CameraMonitorFeedback;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
@@ -101,6 +104,22 @@ abstract class Access {
 
   protected BNO055IMU.Parameters checkBNO055IMUParameters(Object parametersArg) {
     return checkArg(parametersArg, BNO055IMU.Parameters.class, "parameters");
+  }
+
+  protected Orientation checkOrientation(Object orientationArg) {
+    return checkArg(orientationArg, Orientation.class, "orientation");
+  }
+
+  protected Orientation checkOrientation(Object orientationArg, String socketName) {
+    return checkArg(orientationArg, Orientation.class, socketName);
+  }
+
+  protected Quaternion checkQuaternion(Object quaternionArg) {
+    return checkArg(quaternionArg, Quaternion.class, "quaternion");
+  }
+
+  protected Quaternion checkQuaternion(Object quaternionArg, String socketName) {
+    return checkArg(quaternionArg, Quaternion.class, socketName);
   }
 
   protected MatrixF checkMatrixF(Object matrixArg) {
@@ -230,6 +249,9 @@ abstract class Access {
     // it is "IMU-BNO055.Parameters".
     if (BNO055IMU.Parameters.class.isAssignableFrom(clazz)) {
       return "IMU-BNO055.Parameters";
+    }
+    if (IMU.Parameters.class.isAssignableFrom(clazz)) {
+      return "IMU.Parameters";
     }
     if (VuforiaLocalizer.Parameters.class.isAssignableFrom(clazz)) {
       return "VuforiaLocalizer.Parameters";

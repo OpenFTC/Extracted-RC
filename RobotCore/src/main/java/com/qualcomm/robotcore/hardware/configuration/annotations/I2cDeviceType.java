@@ -48,10 +48,10 @@ import java.lang.annotation.Target;
  * in the hardware map in the uncategorized mapping. Classes on which this annotation is placed must
  * implement {@link HardwareDevice} and have a constructor with at least one of the following signatures:
  * <ol>
- * <li>ctor(I2cDeviceSync i2cDeviceSynch)</li>
- * <li>ctor(I2cDeviceSyncSimple i2cDeviceSynch) (Only used when configured on a REV Hub)</li>
- * <li>ctor(I2cDevice i2cDevice) (Only used when configured on a CDIM)</li>
- * <li>ctor(I2cController i2cController, int port) (Only used when configured on a CDIM)</li>
+ * <li>{@code ctor(I2cDeviceSync i2cDeviceSynch, boolean deviceClientIsOwned)}</li>
+ * <li>{@code ctor(I2cDeviceSyncSimple i2cDeviceSynch, boolean deviceClientIsOwned)}</li>
+ * <li>{@code ctor(I2cDeviceSync i2cDeviceSynch)} (deprecated)</li>
+ * <li>{@code ctor(I2cDeviceSyncSimple i2cDeviceSynch)} (deprecated)</li>
  * </ol>
  * <p>
  * Must be accompanied by {@link DeviceProperties} annotation

@@ -32,6 +32,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.robotcore.internal.hardware.android;
 
+import androidx.annotation.NonNull;
+
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DigitalChannelController;
 import com.qualcomm.robotcore.util.RobotLog;
@@ -47,32 +49,67 @@ import java.io.File;
 public class FakeAndroidBoard extends AndroidBoard {
     private static final String TAG = "FakeAndroidBoard";
 
-    @Override public String getDeviceType() {
+    @Override @NonNull
+    public String getDeviceType() {
         return "Fake Android board";
     }
 
-    @Override public DigitalChannel getAndroidBoardIsPresentPin() {
+    @Override @NonNull
+    public DigitalChannel getAndroidBoardIsPresentPin() {
         return new FakeDigitalChannel(DigitalChannel.Mode.OUTPUT);
     }
 
-    @Override public DigitalChannel getProgrammingPin() {
+    @Override @NonNull public DigitalChannel getProgrammingPin() {
         return new FakeDigitalChannel(DigitalChannel.Mode.OUTPUT);
     }
 
-    @Override public DigitalChannel getLynxModuleResetPin() {
+    @Override @NonNull
+    public DigitalChannel getLynxModuleResetPin() {
         return new FakeDigitalChannel(DigitalChannel.Mode.OUTPUT);
     }
 
-    @Override public DigitalChannel getUserButtonPin() {
+    @Override @NonNull
+    public DigitalChannel getUserButtonPin() {
         return new FakeDigitalChannel(DigitalChannel.Mode.INPUT);
     }
 
-    @Override
-    public DigitalChannel getBhi260QuatRegFreezePin() {
-        return new FakeDigitalChannel(DigitalChannel.Mode.OUTPUT);
+    @Override @NonNull
+    public DigitalChannel getBhi260ResetPin() {
+        return new FakeAndroidBoard.FakeDigitalChannel(DigitalChannel.Mode.OUTPUT);
     }
 
-    @Override public File getUartLocation() {
+    @Override @NonNull
+    public DigitalChannel getBhi260InterruptPin() {
+        return new FakeAndroidBoard.FakeDigitalChannel(DigitalChannel.Mode.INPUT);
+    }
+
+    @Override @NonNull
+    public DigitalChannel getBhi260Gpio1() {
+        return new FakeAndroidBoard.FakeDigitalChannel(DigitalChannel.Mode.OUTPUT);
+    }
+
+    @Override @NonNull
+    public DigitalChannel getBhi260Gpio5() {
+        return new FakeAndroidBoard.FakeDigitalChannel(DigitalChannel.Mode.OUTPUT);
+    }
+
+    @Override @NonNull
+    public DigitalChannel getBhi260Gpio6() {
+        return new FakeAndroidBoard.FakeDigitalChannel(DigitalChannel.Mode.OUTPUT);
+    }
+
+    @Override @NonNull
+    public DigitalChannel getBhi260Gpio17() {
+        return new FakeAndroidBoard.FakeDigitalChannel(DigitalChannel.Mode.OUTPUT);
+    }
+
+    @Override @NonNull
+    public DigitalChannel getBhi260Gpio18() {
+        return new FakeAndroidBoard.FakeDigitalChannel(DigitalChannel.Mode.OUTPUT);
+    }
+
+    @Override @NonNull
+    public File getUartLocation() {
         return new File("/dev/null");
     }
 
@@ -100,7 +137,8 @@ public class FakeAndroidBoard extends AndroidBoard {
         return false;
     }
 
-    @Override public WifiDataRate getWifiApBeaconRate() {
+    @Override @NonNull
+    public WifiDataRate getWifiApBeaconRate() {
         return WifiDataRate.UNKNOWN;
     }
 

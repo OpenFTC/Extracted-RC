@@ -80,9 +80,9 @@ public class RevColorSensorV3 extends BroadcomColorSensorImpl implements Distanc
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public RevColorSensorV3(I2cDeviceSynchSimple deviceClient)
+    public RevColorSensorV3(I2cDeviceSynchSimple deviceClient, boolean deviceClientIsOwned)
     {
-        super(RevColorSensorV3.Parameters.createForAPDS9151(), deviceClient, true);
+        super(RevColorSensorV3.Parameters.createForAPDS9151(), deviceClient, deviceClientIsOwned);
     }
 
     //----------------------------------------------------------------------------------------------

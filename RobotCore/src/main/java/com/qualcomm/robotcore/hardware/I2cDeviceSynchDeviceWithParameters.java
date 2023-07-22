@@ -6,7 +6,7 @@ import androidx.annotation.NonNull;
 
 /**
  * {@link I2cDeviceSynchDeviceWithParameters} adds to {@link I2cDeviceSynchDevice} support for
- * sensors that can be publicly initialized with parameter block of a particular type.
+ * sensors that can be publicly initialized with a particular parameters class.
  */
 public abstract class I2cDeviceSynchDeviceWithParameters<DEVICE_CLIENT extends I2cDeviceSynchSimple, PARAMETERS>
         extends I2cDeviceSynchDevice<DEVICE_CLIENT>
@@ -15,16 +15,18 @@ public abstract class I2cDeviceSynchDeviceWithParameters<DEVICE_CLIENT extends I
     // State
     //----------------------------------------------------------------------------------------------
 
-    protected @NonNull PARAMETERS parameters;
+    protected volatile @NonNull PARAMETERS parameters;
+    protected final @NonNull PARAMETERS defaultParameters;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    protected I2cDeviceSynchDeviceWithParameters(DEVICE_CLIENT deviceClient, boolean isOwned, @NonNull PARAMETERS parameters)
+    protected I2cDeviceSynchDeviceWithParameters(DEVICE_CLIENT deviceClient, boolean deviceClientIsOwned, @NonNull PARAMETERS defaultParameters)
         {
-        super(deviceClient, isOwned);
-        this.parameters = parameters;
+        super(deviceClient, deviceClientIsOwned);
+        this.parameters = defaultParameters;
+        this.defaultParameters = defaultParameters;
         }
 
     //----------------------------------------------------------------------------------------------
@@ -45,6 +47,13 @@ public abstract class I2cDeviceSynchDeviceWithParameters<DEVICE_CLIENT extends I
         return internalInitialize(this.parameters);
         }
 
+    @Override
+    public void resetDeviceConfigurationForOpMode()
+        {
+        super.resetDeviceConfigurationForOpMode();
+        this.parameters = defaultParameters;
+        }
+
     /**
      * Allows for external initialization with non-default parameters
      * @param parameters the parameters with which the sensor should be initialized
@@ -53,17 +62,14 @@ public abstract class I2cDeviceSynchDeviceWithParameters<DEVICE_CLIENT extends I
     public boolean initialize(@NonNull PARAMETERS parameters)
         {
         this.isInitialized = internalInitialize(parameters);
-        if (this.deviceClientIsOwned)
+        if (this.isInitialized)
             {
-            if (this.isInitialized)
-                {
-                I2cWarningManager.removeProblemI2cDevice(deviceClient);
-                }
-            else
-                {
-                RobotLog.e("Marking I2C device %s %s as unhealthy because initialization failed", getClass().getSimpleName(), getConnectionInfo());
-                I2cWarningManager.notifyProblemI2cDevice(deviceClient);
-                }
+            I2cWarningManager.removeProblemI2cDevice(deviceClient);
+            }
+        else
+            {
+            RobotLog.e("Marking I2C device %s %s as unhealthy because initialization failed", getClass().getSimpleName(), getConnectionInfo());
+            I2cWarningManager.notifyProblemI2cDevice(deviceClient);
             }
         return this.isInitialized;
         }

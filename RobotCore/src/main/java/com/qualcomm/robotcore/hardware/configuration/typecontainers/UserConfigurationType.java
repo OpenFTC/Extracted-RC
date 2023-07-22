@@ -33,20 +33,22 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package com.qualcomm.robotcore.hardware.configuration.typecontainers;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.gson.annotations.Expose;
 import com.qualcomm.robotcore.hardware.ControlSystem;
 import com.qualcomm.robotcore.hardware.DeviceManager;
 import com.qualcomm.robotcore.hardware.configuration.ConfigurationType;
 import com.qualcomm.robotcore.hardware.configuration.ConfigurationTypeManager;
+import com.qualcomm.robotcore.hardware.configuration.ConfigurationTypeManager.ClassSource;
 import com.qualcomm.robotcore.hardware.configuration.annotations.DeviceProperties;
 import com.qualcomm.robotcore.util.ClassUtil;
-
-import org.firstinspires.ftc.robotcore.internal.opmode.OnBotJavaDeterminer;
+import com.qualcomm.robotcore.util.RobotLog;
 
 import java.io.InvalidObjectException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
+import java.util.EnumSet;
 
 import static com.qualcomm.robotcore.hardware.ControlSystem.REV_HUB;
 
@@ -66,24 +68,38 @@ public abstract class UserConfigurationType implements ConfigurationType, Serial
 
     private @Expose @NonNull final DeviceFlavor flavor;
     private @Expose @NonNull       String xmlTag;
-    private @Expose                String[] xmlTagAliases;
+    private @Deprecated @Expose    String[] xmlTagAliases = new String[]{}; // TODO(Noah): Delete this the next time we bump Robocol
     private @Expose                boolean builtIn = false;
-    private @Expose                boolean isOnBotJava;
-    private @Expose                boolean isExternalLibraries;
     private @Expose @NonNull       ControlSystem[] compatibleControlSystems = {REV_HUB};
     private @Expose                boolean isDeprecated;
+    /** May be null if running on the DS and used with an RC of a different version
+        (including hypothetical future versions that add new ClassSource entries) */
+    private @Expose @Nullable      ClassSource classSource;
+
+    // These are used only for serialization backwards-compatibility.
+    // TODO(Noah): Delete after the next Robocol bump
+    @SuppressWarnings({ "FieldCanBeLocal", "unused", "DeprecatedIsStillUsed" })
+    private @Expose @Deprecated boolean isOnBotJava;
+    @SuppressWarnings({ "FieldCanBeLocal", "unused", "DeprecatedIsStillUsed" })
+    private @Expose @Deprecated boolean isExternalLibraries;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public UserConfigurationType(Class clazz, @NonNull DeviceFlavor flavor, @NonNull String xmlTag)
+    public UserConfigurationType(Class<?> clazz, @NonNull DeviceFlavor flavor, @NonNull String xmlTag, @NonNull ClassSource classSource)
         {
         this.flavor = flavor;
         this.xmlTag = xmlTag;
-        this.isOnBotJava = OnBotJavaDeterminer.isOnBotJava(clazz);
-        this.isExternalLibraries = OnBotJavaDeterminer.isExternalLibraries(clazz);
+        this.classSource = classSource;
+        this.isOnBotJava = classSource == ClassSource.ONBOTJAVA;
+        this.isExternalLibraries = classSource == ClassSource.EXTERNAL_LIB;
         this.isDeprecated = clazz.isAnnotationPresent(Deprecated.class);
+
+        if (xmlTag.equals(ConfigurationTypeManager.NEW_HD_HEX_MOTOR_40_TAG))
+            {
+            xmlTagAliases = new String[] { ConfigurationTypeManager.LEGACY_HD_HEX_MOTOR_TAG };
+            }
         }
 
     // used by gson deserialization
@@ -98,10 +114,18 @@ public abstract class UserConfigurationType implements ConfigurationType, Serial
         description = ClassUtil.decodeStringRes(deviceProperties.description());
         builtIn = deviceProperties.builtIn();
         compatibleControlSystems = deviceProperties.compatibleControlSystems();
-        xmlTagAliases = deviceProperties.xmlTagAliases();
         if (!deviceProperties.name().isEmpty())
             {
             name = ClassUtil.decodeStringRes(deviceProperties.name().trim());
+            }
+
+        for (String unusedXmlTagAlias: deviceProperties.xmlTagAliases())
+            {
+            if (!xmlTag.equals(unusedXmlTagAlias))
+                {
+                RobotLog.addGlobalWarningMessage("xmlTagAliases has been deprecated. %s will NOT " +
+                        "be respected as an alias for the %s XML tag.", unusedXmlTagAlias, xmlTag);
+                }
             }
         }
 
@@ -111,13 +135,9 @@ public abstract class UserConfigurationType implements ConfigurationType, Serial
             {
             name = clazz.getSimpleName();
             }
-
-        if (xmlTagAliases == null)
-            {
-            xmlTagAliases = new String[]{};
-            }
         }
 
+    @Override
     public boolean isCompatibleWith(ControlSystem controlSystem)
         {
         for (ControlSystem compatibleControlSystem : compatibleControlSystems)
@@ -168,6 +188,7 @@ public abstract class UserConfigurationType implements ConfigurationType, Serial
         return this.flavor;
         }
 
+    @Override
     public @NonNull String getName()
         {
         return this.name;
@@ -178,14 +199,15 @@ public abstract class UserConfigurationType implements ConfigurationType, Serial
         return this.description;
         }
 
-    public boolean isOnBotJava()
+    @Override
+    public @NonNull ClassSource getClassSource()
         {
-        return isOnBotJava;
-        }
-
-    public boolean isExternalLibraries()
-        {
-        return isExternalLibraries;
+        // If we don't know our class source, we must be running on the DS and be connected
+        // to an RC of an older version (or maybe a future version with new sources we don't know
+        // about). On the DS, our beliefs about where the class came from don't matter much. It's
+        // very likely that it came from the APK anyway.
+        if (classSource == null) { return ClassSource.APK; }
+        return classSource;
         }
 
     /**
@@ -196,24 +218,21 @@ public abstract class UserConfigurationType implements ConfigurationType, Serial
         return this.builtIn;
         }
 
+    /** Only InstantiableUserConfigurationType subclasses can have this return true */
+    @Override
+    public boolean annotatedClassIsInstantiable()
+        {
+        return false;
+        }
+
 
     //----------------------------------------------------------------------------------------------
     // ConfigurationType
     //----------------------------------------------------------------------------------------------
 
-    @Override @NonNull public String getDisplayName(DisplayNameFlavor flavor)
-        {
-        return this.name;
-        }
-
     @Override @NonNull public String getXmlTag()
         {
         return this.xmlTag;
-        }
-
-    @Override @NonNull public String[] getXmlTagAliases()
-        {
-        return xmlTagAliases;
         }
 
     @Override @NonNull public DeviceManager.UsbDeviceType toUSBDeviceType()

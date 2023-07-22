@@ -37,6 +37,7 @@ class ElapsedTimeAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = ElapsedTime.class, constructor = true)
   public ElapsedTime create() {
     try {
       startBlockExecution(BlockType.CREATE, "");
@@ -51,6 +52,7 @@ class ElapsedTimeAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = ElapsedTime.class, constructor = true)
   public ElapsedTime create_withStartTime(long startTime) {
     try {
       startBlockExecution(BlockType.CREATE, "");
@@ -65,6 +67,7 @@ class ElapsedTimeAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = ElapsedTime.class, constructor = true)
   public ElapsedTime create_withResolution(String resolutionString) {
     try {
       startBlockExecution(BlockType.CREATE, "");
@@ -83,6 +86,7 @@ class ElapsedTimeAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = ElapsedTime.class, methodName = "startTime")
   public double getStartTime(Object elapsedTimeArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".StartTime");
@@ -101,6 +105,7 @@ class ElapsedTimeAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = ElapsedTime.class, methodName = "time")
   public double getTime(Object elapsedTimeArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".Time");
@@ -119,6 +124,7 @@ class ElapsedTimeAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = ElapsedTime.class, methodName = "seconds")
   public double getSeconds(Object elapsedTimeArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".Seconds");
@@ -137,6 +143,7 @@ class ElapsedTimeAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = ElapsedTime.class, methodName = "milliseconds")
   public double getMilliseconds(Object elapsedTimeArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".Milliseconds");
@@ -155,6 +162,7 @@ class ElapsedTimeAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = ElapsedTime.class, methodName = "getResolution")
   public String getResolution(Object elapsedTimeArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".Resolution");
@@ -176,6 +184,7 @@ class ElapsedTimeAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = ElapsedTime.class, methodName = "toString")
   public String getAsText(Object elapsedTimeArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".AsText");
@@ -194,6 +203,7 @@ class ElapsedTimeAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = ElapsedTime.class, methodName = "reset")
   public void reset(Object elapsedTimeArg) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".reset");
@@ -211,6 +221,7 @@ class ElapsedTimeAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = ElapsedTime.class, methodName = "log")
   public void log(Object elapsedTimeArg, String label) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".log");
@@ -228,6 +239,7 @@ class ElapsedTimeAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = ElapsedTime.class, methodName = "toString")
   public String toText(Object elapsedTimeArg) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".toText");

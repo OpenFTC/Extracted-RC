@@ -44,6 +44,9 @@ public interface ClassFilter {
     void filterOnBotJavaClassesStart();
     void filterExternalLibrariesClassesStart();
 
+    // TODO(Noah): In a major or off-season release, replace the various filterClass() methods
+    //             with one that accepts a Class<?> and a ClassSource enum (note the type param)
+    //
     /**
      * Don't call me, I'll call you.
      *

@@ -39,6 +39,7 @@ import androidx.annotation.StringRes;
 import com.qualcomm.robotcore.R;
 import com.qualcomm.robotcore.exception.RobotCoreException;
 import com.qualcomm.robotcore.hardware.DeviceManager;
+import com.qualcomm.robotcore.hardware.LynxModuleImuType;
 import com.qualcomm.robotcore.hardware.LynxModuleMeta;
 import com.qualcomm.robotcore.hardware.LynxModuleMetaList;
 import com.qualcomm.robotcore.hardware.RobotCoreLynxUsbDevice;
@@ -188,19 +189,19 @@ public class ConfigurationUtility
             if (metas == null) metas = new LynxModuleMetaList(serialNumber);
             RobotLog.vv(TAG, "buildLynxUsbDevice(): discovered lynx modules: %s", metas);
 
-            LynxModuleMeta.ImuType parentImuType;
+            LynxModuleImuType parentImuType;
 
             if (metas.getParent() == null)
                 {
-                parentImuType = LynxModuleMeta.ImuType.NONE;
+                parentImuType = LynxModuleImuType.NONE;
                 }
             else
                 {
                 parentImuType = metas.getParent().imuType();
-                if (parentImuType == LynxModuleMeta.ImuType.UNKNOWN)
+                if (parentImuType == LynxModuleImuType.UNKNOWN)
                     {
-                    RobotLog.aa(TAG, "parent IMU type was UNKNOWN in buildNewLynxDevice()");
-                    parentImuType = LynxModuleMeta.ImuType.NONE;
+                    RobotLog.ww(TAG, "parent IMU type was UNKNOWN in buildNewLynxDevice()");
+                    parentImuType = LynxModuleImuType.NONE;
                     }
                 }
 
@@ -212,8 +213,8 @@ public class ConfigurationUtility
                         meta.isParent() &&
                         meta.getModuleAddress() == LynxConstants.CH_EMBEDDED_MODULE_ADDRESS;
 
-                LynxModuleMeta.ImuType syntheticImuType;
-                if (parentImuType != LynxModuleMeta.ImuType.NONE)
+                LynxModuleImuType syntheticImuType;
+                if (parentImuType != LynxModuleImuType.NONE)
                     {
                     // When the parent has an IMU, that's the IMU that should be used for
                     // performance reasons, so we don't want to add the synthetic IMU on any other
@@ -222,7 +223,7 @@ public class ConfigurationUtility
                     // Because we previously set parentHasImu to true if the RC is outdated,
                     // this branch includes that case.
                     if (meta.isParent()) { syntheticImuType = parentImuType; }
-                    else { syntheticImuType = LynxModuleMeta.ImuType.NONE; }
+                    else { syntheticImuType = LynxModuleImuType.NONE; }
                     }
                 else
                     {
@@ -230,10 +231,10 @@ public class ConfigurationUtility
                     // for any modules that are known to physically have one.
 
                     syntheticImuType = meta.imuType();
-                    if (syntheticImuType == LynxModuleMeta.ImuType.UNKNOWN)
+                    if (syntheticImuType == LynxModuleImuType.UNKNOWN)
                         {
-                        RobotLog.aa(TAG, "module IMU type was UNKNOWN in buildNewLynxDevice()");
-                        syntheticImuType = LynxModuleMeta.ImuType.NONE;
+                        RobotLog.ww(TAG, "module IMU type was UNKNOWN in buildNewLynxDevice()");
+                        syntheticImuType = LynxModuleImuType.NONE;
                         }
                     }
 
@@ -265,7 +266,7 @@ public class ConfigurationUtility
     public LynxModuleConfiguration buildNewLynxModule(
             int moduleAddress,
             boolean isParent,
-            LynxModuleMeta.ImuType syntheticImuType,
+            LynxModuleImuType syntheticImuType,
             boolean isEnabled,
             boolean isEmbeddedControlHubModule)
         {
@@ -281,14 +282,14 @@ public class ConfigurationUtility
         LynxModuleConfiguration lynxModuleConfiguration = buildEmptyLynxModule(name, moduleAddress, isParent, isEnabled);
 
         // Add the embedded IMU device to the newly created configuration, if applicable
-        if (syntheticImuType != LynxModuleMeta.ImuType.NONE && syntheticImuType != LynxModuleMeta.ImuType.UNKNOWN)
+        if (syntheticImuType != LynxModuleImuType.NONE && syntheticImuType != LynxModuleImuType.UNKNOWN)
             {
             UserConfigurationType embeddedIMUConfigurationType;
-            if (syntheticImuType == LynxModuleMeta.ImuType.BNO055)
+            if (syntheticImuType == LynxModuleImuType.BNO055)
                 {
                 embeddedIMUConfigurationType = I2cDeviceConfigurationType.getLynxEmbeddedBNO055ImuType();
                 }
-            else if (syntheticImuType == LynxModuleMeta.ImuType.BHI260)
+            else if (syntheticImuType == LynxModuleImuType.BHI260)
                 {
                 embeddedIMUConfigurationType = I2cDeviceConfigurationType.getLynxEmbeddedBHI260APImuType();
                 }

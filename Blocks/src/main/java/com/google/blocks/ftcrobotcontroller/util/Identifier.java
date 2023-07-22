@@ -57,6 +57,8 @@ public enum Identifier {
       "gamepad1", null),
   GAMEPAD_2("gamepad2", null,
       "gamepad2", null),
+  IMU_PARAMETERS("imuParametersAccess", "imuParametersIdentifierForJavaScript",
+      null, null),
   LED_EFFECT("ledEffectAccess", "ledEffectIdentifierForJavaScript",
       null, null),
   LINEAR_OP_MODE("linearOpMode", "linearOpModeIdentifierForJavaScript",
@@ -80,6 +82,8 @@ public enum Identifier {
   QUATERNION("quaternionAccess", "quaternionIdentifierForJavaScript",
       null, null),
   RANGE("rangeAccess", "rangeIdentifierForJavaScript",
+      null, null),
+  REV_HUB_ORIENTATION_ON_ROBOT("revHubOrientationOnRobotAccess", "revHubOrientationOnRobotIdentifierForJavaScript",
       null, null),
   RUMBLE_EFFECT("rumbleEffectAccess", "rumbleEffectIdentifierForJavaScript",
       null, null),
@@ -120,6 +124,8 @@ public enum Identifier {
   VUFORIA_TRACKABLE_DEFAULT_LISTENER("vuforiaTrackableDefaultListenerAccess", "vuforiaTrackableDefaultListenerIdentifierForJavaScript",
       null, null),
   VUFORIA_TRACKABLES("vuforiaTrackablesAccess", "vuforiaTrackablesIdentifierForJavaScript",
+      null, null),
+  YAW_PITCH_ROLL_ANGLES("yawPitchRollAnglesAccess", "yawPitchRollAnglesIdentifierForJavaScript",
       null, null);
 
   /**

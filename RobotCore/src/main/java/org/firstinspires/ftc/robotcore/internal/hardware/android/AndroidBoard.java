@@ -32,6 +32,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.robotcore.internal.hardware.android;
 
+import androidx.annotation.NonNull;
+
 import com.qualcomm.robotcore.R;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.configuration.LynxConstants;
@@ -48,19 +50,25 @@ public abstract class AndroidBoard {
 
     private static AndroidBoard androidBoard;
 
-    // GPIO pin names
-    protected static final String ANDROID_BOARD_IS_PRESENT_PIN_NAME = "AndroidBoardIsPresentPin";
+    // GPIO pin names (will be used as Logcat tags; must be 22 characters or less)
+    protected static final String ANDROID_BOARD_IS_PRESENT_PIN_NAME = "ABIsPresentPin";
     protected static final String LYNX_MODULE_RESET_PIN_NAME = "LynxModuleResetPin";
     protected static final String PROGRAMMING_PIN_NAME = "ProgrammingPin";
     protected static final String USER_BUTTON_PIN_NAME = "UserButtonPin";
-    protected static final String BHI_260_QUATERNION_REGISTER_FREEZE_PIN_NAME = "BHI260QuatFreezePin";
+    protected static final String BHI_260_RESET_PIN_NAME = "BHI260ResetPin";
+    protected static final String BHI_260_INTERRUPT_PIN_NAME = "BHI260IntPin";
+    protected static final String BHI_260_GPIO1_PIN_NAME = "BHI260Gpio1Pin";
+    protected static final String BHI_260_GPIO5_PIN_NAME = "BHI260Gpio5Pin";
+    protected static final String BHI_260_GPIO6_PIN_NAME = "BHI260Gpio6Pin";
+    protected static final String BHI_260_GPIO17_PIN_NAME = "BHI260Gpio17Pin";
+    protected static final String BHI_260_GPIO18_PIN_NAME = "BHI260Gpio18Pin";
 
     /**
      * Get the instance of AndroidBoard that is appropriate for our hardware
-     *
+     * <p>
      * Returns a FakeAndroidBoard if the Control Hub type is unknown.
      */
-    public static AndroidBoard getInstance() {
+    @NonNull public static AndroidBoard getInstance() {
         if (androidBoard == null) {
             if (isRevControlHubv1()) {
                 androidBoard = new Rev3328();
@@ -90,11 +98,11 @@ public abstract class AndroidBoard {
 
     /**
      * Returns the type of Android board we're running on as a String
-     *
+     * <p>
      * Intended only for logging or display. Device-specific functionality belongs in the appropriate
      * subclass of AndroidBoard.
      */
-    public abstract String getDeviceType();
+    @NonNull public abstract String getDeviceType();
 
      // GPIO pins
 
@@ -102,35 +110,64 @@ public abstract class AndroidBoard {
      * Returns a {@link DigitalChannel} that controls the AndroidBoardIsPresent pin
      * (also known as the DragonboardIsPresent pin) (96boards pin 8)
      */
-    public abstract DigitalChannel getAndroidBoardIsPresentPin();
+    @NonNull public abstract DigitalChannel getAndroidBoardIsPresentPin();
 
     /**
      * Returns a {@link DigitalChannel} that controls the Lynx programming pin (96boards pin 23)
      */
-    public abstract DigitalChannel getProgrammingPin();
+    @NonNull public abstract DigitalChannel getProgrammingPin();
 
     /**
      * Returns a {@link DigitalChannel} that controls the Lynx reset pin (96boards pin 25)
      */
-    public abstract DigitalChannel getLynxModuleResetPin();
+    @NonNull public abstract DigitalChannel getLynxModuleResetPin();
 
     /**
      * Returns a {@link DigitalChannel} that gives the value of the user-facing button on the
      * Control Hub (96boards pin 10)
      */
-    public abstract DigitalChannel getUserButtonPin();
+    @NonNull public abstract DigitalChannel getUserButtonPin();
 
     /**
-     * Returns a {@link DigitalChannel} that controls the BHI260 quaternion register freeze pin
-     * (96boards pin 30)
+     * Returns a {@link DigitalChannel} that controls the BHI260AP reset pin (96boards pin 26)
      */
-    public abstract DigitalChannel getBhi260QuatRegFreezePin();
+    @NonNull public abstract DigitalChannel getBhi260ResetPin();
+
+    /**
+     * Returns a {@link DigitalChannel} that accesses the BHI260AP HIRQ interrupt pin (96boards pin 27)
+     */
+    @NonNull public abstract DigitalChannel getBhi260InterruptPin();
+
+    /**
+     * Returns a {@link DigitalChannel} that accesses the BHI260AP GPIO1 pin (96boards pin 28)
+     */
+    @NonNull public abstract DigitalChannel getBhi260Gpio1();
+
+    /**
+     * Returns a {@link DigitalChannel} that accesses the BHI260AP GPIO5 pin (96boards pin 29)
+     */
+    @NonNull public abstract DigitalChannel getBhi260Gpio5();
+
+    /**
+     * Returns a {@link DigitalChannel} that accesses the BHI260AP GPIO6 pin (96boards pin 30)
+     */
+    @NonNull public abstract DigitalChannel getBhi260Gpio6();
+
+    /**
+     * Returns a {@link DigitalChannel} that accesses the BHI260AP GPIO17 pin (96boards pin 31)
+     */
+    @NonNull public abstract DigitalChannel getBhi260Gpio17();
+
+    /**
+     * Returns a {@link DigitalChannel} that accesses the BHI260AP GPIO18 pin (96boards pin 33)
+     */
+    @NonNull public abstract DigitalChannel getBhi260Gpio18();
 
     /**
      * Returns a {@link File} that points to the location of the "file" that we read and write from
      * to communicate with the Lynx board over UART
      */
-    public abstract File getUartLocation();
+    @NonNull public abstract File getUartLocation();
 
     /**
      * Returns whether or not this Android board supports broadcasting a 5GHz Wi-Fi access point
@@ -155,7 +192,7 @@ public abstract class AndroidBoard {
     /**
      * Returns the current data rate of our Wi-Fi access point beacons
      */
-    public abstract WifiDataRate getWifiApBeaconRate();
+    @NonNull public abstract WifiDataRate getWifiApBeaconRate();
 
     /**
      * Set the data rate of our Wi-Fi access point beacons
@@ -212,6 +249,6 @@ public abstract class AndroidBoard {
         OFDM_24Mb,
         OFDM_36Mb,
         OFDM_48Mb,
-        OFDM_54Mb;
+        OFDM_54Mb
     }
 }

@@ -36,6 +36,7 @@ class OpenGLMatrixAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = OpenGLMatrix.class, constructor = true)
   public OpenGLMatrix create() {
     try {
       startBlockExecution(BlockType.CREATE, "");
@@ -50,6 +51,7 @@ class OpenGLMatrixAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = OpenGLMatrix.class, constructor = true)
   public OpenGLMatrix create_withMatrixF(Object matrixArg) {
     try {
       startBlockExecution(BlockType.CREATE, "");
@@ -68,6 +70,7 @@ class OpenGLMatrixAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = OpenGLMatrix.class, methodName = "rotation")
   public OpenGLMatrix rotation(String angleUnitString, float angle, float dx, float dy, float dz) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".rotation");
@@ -86,6 +89,7 @@ class OpenGLMatrixAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = OpenGLMatrix.class, methodName = "rotation")
   public OpenGLMatrix rotation_withAxesArgs(
       String axesReferenceString, String axesOrderString, String angleUnitString,
       float firstAngle, float secondAngle, float thirdAngle) {
@@ -109,6 +113,7 @@ class OpenGLMatrixAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = OpenGLMatrix.class, methodName = "translation")
   public OpenGLMatrix translation(float dx, float dy, float dz) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".translation");
@@ -123,6 +128,7 @@ class OpenGLMatrixAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = OpenGLMatrix.class, methodName = "identityMatrix")
   public OpenGLMatrix identityMatrix() {
     try {
       startBlockExecution(BlockType.FUNCTION, ".identityMatrix");
@@ -137,6 +143,7 @@ class OpenGLMatrixAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = OpenGLMatrix.class, methodName = "scale")
   public void scale_with3(Object matrixArg, float scaleX, float scaleY, float scaleZ) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".scale");
@@ -154,6 +161,7 @@ class OpenGLMatrixAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = OpenGLMatrix.class, methodName = "scale")
   public void scale_with1(Object matrixArg, float scale) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".scale");
@@ -171,6 +179,7 @@ class OpenGLMatrixAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = OpenGLMatrix.class, methodName = "translate")
   public void translate(Object matrixArg, float dx, float dy, float dz) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".translate");
@@ -188,6 +197,7 @@ class OpenGLMatrixAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = OpenGLMatrix.class, methodName = "rotate")
   public void rotate(Object matrixArg, String angleUnitString, float angle, float dx, float dy, float dz) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".rotate");
@@ -206,6 +216,7 @@ class OpenGLMatrixAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = OpenGLMatrix.class, methodName = "rotate")
   public void rotate_withAxesArgs(
       Object matrixArg,
       String axesReferenceString, String axesOrderString, String angleUnitString,
@@ -229,6 +240,7 @@ class OpenGLMatrixAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = OpenGLMatrix.class, methodName = "scaled")
   public OpenGLMatrix scaled_with3(Object matrixArg, float scaleX, float scaleY, float scaleZ) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".scaled");
@@ -247,6 +259,7 @@ class OpenGLMatrixAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = OpenGLMatrix.class, methodName = "scaled")
   public OpenGLMatrix scaled_with1(Object matrixArg, float scale) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".scaled");
@@ -265,6 +278,7 @@ class OpenGLMatrixAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = OpenGLMatrix.class, methodName = "translated")
   public OpenGLMatrix translated(Object matrixArg, float dx, float dy, float dz) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".translated");
@@ -283,6 +297,7 @@ class OpenGLMatrixAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = OpenGLMatrix.class, methodName = "rotated")
   public OpenGLMatrix rotated(
       Object matrixArg, String angleUnitString, float angle, float dx, float dy, float dz) {
     try {
@@ -303,6 +318,7 @@ class OpenGLMatrixAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = OpenGLMatrix.class, methodName = "rotated")
   public OpenGLMatrix rotated_withAxesArgs(
       Object matrixArg, String axesReferenceString, String axesOrderString, String angleUnitString,
       float firstAngle, float secondAngle, float thirdAngle) {
@@ -326,6 +342,7 @@ class OpenGLMatrixAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = OpenGLMatrix.class, methodName = "multiplied")
   public OpenGLMatrix multiplied(Object matrix1Arg, Object matrix2Arg) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".multiplied");
@@ -345,6 +362,7 @@ class OpenGLMatrixAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = OpenGLMatrix.class, methodName = "multiply")
   public void multiply(Object matrix1Arg, Object matrix2Arg) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".multiply");

@@ -68,6 +68,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.qualcomm.robotcore.R;
+import com.qualcomm.robotcore.hardware.ControlSystem;
 import com.qualcomm.robotcore.hardware.DeviceManager;
 import com.qualcomm.robotcore.util.RobotLog;
 
@@ -75,6 +76,7 @@ import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 
 /**
@@ -151,11 +153,17 @@ public enum BuiltInConfigurationType implements ConfigurationType
 
     @Override public boolean isDeviceFlavor(DeviceFlavor flavor)
         {
-        if (flavor == DeviceFlavor. BUILT_IN)
+        if (flavor == DeviceFlavor.BUILT_IN)
             {
             return true;
             }
         return flavor == this.deviceFlavor;
+        }
+
+    @Override
+    public boolean isCompatibleWith(ControlSystem controlSystem)
+        {
+        return true;
         }
 
     @NonNull
@@ -180,7 +188,7 @@ public enum BuiltInConfigurationType implements ConfigurationType
         }
 
     @Override @NonNull
-    public String getDisplayName(DisplayNameFlavor flavor)
+    public String getName()
         {
         switch (this)
             {
@@ -215,14 +223,20 @@ public enum BuiltInConfigurationType implements ConfigurationType
             }
         }
 
+    @Override
+    public ConfigurationTypeManager.ClassSource getClassSource()
+        {
+        return ConfigurationTypeManager.ClassSource.APK;
+        }
+
+    @Override
+    public boolean annotatedClassIsInstantiable()
+        {
+        return false;
+        }
+
     @Override @NonNull public String getXmlTag()
         {
         return this.xmlTag;
-        }
-
-    @Override @NonNull public String[] getXmlTagAliases()
-        {
-        // This implementation can be changed if aliases are needed for a built-in type
-        return new String[0];
         }
     }

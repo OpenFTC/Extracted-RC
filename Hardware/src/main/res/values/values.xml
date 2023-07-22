@@ -12,6 +12,7 @@
     <string name="lynxModuleFirmwareOutdated">has firmware that does not meet the minimum requirement for this FTC season. Update to firmware %s or later.</string>
     <string name="lynxModulePowerLost">reported a temporary complete power loss while an Op Mode was running. Unexpected behavior may result.</string>
     <string name="lynxModulePreviouslyNotResponding">temporarily stopped responding to commands while an Op Mode was running.</string>
+    <string name="parametersForOtherDeviceUsed">An IMU parameters object was used that is intended for a different physical IMU type.</string>
     <string name="powerIssueTip">Check your wiring, battery, and power switch.</string>
     <string name="progressUpdatingDeviceFirmware">Updating Expansion Hub firmware (%s)</string>
     <string name="quotes">\"%s\"</string>

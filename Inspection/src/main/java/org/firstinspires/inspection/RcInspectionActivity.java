@@ -376,7 +376,7 @@ public class RcInspectionActivity extends InspectionActivity
                 }
             else
                 {
-                addItemToCount(surveyData.getHardwareData(), device.getConfigurationType().getDisplayName(ConfigurationType.DisplayNameFlavor.Normal));
+                addItemToCount(surveyData.getHardwareData(), device.getConfigurationType().getName());
                 }
             }
         }

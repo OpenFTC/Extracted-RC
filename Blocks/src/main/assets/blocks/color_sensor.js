@@ -428,7 +428,7 @@ Blockly.FtcJava['colorSensor_isLightOn'] = function(block) {
   // This java code will throw ClassCastException if the ColorSensor is not a Light.
   Blockly.FtcJava.generateImport_('Light');
   var code = '((Light) ' + identifier + ').isLightOn()';
-  return [code, Blockly.FtcJava.ORDER_LOGICAL_FUNCTION_CALL];
+  return [code, Blockly.FtcJava.ORDER_FUNCTION_CALL];
 };
 
 Blockly.Blocks['colorSensor_toText'] = {

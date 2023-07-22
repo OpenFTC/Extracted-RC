@@ -46,9 +46,9 @@ import com.qualcomm.robotcore.hardware.I2cDeviceSynchSimple;
 import com.qualcomm.robotcore.hardware.I2cWaitControl;
 import com.qualcomm.robotcore.hardware.I2cWarningManager;
 import com.qualcomm.robotcore.hardware.IntegratingGyroscope;
+import com.qualcomm.robotcore.hardware.QuaternionBasedImuHelper;
 import com.qualcomm.robotcore.hardware.TimestampedData;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.ReadWriteFile;
 import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.util.ThreadPool;
 import com.qualcomm.robotcore.util.TypeConversion;
@@ -66,10 +66,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Quaternion;
 import org.firstinspires.ftc.robotcore.external.navigation.Temperature;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
-import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
-import java.io.File;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.HashSet;
@@ -96,46 +93,12 @@ public abstract class BNO055IMUImpl extends I2cDeviceSynchDeviceWithParameters<I
      */
     public static boolean imuIsPresent(I2cDeviceSynchSimple deviceClient, boolean retryAfterWaiting)
         {
-        RobotLog.vv("BNO055", "Suppressing I2C warnings while we check for a BNO055 IMU");
-        I2cWarningManager.suppressNewProblemDeviceWarnings(true);
-        try
-            {
-            byte chipId = deviceClient.read8(Register.CHIP_ID.bVal);
-            if (chipId != bCHIP_ID_VALUE && retryAfterWaiting)
-                {
-                deviceClient.waitForWriteCompletions(I2cWaitControl.WRITTEN);
-                try
-                    {
-                    Thread.sleep(650); // delay value is from Table 0-2 in the BNO055 specification
-                    }
-                catch (InterruptedException e)
-                    {
-                    Thread.currentThread().interrupt();
-                    }
-                chipId = deviceClient.read8(Register.CHIP_ID.bVal);
-                }
-            if (chipId == bCHIP_ID_VALUE)
-                {
-                RobotLog.vv("BNO055", "Found BNO055 IMU");
-                return true;
-                }
-            else
-                {
-                RobotLog.vv("BNO055", "No BNO055 IMU found");
-                return false;
-                }
-            }
-        finally
-            {
-            I2cWarningManager.suppressNewProblemDeviceWarnings(false);
-            }
+        return BNO055Util.imuIsPresent(deviceClient, retryAfterWaiting);
         }
 
     //------------------------------------------------------------------------------------------
     // State
     //------------------------------------------------------------------------------------------
-
-    protected SensorMode             currentMode;
 
     protected final Object           dataLock = new Object();
     protected AccelerationIntegrator accelerationAlgorithm;
@@ -193,14 +156,13 @@ public abstract class BNO055IMUImpl extends I2cDeviceSynchDeviceWithParameters<I
     /**
      * This constructor is called internally by the FTC SDK.
      */
-    public BNO055IMUImpl(I2cDeviceSynch deviceClient)
+    public BNO055IMUImpl(I2cDeviceSynch deviceClient, boolean deviceClientIsOwned)
         {
-        super(deviceClient, true, disabledParameters());
+        super(deviceClient, deviceClientIsOwned, disabledParameters());
 
         this.deviceClient.setReadWindow(lowerWindow);
         this.deviceClient.engage();
 
-        this.currentMode           = null;
         this.accelerationAlgorithm = new NaiveAccelerationIntegrator();
         this.accelerationMananger  = null;
 
@@ -224,9 +186,17 @@ public abstract class BNO055IMUImpl extends I2cDeviceSynchDeviceWithParameters<I
 
     @Override public void resetDeviceConfigurationForOpMode()
         {
+        // So that teams can maintain a 0-heading point across Op Modes, we want to preserve the
+        // parameters from run to run, and we do NOT want to mark the device as needing
+        // initialization between Op Modes.
+        Parameters previousParameters = this.parameters;
+        boolean previouslyInitialized = this.isInitialized;
+
         stopAccelerationIntegration();
-        this.parameters = disabledParameters();
         super.resetDeviceConfigurationForOpMode();
+
+        this.parameters = previousParameters;
+        this.isInitialized = previouslyInitialized;
         }
 
     @Override public void onOpModePreInit(OpMode opMode)
@@ -274,7 +244,8 @@ public abstract class BNO055IMUImpl extends I2cDeviceSynchDeviceWithParameters<I
         // Remember parameters so they're accessible starting during initialization.
         // Disconnect from user parameters so he won't interfere with us later.
         Parameters prevParameters = this.parameters;
-        this.parameters = parameters.clone();
+        parameters = parameters.clone();
+        this.parameters = parameters;
 
         // Configure logging as desired (we no longer log at the I2C level)
         // this.deviceClient.setLogging(this.parameters.loggingEnabled);
@@ -331,7 +302,7 @@ public abstract class BNO055IMUImpl extends I2cDeviceSynchDeviceWithParameters<I
             elapsed.reset();
             write8(Register.SYS_TRIGGER, 0x20, I2cWaitControl.WRITTEN);
             delay(400);
-            RobotLog.vv("IMU", "Now polling until IMU comes out of reset. It is normal to see I2C failures below");
+            RobotLog.vv(getLoggingTag(), "Now polling until IMU comes out of reset. It is normal to see I2C failures below");
             byte chipId;
             while (!isStopRequested())
                 {
@@ -352,58 +323,17 @@ public abstract class BNO055IMUImpl extends I2cDeviceSynchDeviceWithParameters<I
                 I2cWarningManager.suppressNewProblemDeviceWarnings(false);
             }
 
-        RobotLog.vv("IMU", "IMU has come out of reset. No more I2C failures should occur.");
+        RobotLog.vv(getLoggingTag(), "IMU has come out of reset. No more I2C failures should occur.");
 
-        // Set to normal power mode
-        write8(Register.PWR_MODE, POWER_MODE.NORMAL.getValue(), I2cWaitControl.WRITTEN);
-        delayLoreExtra(10);
-
-        // Make sure we're looking at register page zero, as the other registers
-        // we need to set here are on that page.
-        write8(Register.PAGE_ID, 0);
-
-        // Set the output units. Section 3.6, p31
-        int unitsel = (parameters.pitchMode.bVal << 7) |       // pitch angle convention
-                      (parameters.temperatureUnit.bVal << 4) | // temperature
-                      (parameters.angleUnit.bVal << 2) |       // euler angle units
-                      (parameters.angleUnit.bVal << 1) |       // gyro units, per second
-                      (parameters.accelUnit.bVal /*<< 0*/);    // accelerometer units
-        write8(Register.UNIT_SEL, unitsel);
-
-        // Switch to page 1 so we can write some more registers
-        write8(Register.PAGE_ID, 1);
-
-        // Configure selected page 1 registers
-        write8(Register.ACC_CONFIG, parameters.accelPowerMode.bVal | parameters.accelBandwidth.bVal | parameters.accelRange.bVal);
-        write8(Register.MAG_CONFIG, parameters.magPowerMode.bVal | parameters.magOpMode.bVal | parameters.magRate.bVal);
-        write8(Register.GYR_CONFIG_0, parameters.gyroBandwidth.bVal | parameters.gyroRange.bVal);
-        write8(Register.GYR_CONFIG_1, parameters.gyroPowerMode.bVal);
-
-        // Switch back
-        write8(Register.PAGE_ID, 0);
-
-        write8(Register.SYS_TRIGGER, 0x00);
-
-        if (this.parameters.calibrationData != null)
+        try
             {
-            writeCalibrationData(this.parameters.calibrationData);
+            BNO055Util.sharedInit(deviceClient, parameters);
             }
-        else if (this.parameters.calibrationDataFile != null)
+        catch (BNO055Util.InitException e)
             {
-            try {
-                File file = AppUtil.getInstance().getSettingsFile(this.parameters.calibrationDataFile);
-                String serialized = ReadWriteFile.readFileOrThrow(file);
-                CalibrationData data = CalibrationData.deserialize(serialized);
-                writeCalibrationData(data);
-                }
-            catch (IOException e)
-                {
-                // Ignore the absence of the indicated file, etc
-                }
+            RobotLog.ee(getLoggingTag(), e, "Failed to initialize BNO055 IMU");
+            return false;
             }
-
-        // Finally, enter the requested operating mode (see section 3.3).
-        setSensorMode(parameters.mode);
 
         // Make sure the status is correct before exiting
         SystemStatus status = getSystemStatus();
@@ -421,28 +351,12 @@ public abstract class BNO055IMUImpl extends I2cDeviceSynchDeviceWithParameters<I
     operation mode, the sensors which are required in that particular sensor mode are powered,
     while the sensors whose signals are not required are set to suspend mode. */
         {
-        // Remember the mode, 'cause that's easy
-        this.currentMode = mode;
-
-        // Actually change the operation/sensor mode
-        this.write8(Register.OPR_MODE, mode.bVal & 0x0F, I2cWaitControl.WRITTEN);                           // OPR_MODE=0x3D
-
-        // Delay per Table 3-6 of BNO055 Data sheet
-        if (mode == SensorMode.CONFIG)
-            delayExtra(19);
-        else
-            delayExtra(7);
+        BNO055Util.setSensorMode(deviceClient, mode);
         }
 
     public synchronized SystemStatus getSystemStatus()
         {
-        byte bVal = read8(Register.SYS_STAT);
-        SystemStatus status = SystemStatus.from(bVal);
-        if (status==SystemStatus.UNKNOWN)
-            {
-            log_w("unknown system status observed: 0x%08x", bVal);
-            }
-        return status;
+        return BNO055Util.getSystemStatus(deviceClient, getLoggingTag());
         }
 
     public synchronized SystemError getSystemError()
@@ -502,16 +416,19 @@ public abstract class BNO055IMUImpl extends I2cDeviceSynchDeviceWithParameters<I
     @Override
     public synchronized AngularVelocity getAngularVelocity(org.firstinspires.ftc.robotcore.external.navigation.AngleUnit unit)
         {
-        // See the comment in getAngularOrientation().
         throwIfNotInitialized();
-        VectorData vector = getVector(VECTOR.GYROSCOPE, getAngularScale());
-        float xRotationRate = -vector.next();
-        float yRotationRate = -vector.next();
-        float zRotationRate = vector.next();
-        return new AngularVelocity(parameters.angleUnit.toAngleUnit(),
-                    xRotationRate, yRotationRate, zRotationRate,
-                    vector.data.nanoTime)
-                .toAngleUnit(unit);
+
+        // Ensure that the 6 bytes for this vector are visible in the register window.
+        ensureReadWindow(new I2cDeviceSynch.ReadWindow(VECTOR.GYROSCOPE.getValue(), 6, readMode));
+
+        AngularVelocity rawAngularVelocity = BNO055Util.getRawAngularVelocity(deviceClient, parameters.angleUnit, unit);
+        // Negate the X and Y axes (see the comment in getAngularOrientation())
+        return new AngularVelocity(
+                unit,
+                -rawAngularVelocity.xRotationRate,
+                -rawAngularVelocity.yRotationRate,
+                rawAngularVelocity.zRotationRate,
+                rawAngularVelocity.acquisitionTime);
         }
 
     @Override
@@ -561,7 +478,7 @@ public abstract class BNO055IMUImpl extends I2cDeviceSynchDeviceWithParameters<I
         //      https://learn.adafruit.com/bno055-absolute-orientation-sensor-with-raspberry-pi-and-beaglebone-black/webgl-example#sensor-calibration
         //      http://iotdk.intel.com/docs/master/upm/classupm_1_1_b_n_o055.html
 
-        SensorMode prevMode = this.currentMode;
+        SensorMode prevMode = BNO055Util.getSensorMode(deviceClient);
         if (prevMode != SensorMode.CONFIG) setSensorMode(SensorMode.CONFIG);
 
         CalibrationData result = new CalibrationData();
@@ -584,37 +501,11 @@ public abstract class BNO055IMUImpl extends I2cDeviceSynchDeviceWithParameters<I
 
     public void writeCalibrationData(CalibrationData data)
         {
-        // Section 3.11.4:
-        //
-        // It is important that the correct offsets and corresponding sensor radius are used.
-        // Incorrect offsets may result in unreliable orientation data even at calibration
-        // accuracy level 3. To set the calibration profile the following steps need to be taken
-        //
-        //    1. Select the operation mode to CONFIG_MODE
-        //    2. Write the corresponding sensor offsets and radius data
-        //    3. Change operation mode to fusion mode
-
-        SensorMode prevMode = this.currentMode;
-        if (prevMode != SensorMode.CONFIG) setSensorMode(SensorMode.CONFIG);
-
-        writeShort(Register.ACC_OFFSET_X_LSB, data.dxAccel);
-        writeShort(Register.ACC_OFFSET_Y_LSB, data.dyAccel);
-        writeShort(Register.ACC_OFFSET_Z_LSB, data.dzAccel);
-        writeShort(Register.MAG_OFFSET_X_LSB, data.dxMag);
-        writeShort(Register.MAG_OFFSET_Y_LSB, data.dyMag);
-        writeShort(Register.MAG_OFFSET_Z_LSB, data.dzMag);
-        writeShort(Register.GYR_OFFSET_X_LSB, data.dxGyro);
-        writeShort(Register.GYR_OFFSET_Y_LSB, data.dyGyro);
-        writeShort(Register.GYR_OFFSET_Z_LSB, data.dzGyro);
-        writeShort(Register.ACC_RADIUS_LSB,   data.radiusAccel);
-        writeShort(Register.MAG_RADIUS_LSB,   data.radiusMag);
-
-        // Restore the previous mode and return
-        if (prevMode != SensorMode.CONFIG) setSensorMode(prevMode);
+        BNO055Util.writeCalibrationData(deviceClient, data);
         }
 
     //------------------------------------------------------------------------------------------
-    // IBNO055IMU data retrieval
+    // BNO055IMU data retrieval
     //------------------------------------------------------------------------------------------
 
     public synchronized Temperature getTemperature()
@@ -658,14 +549,19 @@ public abstract class BNO055IMUImpl extends I2cDeviceSynchDeviceWithParameters<I
         // Data returned from VECTOR.EULER is heading, roll, pitch, in that order as specified by
         // the Android convention (https://developer.android.com/guide/topics/sensors/sensors_position).
         //
-        // Note that the IMU returns heading in what one might call 'compass' direction, with values
+        // Note that the coordinate system used by the BNO055 interface is rotated 180 degrees
+        // around the Z axis from the coordinate system defined in the datasheet. This means that
+        // the values for the X and Y axes need to be negated from what they would be normally.
+        //
+        // The IMU returns heading in what one might call 'compass' direction, with values
         // increasing CW. We need a geometric direction, with values increasing CCW. So we simply negate.
         //
-        // Also note that the IMU returns roll and pitch with values increasing CW according to the
-        // coordinate axes specified in section 3.4 of the datasheet given the Android pitch mode.
-        // These conventions happen to give the same angle values as the parent interface coordinate
-        // axes with all angles increasing CCW. However, to bring the angular velocity into the
-        // interface-specified coordinates, the x and y rotation rates must be negated.
+        // The IMU returns roll and pitch with values increasing CW according to the coordinate axes
+        // specified in section 3.4 of the datasheet given the Android pitch mode. Since we need
+        // values that increase with CCW rotation (as per the right hand rule), the IMU effectively
+        // performs the X and Y negations for us when retrieving orientation. However, the angular
+        // velocity values are positive for CCW rotation, which means that we need to negate the x
+        // and y rotation rates for angular velocity.
         //
         // The data returned from the IMU is in the units that we initialized the IMU to return.
         // However, the IMU has a different sense of angle normalization than we do, so we explicitly
@@ -689,11 +585,18 @@ public abstract class BNO055IMUImpl extends I2cDeviceSynchDeviceWithParameters<I
         deviceClient.ensureReadWindow(
                 new I2cDeviceSynch.ReadWindow(Register.QUA_DATA_W_LSB.bVal, 8, readMode),
                 upperWindow);
-
-        // Section 3.6.5.5 of BNO055 specification
-        TimestampedData ts = deviceClient.readTimeStamped(Register.QUA_DATA_W_LSB.bVal, 8);
-        VectorData vector = new VectorData(ts, (1 << 14));
-        return new Quaternion(vector.next(), vector.next(), vector.next(), vector.next(), vector.data.nanoTime);
+        try
+            {
+            return BNO055Util.getRawQuaternion(deviceClient);
+            }
+        catch (QuaternionBasedImuHelper.FailedToRetrieveQuaternionException e)
+            {
+            if (parameters.loggingEnabled)
+                {
+                RobotLog.ww(getLoggingTag(), "Failed to retrieve valid quaternion. Returning identity quaternion.");
+                }
+            return Quaternion.identityQuaternion();
+            }
         }
 
     /**
@@ -702,7 +605,7 @@ public abstract class BNO055IMUImpl extends I2cDeviceSynchDeviceWithParameters<I
      */
     protected float getAngularScale()
         {
-        return this.parameters.angleUnit == AngleUnit.DEGREES ? 16.0f : 900.0f;
+        return BNO055Util.getAngularScale(this.parameters.angleUnit);
         }
 
     /**
@@ -805,6 +708,7 @@ public abstract class BNO055IMUImpl extends I2cDeviceSynchDeviceWithParameters<I
     public void startAccelerationIntegration(Position initalPosition, Velocity initialVelocity, int msPollInterval)
     // Start integrating acceleration to determine position and velocity by polling for acceleration every while
         {
+        throwIfNotInitialized();
         synchronized (this.startStopLock)
             {
             // Stop doing this if we're already in flight
@@ -1041,7 +945,7 @@ public abstract class BNO055IMUImpl extends I2cDeviceSynchDeviceWithParameters<I
 
     protected void enterConfigModeFor(Runnable action)
         {
-        SensorMode modePrev = this.currentMode;
+        SensorMode modePrev = BNO055Util.getSensorMode(deviceClient);
         setSensorMode(SensorMode.CONFIG);
         delayLoreExtra(25);
         try
@@ -1059,7 +963,7 @@ public abstract class BNO055IMUImpl extends I2cDeviceSynchDeviceWithParameters<I
         {
         T result;
 
-        SensorMode modePrev = this.currentMode;
+        SensorMode modePrev = BNO055Util.getSensorMode(deviceClient);
         setSensorMode(SensorMode.CONFIG);
         delayLoreExtra(25);
         try

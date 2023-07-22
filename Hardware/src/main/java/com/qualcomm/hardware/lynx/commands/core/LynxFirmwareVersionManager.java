@@ -34,6 +34,8 @@ package com.qualcomm.hardware.lynx.commands.core;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+
 import com.qualcomm.hardware.lynx.LynxI2cDeviceSynch;
 import com.qualcomm.hardware.lynx.LynxI2cDeviceSynchV1;
 import com.qualcomm.hardware.lynx.LynxI2cDeviceSynchV2;
@@ -55,7 +57,7 @@ public class LynxFirmwareVersionManager
      * All classes that need different implementations for varying firmware revisions have a factory method here.
      ***********************************************************************************************************/
 
-    public static LynxI2cDeviceSynch createLynxI2cDeviceSynch(Context context, LynxModule module, int bus)
+    public static LynxI2cDeviceSynch createLynxI2cDeviceSynch(Context context, @NonNull LynxModule module, int bus)
     {
         if (module.isCommandSupported(LynxI2cWriteReadMultipleBytesCommand.class)) {
             RobotLog.i("LynxFirmwareVersionManager: LynxI2cDeviceSynchV2");

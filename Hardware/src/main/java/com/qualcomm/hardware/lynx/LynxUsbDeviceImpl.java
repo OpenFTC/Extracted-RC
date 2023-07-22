@@ -38,12 +38,8 @@ import androidx.annotation.Nullable;
 
 import com.qualcomm.hardware.HardwareFactory;
 import com.qualcomm.hardware.R;
-import com.qualcomm.hardware.bosch.BHI260IMU;
-import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.bosch.BNO055IMUImpl;
 import com.qualcomm.hardware.lynx.commands.LynxDatagram;
 import com.qualcomm.hardware.lynx.commands.LynxMessage;
-import com.qualcomm.hardware.lynx.commands.core.LynxFirmwareVersionManager;
 import com.qualcomm.hardware.lynx.commands.standard.LynxDiscoveryCommand;
 import com.qualcomm.hardware.lynx.commands.standard.LynxDiscoveryResponse;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsUsbDevice;
@@ -89,7 +85,7 @@ import java.util.concurrent.TimeUnit;
  * {@link LynxUsbDeviceImpl} controls the USB communication to one or more Lynx Modules.
  * It polls for incoming traffic and sorts same according to the module address involved.
  */
-@SuppressWarnings("WeakerAccess,UnnecessaryLocalVariable")
+@SuppressWarnings("WeakerAccess")
 public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
     {
     //----------------------------------------------------------------------------------------------
@@ -262,6 +258,7 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
     @Override
     public ShutdownReason getShutdownReason()
         {
+        RobotUsbDevice robotUsbDevice = this.robotUsbDevice;
         return this.hasShutdownAbnormally || robotUsbDevice==null || !robotUsbDevice.isOpen()
                 ? ShutdownReason.ABNORMAL
                 : ShutdownReason.NORMAL;
@@ -332,7 +329,7 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
         }
 
     @Override
-    protected void doPretend() throws RobotCoreException, InterruptedException
+    protected void doPretend()
         {
         // Nothing to do: see transmit()
         RobotLog.vv(TAG, "doPretend() serial=%s", serialNumber);
@@ -546,7 +543,7 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
     /**
      * Returns a LynxModule instance that is equivalent to (but not guaranteed to be the same as)
      * the one passed in as a parameter, which is registered with this LynxUsbDevice.
-     *
+     * <p>
      * After calling this method, you MUST use the return value, not the instance you passed in as a
      * parameter.
      *
@@ -713,6 +710,7 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
             long nsWait = nsPerModuleInterval * maxNumberOfModules + nsPacketTimeMax + nsSlop;
 
             long msWait = (nsWait / ElapsedTime.MILLIS_IN_NANO);
+            //noinspection ConstantConditions
             nsWait = nsWait - msWait * ElapsedTime.MILLIS_IN_NANO;
             RobotLog.vv(TAG, "discovery waiting %dms and %dns", msWait, nsWait);
             Thread.sleep(msWait, (int) nsWait);
@@ -723,36 +721,10 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
                 RobotLog.vv(TAG, "Checking if discovered modules have onboard IMUs");
                 for (final LynxModuleMeta moduleMeta: discoveredModules.values())
                     {
-                    performSystemOperationOnConnectedModule(moduleMeta.getModuleAddress(), moduleMeta.isParent(), new Consumer<LynxModule>()
-                        {
-                        @Override
-                        public void accept(LynxModule module)
-                            {
-                            LynxI2cDeviceSynch rawImuI2c = LynxFirmwareVersionManager.createLynxI2cDeviceSynch(AppUtil.getDefContext(), module, 0);
-
-                            LynxModuleMeta.ImuType imuType = LynxModuleMeta.ImuType.NONE;
-
-                            // BHI260 IMUs will only ever exist on the parent module of a Control Hub
-                            if (serialNumber.isEmbedded() && module.isParent()) {
-                                if (BHI260IMU.imuIsPresent(rawImuI2c))
-                                    {
-                                    imuType = LynxModuleMeta.ImuType.BHI260;
-                                    }
-                            }
-
-                            // If we've found a BHI260 IMU, we don't need to look for a BNO055
-                            if (imuType == LynxModuleMeta.ImuType.NONE)
-                                {
-                                rawImuI2c.setI2cAddress(BNO055IMU.I2CADDR_DEFAULT);
-                                if (BNO055IMUImpl.imuIsPresent(rawImuI2c, false))
-                                    {
-                                    imuType = LynxModuleMeta.ImuType.BNO055;
-                                    }
-                                }
-
-                            moduleMeta.setImuType(imuType);
-                            }
-                        });
+                    performSystemOperationOnConnectedModule(
+                            moduleMeta.getModuleAddress(),
+                            moduleMeta.isParent(),
+                            module -> moduleMeta.setImuType(module.getImuType()));
                     }
                 }
             }
@@ -962,7 +934,8 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
         boolean wasEngaged = incomingDatagramPoller != null;
 
         // Make sure the FTDI layer interrupts reads etc
-        if (this.robotUsbDevice != null) this.robotUsbDevice.requestReadInterrupt(true);
+        RobotUsbDevice robotUsbDevice = this.robotUsbDevice;
+        if (robotUsbDevice != null) robotUsbDevice.requestReadInterrupt(true);
 
         if (incomingDatagramPoller != null)
             {
@@ -973,7 +946,7 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
             }
 
         // Clear the forced interrupt so we can re-engage later, maybe // TODO review
-        if (this.robotUsbDevice != null) this.robotUsbDevice.requestReadInterrupt(false);
+        if (robotUsbDevice != null) robotUsbDevice.requestReadInterrupt(false);
 
         return wasEngaged;
         }
@@ -1001,7 +974,7 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
             if (this.isArmedOrArming() && !this.hasShutdownAbnormally() && isEngaged)
                 {
                 LynxDatagram datagram = message.getSerialization();
-                /**
+                /*
                  * {@link LynxModule#finishedWithMessage()} might have nulled the serialization
                  */
                 if (datagram != null)
@@ -1014,6 +987,8 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
                     byte[] bytes = datagram.toByteArray();
 
                     try {
+                        // If robotUsbDevice is null, we'll just catch and handle the RuntimeException
+                        //noinspection ConstantConditions
                         this.robotUsbDevice.write(bytes);
                         }
                     catch (RobotUsbException|RuntimeException e)    // RuntimeException is just paranoia
@@ -1055,7 +1030,9 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
     protected void shutdownAbnormally()
         {
         this.hasShutdownAbnormally = true;
-        String format = context.getString(robotUsbDevice.isAttached() ? R.string.warningProblemCommunicatingWithUSBDevice : R.string.warningUSBDeviceDetached);
+        RobotUsbDevice robotUsbDevice = this.robotUsbDevice;
+        boolean attached = robotUsbDevice != null && robotUsbDevice.isAttached();
+        String format = context.getString(attached ? R.string.warningProblemCommunicatingWithUSBDevice : R.string.warningUSBDeviceDetached);
         setGlobalWarning(String.format(format, HardwareFactory.getDeviceDisplayName(context, serialNumber)));
         }
 
@@ -1121,7 +1098,16 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
             {
             // We specify an essentially infinite read timeout waiting for the next packet to come in
             long msReadTimeout = Integer.MAX_VALUE;
+            RobotUsbDevice robotUsbDevice = LynxUsbDeviceImpl.this.robotUsbDevice;
+
+            if (robotUsbDevice == null)
+                {
+                RobotLog.ee(TAG, "readIncomingBytes() robotUsbDevice was null");
+                throw new RobotUsbUnspecifiedException("readIncomingBytes() robotUsbDevice was null");
+                }
+
             int cbRead = robotUsbDevice.read(buffer, 0, cbToRead, msReadTimeout, timeWindow);
+            //noinspection StatementWithEmptyBody
             if (cbRead == cbToRead)
                 {
                 // We got all the data we came for. Just return gracefully
@@ -1221,7 +1207,11 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
                     {
                     RobotLog.vv(TAG, "device closed in incoming datagram loop");
                     shutdownAbnormally();
-                    robotUsbDevice.close();
+                    RobotUsbDevice robotUsbDevice = LynxUsbDeviceImpl.this.robotUsbDevice;
+                    if (robotUsbDevice != null)
+                        {
+                        robotUsbDevice.close();
+                        }
 
                     // We're not going to be receiving any more incoming messages, so get out of whatever we've got
                     try {
@@ -1271,8 +1261,14 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
     /**
      * Issues a hardware reset to the lynx module.
      */
-    public static void resetDevice(RobotUsbDevice robotUsbDevice)
+    public static void resetDevice(@Nullable RobotUsbDevice robotUsbDevice)
         {
+        if (robotUsbDevice == null)
+            {
+            RobotLog.ww(TAG, "resetDevice() called with null robotUsbDevice");
+            return;
+            }
+
         RobotLog.vv(TAG, "resetDevice() serial=%s", robotUsbDevice.getSerialNumber());
 
         int msDelay = msCbusWiggle;

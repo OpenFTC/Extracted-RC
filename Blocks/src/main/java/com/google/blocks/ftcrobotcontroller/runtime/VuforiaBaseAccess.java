@@ -76,6 +76,7 @@ abstract class VuforiaBaseAccess<T extends VuforiaBase> extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = VuforiaBase.class, methodName = "initialize")
   public void initialize_withCameraDirection(String vuforiaLicenseKey, String cameraDirectionString,
       boolean useExtendedTracking, boolean enableCameraMonitoring, String cameraMonitorFeedbackString,
       float dx, float dy, float dz, float xAngle, float yAngle, float zAngle,
@@ -96,6 +97,7 @@ abstract class VuforiaBaseAccess<T extends VuforiaBase> extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = VuforiaBase.class, methodName = "initialize")
   public void initialize_withCameraDirection_2(String cameraDirectionString,
       boolean useExtendedTracking, boolean enableCameraMonitoring, String cameraMonitorFeedbackString,
       float dx, float dy, float dz,
@@ -134,6 +136,7 @@ abstract class VuforiaBaseAccess<T extends VuforiaBase> extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = VuforiaBase.class, methodName = "initialize")
   public void initialize_withWebcam(String cameraNameString, String webcamCalibrationFilename,
       boolean useExtendedTracking, boolean enableCameraMonitoring, String cameraMonitorFeedbackString,
       float dx, float dy, float dz, float xAngle, float yAngle, float zAngle,
@@ -154,6 +157,7 @@ abstract class VuforiaBaseAccess<T extends VuforiaBase> extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = VuforiaBase.class, methodName = "initialize")
   public void initialize_withWebcam_2(String cameraNameString, String webcamCalibrationFilename,
       boolean useExtendedTracking, boolean enableCameraMonitoring, String cameraMonitorFeedbackString,
       float dx, float dy, float dz,
@@ -197,6 +201,7 @@ abstract class VuforiaBaseAccess<T extends VuforiaBase> extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = VuforiaBase.class, methodName = "activate")
   public void activate() {
     try {
       startBlockExecution(BlockType.FUNCTION, ".activate");
@@ -215,6 +220,7 @@ abstract class VuforiaBaseAccess<T extends VuforiaBase> extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = VuforiaBase.class, methodName = "deactivate")
   public void deactivate() {
     try {
       startBlockExecution(BlockType.FUNCTION, ".deactivate");
@@ -233,6 +239,7 @@ abstract class VuforiaBaseAccess<T extends VuforiaBase> extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = VuforiaBase.class, methodName = "setActiveCamera")
   public void setActiveCamera(String cameraNameString) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".deactivate");
@@ -254,6 +261,7 @@ abstract class VuforiaBaseAccess<T extends VuforiaBase> extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = VuforiaBase.class, methodName = "track")
   public String track(String name) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".track");
@@ -275,6 +283,7 @@ abstract class VuforiaBaseAccess<T extends VuforiaBase> extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = VuforiaBase.class, methodName = "trackPose")
   public String trackPose(String name) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".trackPose");
@@ -296,6 +305,7 @@ abstract class VuforiaBaseAccess<T extends VuforiaBase> extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = VuforiaBase.class, methodName = "getVuforiaLocalizer")
   public VuforiaLocalizer getVuforiaLocalizer() {
     try {
       startBlockExecution(BlockType.FUNCTION, ".getVuforiaLocalizer");

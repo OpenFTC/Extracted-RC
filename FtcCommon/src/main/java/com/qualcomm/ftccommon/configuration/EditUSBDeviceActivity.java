@@ -141,7 +141,7 @@ public class EditUSBDeviceActivity extends EditActivity
             {
             String format = getString(R.string.fixFailNoneAvailable);
             String name   = controllerConfiguration.getName();
-            String type   = displayNameOfConfigurationType(ConfigurationType.DisplayNameFlavor.Normal, controllerConfiguration.getConfigurationType());
+            String type   = controllerConfiguration.getConfigurationType().getName();
             appUtil.showToast(UILocation.ONLY_LOCAL, String.format(format, name, type));
             }
 

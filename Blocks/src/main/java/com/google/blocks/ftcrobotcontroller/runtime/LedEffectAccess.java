@@ -37,6 +37,7 @@ class LedEffectAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = LedEffect.Builder.class, constructor = true)
   public LedEffect.Builder createBuilder() {
     try {
       startBlockExecution(BlockType.CREATE, "");
@@ -51,6 +52,7 @@ class LedEffectAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = LedEffect.Builder.class, methodName = "addStep")
   public void addStep(Object ledEffectBuilderArg, double red, double green, double blue, int millis) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".addStep");
@@ -68,9 +70,10 @@ class LedEffectAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = LedEffect.Builder.class, methodName = "setRepeating")
   public void setRepeating(Object ledEffectBuilderArg, boolean repeating) {
     try {
-      startBlockExecution(BlockType.FUNCTION, ".addStep");
+      startBlockExecution(BlockType.FUNCTION, ".setRepeating");
       LedEffect.Builder ledEffectBuilder = checkLedEffectBuilder(ledEffectBuilderArg);
       if (ledEffectBuilder != null) {
         ledEffectBuilder.setRepeating(repeating);
@@ -85,6 +88,7 @@ class LedEffectAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = LedEffect.Builder.class, methodName = "build")
   public LedEffect build(Object ledEffectBuilderArg) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".build");

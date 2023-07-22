@@ -285,7 +285,7 @@ public class RobotConfigMap implements Serializable
         {
         for (int i = ConfigurationUtility.firstNamedDeviceNumber; ; i++)
             {
-            String name = Misc.formatForUser("%s %d", type.getDisplayName(ConfigurationType.DisplayNameFlavor.Normal), i);
+            String name = Misc.formatForUser("%s %d", type.getName(), i);
             if (!nameExists(name, resultSoFar))
                 {
                 return name;

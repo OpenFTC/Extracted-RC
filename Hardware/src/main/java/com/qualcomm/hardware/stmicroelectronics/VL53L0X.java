@@ -250,9 +250,9 @@ public class VL53L0X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements Dis
     //***********************************************************************************************
 
     // Constructor.
-    public VL53L0X(I2cDeviceSynch deviceClient)
+    public VL53L0X(I2cDeviceSynch deviceClient, boolean deviceClientIsOwned)
     {
-        super(deviceClient, true);
+        super(deviceClient, deviceClientIsOwned);
 
         //this.setOptimalReadWindow();
         this.deviceClient.setI2cAddress(ADDRESS_I2C_DEFAULT);

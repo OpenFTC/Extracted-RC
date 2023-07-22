@@ -363,6 +363,84 @@ Blockly.FtcJava['orientation_create_withArgs'] = function(block) {
   return [code, Blockly.FtcJava.ORDER_NEW];
 };
 
+Blockly.Blocks['orientation_create_withArgs2'] = {
+  init: function() {
+    this.setOutput(true, 'Orientation');
+    this.appendDummyInput()
+        .appendField('new')
+        .appendField(createNonEditableField('Orientation'));
+    this.appendValueInput('AXES_REFERENCE').setCheck('AxesReference')
+        .appendField('axesReference')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('AXES_ORDER').setCheck('AxesOrder')
+        .appendField('axesOrder')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('ANGLE_UNIT').setCheck('AngleUnit')
+        .appendField('angleUnit')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('FIRST_ANGLE').setCheck('Number')
+        .appendField('firstAngle')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('SECOND_ANGLE').setCheck('Number')
+        .appendField('secondAngle')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('THIRD_ANGLE').setCheck('Number')
+        .appendField('thirdAngle')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.setColour(functionColor);
+    this.setTooltip('Creates a new Orientation object.');
+    this.getFtcJavaInputType = function(inputName) {
+      switch (inputName) {
+        case 'FIRST_ANGLE':
+        case 'SECOND_ANGLE':
+        case 'THIRD_ANGLE':
+          return 'float';
+      }
+      return '';
+    };
+  }
+};
+
+Blockly.JavaScript['orientation_create_withArgs2'] = function(block) {
+  var axesReference = Blockly.JavaScript.valueToCode(
+      block, 'AXES_REFERENCE', Blockly.JavaScript.ORDER_COMMA);
+  var axesOrder = Blockly.JavaScript.valueToCode(
+      block, 'AXES_ORDER', Blockly.JavaScript.ORDER_COMMA);
+  var angleUnit = Blockly.JavaScript.valueToCode(
+      block, 'ANGLE_UNIT', Blockly.JavaScript.ORDER_COMMA);
+  var firstAngle = Blockly.JavaScript.valueToCode(
+      block, 'FIRST_ANGLE', Blockly.JavaScript.ORDER_COMMA);
+  var secondAngle = Blockly.JavaScript.valueToCode(
+      block, 'SECOND_ANGLE', Blockly.JavaScript.ORDER_COMMA);
+  var thirdAngle = Blockly.JavaScript.valueToCode(
+      block, 'THIRD_ANGLE', Blockly.JavaScript.ORDER_COMMA);
+  var code = orientationIdentifierForJavaScript + '.create_withArgs2(' +
+      axesReference + ', ' + axesOrder + ', ' + angleUnit + ', ' +
+      firstAngle + ', ' + secondAngle + ', ' + thirdAngle + ')';
+  return [code, Blockly.JavaScript.ORDER_FUNCTION_CALL];
+};
+
+Blockly.FtcJava['orientation_create_withArgs2'] = function(block) {
+  var axesReference = Blockly.FtcJava.valueToCode(
+      block, 'AXES_REFERENCE', Blockly.FtcJava.ORDER_COMMA);
+  var axesOrder = Blockly.FtcJava.valueToCode(
+      block, 'AXES_ORDER', Blockly.FtcJava.ORDER_COMMA);
+  var angleUnit = Blockly.FtcJava.valueToCode(
+      block, 'ANGLE_UNIT', Blockly.FtcJava.ORDER_COMMA);
+  var firstAngle = Blockly.FtcJava.valueToCode(
+      block, 'FIRST_ANGLE', Blockly.FtcJava.ORDER_COMMA);
+  var secondAngle = Blockly.FtcJava.valueToCode(
+      block, 'SECOND_ANGLE', Blockly.FtcJava.ORDER_COMMA);
+  var thirdAngle = Blockly.FtcJava.valueToCode(
+      block, 'THIRD_ANGLE', Blockly.FtcJava.ORDER_COMMA);
+  var acquisitionTime = '0';
+  var code = 'new Orientation(' + axesReference + ', ' +
+      axesOrder + ', ' + angleUnit + ', ' + firstAngle + ', ' + secondAngle + ', ' +
+      thirdAngle + ', ' + acquisitionTime + ')';
+  Blockly.FtcJava.generateImport_('Orientation');
+  return [code, Blockly.FtcJava.ORDER_NEW];
+};
+
 Blockly.Blocks['orientation_toAngleUnit'] = {
   init: function() {
     this.setOutput(true, 'Orientation');

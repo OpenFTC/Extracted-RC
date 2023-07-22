@@ -54,12 +54,17 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -91,6 +96,13 @@ public class ProjectsUtil {
 
   private static final OpModeMeta.Flavor DEFAULT_FLAVOR = OpModeMeta.Flavor.TELEOP;
 
+  private static final Map<HardwareType, SortedSet<String>> sampleDeviceNamesMap = new HashMap<>();
+  private static final Object sampleDeviceNamesMapLock = new Object();
+  private static final Pattern identifierFieldPattern = Pattern.compile(
+      "<field name=\"(IDENTIFIER|IDENTIFIER1|IDENTIFIER2|WEBCAM_NAME)\">(.*)</field>");
+  private static final Pattern deviceNameWithSuffix = Pattern.compile(
+      "(.*)(As.*)");
+
   // Prevent instantiation of utility class.
   private ProjectsUtil() {
   }
@@ -99,6 +111,7 @@ public class ProjectsUtil {
    * Returns the names and last modified time of existing blocks projects that have a blocks file.
    */
   public static String fetchProjectsWithBlocks() {
+    AppUtil.getInstance().ensureDirectoryExists(BLOCK_OPMODES_DIR, false);
     ReadWriteFile.ensureAllChangesAreCommitted(BLOCK_OPMODES_DIR);
 
     return ProjectsLockManager.lockProjectsWhile(new Supplier<String>() {
@@ -156,6 +169,7 @@ public class ProjectsUtil {
    */
   public static void fetchProjectsForOfflineBlocksEditor(
       final List<OfflineBlocksProject> offlineBlocksProjects) throws IOException {
+    AppUtil.getInstance().ensureDirectoryExists(BLOCK_OPMODES_DIR, false);
     ReadWriteFile.ensureAllChangesAreCommitted(BLOCK_OPMODES_DIR);
 
     ProjectsLockManager.lockProjectsWhile(new ThrowingCallable<Void, IOException>() {
@@ -209,7 +223,7 @@ public class ProjectsUtil {
         if (filename.endsWith(BLOCKS_BLK_EXT)) {
           String sampleName = filename.substring(0, filename.length() - BLOCKS_BLK_EXT.length());
           if (!sampleName.equals(DEFAULT_BLOCKS_SAMPLE_NAME)) {
-            String blkFileContent = readSample(sampleName, hardwareItemMap);
+            String blkFileContent = readSample(sampleName);
             Set<Capability> requestedCapabilities = getRequestedCapabilities(sampleName, blkFileContent);
             // TODO(lizlooney): Consider adding required hardware.
             jsonSamples
@@ -244,7 +258,7 @@ public class ProjectsUtil {
     for (String filename : sampleFileNames) {
       if (filename.endsWith(BLOCKS_BLK_EXT)) {
         String sampleName = filename.substring(0, filename.length() - BLOCKS_BLK_EXT.length());
-        String blkFileContent = readSample(sampleName, hardwareItemMap);
+        String blkFileContent = readSampleAndReplaceDeviceNames(sampleName, hardwareItemMap);
         if (sampleName.equals(DEFAULT_BLOCKS_SAMPLE_NAME)) {
           sampleName = "";
         }
@@ -551,11 +565,15 @@ public class ProjectsUtil {
       throw new IllegalArgumentException();
     }
 
-    return readSample(sampleName, HardwareItemMap.newHardwareItemMap());
+    return readSampleAndReplaceDeviceNames(sampleName, HardwareItemMap.newHardwareItemMap());
   }
 
-  private static String readSample(String sampleName, HardwareItemMap hardwareItemMap)
-      throws IOException {
+  private static String readSampleAndReplaceDeviceNames(String sampleName,
+      HardwareItemMap hardwareItemMap) throws IOException {
+    return replaceDeviceNamesInSample(readSample(sampleName), hardwareItemMap);
+  }
+
+  private static String readSample(String sampleName) throws IOException {
     if (sampleName == null || sampleName.isEmpty()) {
       sampleName = DEFAULT_BLOCKS_SAMPLE_NAME;
     }
@@ -564,114 +582,170 @@ public class ProjectsUtil {
     AssetManager assetManager = AppUtil.getDefContext().getAssets();
     String assetName = BLOCKS_SAMPLES_PATH + "/" + sampleName + BLOCKS_BLK_EXT;
     FileUtil.readAsset(blkFileContent, assetManager, assetName);
-
-    return replaceHardwareIdentifiers(blkFileContent.toString(), hardwareItemMap);
+    return blkFileContent.toString();
   }
 
   /**
-   * Replaces the hardware identifiers in the given blocks content based on the given {@link
-   * HardwareItemMap}.
+   * Replaces the device names in the given blocks content based on the devices availble in the
+   * given {@link HardwareItemMap}.
    */
-  private static String replaceHardwareIdentifiers(String blkContent, HardwareItemMap hardwareItemMap) {
-    // The following handles the identifiers that are hardcoded in the sample blocks op modes.
-    if (hardwareItemMap.contains(HardwareType.DC_MOTOR)) {
-      List<HardwareItem> items = hardwareItemMap.getHardwareItems(HardwareType.DC_MOTOR);
-      if (!items.isEmpty()) {
-        String firstDcMotor = items.get(0).identifier;
-        String secondDcMotor = (items.size() > 1) ? items.get(1).identifier : firstDcMotor;
-        String leftDcMotor = null;
-        String rightDcMotor = null;
+  private static String replaceDeviceNamesInSample(String blkContent,
+      HardwareItemMap hardwareItemMap) throws IOException {
+    synchronized (sampleDeviceNamesMapLock) {
+      if (sampleDeviceNamesMap.isEmpty()) {
+        fillSampleDeviceNamesMap();
+      }
+    }
+
+    for (Map.Entry<HardwareType, SortedSet<String>> entry : sampleDeviceNamesMap.entrySet()) {
+      HardwareType hardwareType = entry.getKey();
+      SortedSet<String> sampleDeviceNames = entry.getValue();
+      if (hardwareItemMap.contains(hardwareType)) {
+        // Get the list of HardwareItems of this hardware type from the HardwareItemMap.
+        List<HardwareItem> items = hardwareItemMap.getHardwareItems(hardwareType);
+        if (items.isEmpty()) {
+          continue;
+        }
+
+        // Get their device names.
+        List<String> actualDeviceNames = new ArrayList<>();
+        for (HardwareItem item : items) {
+          actualDeviceNames.add(item.deviceName);
+        }
+
+        // Special code for  left and right.
+        String leftDeviceName = null;
+        String rightDeviceName = null;
         for (HardwareItem item : items) {
           String lower = item.deviceName.toLowerCase(Locale.ENGLISH);
-          if (leftDcMotor == null && lower.contains("left")) {
-            leftDcMotor = item.identifier;
+          if (leftDeviceName == null && lower.contains("left")) {
+            leftDeviceName = item.deviceName;
           }
-          if (rightDcMotor == null && lower.contains("right")) {
-            rightDcMotor = item.identifier;
+          if (rightDeviceName == null && lower.contains("right")) {
+            rightDeviceName = item.deviceName;
           }
         }
-        if (leftDcMotor == null) {
-          leftDcMotor = firstDcMotor;
+
+        // Now go through the the sample device names and replace it in the sample.
+        for (String sampleDeviceName : sampleDeviceNames) {
+          if (actualDeviceNames.isEmpty()) {
+            // The sample will have device names that weren't replaced because there aren't enough
+            // hardware items of this type.
+            break;
+          }
+
+          if (actualDeviceNames.contains(sampleDeviceName)) {
+            // No need to replace this one, since there is a hardware device that matches the name
+            // from the sample.
+            actualDeviceNames.remove(sampleDeviceName);
+            continue;
+          }
+
+          String actualDeviceName;
+          String lower = sampleDeviceName;
+          if (lower.contains("left")) {
+            actualDeviceName = leftDeviceName;
+            actualDeviceNames.remove(leftDeviceName);
+          } else if (lower.contains("right")) {
+            actualDeviceName = rightDeviceName;
+            actualDeviceNames.remove(rightDeviceName);
+          } else {
+            actualDeviceName = actualDeviceNames.remove(0);
+          }
+          blkContent = replaceDeviceNameInBlocks(hardwareType, blkContent,
+              sampleDeviceName, actualDeviceName);
         }
-        if (rightDcMotor == null) {
-          rightDcMotor = secondDcMotor;
-        }
-        blkContent = replaceIdentifierInBlocks("motorTestAsDcMotor",
-            firstDcMotor, blkContent, false, items, "IDENTIFIER");
-        blkContent = replaceIdentifierInBlocks("left_driveAsDcMotor",
-            leftDcMotor, blkContent, false, items, "IDENTIFIER", "IDENTIFIER1");
-        blkContent = replaceIdentifierInBlocks("right_driveAsDcMotor",
-            rightDcMotor, blkContent, false, items, "IDENTIFIER", "IDENTIFIER2");
-      }
-    }
-    if (hardwareItemMap.contains(HardwareType.DIGITAL_CHANNEL)) {
-      List<HardwareItem> items = hardwareItemMap.getHardwareItems(HardwareType.DIGITAL_CHANNEL);
-      if (!items.isEmpty()) {
-        String firstDigitalChannel = items.get(0).identifier;
-        blkContent = replaceIdentifierInBlocks("digitalTouchAsDigitalChannel",
-            firstDigitalChannel, blkContent, false, items, "IDENTIFIER");
-      }
-    }
-    if (hardwareItemMap.contains(HardwareType.BNO055IMU)) {
-      List<HardwareItem> items = hardwareItemMap.getHardwareItems(HardwareType.BNO055IMU);
-      if (!items.isEmpty()) {
-        String firstBno055imu = items.get(0).identifier;
-        blkContent = replaceIdentifierInBlocks("imuAsBNO055IMU",
-            firstBno055imu, blkContent, false, items, "IDENTIFIER");
-      }
-    }
-    if (hardwareItemMap.contains(HardwareType.SERVO)) {
-      List<HardwareItem> items = hardwareItemMap.getHardwareItems(HardwareType.SERVO);
-      if (!items.isEmpty()) {
-        String firstServo = items.get(0).identifier;
-        blkContent = replaceIdentifierInBlocks("left_handAsServo",
-            firstServo, blkContent, false, items, "IDENTIFIER");
-        blkContent = replaceIdentifierInBlocks("servoTestAsServo",
-            firstServo, blkContent, false, items, "IDENTIFIER");
-      }
-    }
-    if (hardwareItemMap.contains(HardwareType.COLOR_RANGE_SENSOR)) {
-      List<HardwareItem> items = hardwareItemMap.getHardwareItems(HardwareType.COLOR_RANGE_SENSOR);
-      if (!items.isEmpty()) {
-        String firstColorRangeSensor = items.get(0).identifier;
-        blkContent = replaceIdentifierInBlocks("sensorColorRangeAsREVColorRangeSensor",
-            firstColorRangeSensor, blkContent, false, items, "IDENTIFIER");
-      }
-    }
-    if (hardwareItemMap.contains(HardwareType.REV_BLINKIN_LED_DRIVER)) {
-      List<HardwareItem> items = hardwareItemMap.getHardwareItems(HardwareType.REV_BLINKIN_LED_DRIVER);
-      if (!items.isEmpty()) {
-        String firstRevBlinkinLedDriver = items.get(0).identifier;
-        blkContent = replaceIdentifierInBlocks("blinkinAsRevBlinkinLedDriver",
-            firstRevBlinkinLedDriver, blkContent, false, items, "IDENTIFIER");
-      }
-    }
-    if (hardwareItemMap.contains(HardwareType.WEBCAM_NAME)) {
-      List<HardwareItem> items = hardwareItemMap.getHardwareItems(HardwareType.WEBCAM_NAME);
-      if (!items.isEmpty()) {
-        // The webcam block uses the deviceName, rather than the identifier.
-        String firstWebcamName = items.get(0).deviceName;
-        blkContent = replaceIdentifierInBlocks("Webcam 1",
-            firstWebcamName, blkContent, true, items, "WEBCAM_NAME");
       }
     }
     return blkContent;
   }
 
-  /**
-   * Replaces an identifier in blocks.
-   */
-  private static String replaceIdentifierInBlocks(String oldIdentifier, String newIdentifier,
-      String blkContent, boolean useDeviceName, List<HardwareItem> items, String... fieldNames) {
-    for (HardwareItem item : items) {
-      String identifier = useDeviceName ? item.deviceName : item.identifier;
-      if (identifier.equals(oldIdentifier)) {
-        return blkContent;
+  private static void fillSampleDeviceNamesMap() throws IOException {
+    synchronized (sampleDeviceNamesMapLock) {
+      AssetManager assetManager = AppUtil.getDefContext().getAssets();
+      List<String> sampleFileNames = Arrays.asList(assetManager.list(BLOCKS_SAMPLES_PATH));
+      Collections.sort(sampleFileNames);
+      if (sampleFileNames != null) {
+        String delimiter = "";
+        for (String filename : sampleFileNames) {
+          if (filename.endsWith(BLOCKS_BLK_EXT)) {
+            String sampleName = filename.substring(0, filename.length() - BLOCKS_BLK_EXT.length());
+            if (!sampleName.equals(DEFAULT_BLOCKS_SAMPLE_NAME)) {
+              String blkFileContent = readSample(sampleName);
+              for (String line : blkFileContent.split("\n")) {
+                Matcher matcher1 = identifierFieldPattern.matcher(line);
+                if (matcher1.find()) {
+                  String fieldName = matcher1.group(1);
+                  String fieldValue = matcher1.group(2);
+                  if (fieldValue.equals("gamepad1") || fieldValue.equals("gamepad2")) {
+                    continue;
+                  }
+
+                  String deviceName;
+                  HardwareType hardwareType;
+                  if (fieldName.equals("WEBCAM_NAME")) {
+                    deviceName = fieldValue;
+                    hardwareType = HardwareType.WEBCAM_NAME;
+                  } else {
+                    Matcher matcher2 = deviceNameWithSuffix.matcher(fieldValue);
+                    if (matcher2.find()) {
+                      deviceName = matcher2.group(1);
+                      String suffix = matcher2.group(2);
+                      hardwareType = HardwareType.fromIdentifierSuffixForJavaScript(suffix);
+                      if (hardwareType == null) {
+                        continue;
+                      }
+                    } else {
+                      continue;
+                    }
+                  }
+
+                  SortedSet<String> deviceNames = sampleDeviceNamesMap.get(hardwareType);
+                  if (deviceNames == null) {
+                    deviceNames = new TreeSet<>();
+                    sampleDeviceNamesMap.put(hardwareType, deviceNames);
+                  }
+                  deviceNames.add(deviceName);
+                }
+              }
+            }
+          }
+        }
       }
     }
+  }
+
+  /**
+   * Replaces a device name in blocks.
+   */
+  private static String replaceDeviceNameInBlocks(HardwareType hardwareType, String blkContent,
+      String sampleDeviceName, String actualDeviceName) {
+    String oldIdentifier;
+    String newIdentifier;
+    String[] fieldNames;
+    if (hardwareType == HardwareType.WEBCAM_NAME) {
+      // The webcam block (navigation_webcamName) uses the device name, rather than the identifier.
+      oldIdentifier = sampleDeviceName;
+      newIdentifier = actualDeviceName;
+      fieldNames = new String[] {"WEBCAM_NAME"};
+    } else {
+      oldIdentifier = hardwareType.makeIdentifier(sampleDeviceName);
+      newIdentifier = hardwareType.makeIdentifier(actualDeviceName);
+      if (hardwareType == HardwareType.DC_MOTOR) {
+        fieldNames = new String[] {"IDENTIFIER", "IDENTIFIER1", "IDENTIFIER2"};
+      } else {
+        fieldNames = new String[] {"IDENTIFIER"};
+      }
+    }
+
     for (String fieldName : fieldNames) {
       String oldElement = "<field name=\"" + fieldName + "\">" + oldIdentifier + "</field>";
       String newElement = "<field name=\"" + fieldName + "\">" + newIdentifier + "</field>";
+      blkContent = blkContent.replace(oldElement, newElement);
+
+      // The following is for <data> tags.
+      oldElement = "\"" + fieldName + "\":\"" + sampleDeviceName + "\"";
+      newElement = "\"" + fieldName + "\":\"" + actualDeviceName + "\"";
       blkContent = blkContent.replace(oldElement, newElement);
     }
     return blkContent;

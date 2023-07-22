@@ -35,12 +35,9 @@ class OrientationAccess extends Access {
     super(blocksOpMode, identifier, "Orientation");
   }
 
-  private Orientation checkOrientation(Object orientationArg) {
-    return checkArg(orientationArg, Orientation.class, "orientation");
-  }
-
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Orientation.class, fieldName = "axesReference")
   public String getAxesReference(Object orientationArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".AxesReference");
@@ -62,6 +59,7 @@ class OrientationAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Orientation.class, fieldName = "axesOrder")
   public String getAxesOrder(Object orientationArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".AxesOrder");
@@ -83,6 +81,7 @@ class OrientationAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Orientation.class, fieldName = "angleUnit")
   public String getAngleUnit(Object orientationArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".AngleUnit");
@@ -104,6 +103,7 @@ class OrientationAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Orientation.class, fieldName = "firstAngle")
   public float getFirstAngle(Object orientationArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".FirstAngle");
@@ -122,6 +122,7 @@ class OrientationAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Orientation.class, fieldName = "secondAngle")
   public float getSecondAngle(Object orientationArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".SecondAngle");
@@ -140,6 +141,7 @@ class OrientationAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Orientation.class, fieldName = "thirdAngle")
   public float getThirdAngle(Object orientationArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".ThirdAngle");
@@ -158,6 +160,7 @@ class OrientationAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Orientation.class, fieldName = "acquisitionTime")
   public long getAcquisitionTime(Object orientationArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".AcquisitionTime");
@@ -176,6 +179,7 @@ class OrientationAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Orientation.class, constructor = true)
   public Orientation create() {
     try {
       startBlockExecution(BlockType.CREATE, "");
@@ -190,6 +194,7 @@ class OrientationAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Orientation.class, constructor = true)
   public Orientation create_withArgs(
       String axesReferenceString, String axesOrderString, String angleUnitString, float firstAngle,
       float secondAngle, float thirdAngle, long acquisitionTime) {
@@ -214,6 +219,31 @@ class OrientationAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Orientation.class, constructor = true)
+  public Orientation create_withArgs2(
+      String axesReferenceString, String axesOrderString, String angleUnitString,
+      float firstAngle, float secondAngle, float thirdAngle) {
+    try {
+      startBlockExecution(BlockType.CREATE, "");
+      AxesReference axesReference = checkAxesReference(axesReferenceString);
+      AxesOrder axesOrder = checkAxesOrder(axesOrderString);
+      AngleUnit angleUnit = checkAngleUnit(angleUnitString);
+      if (axesReference != null && axesOrder != null && angleUnit != null) {
+        return new Orientation(
+            axesReference, axesOrder, angleUnit, firstAngle, secondAngle, thirdAngle, 0);
+      }
+      return null;
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(classes = Orientation.class, methodName = "toAngleUnit")
   public Orientation toAngleUnit(Object orientationArg, String angleUnitString) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".toAngleUnit");
@@ -233,6 +263,7 @@ class OrientationAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Orientation.class, methodName = "toAxesReference")
   public Orientation toAxesReference(Object orientationArg, String axesReferenceString) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".toAxesReference");
@@ -252,6 +283,7 @@ class OrientationAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Orientation.class, methodName = "toAxesOrder")
   public Orientation toAxesOrder(Object orientationArg, String axesOrderString) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".toAxesOrder");
@@ -271,6 +303,7 @@ class OrientationAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Orientation.class, methodName = "toString")
   public String toText(Object orientationArg) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".toText");
@@ -289,6 +322,7 @@ class OrientationAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Orientation.class, methodName = "getRotationMatrix")
   public OpenGLMatrix getRotationMatrix(Object orientationArg) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".getRotationMatrix");
@@ -307,6 +341,7 @@ class OrientationAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Orientation.class, methodName = "getRotationMatrix")
   public OpenGLMatrix getRotationMatrix_withArgs(
       String axesReferenceString, String axesOrderString, String angleUnitString, float firstAngle,
       float secondAngle, float thirdAngle) {
@@ -330,6 +365,7 @@ class OrientationAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Orientation.class, methodName = "getOrientation")
   public Orientation getOrientation(
       Object matrixArg, String axesReferenceString, String axesOrderString, String angleUnitString) {
     try {

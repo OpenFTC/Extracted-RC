@@ -103,9 +103,9 @@ public class ModernRoboticsI2cRangeSensor extends I2cDeviceSynchDevice<I2cDevice
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public ModernRoboticsI2cRangeSensor(I2cDeviceSynch deviceClient)
+    public ModernRoboticsI2cRangeSensor(I2cDeviceSynch deviceClient, boolean deviceClientIsOwned)
         {
-        super(deviceClient, true);
+        super(deviceClient, deviceClientIsOwned);
 
         this.setOptimalReadWindow();
         this.deviceClient.setI2cAddress(ADDRESS_I2C_DEFAULT);

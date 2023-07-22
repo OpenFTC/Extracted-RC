@@ -42,7 +42,7 @@ import com.qualcomm.robotcore.hardware.configuration.ConfigurationType;
 import com.qualcomm.robotcore.hardware.configuration.ConfigurationTypeManager;
 import com.qualcomm.robotcore.hardware.configuration.DeviceConfiguration;
 
-import java.util.List;
+import java.util.SortedSet;
 
 /**
  * EditPortListSpinnerActivity provides a template-driven editing of a list of spinner list items
@@ -89,10 +89,10 @@ public abstract class EditPortListSpinnerActivity<ITEM_T extends DeviceConfigura
     protected void localizeSpinner(View itemView)
         {
         Spinner spinner = (Spinner) itemView.findViewById(idItemSpinner);
-        List<ConfigurationType> deviceTypes =
+        SortedSet<ConfigurationType> deviceTypes =
                 ConfigurationTypeManager.getInstance().getApplicableConfigTypes(getDeviceFlavorBeingConfigured(), controlSystem, configuringControlHubParent);
 
-        localizeConfigTypeSpinnerTypes(ConfigurationType.DisplayNameFlavor.Normal, spinner, deviceTypes);
+        localizeConfigTypeSpinnerTypes(spinner, deviceTypes);
         }
 
     @Override

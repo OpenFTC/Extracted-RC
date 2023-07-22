@@ -110,6 +110,8 @@ public class OfflineBlocksUtil {
     assetsToInclude.add("blocks/gamepad.js");
     assetsToInclude.add("blocks/gyro_sensor.js");
     assetsToInclude.add("blocks/hardware_util.js");
+    assetsToInclude.add("blocks/imu.js");
+    assetsToInclude.add("blocks/imu_parameters.js");
     assetsToInclude.add("blocks/ir_seeker_sensor.js");
     assetsToInclude.add("blocks/led.js");
     assetsToInclude.add("blocks/led_effect.js");
@@ -131,6 +133,7 @@ public class OfflineBlocksUtil {
     assetsToInclude.add("blocks/quaternion.js");
     assetsToInclude.add("blocks/range.js");
     assetsToInclude.add("blocks/rev_blinkin_led_driver.js");
+    assetsToInclude.add("blocks/rev_hub_orientation_on_robot.js");
     assetsToInclude.add("blocks/rumble_effect.js");
     assetsToInclude.add("blocks/servo.js");
     assetsToInclude.add("blocks/servo_controller.js");
@@ -162,6 +165,7 @@ public class OfflineBlocksUtil {
     assetsToInclude.add("blocks/vuforia_trackable.js");
     assetsToInclude.add("blocks/vuforia_trackable_default_listener.js");
     assetsToInclude.add("blocks/vuforia_trackables.js");
+    assetsToInclude.add("blocks/yaw_pitch_roll_angles.js");
 
     assetsToInclude.add("FtcOfflineBlocksProjects.html");
     assetsToInclude.add("FtcOfflineBlocks.html");

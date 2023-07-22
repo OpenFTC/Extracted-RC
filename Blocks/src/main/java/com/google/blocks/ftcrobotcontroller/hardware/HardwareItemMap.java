@@ -35,8 +35,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
-import java.util.SortedMap;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.SortedSet;
 import java.util.TreeMap;
 
 /**
@@ -129,36 +130,11 @@ public class HardwareItemMap {
    */
   private HardwareItemMap(HardwareMap hardwareMap) {
     for (HardwareType hardwareType : HardwareType.values()) {
-      List<HardwareDevice> devices = hardwareMap.getAll(hardwareType.deviceType);
-      for (HardwareDevice hardwareDevice : devices) {
-        String deviceName = getDeviceName(hardwareMap, hardwareDevice);
-        if (deviceName != null) {
-          addHardwareItem(hardwareType, deviceName);
-        }
+      SortedSet<String> deviceNames = hardwareMap.getAllNames(hardwareType.deviceType);
+      for (String deviceName : deviceNames) {
+        addHardwareItem(hardwareType, deviceName);
       }
     }
-  }
-
-  static String getDeviceName(HardwareMap hardwareMap, HardwareDevice hardwareDevice) {
-    // Having multiple names for a single device is confusing in our UI here, so we pick
-    // one arbitrarily. Note that this virtually never actually happens in practice; the
-    // one current (Sept '16) occurrence involves Matrix motor and servo controllers.
-    List<String> deviceNames = new ArrayList<String>(hardwareMap.getNamesOf(hardwareDevice));
-    if (deviceNames.isEmpty()) {
-      return null;
-    }
-
-    Collections.sort(deviceNames, new Comparator<String>() {
-      @Override public int compare(String lhs, String rhs) {
-            // sort first by length (shortest first) and second by content
-        int result = lhs.length() - rhs.length();
-        if (result == 0) {
-          result = lhs.compareToIgnoreCase(rhs);
-        }
-        return result;
-      }
-    });
-    return deviceNames.get(0);
   }
 
   /**

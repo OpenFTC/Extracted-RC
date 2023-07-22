@@ -219,4 +219,23 @@ class AngularVelocityAccess extends Access {
       endBlockExecution();
     }
   }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(classes = AngularVelocity.class, methodName = "toString")
+  public String toText(Object angularVelocityArg) {
+    try {
+      startBlockExecution(BlockType.FUNCTION, ".toText");
+      AngularVelocity angularVelocity = checkAngularVelocity(angularVelocityArg);
+      if (angularVelocity != null) {
+        return angularVelocity.toString();
+      }
+      return "";
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
 }

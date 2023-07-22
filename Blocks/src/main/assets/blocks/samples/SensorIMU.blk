@@ -1,82 +1,41 @@
 <xml xmlns="https://developers.google.com/blockly/xml">
 <variables>
-<variable type="" id="FbaKvU!;|Tlp/}9nA2Ob">imuParameters</variable>
-<variable type="" id="~LUL9~Z;enziZiH||`!?">angles</variable>
-<variable type="" id="#]v^/7$}[x}*;PPYGOk(">gravity</variable>
+<variable id="~LUL9~Z;enziZiH||`!?">orientation</variable>
+<variable id="uJjN|$P.}=4O:6Fa#2s)">angularVelocity</variable>
 </variables>
 <block type="procedures_defnoreturn" id=".C5qAWP%TVp.hOLyFe(w" deletable="false" x="50" y="50">
 <field name="NAME">runOpMode</field>
 <comment pinned="false" h="45" w="532">This function is executed when this Op Mode is selected from the Driver Station.</comment>
 <statement name="STACK">
-<block type="comment" id="Nza/1vCee@t2F,C[_^-o">
-<field name="COMMENT">Create new IMU Parameters object.</field>
-<next>
-<block type="variables_set" id="@Ya2R~P,E!RTmfG`+8Z5">
-<field name="VAR" id="FbaKvU!;|Tlp/}9nA2Ob" variabletype="">imuParameters</field>
-<value name="VALUE">
-<block type="bno055imuParameters_create" id="Z|A~RqD{t/!0-~BAuY([">
-</block>
-</value>
-<next>
-<block type="comment" id="`aq82cVD)Z5ENpXkSG3j">
-<field name="COMMENT">Use degrees as angle unit.</field>
-<next>
-<block type="bno055imuParameters_setAngleUnit" id="OB7Zsf$lb_)`GOa|T78t">
-<value name="BNO055IMU_PARAMETERS">
-<block type="variables_get" id="(S{nKP6y94;y_Ijayb{;">
-<field name="VAR" id="FbaKvU!;|Tlp/}9nA2Ob" variabletype="">imuParameters</field>
-</block>
-</value>
-<value name="ANGLE_UNIT">
-<shadow type="navigation_typedEnum_angleUnit" id="5vr(.`/7(ZF5b}E4e]L!">
-<field name="ANGLE_UNIT">DEGREES</field>
-</shadow>
-</value>
-<next>
-<block type="comment" id="nfyb[K5*`e=e;RtwdfT,">
-<field name="COMMENT">Express acceleration as m/s^2.</field>
-<next>
-<block type="bno055imuParameters_setAccelUnit" id="~H(Dw+r[l/.thWJRLXLb">
-<value name="BNO055IMU_PARAMETERS">
-<block type="variables_get" id="]ViYVMnx=*T`rx`~Nb6s">
-<field name="VAR" id="FbaKvU!;|Tlp/}9nA2Ob" variabletype="">imuParameters</field>
-</block>
-</value>
-<value name="ACCEL_UNIT">
-<shadow type="bno055imuParameters_typedEnum_accelUnit" id="*Q]PM*$/r1}S#iu6NUIv">
-<field name="ACCEL_UNIT">METERS_PERSEC_PERSEC</field>
-</shadow>
-</value>
-<next>
-<block type="comment" id="zLU[PpU=;X+ob*uT6A]A">
-<field name="COMMENT">Disable logging.</field>
-<next>
-<block type="bno055imuParameters_setLoggingEnabled" id="v2AwUqW,@C-Xa:HsVCie">
-<value name="BNO055IMU_PARAMETERS">
-<block type="variables_get" id="IaGgzqdNi@ryST}]A$7X">
-<field name="VAR" id="FbaKvU!;|Tlp/}9nA2Ob" variabletype="">imuParameters</field>
-</block>
-</value>
-<value name="LOGGING_ENABLED">
-<shadow type="logic_boolean" id="|*51eNRnb;%E*B;1U=Sm">
-<field name="BOOL">FALSE</field>
-</shadow>
-</value>
-<next>
 <block type="comment" id="}uxrcK{*_XRvt~Af0=Zh">
-<field name="COMMENT">Initialize IMU.</field>
+<field name="COMMENT">Initialize the IMU.</field>
 <next>
-<block type="bno055imu_initialize" id="L)mUPf_*~9K0lQKKU{7k">
-<field name="IDENTIFIER">imuAsBNO055IMU</field>
+<block type="imu_initialize" id="YFa-}1E/YYbH7ih,p2MZ">
+<field name="IDENTIFIER">imuAsIMU</field>
+<comment pinned="false" h="120" w="250">Initializes the IMU with non-default settings. To use this block, plug one of the "new IMU.Parameters" blocks into the parameters socket.</comment>
 <data>{"IDENTIFIER":"imu"}</data>
 <value name="PARAMETERS">
-<block type="variables_get" id="gi_FUMi?IOZAHjgYL|n!">
-<field name="VAR" id="FbaKvU!;|Tlp/}9nA2Ob" variabletype="">imuParameters</field>
+<block type="imuParameters_create" id="gY43_;=B@S~ALfczk-Wa">
+<comment pinned="false" h="150" w="325">Creates a Parameters object for use with an IMU in a REV Robotics Control Hub or Expansion Hub, specifying the hub's orientation on the robot via the direction that the REV Robotics logo is facing and the direction that the USB ports are facing.</comment>
+<value name="IMU_ORIENTATION_ON_ROBOT">
+<block type="revHubOrientationOnRobot_create1" id="qrP9|m*S_Cva+x@u+dBP">
+<value name="LOGO_FACING_DIRECTION">
+<shadow type="revHubOrientationOnRobot_typedEnum_logoFacingDirection" id="1!p#-qaeWzXbK?|DI7?8">
+<field name="LOGO_FACING_DIRECTION">UP</field>
+</shadow>
+</value>
+<value name="USB_FACING_DIRECTION">
+<shadow type="revHubOrientationOnRobot_typedEnum_usbFacingDirection" id="FbjHim7/izbo^6uOPymD">
+<field name="USB_FACING_DIRECTION">FORWARD</field>
+</shadow>
+</value>
+</block>
+</value>
 </block>
 </value>
 <next>
 <block type="comment" id="50963kz99wL?$qb1eCM#">
-<field name="COMMENT">Prompt user to press start buton.</field>
+<field name="COMMENT">Prompt user to press start button.</field>
 <next>
 <block type="telemetry_addTextData_All" id="I|{*]NJnDWUu_sRNEJNc">
 <value name="KEY">
@@ -96,8 +55,7 @@
 <next>
 <block type="controls_if" id="(xE-t{ZSFBWrNyAt#(Lg">
 <value name="IF0">
-<block type="linearOpMode_opModeIsActive" id=",_L/yC`0GP5}rAw?:?l}">
-</block>
+<block type="linearOpMode_opModeIsActive" id=",_L/yC`0GP5}rAw?:?l}"/>
 </value>
 <statement name="DO0">
 <block type="comment" id="u(VJvZJERNpN$v^,:k%2">
@@ -106,177 +64,265 @@
 <block type="controls_whileUntil" id="x+6xBn4:_+Iq]kCttUSS">
 <field name="MODE">WHILE</field>
 <value name="BOOL">
-<block type="linearOpMode_opModeIsActive" id="B*pFK1@PI_JqfeALPI`M">
-</block>
+<block type="linearOpMode_opModeIsActive" id="B*pFK1@PI_JqfeALPI`M"/>
 </value>
 <statement name="DO">
-<block type="comment" id="Hk{3u|gayGk}t4B[mn57">
-<field name="COMMENT">Get absolute orientation</field>
+<block type="telemetry_addTextData_All" id="B)KK7xP+-|S?Z*;)p}Sd">
+<value name="KEY">
+<shadow type="text" id="*OeY$nrzm%k(IrI#4Ym9">
+<field name="TEXT">Yaw</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id=".5#,2~|boS-jf4LNaV3G">
+<field name="TEXT">Press Circle or B on Gamepad to reset.</field>
+</shadow>
+</value>
 <next>
-<block type="comment" id="2[b2S^TbBN|ZDKIPTCTx">
-<field name="COMMENT">Get acceleration due to force of gravity.</field>
+<block type="comment" id="~(szoVNv9wHcI0i=O:w$">
+<field name="COMMENT">Check to see if reset yaw is requested.</field>
+<next>
+<block type="controls_if" id="Ilq3k`~~w6KX;Q,!ER#*">
+<value name="IF0">
+<block type="gamepad_getProperty_Boolean" id="!ojSX8f+pSY2OU2b#5T(">
+<field name="IDENTIFIER">gamepad1</field>
+<field name="PROP">Circle</field>
+<data>{"IDENTIFIER":"gamepad1"}</data>
+</block>
+</value>
+<statement name="DO0">
+<block type="imu_resetYaw" id="n%oZl)HU7a9;,;soG(*p">
+<field name="IDENTIFIER">imuAsIMU</field>
+<data>{"IDENTIFIER":"imu"}</data>
+</block>
+</statement>
+<next>
+<block type="comment" id="Hk{3u|gayGk}t4B[mn57">
+<field name="COMMENT">Get the orientation and angular velocity.</field>
 <next>
 <block type="variables_set" id="yL3ltwiBH4E(OD(%|WA!">
-<field name="VAR" id="~LUL9~Z;enziZiH||`!?" variabletype="">angles</field>
+<field name="VAR" id="~LUL9~Z;enziZiH||`!?">orientation</field>
 <value name="VALUE">
-<block type="bno055imu_getAngularOrientation" id="*~!pw]|@:UffO+DP~Oth">
-<field name="IDENTIFIER">imuAsBNO055IMU</field>
+<block type="imu_getProperty_YawPitchRollAngles" id=".t{2T{XxofDeE/ENw;3c">
+<field name="IDENTIFIER">imuAsIMU</field>
+<field name="PROP">RobotYawPitchRollAngles</field>
 <data>{"IDENTIFIER":"imu"}</data>
-<value name="AXES_REFERENCE">
-<shadow type="navigation_typedEnum_axesReference" id="!uSPH#9gEQjmYd!!L*Zu">
-<field name="AXES_REFERENCE">INTRINSIC</field>
-</shadow>
+</block>
 </value>
-<value name="AXES_ORDER">
-<shadow type="navigation_typedEnum_axesOrder" id="X.WQr`$_$z}qJl^!MPZ!">
-<field name="AXES_ORDER">ZYX</field>
-</shadow>
-</value>
+<next>
+<block type="variables_set" id="MDVK`%jrUQYSE/zq12$p">
+<field name="VAR" id="uJjN|$P.}=4O:6Fa#2s)">angularVelocity</field>
+<value name="VALUE">
+<block type="imu_getRobotAngularVelocity" id="g;GhzDLOIP(|e/2R8g}-">
+<field name="IDENTIFIER">imuAsIMU</field>
+<data>{"IDENTIFIER":"imu"}</data>
 <value name="ANGLE_UNIT">
-<shadow type="navigation_typedEnum_angleUnit" id="KtGQBfDA`V1Jc:Yhq-5l">
+<shadow type="navigation_typedEnum_angleUnit" id="YGOM]sLE[sCDuL`HFa%f">
 <field name="ANGLE_UNIT">DEGREES</field>
 </shadow>
 </value>
 </block>
 </value>
 <next>
-<block type="variables_set" id=":{xd3^F|e,)G+x3^(7Sn">
-<field name="VAR" id="#]v^/7$}[x}*;PPYGOk(" variabletype="">gravity</field>
-<value name="VALUE">
-<block type="bno055imu_getProperty_Acceleration" id="sI7xC=zc);0tA95zW([5">
-<field name="IDENTIFIER">imuAsBNO055IMU</field>
-<field name="PROP">Gravity</field>
-<data>{"IDENTIFIER":"imu"}</data>
-</block>
-</value>
-<next>
 <block type="comment" id="*sfgJpD!TIi5%3,fIA$J">
-<field name="COMMENT">Display orientation info.</field>
+<field name="COMMENT">Display yaw, pitch, and roll.</field>
 <next>
-<block type="telemetry_addNumericData_Number" id="?WegteK9LY3d`hTN(/F1">
+<block type="telemetry_addTextData_All" id="V/Jd5^q^NJ;;g)*_*{}U">
 <value name="KEY">
-<shadow type="text" id="Q2#n6^-?]I;}CV*(|IEd">
-<field name="TEXT">rot about Z</field>
+<shadow type="text" id="u2+)H.QPHh|bSS(jl4rn">
+<field name="TEXT">Yaw (Z)</field>
 </shadow>
 </value>
+<value name="TEXT">
+<block type="misc_formatNumber" id="QMdk}x=J$m08{K9cycan">
 <value name="NUMBER">
-<shadow type="math_number" id="Birj9wk*?|%Xk#1A2UM(">
-<field name="NUM">123</field>
+<shadow type="math_number" id=",)];oqpd%Tlez*ysZ8*N">
+<field name="NUM">3.14159265</field>
 </shadow>
-<block type="orientation_getProperty_Number" id="^}};qtD:W@};72f-;7z#">
-<field name="PROP">FirstAngle</field>
-<value name="ORIENTATION">
+<block type="yawPitchRollAngles_getPropertyWithAngleUnit_Number" id="yTh35V)vPoigkv2q=NvG">
+<field name="PROP">Yaw</field>
+<value name="YAW_PITCH_ROLL_ANGLES">
 <block type="variables_get" id="(/6;@TJA5$EJRli0nLC8">
-<field name="VAR" id="~LUL9~Z;enziZiH||`!?" variabletype="">angles</field>
+<field name="VAR" id="~LUL9~Z;enziZiH||`!?">orientation</field>
 </block>
+</value>
+<value name="ANGLE_UNIT">
+<shadow type="navigation_typedEnum_angleUnit" id="nz9q*@)K/@Q:pTmC29:^">
+<field name="ANGLE_UNIT">DEGREES</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="%o.y#}+)UHu5qM[Uwma|">
+<field name="NUM">2</field>
+</shadow>
 </value>
 </block>
 </value>
 <next>
-<block type="telemetry_addNumericData_Number" id="%~}fRo#A4(EGw?ZI87}K">
+<block type="telemetry_addTextData_All" id="}xm#jey#5u8TS$;F~:ey">
 <value name="KEY">
-<shadow type="text" id="!sqZY|J1xGR,U,u$su!P">
-<field name="TEXT">rot about Y</field>
+<shadow type="text" id="vq;Z1]dZuY2,Ot8HPf^W">
+<field name="TEXT">Pitch (X)</field>
 </shadow>
 </value>
+<value name="TEXT">
+<block type="misc_formatNumber" id="fv*i=Sv$BW95`Tn1LT78">
 <value name="NUMBER">
-<shadow type="math_number" id="Birj9wk*?|%Xk#1A2UM(">
-<field name="NUM">123</field>
+<shadow type="math_number" id=".zaPop@XbvI(BcCUz2Pu">
+<field name="NUM">3.14159265</field>
 </shadow>
-<block type="orientation_getProperty_Number" id="rO1]S}q~z0;Rb^D7Yr#r">
-<field name="PROP">SecondAngle</field>
-<value name="ORIENTATION">
-<block type="variables_get" id="yv}O,8]*ry(s#vlf)wX0">
-<field name="VAR" id="~LUL9~Z;enziZiH||`!?" variabletype="">angles</field>
+<block type="yawPitchRollAngles_getPropertyWithAngleUnit_Number" id="(zV(NmTpBOz|am?7/m9U">
+<field name="PROP">Pitch</field>
+<value name="YAW_PITCH_ROLL_ANGLES">
+<block type="variables_get" id="}t:Q3lG)pR?zjp5uX}zh">
+<field name="VAR" id="~LUL9~Z;enziZiH||`!?">orientation</field>
 </block>
+</value>
+<value name="ANGLE_UNIT">
+<shadow type="navigation_typedEnum_angleUnit" id="szYMJE:x:lK]/jmq3{DM">
+<field name="ANGLE_UNIT">DEGREES</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="^%_|ob,^57hs^1z8`AY5">
+<field name="NUM">2</field>
+</shadow>
 </value>
 </block>
 </value>
 <next>
-<block type="telemetry_addNumericData_Number" id="H;TO|TLO5!UBZ0zZ||%f">
+<block type="telemetry_addTextData_All" id="r?tpCDZu,Sf7ZWy)wDJ-">
 <value name="KEY">
-<shadow type="text" id="}rTC/k;}NimSqXR2go?e">
-<field name="TEXT">rot about X</field>
+<shadow type="text" id="BCQ;NOBB|-x+Gdky+?v.">
+<field name="TEXT">Roll (Y)</field>
 </shadow>
 </value>
+<value name="TEXT">
+<block type="misc_formatNumber" id="U:Z=.gm3%2+*5ZKVy/HT">
 <value name="NUMBER">
-<shadow type="math_number" id="Birj9wk*?|%Xk#1A2UM(">
-<field name="NUM">123</field>
+<shadow type="math_number" id="{OpC7YRf-A`by)XAYHuS">
+<field name="NUM">3.14159265</field>
 </shadow>
-<block type="orientation_getProperty_Number" id="SP5h7?{{Xk]R!W_W~C9[">
-<field name="PROP">ThirdAngle</field>
-<value name="ORIENTATION">
-<block type="variables_get" id="4,:;S9q3;(_BvCH89%yf">
-<field name="VAR" id="~LUL9~Z;enziZiH||`!?" variabletype="">angles</field>
+<block type="yawPitchRollAngles_getPropertyWithAngleUnit_Number" id="H(M==MHND?/%YeI1M).R">
+<field name="PROP">Roll</field>
+<value name="YAW_PITCH_ROLL_ANGLES">
+<block type="variables_get" id="7Xi+Xz}e/ZJq2M6K+Y{F">
+<field name="VAR" id="~LUL9~Z;enziZiH||`!?">orientation</field>
 </block>
+</value>
+<value name="ANGLE_UNIT">
+<shadow type="navigation_typedEnum_angleUnit" id="Upu*.1X!R$WG#Jg^M7Xs">
+<field name="ANGLE_UNIT">DEGREES</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="WT+|Myz9b/@bzdo=;hKG">
+<field name="NUM">2</field>
+</shadow>
 </value>
 </block>
 </value>
 <next>
-<block type="comment" id="QNqIik:q|4ImPUc*9QG^">
-<field name="COMMENT">Display gravitational acceleration.</field>
+<block type="comment" id="~X_t+;#=@^eCNQk*-o9?">
+<field name="COMMENT">Display angular velocity.</field>
 <next>
-<block type="telemetry_addNumericData_Number" id="Cqt(`TGwA/:Vq`[lBSm8">
+<block type="telemetry_addTextData_All" id="!`]muGoZ03Dg0*]edC]K">
 <value name="KEY">
-<shadow type="text" id="TDl$B-+(b^{|5EetSYa]">
-<field name="TEXT">gravity (Z)</field>
+<shadow type="text" id="8{1,iOG7TC7gljmuCj#_">
+<field name="TEXT">Yaw (Z) velocity</field>
 </shadow>
 </value>
+<value name="TEXT">
+<block type="misc_formatNumber" id="KaSj3~D*BM3`Lg_/.y:t">
 <value name="NUMBER">
-<shadow type="math_number" id="Birj9wk*?|%Xk#1A2UM(">
-<field name="NUM">123</field>
+<shadow type="math_number" id="9(c}k42O`H6)@1NXw6]:">
+<field name="NUM">3.14159265</field>
 </shadow>
-<block type="acceleration_getProperty_Number" id="k3Byi/mz|PuOKlHk9V{$">
-<field name="PROP">ZAccel</field>
-<value name="ACCELERATION">
-<block type="variables_get" id="/^bCd^wy8tiTs9ty.tR#">
-<field name="VAR" id="#]v^/7$}[x}*;PPYGOk(" variabletype="">gravity</field>
+<block type="angularVelocity_getProperty_Number" id="5b?ic3^@pgO0-1#V_))]">
+<field name="PROP">ZRotationRate</field>
+<value name="ANGULAR_VELOCITY">
+<block type="variables_get" id="E%(irAGQfPNVia{C.wL1">
+<field name="VAR" id="uJjN|$P.}=4O:6Fa#2s)">angularVelocity</field>
 </block>
+</value>
+</block>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="yOvPj6%*=NeTRN;|e.)I">
+<field name="NUM">2</field>
+</shadow>
 </value>
 </block>
 </value>
 <next>
-<block type="telemetry_addNumericData_Number" id="v1^NT6W$)$lJP:7g49x3">
+<block type="telemetry_addTextData_All" id="5n+2$pw;}59k.c.gZ,tc">
 <value name="KEY">
-<shadow type="text" id="#3j@_iX^rhy@m.qplD|}">
-<field name="TEXT">gravity (Y)</field>
+<shadow type="text" id="]Y*JxSAE}YVz6X^~#rvx">
+<field name="TEXT">Pitch (X) velocity</field>
 </shadow>
 </value>
+<value name="TEXT">
+<block type="misc_formatNumber" id="N}1cu?)b~{0YKRLqsb^=">
 <value name="NUMBER">
-<shadow type="math_number" id="Birj9wk*?|%Xk#1A2UM(">
-<field name="NUM">123</field>
+<shadow type="math_number" id="F##|-bH;9/OCezXVFrZc">
+<field name="NUM">3.14159265</field>
 </shadow>
-<block type="acceleration_getProperty_Number" id="fl~%TFsKuPs)LoD.g].T">
-<field name="PROP">YAccel</field>
-<value name="ACCELERATION">
-<block type="variables_get" id="cBwD@hwC*3D3kxz~~(9|">
-<field name="VAR" id="#]v^/7$}[x}*;PPYGOk(" variabletype="">gravity</field>
+<block type="angularVelocity_getProperty_Number" id="I|W}dC0ZFBjN%egU*rx`">
+<field name="PROP">XRotationRate</field>
+<value name="ANGULAR_VELOCITY">
+<block type="variables_get" id="X[*?(,$L49T+BgG$b}~|">
+<field name="VAR" id="uJjN|$P.}=4O:6Fa#2s)">angularVelocity</field>
 </block>
+</value>
+</block>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="{488c#{ef|x{+9bHjytR">
+<field name="NUM">2</field>
+</shadow>
 </value>
 </block>
 </value>
 <next>
-<block type="telemetry_addNumericData_Number" id="n7REFu]6eyX8QZTI[*J)">
+<block type="telemetry_addTextData_All" id="Nvvam2b1jR+6[Yk`_mT/">
 <value name="KEY">
-<shadow type="text" id="`xq]Prju_@MUh3hN%PQ@">
-<field name="TEXT">gravity (X)</field>
+<shadow type="text" id="VoEOrd6T.UgZ;WLNVo2k">
+<field name="TEXT">Roll (Y) velocity</field>
 </shadow>
 </value>
+<value name="TEXT">
+<block type="misc_formatNumber" id="hBSgcm^n!c)hXnlFl?lT">
 <value name="NUMBER">
-<shadow type="math_number" id="Birj9wk*?|%Xk#1A2UM(">
-<field name="NUM">123</field>
+<shadow type="math_number" id="=Y|drUy?D,4RtfFlJE`U">
+<field name="NUM">3.14159265</field>
 </shadow>
-<block type="acceleration_getProperty_Number" id="a!9OOO-p+eldGtv:7~kj">
-<field name="PROP">XAccel</field>
-<value name="ACCELERATION">
-<block type="variables_get" id="EybT[_@,K[*H=H[X#Hpq">
-<field name="VAR" id="#]v^/7$}[x}*;PPYGOk(" variabletype="">gravity</field>
+<block type="angularVelocity_getProperty_Number" id="+Z53/[F/.Qb+M~bQd).I">
+<field name="PROP">YRotationRate</field>
+<value name="ANGULAR_VELOCITY">
+<block type="variables_get" id="xLMyL#q]jX|q9Jr7j2PP">
+<field name="VAR" id="uJjN|$P.}=4O:6Fa#2s)">angularVelocity</field>
 </block>
+</value>
+</block>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="%2:Bf+vz_(xrRklN5!.D">
+<field name="NUM">2</field>
+</shadow>
 </value>
 </block>
 </value>
 <next>
-<block type="telemetry_update" id="Dd6y4Mjx5+AfHM?TiUbT">
+<block type="telemetry_update" id="Dd6y4Mjx5+AfHM?TiUbT"/>
+</next>
+</block>
+</next>
 </block>
 </next>
 </block>
@@ -307,22 +353,6 @@
 </next>
 </block>
 </statement>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
 </block>
 </next>
 </block>
@@ -341,6 +371,6 @@
 </xml>
 <?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
 <Extra>
-<OpModeMeta flavor="TELEOP" group="" />
+<OpModeMeta flavor="TELEOP" group="" autoTransition="" />
 <Enabled value="true" />
 </Extra>

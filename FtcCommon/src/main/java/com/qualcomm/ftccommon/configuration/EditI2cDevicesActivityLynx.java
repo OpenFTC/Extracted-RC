@@ -69,7 +69,7 @@ import com.qualcomm.robotcore.hardware.configuration.ConfigurationType;
 import com.qualcomm.robotcore.hardware.configuration.ConfigurationTypeManager;
 import com.qualcomm.robotcore.hardware.configuration.LynxI2cDeviceConfiguration;
 
-import java.util.List;
+import java.util.SortedSet;
 
 /**
  * Created by bob on 2016-10-21.
@@ -92,9 +92,9 @@ public class EditI2cDevicesActivityLynx extends EditI2cDevicesActivityAbstract<L
         {
         Spinner spinner = (Spinner) itemView.findViewById(this.idItemSpinner);
 
-        List<ConfigurationType> deviceTypes =
+        SortedSet<ConfigurationType> deviceTypes =
                 ConfigurationTypeManager.getInstance().getApplicableConfigTypes(ConfigurationType.DeviceFlavor.I2C, controlSystem, configuringControlHubParent, i2cBus);
 
-        localizeConfigTypeSpinnerTypes(ConfigurationType.DisplayNameFlavor.Normal, spinner, deviceTypes);
+        localizeConfigTypeSpinnerTypes(spinner, deviceTypes);
         }
     }

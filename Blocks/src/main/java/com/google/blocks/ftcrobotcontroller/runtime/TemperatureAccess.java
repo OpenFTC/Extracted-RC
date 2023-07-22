@@ -41,6 +41,7 @@ class TemperatureAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Temperature.class, fieldName = "unit")
   public String getTempUnit(Object temperatureArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".TempUnit");
@@ -62,6 +63,7 @@ class TemperatureAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Temperature.class, fieldName = "temperature")
   public double getTemperature(Object temperatureArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".Temperature");
@@ -80,6 +82,7 @@ class TemperatureAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Temperature.class, fieldName = "acquisitionTime")
   public long getAcquisitionTime(Object temperatureArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".AcquisitionTime");
@@ -98,6 +101,7 @@ class TemperatureAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Temperature.class, constructor = true)
   public Temperature create() {
     try {
       startBlockExecution(BlockType.CREATE, "");
@@ -112,6 +116,7 @@ class TemperatureAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Temperature.class, constructor = true)
   public Temperature create_withArgs(
       String tempUnitString, double temperature, long acquisitionTime) {
     try {
@@ -131,6 +136,7 @@ class TemperatureAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Temperature.class, methodName = "toUnit")
   public Temperature toTempUnit(Object temperatureArg, String tempUnitString) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".toTempUnit");

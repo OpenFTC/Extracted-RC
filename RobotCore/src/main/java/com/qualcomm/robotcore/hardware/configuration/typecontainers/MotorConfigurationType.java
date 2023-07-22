@@ -39,6 +39,7 @@ import com.google.gson.annotations.Expose;
 import com.qualcomm.robotcore.hardware.configuration.annotations.ExpansionHubPIDFPositionParams;
 import com.qualcomm.robotcore.hardware.configuration.annotations.ExpansionHubPIDFVelocityParams;
 import com.qualcomm.robotcore.hardware.configuration.ConfigurationTypeManager;
+import com.qualcomm.robotcore.hardware.configuration.ConfigurationTypeManager.ClassSource;
 import com.qualcomm.robotcore.hardware.configuration.DistributorInfo;
 import com.qualcomm.robotcore.hardware.configuration.DistributorInfoState;
 import com.qualcomm.robotcore.hardware.configuration.ExpansionHubMotorControllerParamsState;
@@ -60,15 +61,17 @@ public final class MotorConfigurationType extends UserConfigurationType implemen
     // State
     //----------------------------------------------------------------------------------------------
 
+    // Maybe someday we'll expose ticksPerRev, maxRPM, and distributorInfo via the config UI, but
+    // the other information does not seem very useful to the user.
     private @Expose double ticksPerRev;
-    private @Expose double gearing;
     private @Expose double maxRPM;
-    private @Expose double achieveableMaxRPMFraction;
-    private @Expose Rotation orientation;
-
     private @Expose @NonNull DistributorInfoState distributorInfo = new DistributorInfoState();
-    private @Expose @NonNull ExpansionHubMotorControllerParamsState hubVelocityParams = new ExpansionHubMotorControllerParamsState();
-    private @Expose @NonNull ExpansionHubMotorControllerParamsState hubPositionParams = new ExpansionHubMotorControllerParamsState();
+
+    private double gearing;
+    private double achieveableMaxRPMFraction;
+    private Rotation orientation;
+    private @NonNull ExpansionHubMotorControllerParamsState hubVelocityParams = new ExpansionHubMotorControllerParamsState();
+    private @NonNull ExpansionHubMotorControllerParamsState hubPositionParams = new ExpansionHubMotorControllerParamsState();
 
     //----------------------------------------------------------------------------------------------
     // Accessing
@@ -177,9 +180,9 @@ public final class MotorConfigurationType extends UserConfigurationType implemen
         return (MotorConfigurationType)ConfigurationTypeManager.getInstance().userTypeFromClass(DeviceFlavor.MOTOR, clazz);
         }
 
-    public MotorConfigurationType(Class clazz, String xmlTag)
+    public MotorConfigurationType(Class clazz, String xmlTag, ClassSource classSource)
         {
-        super(clazz, DeviceFlavor.MOTOR, xmlTag);
+        super(clazz, DeviceFlavor.MOTOR, xmlTag, classSource);
         }
 
     // Used by gson deserialization

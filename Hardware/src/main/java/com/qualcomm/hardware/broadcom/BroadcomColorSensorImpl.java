@@ -72,9 +72,9 @@ public abstract class BroadcomColorSensorImpl extends I2cDeviceSynchDeviceWithPa
 
     protected BroadcomColorSensorImpl(BroadcomColorSensor.Parameters params,
                                       I2cDeviceSynchSimple deviceClient,
-                                      boolean isOwned)
+                                      boolean deviceClientIsOwned)
     {
-        super(deviceClient, isOwned, params);
+        super(deviceClient, deviceClientIsOwned, params);
         this.deviceClient.setLogging(this.parameters.loggingEnabled);
         this.deviceClient.setLoggingTag(this.parameters.loggingTag);
 

@@ -195,13 +195,28 @@ public class ToolboxUtil {
   public static void addFunctions(
       StringBuilder xmlToolbox, HardwareType hardwareType, String identifier,
       Map<String, Map<String, String>> functions) {
+    addFunctions(xmlToolbox, hardwareType, identifier, functions, null);
+  }
+
+  /**
+   * Appends the function blocks for the given {@link HardwareType} to the toolbox.
+   */
+  public static void addFunctions(
+      StringBuilder xmlToolbox, HardwareType hardwareType, String identifier,
+      Map<String, Map<String, String>> functions, Map<String, String> functionComments) {
     for (Map.Entry<String, Map<String, String>> functionEntry : functions.entrySet()) {
       String functionName = functionEntry.getKey();
       Map<String, String> args = functionEntry.getValue();
+      String comment = (functionComments != null) ? functionComments.get(functionName) : null;
 
       xmlToolbox
           .append("<block type=\"").append(hardwareType.blockTypePrefix).append("_")
-          .append(functionName).append("\">\n")
+          .append(functionName).append("\">\n");
+      if (comment != null && comment.startsWith("<comment") && comment.endsWith("</comment>")) {
+        xmlToolbox
+            .append(comment).append("\n");
+      }
+      xmlToolbox
           .append("<field name=\"IDENTIFIER\">").append(identifier)
           .append("</field>\n");
       if (args != null) {

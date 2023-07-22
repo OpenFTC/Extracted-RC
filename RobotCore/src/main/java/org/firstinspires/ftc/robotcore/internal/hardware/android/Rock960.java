@@ -32,6 +32,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.robotcore.internal.hardware.android;
 
+import androidx.annotation.NonNull;
+
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.util.RobotLog;
 
@@ -68,37 +70,67 @@ public class Rock960 extends AndroidBoard {
 
     // Public Methods
 
-    @Override
+    @Override @NonNull
     public String getDeviceType() {
         return "Rock960";
     }
 
-    @Override
+    @Override @NonNull
     public DigitalChannel getAndroidBoardIsPresentPin() {
         return ANDROID_BOARD_IS_PRESENT_PIN;
     }
 
-    @Override
+    @Override @NonNull
     public DigitalChannel getProgrammingPin() {
         return PROGRAMMING_PIN;
     }
 
-    @Override
+    @Override @NonNull
     public DigitalChannel getLynxModuleResetPin() {
         return LYNX_MODULE_RESET_PIN;
     }
 
-    @Override
+    @Override @NonNull
     public DigitalChannel getUserButtonPin() {
         return USER_BUTTON_PIN;
     }
 
-    @Override
-    public DigitalChannel getBhi260QuatRegFreezePin() {
+    @Override @NonNull
+    public DigitalChannel getBhi260ResetPin() {
         return new FakeAndroidBoard.FakeDigitalChannel(DigitalChannel.Mode.OUTPUT);
     }
 
-    @Override
+    @Override @NonNull
+    public DigitalChannel getBhi260InterruptPin() {
+        return new FakeAndroidBoard.FakeDigitalChannel(DigitalChannel.Mode.INPUT);
+    }
+
+    @Override @NonNull
+    public DigitalChannel getBhi260Gpio1() {
+        return new FakeAndroidBoard.FakeDigitalChannel(DigitalChannel.Mode.OUTPUT);
+    }
+
+    @Override @NonNull
+    public DigitalChannel getBhi260Gpio5() {
+        return new FakeAndroidBoard.FakeDigitalChannel(DigitalChannel.Mode.OUTPUT);
+    }
+
+    @Override @NonNull
+    public DigitalChannel getBhi260Gpio6() {
+        return new FakeAndroidBoard.FakeDigitalChannel(DigitalChannel.Mode.OUTPUT);
+    }
+
+    @Override @NonNull
+    public DigitalChannel getBhi260Gpio17() {
+        return new FakeAndroidBoard.FakeDigitalChannel(DigitalChannel.Mode.OUTPUT);
+    }
+
+    @Override @NonNull
+    public DigitalChannel getBhi260Gpio18() {
+        return new FakeAndroidBoard.FakeDigitalChannel(DigitalChannel.Mode.OUTPUT);
+    }
+
+    @Override @NonNull
     public File getUartLocation() {
         return UART_FILE;
     }
@@ -127,7 +159,8 @@ public class Rock960 extends AndroidBoard {
         return false;
     }
 
-    @Override public WifiDataRate getWifiApBeaconRate() {
+    @Override @NonNull
+    public WifiDataRate getWifiApBeaconRate() {
         return WifiDataRate.UNKNOWN;
     }
 

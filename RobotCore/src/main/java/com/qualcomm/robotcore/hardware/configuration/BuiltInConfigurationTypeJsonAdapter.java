@@ -74,7 +74,7 @@ public class BuiltInConfigurationTypeJsonAdapter extends TypeAdapter<BuiltInConf
         }
         writer.beginObject();
         writer.name("xmlTag").value(configurationType.getXmlTag());
-        writer.name("name").value(configurationType.getDisplayName(ConfigurationType.DisplayNameFlavor.Normal));
+        writer.name("name").value(configurationType.getName());
         writer.name("flavor").value(ConfigurationType.DeviceFlavor.BUILT_IN.toString());
         writer.endObject();
     }

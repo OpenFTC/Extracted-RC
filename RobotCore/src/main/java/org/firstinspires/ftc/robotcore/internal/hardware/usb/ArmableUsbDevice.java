@@ -76,7 +76,7 @@ public abstract class ArmableUsbDevice implements RobotUsbModule, GlobalWarningS
     protected       SyncdDevice.Manager     syncdDeviceManager;
     protected       OpenRobotUsbDevice      openRobotUsbDevice;
     protected final AtomicInteger           referenceCount;
-    protected       RobotUsbDevice          robotUsbDevice;
+    @Nullable protected RobotUsbDevice      robotUsbDevice;
 
     protected           ARMINGSTATE             armingState;
     protected final     Object                  armingLock                 = new Object();

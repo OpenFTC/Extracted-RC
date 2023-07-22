@@ -280,7 +280,7 @@ public class Gamepad extends RobocolParsableBase {
   }
 
   /**
-   * See {@link OpModeManagerImpl#runActiveOpMode(Gamepad[])}
+   * See OpModeManagerImpl#runActiveOpMode(Gamepad[])
    */
   protected volatile byte userForEffects = ID_UNASSOCIATED;
   public void setUserForEffects(byte userForEffects) {
@@ -332,10 +332,10 @@ public class Gamepad extends RobocolParsableBase {
   /**
    * Copy the state of a gamepad into this gamepad
    * @param gamepad state to be copied from
-   * @throws RobotCoreException if the copy fails - gamepad will be in an unknown
+   * @throws RuntimeException if the copy fails - gamepad will be in an unknown
    *         state if this exception is thrown
    */
-  public void copy(Gamepad gamepad) throws RobotCoreException {
+  public void copy(Gamepad gamepad) {
     // reuse the serialization code; since that reduces the chances of bugs
     fromByteArray(gamepad.toByteArray());
   }
@@ -344,13 +344,7 @@ public class Gamepad extends RobocolParsableBase {
    * Reset this gamepad into its initial state
    */
   public void reset() {
-    try {
-      copy(new Gamepad());
-    } catch (RobotCoreException e) {
-      // we should never hit this
-      RobotLog.e("Gamepad library in an invalid state");
-      throw new IllegalStateException("Gamepad library in an invalid state");
-    }
+    copy(new Gamepad());
   }
 
   @Override
@@ -359,7 +353,7 @@ public class Gamepad extends RobocolParsableBase {
   }
 
   @Override
-  public byte[] toByteArray() throws RobotCoreException {
+  public byte[] toByteArray() {
 
     ByteBuffer buffer = getWriteBuffer(PAYLOAD_SIZE);
 
@@ -418,9 +412,9 @@ public class Gamepad extends RobocolParsableBase {
   }
 
   @Override
-  public void fromByteArray(byte[] byteArray) throws RobotCoreException {
+  public void fromByteArray(byte[] byteArray) {
     if (byteArray.length < BUFFER_SIZE) {
-      throw new RobotCoreException("Expected buffer of at least " + BUFFER_SIZE + " bytes, received " + byteArray.length);
+      throw new RuntimeException("Expected buffer of at least " + BUFFER_SIZE + " bytes, received " + byteArray.length);
     }
 
     ByteBuffer byteBuffer = getReadBuffer(byteArray);

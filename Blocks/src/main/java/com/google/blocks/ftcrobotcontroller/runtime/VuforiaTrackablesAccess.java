@@ -39,6 +39,7 @@ class VuforiaTrackablesAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = VuforiaTrackables.class, methodName = "size")
   public int getSize(Object vuforiaTrackablesArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".Size");
@@ -57,6 +58,7 @@ class VuforiaTrackablesAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = VuforiaTrackables.class, methodName = "getName")
   public String getName(Object vuforiaTrackablesArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".Name");
@@ -78,6 +80,7 @@ class VuforiaTrackablesAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = VuforiaTrackables.class, methodName = "getLocalizer")
   public VuforiaLocalizer getLocalizer(Object vuforiaTrackablesArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".Localizer");
@@ -96,6 +99,7 @@ class VuforiaTrackablesAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = VuforiaTrackables.class, methodName = "get")
   public VuforiaTrackable get(Object vuforiaTrackablesArg, int index) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".get");
@@ -114,6 +118,7 @@ class VuforiaTrackablesAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = VuforiaTrackables.class, methodName = "setName")
   public void setName(Object vuforiaTrackablesArg, String name) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".setName");
@@ -131,6 +136,7 @@ class VuforiaTrackablesAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = VuforiaTrackables.class, methodName = "activate")
   public void activate(Object vuforiaTrackablesArg) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".activate");
@@ -148,6 +154,7 @@ class VuforiaTrackablesAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = VuforiaTrackables.class, methodName = "deactivate")
   public void deactivate(Object vuforiaTrackablesArg) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".deactivate");

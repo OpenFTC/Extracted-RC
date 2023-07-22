@@ -63,6 +63,15 @@ public class I2cWarningManager implements GlobalWarningSource
 
     public static void notifyProblemI2cDevice(@NonNull I2cDeviceSynchSimple dev)
     {
+        if (dev instanceof I2cDeviceSynchImplOnSimple)
+        {
+            // Mark the wrapped I2cDeviceSynchSimple class as the one that's experiencing a problem,
+            // so that if another driver is sharing the wrapped class, they are being tracked
+            // equivalently here. We use recursion to keep the behavior correct even if a wrapper is
+            // wrapping a wrapper.
+            notifyProblemI2cDevice(((I2cDeviceSynchImplOnSimple) dev).i2cDeviceSynchSimple);
+            return;
+        }
         synchronized (lock)
         {
             if (newProblemDeviceSuppressionCount == 0)
@@ -74,6 +83,15 @@ public class I2cWarningManager implements GlobalWarningSource
 
     public static void removeProblemI2cDevice(I2cDeviceSynchSimple dev)
     {
+        if (dev instanceof I2cDeviceSynchImplOnSimple)
+        {
+            // Mark the wrapped I2cDeviceSynchSimple class as the one that's experiencing a problem,
+            // so that if another driver is sharing the wrapped class, they are being tracked
+            // equivalently here. We use recursion to keep the behavior correct even if a wrapper is
+            // wrapping a wrapper.
+            removeProblemI2cDevice(((I2cDeviceSynchImplOnSimple) dev).i2cDeviceSynchSimple);
+            return;
+        }
         synchronized (lock)
         {
             if (instance.problemDevices.isEmpty())
@@ -164,7 +182,7 @@ public class I2cWarningManager implements GlobalWarningSource
                 }
             }
 
-            builder.append("Check your wiring and configuration. ");
+            builder.append("Check your wiring and configuration.");
 
             return builder.toString();
         }

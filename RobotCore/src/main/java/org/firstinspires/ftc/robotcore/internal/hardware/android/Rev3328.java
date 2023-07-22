@@ -32,24 +32,34 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.robotcore.internal.hardware.android;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.qualcomm.robotcore.R;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.configuration.LynxConstants;
+import com.qualcomm.robotcore.util.GlobalWarningSource;
 import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.util.RunShellCommand;
+
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
 import java.io.File;
 
 public class Rev3328 extends AndroidBoard {
     private static final String TAG = "Rev3328";
-    private static final int OS_1_1_0_VERSION_NUM = 3;
-    private static final int OS_1_1_1_VERSION_NUM = 4;
-    private static final int OS_1_1_2_BETA_VERSION_NUM = 5;
-    private static final int OS_1_1_2_VERSION_NUM = 6;
+    private static final int OS_1_1_0_VERSION_CODE = 3;
+    private static final int OS_1_1_1_VERSION_CODE = 4;
+    private static final int OS_1_1_2_BETA_VERSION_CODE = 5;
+    private static final int OS_1_1_2_VERSION_CODE = 6;
+    private static final int OS_1_1_3_VERSION_CODE = 7;
 
-    // Don't allow instantiation outside of our package
-    protected Rev3328() {}
+    private static final WarningSource warningSource;
+
+    static {
+        warningSource = new WarningSource();
+        RobotLog.registerGlobalWarningSource(warningSource);
+    }
 
     /**
      * To convert 96boards pin numbers to raw GPIO numbers for the REV3328 board
@@ -76,51 +86,114 @@ public class Rev3328 extends AndroidBoard {
     private static final DigitalChannel LYNX_MODULE_RESET_PIN =
             GpioPin.createOutput(87, false, GpioPin.Active.LOW, LYNX_MODULE_RESET_PIN_NAME);
 
-    private static final DigitalChannel BHI_260_QUATERNION_REGISTER_FREEZE_PIN =
-            GpioPin.createOutput(47, false, GpioPin.Active.LOW, BHI_260_QUATERNION_REGISTER_FREEZE_PIN_NAME);
-
     // UART file
     private static final File UART_FILE = new File("/dev/ttyS1");
 
+    // Don't allow instantiation outside of our package
+    protected Rev3328() { }
+
+    // The BHI260 pins are created on first use, so that we don't warn the user that their Control
+    // Hub OS is too old unless the pins are actually accessed. Only access from synchronized
+    // methods.
+    @Nullable private DigitalChannel bhi260ResetPin;
+    @Nullable private DigitalChannel bhi260InterruptPin;
+    @Nullable private DigitalChannel bhi260Gpio1Pin;
+    @Nullable private DigitalChannel bhi260Gpio5Pin;
+    @Nullable private DigitalChannel bhi260Gpio6Pin;
+    @Nullable private DigitalChannel bhi260Gpio17Pin;
+    @Nullable private DigitalChannel bhi260Gpio18Pin;
+
     // Public Methods
 
-    @Override
+    @Override @NonNull
     public String getDeviceType() {
         return "REV3328";
     }
 
-    @Override
+    @Override @NonNull
     public DigitalChannel getAndroidBoardIsPresentPin() {
         return ANDROID_BOARD_IS_PRESENT_PIN;
     }
 
-    @Override
+    @Override @NonNull
     public DigitalChannel getProgrammingPin() {
         return PROGRAMMING_PIN;
     }
 
-    @Override
+    @Override @NonNull
     public DigitalChannel getLynxModuleResetPin() {
         return LYNX_MODULE_RESET_PIN;
     }
 
-    @Override
+    @Override @NonNull
     public DigitalChannel getUserButtonPin() {
         return USER_BUTTON_PIN;
     }
 
-    @Override
-    public DigitalChannel getBhi260QuatRegFreezePin() {
-        return BHI_260_QUATERNION_REGISTER_FREEZE_PIN;
+    @Override @NonNull
+    public synchronized DigitalChannel getBhi260ResetPin() {
+        if (bhi260ResetPin == null) {
+            bhi260ResetPin = createOutputPinIfOsSupportsBhi260apImu(45, false, GpioPin.Active.LOW, BHI_260_RESET_PIN_NAME);
+        }
+        return bhi260ResetPin;
     }
 
-    @Override
+    @Override @NonNull
+    public synchronized DigitalChannel getBhi260InterruptPin() {
+        if (bhi260InterruptPin == null) {
+            bhi260InterruptPin = createInputPinIfOsSupportsBhi260apImu(84, GpioPin.Active.HIGH, BHI_260_INTERRUPT_PIN_NAME);
+        }
+        return bhi260InterruptPin;
+    }
+
+    @Override @NonNull
+    public synchronized DigitalChannel getBhi260Gpio1() {
+        if (bhi260Gpio1Pin == null) {
+            bhi260Gpio1Pin = createInputPinIfOsSupportsBhi260apImu(46, GpioPin.Active.LOW, BHI_260_GPIO1_PIN_NAME);
+        }
+        return bhi260Gpio1Pin;
+    }
+
+    @Override @NonNull
+    public synchronized DigitalChannel getBhi260Gpio5() {
+        if (bhi260Gpio5Pin == null) {
+            bhi260Gpio5Pin = createOutputPinIfOsSupportsBhi260apImu(85, false, GpioPin.Active.LOW, BHI_260_GPIO5_PIN_NAME);
+        }
+        return bhi260Gpio5Pin;
+    }
+
+    @Override @NonNull
+    public synchronized DigitalChannel getBhi260Gpio6() {
+        if (bhi260Gpio6Pin == null) {
+            bhi260Gpio6Pin = createOutputPinIfOsSupportsBhi260apImu(47, false, GpioPin.Active.LOW, BHI_260_GPIO6_PIN_NAME);
+        }
+        return bhi260Gpio6Pin;
+    }
+
+    @Override @NonNull
+    synchronized public DigitalChannel getBhi260Gpio17() {
+        if (bhi260Gpio17Pin == null) {
+            bhi260Gpio17Pin = createInputPinIfOsSupportsBhi260apImu(86, GpioPin.Active.LOW, BHI_260_GPIO17_PIN_NAME);
+        }
+        return bhi260Gpio17Pin;
+    }
+
+    @Override @NonNull
+    synchronized public DigitalChannel getBhi260Gpio18() {
+        if (bhi260Gpio18Pin == null) {
+            bhi260Gpio18Pin = createInputPinIfOsSupportsBhi260apImu(83, GpioPin.Active.LOW, BHI_260_GPIO18_PIN_NAME);
+        }
+        return bhi260Gpio18Pin;
+    }
+
+    @Override @NonNull
     public File getUartLocation() {
         return UART_FILE;
     }
 
-    @Override public WifiDataRate getWifiApBeaconRate() {
-        if (LynxConstants.getControlHubOsVersionCode() < OS_1_1_0_VERSION_NUM) {
+    @Override @NonNull
+    public WifiDataRate getWifiApBeaconRate() {
+        if (LynxConstants.getControlHubOsVersionCode() < OS_1_1_0_VERSION_CODE) {
             return WifiDataRate.CCK_1Mb; // OS versions prior to 1.1.0 used a 1Mb beacon rate
         }
         String rawBeaconRateString = new RunShellCommand().run("cat /sys/module/wlan/parameters/rev_beacon_rate").getOutput().trim();
@@ -137,7 +210,7 @@ public class Rev3328 extends AndroidBoard {
     }
 
     @Override public void setWifiApBeaconRate(WifiDataRate beaconRate) {
-        if (LynxConstants.getControlHubOsVersionCode() < OS_1_1_1_VERSION_NUM) {
+        if (LynxConstants.getControlHubOsVersionCode() < OS_1_1_1_VERSION_CODE) {
             RobotLog.ww(TAG, "Unable to set the Wi-Fi AP beacon rate on Control Hub OS version" + LynxConstants.getControlHubOsVersion());
             RobotLog.ww(TAG, "Control Hub OS version 1.1.1 or higher is required for this feature.");
             return;
@@ -151,15 +224,15 @@ public class Rev3328 extends AndroidBoard {
     }
 
     @Override public boolean supports5GhzAutoSelection() {
-        return LynxConstants.getControlHubOsVersionCode() >= OS_1_1_2_BETA_VERSION_NUM;
+        return LynxConstants.getControlHubOsVersionCode() >= OS_1_1_2_BETA_VERSION_CODE;
     }
 
     @Override public boolean supportsBulkNetworkSettings() {
-        return LynxConstants.getControlHubOsVersionCode() >= OS_1_1_2_BETA_VERSION_NUM;
+        return LynxConstants.getControlHubOsVersionCode() >= OS_1_1_2_BETA_VERSION_CODE;
     }
 
     @Override public boolean supportsGetChannelInfoIntent() {
-        return LynxConstants.getControlHubOsVersionCode() >= OS_1_1_2_BETA_VERSION_NUM;
+        return LynxConstants.getControlHubOsVersionCode() >= OS_1_1_2_BETA_VERSION_CODE;
     }
 
     @Override public boolean hasControlHubUpdater() {
@@ -167,7 +240,25 @@ public class Rev3328 extends AndroidBoard {
     }
 
     @Override public boolean hasRcAppWatchdog() {
-        return LynxConstants.getControlHubOsVersionCode() >= OS_1_1_2_VERSION_NUM;
+        return LynxConstants.getControlHubOsVersionCode() >= OS_1_1_2_VERSION_CODE;
+    }
+
+    private static DigitalChannel createInputPinIfOsSupportsBhi260apImu(int rawGpioNumber, GpioPin.Active active, String name) {
+        if (LynxConstants.getControlHubOsVersionCode() >= OS_1_1_3_VERSION_CODE) {
+            return GpioPin.createInput(rawGpioNumber, active, name);
+        } else {
+            warningSource.bhi260ImuAccessedOnIncompatibleOs = true;
+            return new FakeAndroidBoard.FakeDigitalChannel(DigitalChannel.Mode.INPUT);
+        }
+    }
+
+    private static DigitalChannel createOutputPinIfOsSupportsBhi260apImu(int rawGpioNumber, boolean initialState, GpioPin.Active active, String name) {
+        if (LynxConstants.getControlHubOsVersionCode() >= OS_1_1_3_VERSION_CODE) {
+            return GpioPin.createOutput(rawGpioNumber, initialState, active, name);
+        } else {
+            warningSource.bhi260ImuAccessedOnIncompatibleOs = true;
+            return new FakeAndroidBoard.FakeDigitalChannel(DigitalChannel.Mode.OUTPUT);
+        }
     }
 
     private enum RealtekWifiDataRate {
@@ -205,5 +296,22 @@ public class Rev3328 extends AndroidBoard {
             }
             return null;
         }
+    }
+
+    private static class WarningSource implements GlobalWarningSource {
+        volatile boolean bhi260ImuAccessedOnIncompatibleOs = false;
+
+        @Nullable @Override public String getGlobalWarning() {
+            if (bhi260ImuAccessedOnIncompatibleOs) {
+                return AppUtil.getDefContext().getString(R.string.warningAttemptedToUseBhi260OnOldOS);
+            } else {
+                return null;
+            }
+        }
+
+        @Override public boolean shouldTriggerWarningSound() { return false; }
+        @Override public void suppressGlobalWarning(boolean suppress) { }
+        @Override public void setGlobalWarning(String warning) { }
+        @Override public void clearGlobalWarning() { }
     }
 }

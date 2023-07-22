@@ -43,8 +43,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import dalvik.system.DexFile;
 
@@ -79,8 +82,10 @@ public class ClassManager {
     private static final String TAG = "ClassManager";
     private static final boolean DEBUG = false;
 
+    private static final AtomicBoolean processAllClassesCalled = new AtomicBoolean(false);
+
     private List<String> packagesAndClassesToIgnore;
-    private List<ClassFilter> filters;
+    private Set<ClassFilter> filters; // Must be a set so that adds are idempotent.
     private Context context;
     private DexFile dexFile;
     private OnBotJavaHelper onBotJavaHelper = null;
@@ -96,8 +101,8 @@ public class ClassManager {
         {
             this.context = AppUtil.getInstance().getApplication();
             this.dexFile = new DexFile(this.context.getPackageCodePath());
-            this.filters = new LinkedList<ClassFilter>();
-            clearIgnoredList();
+            this.filters = new HashSet<>();
+            resetIgnoredList();
         }
         catch (Exception e)
         {
@@ -106,7 +111,7 @@ public class ClassManager {
 
     }
 
-    protected void clearIgnoredList()
+    protected void resetIgnoredList()
     {
         // We ignore certain packages to make us more robust and efficient.
         // Classes in these packages will not be put through our various ClassFilter implementations.
@@ -129,7 +134,8 @@ public class ClassManager {
             "org.java_websocket",
             "org.slf4j",
             "org.tensorflow",
-            "org.threeten"
+            "org.threeten",
+            "com.journeyapps"
         ));
     }
 
@@ -153,11 +159,19 @@ public class ClassManager {
 
     /**
      * You want to know what classes are in the APK?  Call me.
+     * <p>
+     * This method is idempotent.
      *
      * @param filter a class that implements ClassFilter.
      */
     public void registerFilter(ClassFilter filter)
     {
+        if (processAllClassesCalled.get())
+        {
+            RobotLog.addGlobalWarningMessage("Class processing had already started when registerFilter() was called. " +
+                    "You must register your class filter before processAllClasses() is called in FtcRobotControllerActivity.");
+            return;
+        }
         filters.add(filter);
     }
 
@@ -250,11 +264,18 @@ public class ClassManager {
     }
 
     /**
-     * Iterate over all the classes in the APK and call registered filters.
+     * Iterate over all the classes in the APK and other sources and call registered filters.
      */
     public void processAllClasses()
     {
-        clearIgnoredList();
+        if (processAllClassesCalled.getAndSet(true))
+        {
+            RobotLog.addGlobalWarningMessage("processAllClasses() should only be called by the system. " +
+                    "Any additional calls are ignored.");
+            return;
+        }
+
+        resetIgnoredList();
         List<Class> allClasses = classNamesToClasses(getAllClassNames());
 
         for (ClassFilter f : filters)
@@ -274,7 +295,7 @@ public class ClassManager {
             return;
         }
 
-        clearIgnoredList();
+        resetIgnoredList();
         Collection<String> classNames = onBotJavaHelper.getOnBotJavaClassNames();
         setClassLoader(onBotJavaHelper.createOnBotJavaClassLoader());
         List<Class> onBotJavaClasses = classNamesToClasses(classNames);
@@ -302,7 +323,7 @@ public class ClassManager {
             return;
         }
 
-        clearIgnoredList();
+        resetIgnoredList();
         Collection<String> classNames = onBotJavaHelper.getExternalLibrariesClassNames();
         // The OnBotJavaClassLoader sits on top of the ExternalLibraries ClassLoader, so we need to
         // get a new OnBotJavaClassLoader.

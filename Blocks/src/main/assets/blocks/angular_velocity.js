@@ -377,3 +377,33 @@ Blockly.FtcJava['angularVelocity_getRotationRate'] = function(block) {
   var code = angularVelocity + '.' + property;
   return [code, Blockly.FtcJava.ORDER_MEMBER];
 };
+
+Blockly.Blocks['angularVelocity_toText'] = {
+  init: function() {
+    this.setOutput(true, 'String');
+    this.appendDummyInput()
+        .appendField('call')
+        .appendField(createNonEditableField('AngularVelocity'))
+        .appendField('.')
+        .appendField(createNonEditableField('toText'));
+    this.appendValueInput('ANGULAR_VELOCITY').setCheck('AngularVelocity')
+        .appendField('angularVelocity')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.setColour(functionColor);
+    this.setTooltip('Returns a text representation of the given AngularVelocity object.');
+  }
+};
+
+Blockly.JavaScript['angularVelocity_toText'] = function(block) {
+  var angularVelocity = Blockly.JavaScript.valueToCode(
+      block, 'ANGULAR_VELOCITY', Blockly.JavaScript.ORDER_NONE);
+  var code = angularVelocityIdentifierForJavaScript + '.toText(' + angularVelocity + ')';
+  return [code, Blockly.JavaScript.ORDER_FUNCTION_CALL];
+};
+
+Blockly.FtcJava['angularVelocity_toText'] = function(block) {
+  var angularVelocity = Blockly.FtcJava.valueToCode(
+      block, 'ANGULAR_VELOCITY', Blockly.FtcJava.ORDER_MEMBER);
+  var code = angularVelocity + '.toString()';
+  return [code, Blockly.FtcJava.ORDER_FUNCTION_CALL];
+};

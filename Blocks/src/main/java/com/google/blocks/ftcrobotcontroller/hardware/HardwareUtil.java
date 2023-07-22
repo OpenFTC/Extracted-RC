@@ -41,6 +41,7 @@ import com.qualcomm.ftccommon.configuration.RobotConfigFileManager;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver.BlinkinPattern;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.CompassSensor;
@@ -615,6 +616,7 @@ public class HardwareUtil {
 
     jsHardware
         .append("function addReservedWordsForJavaScript() {\n")
+        .append("  Blockly.JavaScript.addReservedWords('orientation');\n")
         .append("  Blockly.JavaScript.addReservedWords('callRunOpMode');\n")
         .append("  Blockly.JavaScript.addReservedWords('telemetryAddTextData');\n")
         .append("  Blockly.JavaScript.addReservedWords('telemetrySpeak');\n")
@@ -958,8 +960,8 @@ public class HardwareUtil {
       Class<? extends HardwareDevice> clazz = entry.getKey();
 
       // Check if the hardware map contains any of this class.
-      List<HardwareDevice> devices = hardwareMap.getAll(clazz);
-      if (devices.isEmpty()) {
+      SortedSet<String> deviceNames = hardwareMap.getAllNames(clazz);
+      if (deviceNames.isEmpty()) {
         continue;
       }
 
@@ -970,7 +972,7 @@ public class HardwareUtil {
 
       DeviceProperties deviceProperties = clazz.getAnnotation(DeviceProperties.class);
       String createDropdownFunctionName = processDeviceNames(
-          jsHardware, deviceProperties, hardwareMap, devices);
+          jsHardware, deviceProperties, deviceNames);
 
       String fullClassName = clazz.getName();
       String className = fullClassName;
@@ -1022,7 +1024,7 @@ public class HardwareUtil {
   }
 
   private static String processDeviceNames(StringBuilder jsHardware, DeviceProperties deviceProperties,
-      HardwareMap hardwareMap, List<HardwareDevice> devices) {
+      SortedSet<String> deviceNames) {
     // Make a name for the function. Start the device's xmlTag.
     StringBuilder sb = new StringBuilder();
     String xmlTag = deviceProperties.xmlTag();
@@ -1039,14 +1041,11 @@ public class HardwareUtil {
     jsHardware
         .append("function ").append(functionName).append("() {\n")
         .append("  var CHOICES = [\n");
-    for (HardwareDevice hardwareDevice : devices) {
-      String deviceName = HardwareItemMap.getDeviceName(hardwareMap, hardwareDevice);
-      if (deviceName != null) {
-        String escapedDeviceName = escapeSingleQuotes(deviceName);
-        jsHardware
-            .append("      ['").append(escapedDeviceName).append("', '")
-            .append(escapedDeviceName).append("'],\n");
-      }
+    for (String deviceName : deviceNames) {
+      String escapedDeviceName = escapeSingleQuotes(deviceName);
+      jsHardware
+          .append("      ['").append(escapedDeviceName).append("', '")
+          .append(escapedDeviceName).append("'],\n");
     }
     jsHardware
         .append("  ];\n")
@@ -1314,6 +1313,16 @@ public class HardwareUtil {
         shadow = (defaultValue == null)
             ? ToolboxUtil.makeTypedEnumShadow("navigation", "cameraMonitorFeedback")
             : ToolboxUtil.makeTypedEnumShadow("navigation", "cameraMonitorFeedback", "CAMERA_MONITOR_FEEDBACK", defaultValue);
+      } else if (argType.equals(RevHubOrientationOnRobot.LogoFacingDirection.class.getName())) {
+        String defaultValue = parseEnumDefaultValue(parameterDefaultValues[i], RevHubOrientationOnRobot.LogoFacingDirection.class);
+        shadow = (defaultValue == null)
+            ? ToolboxUtil.makeTypedEnumShadow("revHubOrientationOnRobot", "logoFacingDirection")
+            : ToolboxUtil.makeTypedEnumShadow("revHubOrientationOnRobot", "logoFacingDirection", "LOGO_FACING_DIRECTION", defaultValue);
+      } else if (argType.equals(RevHubOrientationOnRobot.UsbFacingDirection.class.getName())) {
+        String defaultValue = parseEnumDefaultValue(parameterDefaultValues[i], RevHubOrientationOnRobot.UsbFacingDirection.class);
+        shadow = (defaultValue == null)
+            ? ToolboxUtil.makeTypedEnumShadow("revHubOrientationOnRobot", "usbFacingDirection")
+            : ToolboxUtil.makeTypedEnumShadow("revHubOrientationOnRobot", "usbFacingDirection", "USB_FACING_DIRECTION", defaultValue);
       } else {
         // Leave other sockets empty?
       }
@@ -1494,6 +1503,25 @@ public class HardwareUtil {
     FileUtil.readAsset(sb, assetManager, assetName);
   }
 
+  /**
+   * Appends the text content of an asset to the given StringBuilder, but skips xml comments.
+   * Note that the xml comments have to be on a single line.
+   */
+  private static void addAssetSansXmlComments(StringBuilder xmlToolbox, AssetManager assetManager, String assetName)
+      throws IOException {
+    try (BufferedReader reader =
+        new BufferedReader(new InputStreamReader(assetManager.open(assetName)))) {
+      String line = null;
+      while ((line = reader.readLine()) != null) {
+        String trimmedLine = line.trim();
+        if (trimmedLine.startsWith("<!--") && trimmedLine.endsWith("-->")) {
+          continue;
+        }
+        xmlToolbox.append(line).append("\n");
+      }
+    }
+  }
+
   private static void addAssetWithPlaceholders(StringBuilder xmlToolbox, AssetManager assetManager,
       Map<Capability, Boolean> capabilities, String assetName) throws IOException {
     try (BufferedReader reader =
@@ -1669,6 +1697,9 @@ public class HardwareUtil {
         case GYRO_SENSOR:
           addGyroSensorCategoryToToolbox(xmlToolbox, hardwareType, hardwareItems);
           break;
+        case IMU:
+          addImuCategoryToToolbox(xmlToolbox, hardwareType, hardwareItems, assetManager);
+          break;
         case IR_SEEKER_SENSOR:
           addIrSeekerSensorCategoryToToolbox(xmlToolbox, hardwareType, hardwareItems);
           break;
@@ -1762,13 +1793,10 @@ public class HardwareUtil {
     properties.put("SystemStatus", "SystemStatus");
     properties.put("Temperature", "Temperature");
     properties.put("Velocity", "Velocity");
-    Map<String, String[]> setterValues = new HashMap<String, String[]>();
-    setterValues.put("I2cAddress7Bit", new String[] { ToolboxUtil.makeNumberShadow(8) });
-    setterValues.put("I2cAddress8Bit", new String[] { ToolboxUtil.makeNumberShadow(16) });
     Map<String, String[]> enumBlocks = new HashMap<String, String[]>();
     enumBlocks.put("SystemStatus", new String[] { ToolboxUtil.makeTypedEnumBlock(hardwareType, "systemStatus") });
     ToolboxUtil.addProperties(xmlToolbox, hardwareType, identifier, properties,
-        setterValues, enumBlocks);
+        null /* setterValues */, enumBlocks);
 
     // Functions
     Map<String, Map<String, String>> functions = new TreeMap<String, Map<String, String>>();
@@ -1799,6 +1827,49 @@ public class HardwareUtil {
     getAngularOrientationArgs.put("AXES_ORDER", ToolboxUtil.makeTypedEnumShadow("navigation", "axesOrder"));
     getAngularOrientationArgs.put("ANGLE_UNIT", ToolboxUtil.makeTypedEnumShadow("navigation", "angleUnit"));
     functions.put("getAngularOrientation", getAngularOrientationArgs);
+    ToolboxUtil.addFunctions(xmlToolbox, hardwareType, identifier, functions);
+  }
+
+  /**
+   * Adds the category for IMU to the toolbox.
+   */
+  private static void addImuCategoryToToolbox(
+      StringBuilder xmlToolbox, HardwareType hardwareType, List<HardwareItem> hardwareItems,
+      AssetManager assetManager) throws IOException {
+    String identifier = hardwareItems.get(0).identifier;
+
+    // Initialization blocks
+    Map<String, Map<String, String>> initFunctions = new TreeMap<String, Map<String, String>>();
+    Map<String, String> initFunctionComments = new HashMap<String, String>();
+    initFunctions.put("initialize", null);
+    initFunctionComments.put("initialize", "<comment pinned=\"false\" h=\"120\" w=\"250\">" +
+        "Initializes the IMU with non-default settings. To use this block, plug one of the " +
+        "\"new IMU.Parameters\" blocks into the parameters socket." +
+        "</comment>");
+    ToolboxUtil.addFunctions(xmlToolbox, hardwareType, identifier, initFunctions, initFunctionComments);
+    if (assetManager != null) {
+      addAsset(
+          xmlToolbox, assetManager, "toolbox/imu_parameters.xml");
+    }
+
+    // Property blocks
+    SortedMap<String, String> properties = new TreeMap<String, String>();
+    properties.put("RobotOrientationAsQuaternion", "Quaternion");
+    properties.put("RobotYawPitchRollAngles", "YawPitchRollAngles");
+    ToolboxUtil.addProperties(xmlToolbox, hardwareType, identifier, properties,
+        null /* setterValues */, null /* enumBlocks */);
+
+    // Function blocks
+    Map<String, Map<String, String>> functions = new TreeMap<String, Map<String, String>>();
+    Map<String, String> getRobotAngularVelocityArgs = new LinkedHashMap<String, String>();
+    getRobotAngularVelocityArgs.put("ANGLE_UNIT", ToolboxUtil.makeTypedEnumShadow("navigation", "angleUnit"));
+    functions.put("getRobotAngularVelocity", getRobotAngularVelocityArgs);
+    Map<String, String> getRobotOrientationArgs = new LinkedHashMap<String, String>();
+    getRobotOrientationArgs.put("AXES_REFERENCE", ToolboxUtil.makeTypedEnumShadow("navigation", "axesReference", "AXES_REFERENCE", "INTRINSIC"));
+    getRobotOrientationArgs.put("AXES_ORDER", ToolboxUtil.makeTypedEnumShadow("navigation", "axesOrder", "AXES_ORDER", "ZYX"));
+    getRobotOrientationArgs.put("ANGLE_UNIT", ToolboxUtil.makeTypedEnumShadow("navigation", "angleUnit"));
+    functions.put("getRobotOrientation", getRobotOrientationArgs);
+    functions.put("resetYaw", null);
     ToolboxUtil.addFunctions(xmlToolbox, hardwareType, identifier, functions);
   }
 
@@ -2526,6 +2597,7 @@ public class HardwareUtil {
     set.add("I2cAddr");
     set.add("I2cAddrConfig");
     set.add("I2cAddressableDevice");
+    set.add("IMU");
     set.add("IrSeekerSensor");
     set.add("LED");
     set.add("Light");

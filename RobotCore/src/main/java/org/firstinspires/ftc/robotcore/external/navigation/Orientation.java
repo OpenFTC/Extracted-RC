@@ -209,7 +209,7 @@ public class Orientation
         }
 
     /**
-     * Converst the {@link Orientation} to an equivalent one with the indicated ordering of axes
+     * Converts the {@link Orientation} to an equivalent one with the indicated ordering of axes
      * @param axesOrder the desired ordering of axes
      * @return an equivalent orientation with the indicated axes order
      */

@@ -32,6 +32,7 @@ class BlinkinPatternAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = BlinkinPattern.class, methodName = "fromNumber")
   public String fromNumber(int number) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".fromNumber");
@@ -46,6 +47,7 @@ class BlinkinPatternAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = BlinkinPattern.class, methodName = "ordinal")
   public int toNumber(String blinkinPatternString) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".toNumber");
@@ -64,6 +66,7 @@ class BlinkinPatternAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(exclusiveToBlocks = true)
   public String fromText(String text) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".fromText");
@@ -82,6 +85,7 @@ class BlinkinPatternAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = BlinkinPattern.class, methodName = "toString")
   public String toText(String blinkinPatternString) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".toText");
@@ -100,6 +104,7 @@ class BlinkinPatternAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = BlinkinPattern.class, methodName = "next")
   public String next(String blinkinPatternString) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".next");
@@ -118,6 +123,7 @@ class BlinkinPatternAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = BlinkinPattern.class, methodName = "previous")
   public String previous(String blinkinPatternString) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".previous");

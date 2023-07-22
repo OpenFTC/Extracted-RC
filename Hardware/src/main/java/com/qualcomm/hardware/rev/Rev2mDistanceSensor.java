@@ -50,8 +50,8 @@ import com.qualcomm.robotcore.hardware.configuration.annotations.I2cDeviceType;
 @I2cDeviceType
 @DeviceProperties(name = "@string/rev_laser_sensor_name", description = "@string/rev_laser_sensor_name", xmlTag = "REV_VL53L0X_RANGE_SENSOR", compatibleControlSystems = ControlSystem.REV_HUB, builtIn = true)
 public class Rev2mDistanceSensor extends VL53L0X {
-    public Rev2mDistanceSensor(I2cDeviceSynch deviceClient) {
-        super(deviceClient);
+    public Rev2mDistanceSensor(I2cDeviceSynch deviceClient, boolean deviceClientIsOwned) {
+        super(deviceClient, deviceClientIsOwned);
     }
 
     @Override

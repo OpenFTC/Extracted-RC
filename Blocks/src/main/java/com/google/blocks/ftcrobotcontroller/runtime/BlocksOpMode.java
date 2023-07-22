@@ -18,7 +18,6 @@ package com.google.blocks.ftcrobotcontroller.runtime;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
 import android.webkit.ConsoleMessage;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
@@ -31,14 +30,12 @@ import com.google.blocks.ftcrobotcontroller.hardware.HardwareUtil;
 import com.google.blocks.ftcrobotcontroller.util.FileUtil;
 import com.google.blocks.ftcrobotcontroller.util.Identifier;
 import com.google.blocks.ftcrobotcontroller.util.ProjectsUtil;
-import com.qualcomm.hardware.bosch.BHI260IMU;
+import com.qualcomm.hardware.bosch.BNO055IMUImpl;
 import com.qualcomm.hardware.lynx.EmbeddedControlHubModule;
-import com.qualcomm.hardware.lynx.LynxI2cDeviceSynch;
 import com.qualcomm.hardware.lynx.LynxModule;
-import com.qualcomm.hardware.lynx.commands.core.LynxFirmwareVersionManager;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;
-import com.qualcomm.robotcore.hardware.HardwareDevice;
+import com.qualcomm.robotcore.hardware.LynxModuleImuType;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion;
@@ -159,7 +156,7 @@ public final class BlocksOpMode extends LinearOpMode {
   private void checkIfStopRequested() {
     if (interruptedTime.get() != 0L &&
         isStopRequested() &&
-        System.currentTimeMillis() - interruptedTime.get() >= /* bite BEFORE main watchdog*/msStuckDetectStop-100) {
+        System.currentTimeMillis() - interruptedTime.get() >= /* bite BEFORE main watchdog*/MS_BEFORE_FORCE_STOP_AFTER_STOP_REQUESTED-100) {
       RobotLog.i(getLogPrefix() + "checkIfStopRequested - about to stop opmode by throwing RuntimeException");
       forceStopped = true;
       throw new RuntimeException("Stopping opmode " + project + " by force.");
@@ -439,6 +436,8 @@ public final class BlocksOpMode extends LinearOpMode {
         new GamepadAccess(this, Identifier.GAMEPAD_1.identifierForJavaScript, gamepad1));
     javascriptInterfaces.put(Identifier.GAMEPAD_2.identifierForJavaScript,
         new GamepadAccess(this, Identifier.GAMEPAD_2.identifierForJavaScript, gamepad2));
+    javascriptInterfaces.put(Identifier.IMU_PARAMETERS.identifierForJavaScript,
+        new ImuParametersAccess(this, Identifier.IMU_PARAMETERS.identifierForJavaScript));
     javascriptInterfaces.put(Identifier.LED_EFFECT.identifierForJavaScript,
         new LedEffectAccess(this, Identifier.LED_EFFECT.identifierForJavaScript));
     javascriptInterfaces.put(Identifier.LINEAR_OP_MODE.identifierForJavaScript,
@@ -463,6 +462,8 @@ public final class BlocksOpMode extends LinearOpMode {
         new QuaternionAccess(this, Identifier.QUATERNION.identifierForJavaScript));
     javascriptInterfaces.put(Identifier.RANGE.identifierForJavaScript,
         new RangeAccess(this, Identifier.RANGE.identifierForJavaScript));
+    javascriptInterfaces.put(Identifier.REV_HUB_ORIENTATION_ON_ROBOT.identifierForJavaScript,
+        new RevHubOrientationOnRobotAccess(this, Identifier.REV_HUB_ORIENTATION_ON_ROBOT.identifierForJavaScript));
     javascriptInterfaces.put(Identifier.RUMBLE_EFFECT.identifierForJavaScript,
         new RumbleEffectAccess(this, Identifier.RUMBLE_EFFECT.identifierForJavaScript));
     javascriptInterfaces.put(Identifier.SYSTEM.identifierForJavaScript,
@@ -503,6 +504,8 @@ public final class BlocksOpMode extends LinearOpMode {
         new VuforiaTrackableDefaultListenerAccess(this, Identifier.VUFORIA_TRACKABLE_DEFAULT_LISTENER.identifierForJavaScript, hardwareMap));
     javascriptInterfaces.put(Identifier.VUFORIA_TRACKABLES.identifierForJavaScript,
         new VuforiaTrackablesAccess(this, Identifier.VUFORIA_TRACKABLES.identifierForJavaScript));
+    javascriptInterfaces.put(Identifier.YAW_PITCH_ROLL_ANGLES.identifierForJavaScript,
+        new YawPitchRollAnglesAccess(this, Identifier.YAW_PITCH_ROLL_ANGLES.identifierForJavaScript));
   }
 
   private void addJavascriptInterfacesForHardware(HardwareItemMap hardwareItemMap, Set<String> identifiersUsed) {
@@ -603,9 +606,13 @@ public final class BlocksOpMode extends LinearOpMode {
             errorMessage = "Could not find hardware device: " + missingHardwareDeviceName;
 
             if (missingIdentifier.endsWith(HardwareType.BNO055IMU.identifierSuffixForJavaScript)) {
-              String wrongImuErrorMessage = getWrongImuErrorMessage();
-              if (wrongImuErrorMessage != null) {
-                errorMessage += "\n\n" + wrongImuErrorMessage;
+              if (hardwareMap.getAllNames(BNO055IMUImpl.class).isEmpty()) {
+                // There is no BNO055 configured under a different name. Check if the user is using
+                // the wrong blocks for their IMU.
+                String wrongImuErrorMessage = getWrongImuErrorMessage();
+                if (wrongImuErrorMessage != null) {
+                  errorMessage += "\n\n" + wrongImuErrorMessage;
+                }
               }
             }
           }
@@ -650,16 +657,13 @@ public final class BlocksOpMode extends LinearOpMode {
     }
 
     private String getWrongImuErrorMessage() {
-      Context context = AppUtil.getDefContext();
       LynxModule controlHub = EmbeddedControlHubModule.get();
-      LynxI2cDeviceSynch tempImuI2cClient = LynxFirmwareVersionManager.createLynxI2cDeviceSynch(context, controlHub, 0);
-      try {
-        if (BHI260IMU.imuIsPresent(tempImuI2cClient)) {
+      if (controlHub != null) {
+        LynxModuleImuType controlHubImuType = controlHub.getImuType();
+        if (controlHubImuType == LynxModuleImuType.BHI260) {
           return "You attempted to use a BNO055 IMU on a Control Hub that contains a BHI260AP IMU. " +
-              "You need to migrate your IMU code to the new driver when it becomes available in version 8.1 of the FTC Robot Controller app.";
+                  "You need to update your Op Mode to use the IMU blocks instead of the IMU-BNO055 blocks.";
         }
-      } finally {
-        tempImuI2cClient.close();
       }
       return null;
     }

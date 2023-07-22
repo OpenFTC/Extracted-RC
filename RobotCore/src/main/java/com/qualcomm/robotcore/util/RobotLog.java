@@ -359,7 +359,7 @@ public class RobotLog {
   public static void addGlobalWarningMessage(String msg) {
     synchronized (globalWarningLock) {
       if(!globalWarningMessage.isEmpty()) {
-        globalWarningMessage += ("; " + msg);
+        globalWarningMessage += ("\n\n" + msg);
       } else {
         globalWarningMessage = msg;
       }

@@ -32,6 +32,7 @@ class RangeAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Range.class, methodName = "clip")
   public double clip(double number, double min, double max) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".clip");
@@ -46,6 +47,7 @@ class RangeAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Range.class, methodName = "scale")
   public double scale(double number, double x1, double x2, double y1, double y2) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".scale");

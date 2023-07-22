@@ -39,6 +39,7 @@ class RevBlinkinLedDriverAccess extends HardwareAccess<RevBlinkinLedDriver> {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = RevBlinkinLedDriver.class, methodName = "setPattern")
   public void setPattern(String blinkinPatternString) {
     try {
       startBlockExecution(BlockType.SETTER, ".Pattern");

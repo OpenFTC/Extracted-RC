@@ -75,6 +75,14 @@ function createFieldDropdown(choices) {
   return field;
 }
 
+// TODO(lizlooney): Use "createPropertyDropdown(PROPERTY_CHOICES)" in place of "new Blockly.FieldDropdown(PROPERTY_CHOICES)"
+function createPropertyDropdown(propertyChoices) {
+  if (propertyChoices.length == 1 && propertyChoices[0].length == 2 && propertyChoices[0][0] == propertyChoices[0][1]) {
+    return createNonEditableField(propertyChoices[0][0]);
+  }
+  return new Blockly.FieldDropdown(propertyChoices)
+}
+
 function isJavaIdentifierStart(c) {
   return /[a-zA-Z$_]/.test(c);
 }
@@ -194,6 +202,9 @@ function knownTypeToClassName(type) {
       return 'com.qualcomm.hardware.modernrobotics.' + type;
     case 'RevBlinkinLedDriver':
     case 'RevBlinkinLedDriver.BlinkinPattern':
+    case 'RevHubOrientationOnRobot':
+    case 'RevHubOrientationOnRobot.LogoFacingDirection':
+    case 'RevHubOrientationOnRobot.UsbFacingDirection':
       return 'com.qualcomm.hardware.rev.' + type;
     case 'Autonomous':
     case 'Disabled':
@@ -227,6 +238,9 @@ function knownTypeToClassName(type) {
     case 'I2cAddressableDevice':
     case 'IrSeekerSensor':
     case 'IrSeekerSensor.Mode':
+    case 'IMU':
+    case 'IMU.Parameters':
+    case 'ImuOrientationOnRobot':
     case 'LED':
     case 'Light':
     case 'LightSensor':
@@ -317,6 +331,7 @@ function knownTypeToClassName(type) {
     case 'VuforiaTrackable':
     case 'VuforiaTrackableDefaultListener':
     case 'VuforiaTrackables':
+    case 'YawPitchRollAngles':
       return 'org.firstinspires.ftc.robotcore.external.navigation.' + type;
     case 'AppUtil':
       return 'org.firstinspires.ftc.robotcore.internal.system.' + type;
@@ -389,7 +404,7 @@ function collectIdentifiersUsed() {
   const identifiersUsed = new Set();
   const allBlocks = workspace.getAllBlocks();
   for (let iBlock = 0, block; block = allBlocks[iBlock]; iBlock++) {
-    if (block.isEnabled()) {
+    if (block.isEnabled() && !block.getInheritedDisabled()) {
       for (var iFieldName = 0; iFieldName < identifierFieldNames.length; iFieldName++) {
         const identifierFieldName = identifierFieldNames[iFieldName];
         const field = block.getField(identifierFieldName);

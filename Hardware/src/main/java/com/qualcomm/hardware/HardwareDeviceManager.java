@@ -53,7 +53,6 @@ import com.qualcomm.robotcore.eventloop.SyncdDevice;
 import com.qualcomm.robotcore.exception.RobotCoreException;
 import com.qualcomm.robotcore.hardware.AnalogInputController;
 import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.CRServoImpl;
 import com.qualcomm.robotcore.hardware.CRServoImplEx;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -76,9 +75,7 @@ import com.qualcomm.robotcore.hardware.RobotCoreLynxModule;
 import com.qualcomm.robotcore.hardware.RobotCoreLynxUsbDevice;
 import com.qualcomm.robotcore.hardware.ScannedDevices;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.ServoController;
 import com.qualcomm.robotcore.hardware.ServoControllerEx;
-import com.qualcomm.robotcore.hardware.ServoImpl;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.AnalogSensorConfigurationType;
@@ -101,7 +98,6 @@ import com.qualcomm.robotcore.util.SerialNumber;
 import com.qualcomm.robotcore.util.ThreadPool;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.Func;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraManager;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.internal.camera.CameraManagerInternal;
@@ -109,7 +105,6 @@ import org.firstinspires.ftc.robotcore.internal.hardware.UserNameable;
 import org.firstinspires.ftc.robotcore.internal.hardware.usb.ArmableUsbDevice;
 import org.firstinspires.ftc.robotcore.internal.system.Assert;
 import org.firstinspires.ftc.robotcore.internal.usb.VendorProductSerialNumber;
-import org.firstinspires.ftc.robotcore.internal.usb.exception.RobotUsbException;
 
 import java.util.HashMap;
 import java.util.List;
@@ -384,17 +379,6 @@ public class HardwareDeviceManager implements DeviceManager {
     return new DcMotorImplEx(controller, portNumber, DcMotor.Direction.FORWARD, motorType);
   }
 
-
-  @Override
-  public Servo createServo(ServoController controller, int portNumber, String name) {
-    return new ServoImpl(controller, portNumber, Servo.Direction.FORWARD);
-  }
-
-  @Override
-  public CRServo createCRServo(ServoController controller, int portNumber, String name) {
-    return new CRServoImpl(controller, portNumber, DcMotor.Direction.FORWARD);
-  }
-
   @Override
   public Servo createServoEx(ServoControllerEx controller, int portNumber, String name, ServoConfigurationType servoType) {
     return new ServoImplEx(controller, portNumber, Servo.Direction.FORWARD, servoType);
@@ -406,13 +390,8 @@ public class HardwareDeviceManager implements DeviceManager {
   }
 
   @Override
-  public HardwareDevice createCustomServoDevice(ServoController controller, int portNumber, ServoConfigurationType servoConfigurationType) {
-    return servoConfigurationType.createInstanceMr(controller, portNumber);
-  }
-
-  @Override
-  public HardwareDevice createLynxCustomServoDevice(ServoControllerEx controller, int portNumber, ServoConfigurationType servoConfigurationType) {
-    return servoConfigurationType.createInstanceRev(controller, portNumber);
+  public List<HardwareDevice> createCustomServoDeviceInstances(ServoControllerEx controller, int portNumber, ServoConfigurationType servoConfigurationType) {
+    return servoConfigurationType.createInstances(controller, portNumber);
   }
 
   @Override
@@ -457,19 +436,19 @@ public class HardwareDeviceManager implements DeviceManager {
   @Override
   public IrSeekerSensor createMRI2cIrSeekerSensorV3(RobotCoreLynxModule lynxModule, DeviceConfiguration.I2cChannel channel, String name) {
     RobotLog.v("Creating Modern Robotics I2C IR Seeker Sensor V3 - mod=%d bus=%d", lynxModule.getModuleAddress(), channel.channel);
-    return new ModernRoboticsI2cIrSeekerSensorV3(createI2cDeviceSynch(lynxModule, channel, name));
+    return new ModernRoboticsI2cIrSeekerSensorV3(createI2cDeviceSynch(lynxModule, channel, name), true);
   }
 
   @Override
-  public HardwareDevice createAnalogSensor(AnalogInputController controller, int channel, AnalogSensorConfigurationType type) {
+  public List<HardwareDevice> createAnalogSensorInstances(AnalogInputController controller, int channel, AnalogSensorConfigurationType type) {
     RobotLog.v("Creating Analog Sensor - Type: " + type.getName() + " - Port: " + channel);
-    return type.createInstance(controller, channel);
+    return type.createInstances(controller, channel);
   }
 
   @Override
-  public HardwareDevice createDigitalDevice(DigitalChannelController controller, int channel, DigitalIoDeviceConfigurationType type) {
+  public List<HardwareDevice> createDigitalDeviceInstances(DigitalChannelController controller, int channel, DigitalIoDeviceConfigurationType type) {
     RobotLog.v("Creating Digital Channel Device - Type: " + type.getName() + " - Port: " + channel);
-    return type.createInstance(controller, channel);
+    return type.createInstances(controller, channel);
   }
 
   @Override
@@ -479,46 +458,34 @@ public class HardwareDeviceManager implements DeviceManager {
   }
 
   @Override
-  public HardwareDevice createUserI2cDevice(final RobotCoreLynxModule lynxModule, final DeviceConfiguration.I2cChannel bus, final I2cDeviceConfigurationType type, final String name) {
+  public List<HardwareDevice> createI2cDeviceInstances(final RobotCoreLynxModule lynxModule, final DeviceConfiguration.I2cChannel bus, final I2cDeviceConfigurationType type, final String name) {
     RobotLog.v("Creating user sensor %s - on Lynx module=%d bus=%d", type.getName(), lynxModule.getModuleAddress(), bus.channel);
-    return type.createInstance(lynxModule,
-            new Func<I2cDeviceSynchSimple>() {
-              @Override
-              public I2cDeviceSynchSimple value() {
-                return createI2cDeviceSynchSimple(lynxModule, bus, name);
-              }
-            },
-            new Func<I2cDeviceSynch>() {
-              @Override
-              public I2cDeviceSynch value() {
-                return createI2cDeviceSynch(lynxModule, bus, name);
-              }
-            });
-
+    return type.createInstances(
+            () -> createI2cDeviceSynchSimple(lynxModule, bus, name));
   }
 
   @Override
   public ColorSensor createAdafruitI2cColorSensor(RobotCoreLynxModule lynxModule, DeviceConfiguration.I2cChannel channel, String name) {
     RobotLog.v("Creating Adafruit Color Sensor (Lynx) - mod=%d bus=%d", lynxModule.getModuleAddress(), channel.channel);
-    return new AdafruitI2cColorSensor(createI2cDeviceSynchSimple(lynxModule, channel, name));
+    return new AdafruitI2cColorSensor(createI2cDeviceSynchSimple(lynxModule, channel, name), true);
   }
 
   @Override
   public ColorSensor createLynxColorRangeSensor(RobotCoreLynxModule lynxModule, DeviceConfiguration.I2cChannel channel, String name) {
     RobotLog.v("Creating Lynx Color/Range Sensor - mod=%d bus=%d", lynxModule.getModuleAddress(), channel.channel);
-    return new LynxI2cColorRangeSensor(createI2cDeviceSynchSimple(lynxModule, channel, name));
+    return new LynxI2cColorRangeSensor(createI2cDeviceSynchSimple(lynxModule, channel, name), true);
   }
 
   @Override
   public ColorSensor createModernRoboticsI2cColorSensor(RobotCoreLynxModule lynxModule, DeviceConfiguration.I2cChannel channel, String name) {
     RobotLog.v("Creating Modern Robotics I2C Color Sensor - mod=%d bus=%d", lynxModule.getModuleAddress(), channel.channel);
-    return new ModernRoboticsI2cColorSensor(createI2cDeviceSynch(lynxModule, channel, name));
+    return new ModernRoboticsI2cColorSensor(createI2cDeviceSynch(lynxModule, channel, name), true);
   }
 
   @Override
   public GyroSensor createModernRoboticsI2cGyroSensor(RobotCoreLynxModule lynxModule, DeviceConfiguration.I2cChannel channel, String name) {
     RobotLog.v("Creating Modern Robotics I2C Gyro Sensor - mod=%d bus=%d", lynxModule.getModuleAddress(), channel.channel);
-    return new ModernRoboticsI2cGyro(createI2cDeviceSynch(lynxModule, channel, name));
+    return new ModernRoboticsI2cGyro(createI2cDeviceSynch(lynxModule, channel, name), true);
   }
 
   @Override

@@ -78,9 +78,9 @@ public class AdafruitI2cColorSensor extends AMSColorSensorImpl
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public AdafruitI2cColorSensor(I2cDeviceSynchSimple deviceClient)
+    public AdafruitI2cColorSensor(I2cDeviceSynchSimple deviceClient, boolean deviceClientIsOwned)
         {
-        super(Parameters.createForTCS34725(), deviceClient, true);
+        super(Parameters.createForTCS34725(), deviceClient, deviceClientIsOwned);
         }
 
     //----------------------------------------------------------------------------------------------

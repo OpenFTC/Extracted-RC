@@ -33,8 +33,12 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package com.qualcomm.robotcore.hardware.configuration;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
+import com.qualcomm.robotcore.hardware.ControlSystem;
 import com.qualcomm.robotcore.hardware.DeviceManager;
+
+import java.util.EnumSet;
 
 /**
  * {@link ConfigurationType} instances represent the type of various kinds of hardware
@@ -42,12 +46,6 @@ import com.qualcomm.robotcore.hardware.DeviceManager;
  */
 public interface ConfigurationType
     {
-    enum DisplayNameFlavor
-        {
-        Normal,
-        Legacy
-        }
-
     enum DeviceFlavor
         {
             BUILT_IN,
@@ -60,48 +58,48 @@ public interface ConfigurationType
         }
 
     /**
-     * Returns a user-understandable string form of this configuration type
-     * @return a user-understandable string form of this configuration type
+     * @return A user-understandable string form of this configuration type
      */
-    @NonNull String getDisplayName(DisplayNameFlavor flavor);
+    @NonNull String getName();
 
     /**
-     * Whether the type should be presented as deprecated in the user interface
+     * @return Whether the type should be presented as deprecated in the user interface
      */
     boolean isDeprecated();
 
     /**
-     * Returns the XML element tag to be used when serializing configurations of this type
-     * @return the XML element tag to be used when serializing configurations of this type
+     * @return The source of the class that this type came from
+     */
+    @NonNull ConfigurationTypeManager.ClassSource getClassSource();
+
+    boolean annotatedClassIsInstantiable();
+
+    /**
+     * @return The XML element tag to be used when serializing configurations of this type
      */
     @NonNull String getXmlTag();
 
     /**
-     * Returns any additional XML tags that will resolve to this type
-     * @return the XML tag aliases
-     */
-    @NonNull String[] getXmlTagAliases();
-
-    /**
      * If this configuration type has a corresponding USB device configuration type, returns same;
      * otherwise, returns {@link DeviceManager.UsbDeviceType#FTDI_USB_UNKNOWN_DEVICE FTDI_USB_UNKNOWN_DEVICE}.
-     * @return the USB device type that corresponds to this configuration type, if any
+     * @return The USB device type that corresponds to this configuration type, if any
      */
     @NonNull DeviceManager.UsbDeviceType toUSBDeviceType();
 
     /**
-     * Returns whether this configuration type is of the indicated flavor
-     * @return whether this configuration type is of the indicated flavor;
+     * @return Whether this configuration type is of the indicated flavor
      */
     boolean isDeviceFlavor(DeviceFlavor flavor);
 
+    boolean isCompatibleWith(ControlSystem controlSystem);
+
     /**
      * Returns the configuration type's most specific flavor.
-     *
+     * <p>
      * Types defined in BuiltInConfigurationType will only return DeviceFlavor.BUILT_IN
      * if none of the other types apply. If you need to know if this type is defined in the
      * BuiltInConfigurationType enum, use isDeviceFlavor(BUILT_IN).
-     *
+     * <p>
      * For BuiltInConfigurationType instances that are defined both as a legacy device and as a modern
      * device, this will assume you're asking about the modern variant.
      */

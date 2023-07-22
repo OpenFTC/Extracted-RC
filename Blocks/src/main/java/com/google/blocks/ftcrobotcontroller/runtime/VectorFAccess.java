@@ -33,6 +33,7 @@ class VectorFAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = VectorF.class, methodName = "length")
   public int getLength(Object vectorArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".Length");
@@ -51,6 +52,7 @@ class VectorFAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = VectorF.class, methodName = "magnitude")
   public float getMagnitude(Object vectorArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".Magnitude");
@@ -69,6 +71,7 @@ class VectorFAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = VectorF.class, methodName = "length")
   public VectorF create(int length) {
     try {
       startBlockExecution(BlockType.CREATE, "");
@@ -83,6 +86,7 @@ class VectorFAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = VectorF.class, methodName = "get")
   public float get(Object vectorArg, int index) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".get");
@@ -101,6 +105,7 @@ class VectorFAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = VectorF.class, methodName = "put")
   public void put(Object vectorArg, int index, float value) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".put");
@@ -118,6 +123,7 @@ class VectorFAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = VectorF.class, methodName = "toString")
   public String toText(Object vectorArg) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".toText");
@@ -136,6 +142,7 @@ class VectorFAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = VectorF.class, methodName = "normalized3D")
   public VectorF normalized3D(Object vectorArg) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".normalized3D");
@@ -154,6 +161,7 @@ class VectorFAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = VectorF.class, methodName = "dotProduct")
   public float dotProduct(Object vector1Arg, Object vector2Arg) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".dotProduct");
@@ -173,6 +181,7 @@ class VectorFAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = VectorF.class, methodName = "multiplied")
   public MatrixF multiplied(Object vectorArg, Object matrixArg) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".multiplied");
@@ -192,6 +201,7 @@ class VectorFAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = VectorF.class, methodName = "added")
   public MatrixF added_withMatrix(Object vectorArg, Object matrixArg) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".added");
@@ -211,6 +221,7 @@ class VectorFAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = VectorF.class, methodName = "added")
   public VectorF added_withVector(Object vector1Arg, Object vector2Arg) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".added");
@@ -230,6 +241,7 @@ class VectorFAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = VectorF.class, methodName = "add")
   public void add_withVector(Object vector1Arg, Object vector2Arg) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".add");
@@ -248,6 +260,7 @@ class VectorFAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = VectorF.class, methodName = "subtracted")
   public MatrixF subtracted_withMatrix(Object vectorArg, Object matrixArg) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".subtracted");
@@ -267,6 +280,7 @@ class VectorFAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = VectorF.class, methodName = "subtracted")
   public VectorF subtracted_withVector(Object vector1Arg, Object vector2Arg) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".subtracted");
@@ -286,6 +300,7 @@ class VectorFAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = VectorF.class, methodName = "subtract")
   public void subtract_withVector(Object vector1Arg, Object vector2Arg) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".subtract");
@@ -304,6 +319,7 @@ class VectorFAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = VectorF.class, methodName = "multiplied")
   public VectorF multiplied_withScale(Object vectorArg, float scale) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".multiplied");
@@ -322,6 +338,7 @@ class VectorFAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = VectorF.class, methodName = "multiply")
   public void multiply_withScale(Object vectorArg, float scale) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".multiply");

@@ -34,6 +34,7 @@ class TelemetryAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Telemetry.class, methodName = "addData")
   public void addNumericData(String key, double data) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".addData");
@@ -48,6 +49,7 @@ class TelemetryAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Telemetry.class, methodName = "addData")
   public void addTextData(String key, String data) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".addData");
@@ -64,6 +66,7 @@ class TelemetryAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Telemetry.class, methodName = "addData")
   public void addObjectData(String key, Object data) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".addData");
@@ -79,6 +82,7 @@ class TelemetryAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Telemetry.class, methodName = "update")
   public void update() {
     try {
       startBlockExecution(BlockType.FUNCTION, ".update");
@@ -93,6 +97,7 @@ class TelemetryAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Telemetry.class, methodName = "speak")
   public void speakTextData(String data, String languageCode, String countryCode) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".speak");
@@ -109,6 +114,7 @@ class TelemetryAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Telemetry.class, methodName = "speak")
   public void speakObjectData(Object data, String languageCode, String countryCode) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".speak");
@@ -124,6 +130,7 @@ class TelemetryAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Telemetry.class, methodName = "setDisplayFormat")
   public void setDisplayFormat(String displayFormatString) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".setDisplayFormat");

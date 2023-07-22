@@ -35,20 +35,25 @@ package com.qualcomm.robotcore.hardware.configuration.typecontainers;
 import androidx.annotation.Nullable;
 
 import com.qualcomm.robotcore.hardware.HardwareDevice;
-import com.qualcomm.robotcore.hardware.I2cDevice;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
+import com.qualcomm.robotcore.hardware.I2cDeviceSynchImplOnSimple;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynchSimple;
-import com.qualcomm.robotcore.hardware.RobotCoreLynxModule;
 import com.qualcomm.robotcore.hardware.configuration.ConfigurationTypeManager;
+import com.qualcomm.robotcore.hardware.configuration.ConfigurationTypeManager.ClassSource;
 import com.qualcomm.robotcore.hardware.configuration.ConstructorPrototype;
 import com.qualcomm.robotcore.hardware.configuration.I2cSensor;
 import com.qualcomm.robotcore.hardware.configuration.LynxConstants;
+import com.qualcomm.robotcore.hardware.configuration.annotations.I2cDeviceType;
 import com.qualcomm.robotcore.util.ClassUtil;
+import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.Func;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * {@link I2cDeviceConfigurationType} contains the meta-data for a user-defined I2c sensor driver.
@@ -58,24 +63,26 @@ public final class I2cDeviceConfigurationType extends InstantiableUserConfigurat
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
-    private static final ConstructorPrototype ctorI2cDeviceSynchSimple  = new ConstructorPrototype(I2cDeviceSynchSimple.class);
-    private static final ConstructorPrototype ctorI2cDeviceSynch        = new ConstructorPrototype(I2cDeviceSynch.class);
-    private static final ConstructorPrototype ctorI2cDevice             = new ConstructorPrototype(I2cDevice.class);
+    private static final ConstructorPrototype ctorI2cDeviceSynchSimple            = new ConstructorPrototype(I2cDeviceSynchSimple.class, boolean.class);
+    private static final ConstructorPrototype ctorI2cDeviceSynch                  = new ConstructorPrototype(I2cDeviceSynch.class, boolean.class);
+    private static final ConstructorPrototype ctorI2cDeviceSynchSimpleDeprecated  = new ConstructorPrototype(I2cDeviceSynchSimple.class);
+    private static final ConstructorPrototype ctorI2cDeviceSynchDeprecated        = new ConstructorPrototype(I2cDeviceSynch.class);
 
     private static final ConstructorPrototype[] allowableConstructorPrototypes =
-        {
+            {
             ctorI2cDeviceSynchSimple,
             ctorI2cDeviceSynch,
-            ctorI2cDevice,
-        };
+            ctorI2cDeviceSynchSimpleDeprecated,
+            ctorI2cDeviceSynchDeprecated,
+            };
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public I2cDeviceConfigurationType(Class<? extends HardwareDevice> clazz, String xmlTag)
+    public I2cDeviceConfigurationType(Class<? extends HardwareDevice> clazz, String xmlTag, ClassSource classSource)
         {
-        super(clazz, DeviceFlavor.I2C, xmlTag, allowableConstructorPrototypes);
+        super(clazz, DeviceFlavor.I2C, xmlTag, allowableConstructorPrototypes, classSource);
         }
 
     public static I2cDeviceConfigurationType getLynxEmbeddedBNO055ImuType()
@@ -89,6 +96,7 @@ public final class I2cDeviceConfigurationType extends InstantiableUserConfigurat
         }
 
     // Used by gson deserialization
+    @SuppressWarnings("unused")
     public I2cDeviceConfigurationType()
         {
         super(DeviceFlavor.I2C);
@@ -110,33 +118,90 @@ public final class I2cDeviceConfigurationType extends InstantiableUserConfigurat
     // Instance creation
     //----------------------------------------------------------------------------------------------
 
-    public @Nullable HardwareDevice createInstance(RobotCoreLynxModule lynxModule,
-            Func<I2cDeviceSynchSimple> simpleSynchFunc,
-            Func<I2cDeviceSynch> synchFunc)
+    public List<HardwareDevice> createInstances(Func<I2cDeviceSynchSimple> simpleSynchFunc)
         {
-        try {
-            Constructor<HardwareDevice> ctor;
+        final List<HardwareDevice> result = new ArrayList<>(additionalTypesToInstantiate.size() + 1);
 
-            ctor = findMatch(ctorI2cDeviceSynchSimple);
-            if (null != ctor)
-                {
-                I2cDeviceSynchSimple i2cDeviceSynchSimple = simpleSynchFunc.value();
-                return ctor.newInstance(i2cDeviceSynchSimple);
-                }
+        // All instances should (under ideal circumstances where all instances use a non-deprecated
+        // constructor) share a single deviceClient, so that if an I2C error occurs during an OpMode
+        // using one driver, and then another OpMode is run that uses a different driver for the
+        // same configuration entry, the second OpMode is able to clear the warning caused by the
+        // first OpMode.
+        final AtomicReference<I2cDeviceSynchSimple> sharedDeviceClient = new AtomicReference<>();
+        boolean onlyOneInstance = additionalTypesToInstantiate.size() == 0;
 
-            ctor = findMatch(ctorI2cDeviceSynch);
-            if (null != ctor)
+        forThisAndAllAdditionalTypes(type ->
+            {
+            try
                 {
-                I2cDeviceSynch i2cDeviceSynch = synchFunc.value();
-                return ctor.newInstance(i2cDeviceSynch);
+                Constructor<HardwareDevice> ctor;
+
+                ctor = type.findMatch(ctorI2cDeviceSynchSimple);
+                if (ctor != null)
+                    {
+                    // Classes that use a non-deprecated constructor use a shared deviceClient.
+                    sharedDeviceClient.compareAndSet(null, simpleSynchFunc.value());
+                    result.add(ctor.newInstance(sharedDeviceClient.get(), onlyOneInstance));
+                    return; // Exits the forThisAndAllAdditionalTypes() lambda, NOT createInstances()
+                    }
+
+                ctor = type.findMatch(ctorI2cDeviceSynch);
+                if (ctor != null)
+                    {
+                    // Classes that use a non-deprecated constructor use a shared deviceClient.
+                    sharedDeviceClient.compareAndSet(null, simpleSynchFunc.value());
+                    I2cDeviceSynch i2cDeviceSynch = getI2cDeviceSynchFromSimple(sharedDeviceClient.get(), onlyOneInstance);
+                    result.add(ctor.newInstance(i2cDeviceSynch, onlyOneInstance));
+                    return; // Exits the forThisAndAllAdditionalTypes() lambda, NOT createInstances()
+                    }
+
+                ctor = type.findMatch(ctorI2cDeviceSynchSimpleDeprecated);
+                if (ctor != null)
+                    {
+                    warnAboutDeprecatedConstructor(type.getClazz());
+                    // Classes that use a deprecated constructor get a unique deviceClient just
+                    // for them, since they probably assume that they own it.
+                    result.add(ctor.newInstance(simpleSynchFunc.value()));
+                    return; // Exits the forThisAndAllAdditionalTypes() lambda, NOT createInstances()
+                    }
+
+                ctor = type.findMatch(ctorI2cDeviceSynchDeprecated);
+                if (ctor != null)
+                    {
+                    warnAboutDeprecatedConstructor(type.getClazz());
+                    // Classes that use a deprecated constructor get a unique deviceClient just
+                    // for them, since they probably assume that they own it.
+                    I2cDeviceSynch i2cDeviceSynch = getI2cDeviceSynchFromSimple(simpleSynchFunc.value(), true);
+                    result.add(ctor.newInstance(i2cDeviceSynch));
+                    return; // Exits the forThisAndAllAdditionalTypes() lambda, NOT createInstances()
+                    }
+
+                RobotLog.e("unable to locate constructor for device class " + type.getClazz().getName());
                 }
-            }
-        catch (IllegalAccessException|InstantiationException|InvocationTargetException e)
-             {
-             handleConstructorExceptions(e);
-             return null;
-             }
-        throw new RuntimeException("internal error: unable to locate constructor for user sensor type " + getName());
+            catch (IllegalAccessException | InstantiationException | InvocationTargetException e)
+                {
+                handleConstructorExceptions(e, type.getClazz());
+                }
+            });
+        return result;
+        }
+
+    private static I2cDeviceSynch getI2cDeviceSynchFromSimple(I2cDeviceSynchSimple simple, boolean isSimpleOwned)
+        {
+        if (simple instanceof I2cDeviceSynch) { return (I2cDeviceSynch) simple; }
+        else { return new I2cDeviceSynchImplOnSimple(simple, isSimpleOwned); }
+        }
+
+    private static void warnAboutDeprecatedConstructor(Class<?> driverClass)
+        {
+        // Only print warning to RobotLog, this isn't critical for the end user to know about. 99%
+        // of the time, it's not going to even make a difference whether a third-party driver has
+        // been updated with one of the new constructor signatures.
+        RobotLog.ww(I2cDeviceType.class.getSimpleName(), "%s only has deprecated constructors. " +
+                "For best results, add an additional constructor that accepts an additional " +
+                "\"deviceClientIsOwned\" boolean parameter and passes it to the I2cDeviceSynchDevice " +
+                "or I2cDeviceSynchDeviceWithParameters constructor.",
+                driverClass.getName());
         }
 
     //----------------------------------------------------------------------------------------------

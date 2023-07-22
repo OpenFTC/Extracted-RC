@@ -37,6 +37,7 @@ class RumbleEffectAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = RumbleEffect.Builder.class, constructor = true)
   public RumbleEffect.Builder createBuilder() {
     try {
       startBlockExecution(BlockType.CREATE, "");
@@ -51,6 +52,7 @@ class RumbleEffectAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = RumbleEffect.Builder.class, methodName = "addStep")
   public void addStep(Object rumbleEffectBuilderArg, double rumble1, double rumble2, int millis) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".addStep");
@@ -68,6 +70,7 @@ class RumbleEffectAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = RumbleEffect.Builder.class, methodName = "build")
   public RumbleEffect build(Object rumbleEffectBuilderArg) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".build");

@@ -34,6 +34,7 @@ class VuforiaTrackableAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = VuforiaTrackable.class, methodName = "setLocation")
   public void setLocation(Object vuforiaTrackableArg, Object matrixArg) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".setLocation");
@@ -52,6 +53,7 @@ class VuforiaTrackableAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = VuforiaTrackable.class, methodName = "getLocation")
   public OpenGLMatrix getLocation(Object vuforiaTrackableArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".Location");
@@ -70,6 +72,7 @@ class VuforiaTrackableAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = VuforiaTrackable.class, methodName = "setUserData")
   public void setUserData(Object vuforiaTrackableArg, Object userData) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".setUserData");
@@ -87,6 +90,7 @@ class VuforiaTrackableAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = VuforiaTrackable.class, methodName = "getUserData")
   public Object getUserData(Object vuforiaTrackableArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".UserData");
@@ -105,6 +109,7 @@ class VuforiaTrackableAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = VuforiaTrackable.class, methodName = "getTrackables")
   public VuforiaTrackables getTrackables(Object vuforiaTrackableArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".Trackables");
@@ -123,6 +128,7 @@ class VuforiaTrackableAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = VuforiaTrackable.class, methodName = "setName")
   public void setName(Object vuforiaTrackableArg, String name) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".setName");
@@ -140,6 +146,7 @@ class VuforiaTrackableAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = VuforiaTrackable.class, methodName = "getName")
   public String getName(Object vuforiaTrackableArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".Name");
@@ -161,6 +168,7 @@ class VuforiaTrackableAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = VuforiaTrackable.class, methodName = "getListener")
   public VuforiaTrackable.Listener getListener(Object vuforiaTrackableArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".Listener");

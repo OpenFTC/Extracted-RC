@@ -32,13 +32,16 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package com.qualcomm.robotcore.hardware.configuration.typecontainers;
 
-import androidx.annotation.Nullable;
 import com.qualcomm.robotcore.hardware.DigitalChannelController;
 import com.qualcomm.robotcore.hardware.HardwareDevice;
+import com.qualcomm.robotcore.hardware.configuration.ConfigurationTypeManager.ClassSource;
 import com.qualcomm.robotcore.hardware.configuration.ConstructorPrototype;
+import com.qualcomm.robotcore.util.RobotLog;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * {@link DigitalIoDeviceConfigurationType} contains the meta-data for a user-defined digital device driver.
@@ -54,11 +57,12 @@ public final class DigitalIoDeviceConfigurationType extends InstantiableUserConf
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public DigitalIoDeviceConfigurationType(Class<? extends HardwareDevice> clazz, String xmlTag) {
-        super(clazz, DeviceFlavor.DIGITAL_IO, xmlTag, new ConstructorPrototype[]{ctorDigitalDevice});
+    public DigitalIoDeviceConfigurationType(Class<? extends HardwareDevice> clazz, String xmlTag, ClassSource classSource) {
+        super(clazz, DeviceFlavor.DIGITAL_IO, xmlTag, new ConstructorPrototype[]{ctorDigitalDevice}, classSource);
     }
 
     // Used by gson deserialization
+    @SuppressWarnings("unused")
     public DigitalIoDeviceConfigurationType() {
         super(DeviceFlavor.DIGITAL_IO);
     }
@@ -67,19 +71,23 @@ public final class DigitalIoDeviceConfigurationType extends InstantiableUserConf
     // Instance creation
     //----------------------------------------------------------------------------------------------
 
-    public @Nullable HardwareDevice createInstance(DigitalChannelController controller, int port) {
-        try {
-            Constructor<HardwareDevice> ctor;
+    public List<HardwareDevice> createInstances(DigitalChannelController controller, int port) {
+        final List<HardwareDevice> result = new ArrayList<>(additionalTypesToInstantiate.size() + 1);
+        forThisAndAllAdditionalTypes(type -> {
+            try {
+                Constructor<HardwareDevice> ctor;
 
-            ctor = findMatch(ctorDigitalDevice);
-            if (null != ctor) {
-                return ctor.newInstance(controller, port);
+                ctor = type.findMatch(ctorDigitalDevice);
+                if (ctor == null) {
+                    RobotLog.e("unable to locate constructor for device class " + type.getClazz().getName());
+                } else {
+                    result.add(ctor.newInstance(controller, port));
+                }
+            } catch (IllegalAccessException|InstantiationException|InvocationTargetException e) {
+                handleConstructorExceptions(e, type.getClazz());
             }
-        } catch (IllegalAccessException|InstantiationException|InvocationTargetException e) {
-            handleConstructorExceptions(e);
-            return null;
-        }
-        throw new RuntimeException("internal error: unable to locate constructor for user device type " + getName());
+        });
+        return result;
     }
 
     //----------------------------------------------------------------------------------------------

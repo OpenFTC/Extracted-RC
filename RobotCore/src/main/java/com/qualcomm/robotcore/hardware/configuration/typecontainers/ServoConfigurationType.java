@@ -39,12 +39,16 @@ import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.ServoController;
 import com.qualcomm.robotcore.hardware.ServoControllerEx;
 import com.qualcomm.robotcore.hardware.configuration.ConfigurationTypeManager;
+import com.qualcomm.robotcore.hardware.configuration.ConfigurationTypeManager.ClassSource;
 import com.qualcomm.robotcore.hardware.configuration.ConstructorPrototype;
 import com.qualcomm.robotcore.hardware.configuration.ServoFlavor;
 import com.qualcomm.robotcore.hardware.configuration.annotations.ServoType;
+import com.qualcomm.robotcore.util.RobotLog;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * {@link ServoConfigurationType} contains the meta-data for a user-defined servo type.
@@ -57,20 +61,23 @@ public final class ServoConfigurationType extends InstantiableUserConfigurationT
     private static final ConstructorPrototype ctorServo = new ConstructorPrototype(ServoController.class, int.class);
     private static final ConstructorPrototype ctorServoEx = new ConstructorPrototype(ServoControllerEx.class, int.class);
 
+    // Maybe someday we'll expose servoFlavor via the config UI, but the other information does not
+    // seem very useful to the user.
     private @Expose ServoFlavor servoFlavor;
-    private @Expose double usPulseLower;
-    private @Expose double usPulseUpper;
-    private @Expose double usFrame;
+    private double usPulseLower;
+    private double usPulseUpper;
+    private double usFrame;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public ServoConfigurationType(Class<? extends HardwareDevice> clazz, String xmlTag) {
-        super(clazz, DeviceFlavor.SERVO, xmlTag, new ConstructorPrototype[]{ctorServo, ctorServoEx});
+    public ServoConfigurationType(Class<? extends HardwareDevice> clazz, String xmlTag, ClassSource classSource) {
+        super(clazz, DeviceFlavor.SERVO, xmlTag, new ConstructorPrototype[]{ctorServo, ctorServoEx}, classSource);
     }
 
     // Used by gson deserialization
+    @SuppressWarnings("unused")
     public ServoConfigurationType() {
         super(DeviceFlavor.SERVO);
     }
@@ -109,7 +116,7 @@ public final class ServoConfigurationType extends InstantiableUserConfigurationT
     }
 
     @Override
-    public boolean classMustBeInstantiable() {
+    public boolean annotatedClassIsInstantiable() {
         return servoFlavor == ServoFlavor.CUSTOM;
     }
 
@@ -117,39 +124,35 @@ public final class ServoConfigurationType extends InstantiableUserConfigurationT
     // Instance creation
     //----------------------------------------------------------------------------------------------
 
-    public @Nullable HardwareDevice createInstanceRev(ServoControllerEx controller, int port) {
+    public List<HardwareDevice> createInstances(ServoControllerEx controller, int port) {
         if (servoFlavor != ServoFlavor.CUSTOM)
-            throw new RuntimeException("Can't create instance of noninstantiable servo type " + name);
-        try {
-            Constructor<HardwareDevice> ctor;
+            throw new RuntimeException("Can't create instance of non-instantiable servo type " + name);
 
-            ctor = findMatch(ctorServoEx);
-            if (null != ctor) {
-                controller.setServoType(port, this);
-                return ctor.newInstance(controller, port);
+        final List<HardwareDevice> result = new ArrayList<>(additionalTypesToInstantiate.size() + 1);
+        forThisAndAllAdditionalTypes(type -> {
+            try {
+                Constructor<HardwareDevice> ctor;
+
+                ctor = type.findMatch(ctorServoEx);
+                if (ctor != null) {
+                    controller.setServoType(port, this);
+                    result.add(ctor.newInstance(controller, port));
+                    return; // Exits the forThisAndAllAdditionalTypes() lambda, NOT createInstances()
+                }
+
+                ctor = type.findMatch(ctorServo);
+                if (ctor != null) {
+                    controller.setServoType(port, this);
+                    result.add(ctor.newInstance(controller, port));
+                    return; // Exits the forThisAndAllAdditionalTypes() lambda, NOT createInstances()
+                }
+
+                RobotLog.e("Unable to locate constructor for device class " + type.getClazz().getName());
+            } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
+                handleConstructorExceptions(e, type.getClazz());
             }
-        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            handleConstructorExceptions(e);
-            return null;
-        }
-        throw new RuntimeException("internal error: unable to locate constructor for user device type " + getName());
-    }
-
-    public @Nullable HardwareDevice createInstanceMr(ServoController controller, int port) {
-        if (servoFlavor != ServoFlavor.CUSTOM)
-            throw new RuntimeException("Can't create instance of noninstantiable servo type " + name);
-        try {
-            Constructor<HardwareDevice> ctor;
-
-            ctor = findMatch(ctorServo);
-            if (null != ctor) {
-                return ctor.newInstance(controller, port);
-            }
-        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            handleConstructorExceptions(e);
-            return null;
-        }
-        throw new RuntimeException("internal error: unable to locate constructor for user device type " + getName());
+        });
+        return result;
     }
 
     //----------------------------------------------------------------------------------------------

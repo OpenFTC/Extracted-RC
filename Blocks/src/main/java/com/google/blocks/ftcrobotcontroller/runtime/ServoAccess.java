@@ -39,6 +39,7 @@ class ServoAccess extends HardwareAccess<Servo> {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Servo.class, methodName = "setDirection")
   public void setDirection(String directionString) {
     try {
       startBlockExecution(BlockType.SETTER, ".Direction");
@@ -56,6 +57,7 @@ class ServoAccess extends HardwareAccess<Servo> {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Servo.class, methodName = "getDirection")
   public String getDirection() {
     try {
       startBlockExecution(BlockType.GETTER, ".Direction");
@@ -74,6 +76,7 @@ class ServoAccess extends HardwareAccess<Servo> {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Servo.class, methodName = "setPosition")
   public void setPosition(double position) {
     try {
       startBlockExecution(BlockType.SETTER, ".Position");
@@ -88,6 +91,7 @@ class ServoAccess extends HardwareAccess<Servo> {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Servo.class, methodName = "getPosition")
   public double getPosition() {
     try {
       startBlockExecution(BlockType.GETTER, ".Position");
@@ -102,6 +106,7 @@ class ServoAccess extends HardwareAccess<Servo> {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Servo.class, methodName = "scaleRange")
   public void scaleRange(double min, double max) {
     try {
       startBlockExecution(BlockType.FUNCTION, ".scaleRange");

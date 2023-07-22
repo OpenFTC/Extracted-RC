@@ -84,9 +84,9 @@ public abstract class AMSColorSensorImpl extends I2cDeviceSynchDeviceWithParamet
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    protected AMSColorSensorImpl(AMSColorSensor.Parameters params, I2cDeviceSynchSimple deviceClient, boolean isOwned)
+    protected AMSColorSensorImpl(AMSColorSensor.Parameters params, I2cDeviceSynchSimple deviceClient, boolean deviceClientIsOwned)
         {
-        super(deviceClient, isOwned, params);
+        super(deviceClient, deviceClientIsOwned, params);
         this.deviceClient.setLogging(this.parameters.loggingEnabled);
         this.deviceClient.setLoggingTag(this.parameters.loggingTag);
 

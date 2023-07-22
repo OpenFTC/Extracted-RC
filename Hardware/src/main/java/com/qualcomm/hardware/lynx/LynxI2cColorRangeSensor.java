@@ -73,9 +73,9 @@ public class LynxI2cColorRangeSensor extends AMSColorSensorImpl implements Dista
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    public LynxI2cColorRangeSensor(I2cDeviceSynchSimple deviceClient)
+    public LynxI2cColorRangeSensor(I2cDeviceSynchSimple deviceClient, boolean deviceClientIsOwned)
         {
-        super(AMSColorSensor.Parameters.createForTMD37821(), deviceClient, true);
+        super(AMSColorSensor.Parameters.createForTMD37821(), deviceClient, deviceClientIsOwned);
         }
 
     //----------------------------------------------------------------------------------------------

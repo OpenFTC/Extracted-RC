@@ -69,8 +69,6 @@ import com.qualcomm.ftccommon.configuration.RobotConfigFileManager;
 import com.qualcomm.ftccommon.configuration.RobotConfigMap;
 import com.qualcomm.hardware.HardwareFactory;
 import com.qualcomm.hardware.bosch.BHI260IMU;
-import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.bosch.BNO055IMUImpl;
 import com.qualcomm.hardware.lynx.LynxI2cDeviceSynch;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.lynx.LynxModuleWarningManager;
@@ -83,6 +81,7 @@ import com.qualcomm.robotcore.exception.RobotCoreException;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.I2cWarningManager;
+import com.qualcomm.robotcore.hardware.LynxModuleImuType;
 import com.qualcomm.robotcore.hardware.configuration.ConfigurationTypeManager;
 import com.qualcomm.robotcore.hardware.configuration.LynxConstants;
 import com.qualcomm.robotcore.hardware.configuration.ReadXMLFileHandler;
@@ -95,7 +94,6 @@ import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.util.SerialNumber;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.Consumer;
 import org.firstinspires.ftc.robotcore.internal.camera.CameraManagerInternal;
 import org.firstinspires.ftc.robotcore.internal.ftdi.FtDevice;
 import org.firstinspires.ftc.robotcore.internal.ftdi.FtDeviceManager;
@@ -128,7 +126,7 @@ public class FtcEventLoop extends FtcEventLoopBase {
   // State
   //------------------------------------------------------------------------------------------------
 
-  private static volatile boolean appJustLaunched = true;
+  private static volatile boolean hasInitBeenCalled = false;
 
   protected final  Utility                 utility;
   protected final  OpModeManagerImpl       opModeManager;
@@ -150,7 +148,9 @@ public class FtcEventLoop extends FtcEventLoopBase {
   }
 
   protected static OpModeManagerImpl createOpModeManager(Activity activityContext) {
-    return new OpModeManagerImpl(activityContext, new HardwareMap(activityContext));
+    // The HardwareMap created here is just a placeholder and won't be exposed to Op Modes, so it's
+    // OK to pass in null for the notifier parameter.
+    return new OpModeManagerImpl(activityContext, new HardwareMap(activityContext, null));
   }
 
   //------------------------------------------------------------------------------------------------
@@ -188,6 +188,9 @@ public class FtcEventLoop extends FtcEventLoopBase {
    */
   @Override
   public void init(EventLoopManager eventLoopManager) throws RobotCoreException, InterruptedException {
+    boolean appJustLaunched = !hasInitBeenCalled;
+    hasInitBeenCalled = true;
+
     RobotLog.ii(TAG, "======= INIT START =======");
     super.init(eventLoopManager);
     opModeManager.init(eventLoopManager);
@@ -204,22 +207,18 @@ public class FtcEventLoop extends FtcEventLoopBase {
         temporaryEmbeddedLynxUsb = ensureEmbeddedControlHubModuleIsSetUp();
 
         if (appJustLaunched) {
-          appJustLaunched = false;
           // Flash the BHI260 IMU firmware if necessary
-          temporaryEmbeddedLynxUsb.performSystemOperationOnConnectedModule(LynxConstants.CH_EMBEDDED_MODULE_ADDRESS, true, new Consumer<LynxModule>() {
-            @Override
-            public void accept(LynxModule module) {
+          temporaryEmbeddedLynxUsb.performSystemOperationOnConnectedModule(LynxConstants.CH_EMBEDDED_MODULE_ADDRESS, true, module -> {
+            if (module.getImuType() == LynxModuleImuType.BHI260) {
               LynxI2cDeviceSynch tempImuI2cClient = LynxFirmwareVersionManager.createLynxI2cDeviceSynch(AppUtil.getDefContext(), module, 0);
-              if (BHI260IMU.imuIsPresent(tempImuI2cClient)) {
-                BHI260IMU.flashFirmwareIfNecessary(tempImuI2cClient);
-              }
-              tempImuI2cClient.close();
+              try { BHI260IMU.flashFirmwareIfNecessary(tempImuI2cClient); }
+              finally { tempImuI2cClient.close(); }
             }
           });
         }
       }
 
-      HardwareMap hardwareMap = ftcEventLoopHandler.getHardwareMap();
+      HardwareMap hardwareMap = ftcEventLoopHandler.getHardwareMap(opModeManager);
 
       opModeManager.setHardwareMap(hardwareMap);
       hardwareMap.logDevices();
@@ -255,10 +254,11 @@ public class FtcEventLoop extends FtcEventLoopBase {
     checkForChangedOpModes();
 
     ftcEventLoopHandler.displayGamePadInfo(opModeManager.getActiveOpModeName());
-    Gamepad gamepads[] = ftcEventLoopHandler.getGamepads();
+    Gamepad[] opModeGamepads = ftcEventLoopHandler.getOpModeGamepads();
+    Gamepad latestGamepad1Data = ftcEventLoopHandler.getLatestGamepad1Data();
+    Gamepad latestGamepad2Data = ftcEventLoopHandler.getLatestGamepad2Data();
     ftcEventLoopHandler.gamepadEffects();
-
-    opModeManager.runActiveOpMode(gamepads);
+    opModeManager.runActiveOpMode(opModeGamepads, latestGamepad1Data, latestGamepad2Data);
   }
 
   @Override
@@ -474,7 +474,7 @@ public class FtcEventLoop extends FtcEventLoopBase {
     if (this.usbModuleAttachmentHandler != null && !serialNumbersToProcess.isEmpty()) {
 
       // Find all the UsbModules in the current hardware map
-      List<RobotUsbModule> modules = this.ftcEventLoopHandler.getHardwareMap().getAll(RobotUsbModule.class);
+      List<RobotUsbModule> modules = this.ftcEventLoopHandler.getHardwareMap(opModeManager).getAll(RobotUsbModule.class);
 
       // For each serial number, find the module with that serial number and ask the handler to deal with it
       for (String serialNumberString : new ArrayList<>(serialNumbersToProcess)) {
@@ -567,24 +567,7 @@ public class FtcEventLoop extends FtcEventLoopBase {
       }
 
       String rawFirmwareVersionString = module.getNullableFirmwareVersionString();
-
-      String imuType;
-      if (rawFirmwareVersionString == null) {
-        imuType = "unknown";
-      } else {
-        LynxI2cDeviceSynch tempImuI2cClient = LynxFirmwareVersionManager.createLynxI2cDeviceSynch(AppUtil.getDefContext(), module, 0);
-        // BNO055IMUImpl.imuIsPresent() needs the I2C address to be set first, while the BHI260 equivalent does not.
-        tempImuI2cClient.setI2cAddress(BNO055IMU.I2CADDR_DEFAULT);
-
-        if (BNO055IMUImpl.imuIsPresent(tempImuI2cClient, false)) {
-          imuType = "BNO055";
-        } else if (BHI260IMU.imuIsPresent(tempImuI2cClient)) {
-          imuType = "BHI260AP";
-        } else {
-          imuType = "none";
-        }
-        tempImuI2cClient.close();
-      }
+      LynxModuleImuType imuType = module.getImuType();
 
       result.add(new CachedLynxModulesInfo.LynxModuleInfo(moduleName, rawFirmwareVersionString, module.getSerialNumber().toString(), module.getModuleAddress(), imuType));
     }
