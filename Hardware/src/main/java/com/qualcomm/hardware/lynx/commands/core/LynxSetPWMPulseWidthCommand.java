@@ -94,4 +94,10 @@ public class LynxSetPWMPulseWidthCommand extends LynxDekaInterfaceCommand<LynxAc
         this.channel = buffer.get();
         this.pulseWidth = buffer.getShort();
         }
+
+    @Override
+    public boolean isDangerous()
+        {
+        return true;
+        }
     }

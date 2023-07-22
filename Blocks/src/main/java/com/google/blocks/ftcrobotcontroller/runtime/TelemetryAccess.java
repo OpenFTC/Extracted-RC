@@ -82,6 +82,21 @@ class TelemetryAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = Telemetry.class, methodName = "addLine")
+  public void addLine(String text) {
+    try {
+      startBlockExecution(BlockType.FUNCTION, ".addLine");
+      telemetry.addLine(text);
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
   @Block(classes = Telemetry.class, methodName = "update")
   public void update() {
     try {

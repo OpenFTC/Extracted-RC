@@ -42,10 +42,10 @@ import com.qualcomm.robotcore.util.SerialNumber;
 
 import org.firstinspires.ftc.robotcore.external.function.Consumer;
 import org.firstinspires.ftc.robotcore.external.function.Function;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraManager;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.internal.camera.libuvc.nativeobject.LibUsbDevice;
 import org.firstinspires.ftc.robotcore.internal.camera.libuvc.nativeobject.UvcDevice;
 import org.firstinspires.ftc.robotcore.internal.collections.MutableReference;
@@ -69,7 +69,7 @@ public interface CameraManagerInternal extends CameraManager
 
     boolean isWebcamAttached(@NonNull SerialNumber serialNumberPattern);
 
-    BuiltinCameraName nameFromCameraDirection(VuforiaLocalizer.CameraDirection cameraDirection);
+    BuiltinCameraName nameFromCameraDirection(BuiltinCameraDirection cameraDirection);
 
     UsbManager getUsbManager();
 

@@ -73,7 +73,7 @@ public abstract class ArmableUsbDevice implements RobotUsbModule, GlobalWarningS
 
     protected final Context                 context;
     protected final SerialNumber            serialNumber;
-    protected       SyncdDevice.Manager     syncdDeviceManager;
+    @Nullable protected SyncdDevice.Manager syncdDeviceManager;
     protected       OpenRobotUsbDevice      openRobotUsbDevice;
     protected final AtomicInteger           referenceCount;
     @Nullable protected RobotUsbDevice      robotUsbDevice;
@@ -97,7 +97,7 @@ public abstract class ArmableUsbDevice implements RobotUsbModule, GlobalWarningS
         @Nullable RobotUsbDevice open() throws RobotCoreException, InterruptedException;
         }
 
-    public ArmableUsbDevice(Context context, SerialNumber serialNumber, SyncdDevice.Manager manager, OpenRobotUsbDevice openRobotUsbDevice)
+    public ArmableUsbDevice(Context context, SerialNumber serialNumber, @Nullable SyncdDevice.Manager manager, OpenRobotUsbDevice openRobotUsbDevice)
         {
         this.context              = context;
         this.serialNumber         = serialNumber;

@@ -16,8 +16,6 @@
 
 package com.google.blocks.ftcrobotcontroller.runtime;
 
-import android.util.Pair;
-import android.webkit.JavascriptInterface;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver.BlinkinPattern;
 import com.qualcomm.robotcore.hardware.HardwareDevice;
@@ -27,28 +25,22 @@ import com.qualcomm.robotcore.util.RobotLog;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.matrices.MatrixF;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
-import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Quaternion;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.Parameters.CameraMonitorFeedback;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 
 /**
  * An abstract class for classes that provides JavaScript access to an object.
  *
  * @author lizlooney@google.com (Liz Looney)
  */
-abstract class Access {
+public abstract class Access {
   protected final static String DEFAULT_CAMERA_MONTIOR_FEEDBACK_STRING = "DEFAULT";
 
   protected final BlocksOpMode blocksOpMode;
@@ -80,6 +72,11 @@ abstract class Access {
 
   protected final void endBlockExecution() {
     blocksOpMode.endBlockExecution();
+  }
+
+  protected final void handleObsoleteBlockExecution(BlockType blockType, String blockLastName) {
+    startBlockExecution(blockType, blockLastName);
+    reportWarning("This block is obsolete.");
   }
 
   protected AngleUnit checkAngleUnit(String angleUnitString) {
@@ -132,54 +129,6 @@ abstract class Access {
 
   protected VectorF checkVectorF(Object vectorArg) {
     return checkArg(vectorArg, VectorF.class, "vector");
-  }
-
-  protected VuforiaLocalizer.Parameters checkVuforiaLocalizerParameters(Object parametersArg) {
-    return checkArg(parametersArg, VuforiaLocalizer.Parameters.class, "vuforiaLocalizerParameters");
-  }
-
-  protected Pair<Boolean, CameraMonitorFeedback> checkCameraMonitorFeedback(String cameraMonitorFeedbackString) {
-    boolean cameraMonitorFeedbackIsValid;
-    CameraMonitorFeedback cameraMonitorFeedback;
-    if (cameraMonitorFeedbackString.equalsIgnoreCase(DEFAULT_CAMERA_MONTIOR_FEEDBACK_STRING)) {
-      cameraMonitorFeedback = null;
-      cameraMonitorFeedbackIsValid = true;
-    } else {
-      cameraMonitorFeedback = checkArg(cameraMonitorFeedbackString, CameraMonitorFeedback.class, "cameraMonitorFeedback");
-      cameraMonitorFeedbackIsValid = cameraMonitorFeedback != null;
-    }
-    return Pair.create(cameraMonitorFeedbackIsValid, cameraMonitorFeedback);
-  }
-
-  protected VuforiaLocalizer.CameraDirection checkVuforiaLocalizerCameraDirection(String cameraDirectionString) {
-    return checkArg(cameraDirectionString, VuforiaLocalizer.CameraDirection.class, "cameraDirection");
-  }
-
-  private CameraName checkCameraName(Object cameraNameArg) {
-    return checkArg(cameraNameArg, CameraName.class, "cameraName");
-  }
-
-  protected CameraName checkCameraNameFromString(HardwareMap hardwareMap, String cameraNameString) {
-    return checkCameraName(cameraNameFromString(hardwareMap, cameraNameString));
-  }
-
-  protected CameraName cameraNameFromString(HardwareMap hardwareMap, String cameraNameString) {
-    return hardwareMap.tryGet(WebcamName.class, cameraNameString);
-  }
-
-  protected String cameraNameToString(HardwareMap hardwareMap, CameraName cameraName) {
-    if (cameraName instanceof HardwareDevice) {
-      Set<String> deviceNames = hardwareMap.getNamesOf((HardwareDevice) cameraName);
-      if (!deviceNames.isEmpty()) {
-        return deviceNames.iterator().next();
-      }
-    }
-
-    return "";
-  }
-
-  protected VuforiaTrackable checkVuforiaTrackable(Object vuforiaTrackableArg) {
-    return checkArg(vuforiaTrackableArg, VuforiaTrackable.class, "vuforiaTrackable");
   }
 
   /*
@@ -244,19 +193,13 @@ abstract class Access {
     }
   }
 
-  private final String getTypeFromClass(Class clazz) {
-    // In blocks, the output/check is "BNO055IMU.Parameters", but from the user's point of view,
-    // it is "IMU-BNO055.Parameters".
-    if (BNO055IMU.Parameters.class.isAssignableFrom(clazz)) {
-      return "IMU-BNO055.Parameters";
-    }
-    if (IMU.Parameters.class.isAssignableFrom(clazz)) {
-      return "IMU.Parameters";
-    }
-    if (VuforiaLocalizer.Parameters.class.isAssignableFrom(clazz)) {
-      return "VuforiaLocalizer.Parameters";
+  protected static final String getTypeFromClass(Class clazz) {
+    String type = clazz.getSimpleName();
+    while (clazz.getEnclosingClass() != null) {
+      clazz = clazz.getEnclosingClass();
+      type = clazz.getSimpleName() + "." + type;
     }
 
-    return clazz.getSimpleName();
+    return type;
   }
 }

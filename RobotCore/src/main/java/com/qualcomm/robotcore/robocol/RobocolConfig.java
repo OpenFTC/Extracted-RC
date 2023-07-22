@@ -63,13 +63,13 @@ public class RobocolConfig {
    * Expansion Hub.
    */
 
-  public static final int ROBOCOL_VERSION = 123; // MUST be in the 0-255 range
+  public static final int ROBOCOL_VERSION = 124; // MUST be in the 0-255 range
 
   // The actual max packet size is the min of this value and whatever the OS says we can use
   public static final int MAX_MAX_PACKET_SIZE = 65520;  // + 16 bytes overhead == 64k
 
   public static final int MS_RECEIVE_TIMEOUT = SendOnceRunnable.MS_HEARTBEAT_TRANSMISSION_INTERVAL * 3;
-  
+
   public static final int PORT_NUMBER = 20884;
 
   public static final int TTL = 3;

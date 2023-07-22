@@ -14,6 +14,13 @@ public interface FtcWebSocket {
     void send(@NonNull FtcWebSocketMessage message);
 
     /**
+     * Send a command result to this WebSocket.
+     *
+     * @param response The response to send
+     */
+    void sendCommandResponse(WebSocketCommandResponse response);
+
+    /**
      * @return the IP address of the client this WebSocket is connected to
      */
     InetAddress getRemoteIpAddress();

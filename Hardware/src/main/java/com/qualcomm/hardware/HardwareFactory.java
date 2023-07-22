@@ -55,6 +55,7 @@ import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
 import com.qualcomm.robotcore.hardware.IrSeekerSensor;
+import com.qualcomm.robotcore.hardware.LynxModuleDescription;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.PWMOutput;
 import com.qualcomm.robotcore.hardware.PWMOutputController;
@@ -148,13 +149,6 @@ public class HardwareFactory {
         RobotLog.vv(TAG, "no xml to parse: using empty map");
       }
       return map;
-    }
-  }
-
-  public void instantiateConfiguration(HardwareMap hardwareMap, ControllerConfiguration controllerConfiguration, SyncdDevice.Manager manager) throws RobotCoreException, InterruptedException {
-    synchronized (HardwareDeviceManager.scanDevicesLock) {
-      DeviceManager deviceMgr = new HardwareDeviceManager(context, manager);
-      mapControllerConfiguration(hardwareMap, deviceMgr, controllerConfiguration);
     }
   }
 
@@ -370,36 +364,38 @@ public class HardwareFactory {
         }
       }
 
-      // Make all the modules first, since we need to ping the parent before pinging anyone else,
+      // Build descriptions for each module first, since we need to ping the parent before pinging anyone else,
       // and so we need to figure out who that is.
       //
-      List<LynxModule> potentialModules = new ArrayList<LynxModule>();
+      List<LynxModuleDescription> moduleDescriptions = new ArrayList<LynxModuleDescription>();
       Map<Integer, String> moduleNames = new HashMap<Integer, String>();
       final int parentModuleAddress = lynxUsbDeviceConfiguration.getParentModuleAddress();
       for (DeviceConfiguration moduleConfiguration : lynxUsbDeviceConfiguration.getModules()) {
         int moduleAddress = moduleConfiguration.getPort();
         moduleNames.put(moduleAddress, moduleConfiguration.getName());
         //
-        LynxModule module = (LynxModule)deviceMgr.createLynxModule(lynxUsbDevice, moduleAddress, parentModuleAddress==moduleAddress, moduleConfiguration.getName());
-        potentialModules.add(module);
+        LynxModuleDescription.Builder moduleDescriptionBuilder = new LynxModuleDescription.Builder(moduleAddress, parentModuleAddress==moduleAddress);
+        moduleDescriptionBuilder.setUserModule();
 
         // If the system made up this device, let the live device know that too
         if (((LynxModuleConfiguration)moduleConfiguration).isSystemSynthetic()) {
-          module.setSystemSynthetic(true);
+          moduleDescriptionBuilder.setSystemSynthetic();
         }
+
+        moduleDescriptions.add(moduleDescriptionBuilder.build());
       }
 
-      // Attach all the LynxModules to that LynxUsbDevice, parents first, so that parents get pinged first. Note that if some
+      // Create/get all the LynxModules using our LynxUsbDevice, parents first, so that parents get pinged first. Note that if some
       // modules aren't actually there, or are there but are wedged, these may throw exceptions.
       Map<Integer, LynxModule> connectedModules = new HashMap<Integer, LynxModule>();
-      for (LynxModule module : potentialModules) {
-        if (module.isParent()) { // nb: there should be only one parent
-         connectModule(lynxUsbDevice, module, moduleNames, connectedModules, isFirstLynxUsbDevice && connectedModules.isEmpty());
+      for (LynxModuleDescription moduleDescription : moduleDescriptions) {
+        if (moduleDescription.isParent) { // nb: there should be only one parent
+         connectModule(lynxUsbDevice, moduleDescription, moduleNames, connectedModules, isFirstLynxUsbDevice && connectedModules.isEmpty());
         }
       }
-      for (LynxModule module : potentialModules) {
-        if (!module.isParent()) {
-          connectModule(lynxUsbDevice, module, moduleNames, connectedModules, false /*non-parents are connected over 485, so they can't charge us*/);
+      for (LynxModuleDescription moduleDescription : moduleDescriptions) {
+        if (!moduleDescription.isParent) {
+          connectModule(lynxUsbDevice, moduleDescription, moduleNames, connectedModules, false /*non-parents are connected over 485, so they can't charge us*/);
         }
       }
 
@@ -426,16 +422,12 @@ public class HardwareFactory {
   }
 
   /**
-   * If this method returns without throwing an exception, you can be sure that an equivalent
-   * LynxModule instance is registered with the LynxUsbDevice. However, it is not guaranteed that
-   * the exact LynxModule instance passed in is the one registered to the LynxUsbDevice. ALWAYS use
-   * the one connected to the connectedModules map parameter, not one originally passed in.
+   * If this method returns without throwing an exception, you can be sure that an appropriate
+   * LynxModule instance is registered with the LynxUsbDevice.
    */
-  private void connectModule(LynxUsbDevice lynxUsbDevice, LynxModule module, Map<Integer,String> moduleNames, Map<Integer,LynxModule> connectedModules, boolean enableCharging) throws InterruptedException {
+  private void connectModule(LynxUsbDevice lynxUsbDevice, LynxModuleDescription moduleDescription, Map<Integer,String> moduleNames, Map<Integer,LynxModule> connectedModules, boolean enableCharging) throws InterruptedException {
     try {
-      // addConfiguredModule may return a different LynxModule instance than we passed in, and if it
-      // does that, that's the one we should be using.
-      module = lynxUsbDevice.addConfiguredModule(module);    // this will throw if there's a problem
+      LynxModule module = lynxUsbDevice.getOrAddModule(moduleDescription); // this will throw if there's a problem
       if (enableCharging) {
         // When we first connect, we enable phone charging because we KNOW that the modules
         // aren't connected to a PC where that will be a problem. Note that if for some reason
@@ -449,7 +441,8 @@ public class HardwareFactory {
       }
       connectedModules.put(module.getModuleAddress(), module);
     } catch (RobotCoreException|LynxNackException|RuntimeException e) {
-      lynxUsbDevice.noteMissingModule(module, moduleNames.get(module.getModuleAddress()));
+      int moduleAddress = moduleDescription.address;
+      lynxUsbDevice.noteMissingModule(moduleAddress, moduleNames.get(moduleAddress));
     }
   }
 

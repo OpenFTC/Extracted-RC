@@ -1,31 +1,32 @@
+<placeholder_vision_vision/>
 <category name="Utilities">
   <category name="Acceleration">
     <block type="acceleration_getProperty_DistanceUnit">
       <field name="PROP">DistanceUnit</field>
-      <value name="ACCELERATION"><block type="variables_get"><field name="VAR">{accelerationVariable}</field></block></value>
+      <value name="ACCELERATION"><block type="variables_get"><field name="VAR">myAcceleration</field></block></value>
     </block>
     <block type="acceleration_getProperty_Number">
       <field name="PROP">XAccel</field>
-      <value name="ACCELERATION"><block type="variables_get"><field name="VAR">{accelerationVariable}</field></block></value>
+      <value name="ACCELERATION"><block type="variables_get"><field name="VAR">myAcceleration</field></block></value>
     </block>
     <block type="acceleration_getProperty_Number">
       <field name="PROP">YAccel</field>
-      <value name="ACCELERATION"><block type="variables_get"><field name="VAR">{accelerationVariable}</field></block></value>
+      <value name="ACCELERATION"><block type="variables_get"><field name="VAR">myAcceleration</field></block></value>
     </block>
     <block type="acceleration_getProperty_Number">
       <field name="PROP">ZAccel</field>
-      <value name="ACCELERATION"><block type="variables_get"><field name="VAR">{accelerationVariable}</field></block></value>
+      <value name="ACCELERATION"><block type="variables_get"><field name="VAR">myAcceleration</field></block></value>
     </block>
     <block type="acceleration_getProperty_Number">
       <field name="PROP">AcquisitionTime</field>
-      <value name="ACCELERATION"><block type="variables_get"><field name="VAR">{accelerationVariable}</field></block></value>
+      <value name="ACCELERATION"><block type="variables_get"><field name="VAR">myAcceleration</field></block></value>
     </block>
     <block type="acceleration_toDistanceUnit">
-      <value name="ACCELERATION"><block type="variables_get"><field name="VAR">{accelerationVariable}</field></block></value>
+      <value name="ACCELERATION"><block type="variables_get"><field name="VAR">myAcceleration</field></block></value>
       <value name="DISTANCE_UNIT"><shadow type="navigation_typedEnum_distanceUnit"></shadow></value>
     </block>
     <block type="acceleration_toText">
-      <value name="ACCELERATION"><block type="variables_get"><field name="VAR">{accelerationVariable}</field></block></value>
+      <value name="ACCELERATION"><block type="variables_get"><field name="VAR">myAcceleration</field></block></value>
     </block>
     <block type="acceleration_create"></block>
     <block type="acceleration_create_withArgs">
@@ -56,34 +57,34 @@
   <category name="AngularVelocity">
     <block type="angularVelocity_getProperty_AngleUnit">
       <field name="PROP">AngleUnit</field>
-      <value name="ANGULAR_VELOCITY"><block type="variables_get"><field name="VAR">{angularVelocityVariable}</field></block></value>
+      <value name="ANGULAR_VELOCITY"><block type="variables_get"><field name="VAR">myAngularVelocity</field></block></value>
     </block>
     <block type="angularVelocity_getProperty_Number">
       <field name="PROP">XRotationRate</field>
-      <value name="ANGULAR_VELOCITY"><block type="variables_get"><field name="VAR">{angularVelocityVariable}</field></block></value>
+      <value name="ANGULAR_VELOCITY"><block type="variables_get"><field name="VAR">myAngularVelocity</field></block></value>
     </block>
     <block type="angularVelocity_getProperty_Number">
       <field name="PROP">YRotationRate</field>
-      <value name="ANGULAR_VELOCITY"><block type="variables_get"><field name="VAR">{angularVelocityVariable}</field></block></value>
+      <value name="ANGULAR_VELOCITY"><block type="variables_get"><field name="VAR">myAngularVelocity</field></block></value>
     </block>
     <block type="angularVelocity_getProperty_Number">
       <field name="PROP">ZRotationRate</field>
-      <value name="ANGULAR_VELOCITY"><block type="variables_get"><field name="VAR">{angularVelocityVariable}</field></block></value>
+      <value name="ANGULAR_VELOCITY"><block type="variables_get"><field name="VAR">myAngularVelocity</field></block></value>
     </block>
     <block type="angularVelocity_getRotationRate">
-      <value name="ANGULAR_VELOCITY"><block type="variables_get"><field name="VAR">{angularVelocityVariable}</field></block></value>
+      <value name="ANGULAR_VELOCITY"><block type="variables_get"><field name="VAR">myAngularVelocity</field></block></value>
       <value name="AXIS"><shadow type="navigation_typedEnum_axis"></shadow></value>
     </block>
     <block type="angularVelocity_getProperty_Number">
       <field name="PROP">AcquisitionTime</field>
-      <value name="ANGULAR_VELOCITY"><block type="variables_get"><field name="VAR">{angularVelocityVariable}</field></block></value>
+      <value name="ANGULAR_VELOCITY"><block type="variables_get"><field name="VAR">myAngularVelocity</field></block></value>
     </block>
     <block type="angularVelocity_toAngleUnit">
-      <value name="ANGULAR_VELOCITY"><block type="variables_get"><field name="VAR">{angularVelocityVariable}</field></block></value>
+      <value name="ANGULAR_VELOCITY"><block type="variables_get"><field name="VAR">myAngularVelocity</field></block></value>
       <value name="ANGLE_UNIT"><shadow type="navigation_typedEnum_angleUnit"></shadow></value>
     </block>
     <block type="angularVelocity_toText">
-      <value name="ANGULAR_VELOCITY"><block type="variables_get"><field name="VAR">{angularVelocityVariable}</field></block></value>
+      <value name="ANGULAR_VELOCITY"><block type="variables_get"><field name="VAR">myAngularVelocity</field></block></value>
     </block>
     <block type="angularVelocity_create"></block>
     <block type="angularVelocity_create_withArgs">
@@ -116,38 +117,38 @@
       <value name="BLUE"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
     </block>
     <block type="color_toText">
-      <value name="COLOR"><block type="variables_get"><field name="VAR">{colorVariable}</field></block></value>
+      <value name="COLOR"><block type="variables_get"><field name="VAR">myColor</field></block></value>
     </block>
     <block type="color_showColor">
-      <value name="COLOR"><block type="variables_get"><field name="VAR">{colorVariable}</field></block></value>
+      <value name="COLOR"><block type="variables_get"><field name="VAR">myColor</field></block></value>
     </block>
     <block type="color_getProperty_Number">
       <field name="PROP">Red</field>
-      <value name="COLOR"><block type="variables_get"><field name="VAR">{colorVariable}</field></block></value>
+      <value name="COLOR"><block type="variables_get"><field name="VAR">myColor</field></block></value>
     </block>
     <block type="color_getProperty_Number">
       <field name="PROP">Green</field>
-      <value name="COLOR"><block type="variables_get"><field name="VAR">{colorVariable}</field></block></value>
+      <value name="COLOR"><block type="variables_get"><field name="VAR">myColor</field></block></value>
     </block>
     <block type="color_getProperty_Number">
       <field name="PROP">Blue</field>
-      <value name="COLOR"><block type="variables_get"><field name="VAR">{colorVariable}</field></block></value>
+      <value name="COLOR"><block type="variables_get"><field name="VAR">myColor</field></block></value>
     </block>
     <block type="color_getProperty_Number">
       <field name="PROP">Alpha</field>
-      <value name="COLOR"><block type="variables_get"><field name="VAR">{colorVariable}</field></block></value>
+      <value name="COLOR"><block type="variables_get"><field name="VAR">myColor</field></block></value>
     </block>
     <block type="color_getProperty_Number">
       <field name="PROP">Hue</field>
-      <value name="COLOR"><block type="variables_get"><field name="VAR">{colorVariable}</field></block></value>
+      <value name="COLOR"><block type="variables_get"><field name="VAR">myColor</field></block></value>
     </block>
     <block type="color_getProperty_Number">
       <field name="PROP">Saturation</field>
-      <value name="COLOR"><block type="variables_get"><field name="VAR">{colorVariable}</field></block></value>
+      <value name="COLOR"><block type="variables_get"><field name="VAR">myColor</field></block></value>
     </block>
     <block type="color_getProperty_Number">
       <field name="PROP">Value</field>
-      <value name="COLOR"><block type="variables_get"><field name="VAR">{colorVariable}</field></block></value>
+      <value name="COLOR"><block type="variables_get"><field name="VAR">myColor</field></block></value>
     </block>
     <block type="color_rgbToColor_Number">
       <value name="RED"><shadow type="math_number"><field name="NUM">255</field></shadow></value>
@@ -182,23 +183,23 @@
     </block>
     <block type="normalizedColors_getProperty_Number">
       <field name="PROP">Red</field>
-      <value name="NORMALIZED_COLORS"><block type="variables_get"><field name="VAR">{normalizedColorsVariable}</field></block></value>
+      <value name="NORMALIZED_COLORS"><block type="variables_get"><field name="VAR">myNormalizedColors</field></block></value>
     </block>
     <block type="normalizedColors_getProperty_Number">
       <field name="PROP">Green</field>
-      <value name="NORMALIZED_COLORS"><block type="variables_get"><field name="VAR">{normalizedColorsVariable}</field></block></value>
+      <value name="NORMALIZED_COLORS"><block type="variables_get"><field name="VAR">myNormalizedColors</field></block></value>
     </block>
     <block type="normalizedColors_getProperty_Number">
       <field name="PROP">Blue</field>
-      <value name="NORMALIZED_COLORS"><block type="variables_get"><field name="VAR">{normalizedColorsVariable}</field></block></value>
+      <value name="NORMALIZED_COLORS"><block type="variables_get"><field name="VAR">myNormalizedColors</field></block></value>
     </block>
     <block type="normalizedColors_getProperty_Number">
       <field name="PROP">Alpha</field>
-      <value name="NORMALIZED_COLORS"><block type="variables_get"><field name="VAR">{normalizedColorsVariable}</field></block></value>
+      <value name="NORMALIZED_COLORS"><block type="variables_get"><field name="VAR">myNormalizedColors</field></block></value>
     </block>
     <block type="normalizedColors_getProperty_Number">
       <field name="PROP">Color</field>
-      <value name="NORMALIZED_COLORS"><block type="variables_get"><field name="VAR">{normalizedColorsVariable}</field></block></value>
+      <value name="NORMALIZED_COLORS"><block type="variables_get"><field name="VAR">myNormalizedColors</field></block></value>
     </block>
   </category>
   <category name="DbgLog">
@@ -217,25 +218,64 @@
       </value>
     </block>
   </category>
+  <category name="ElapsedTime">
+    <block type="elapsedTime2_create"></block>
+    <block type="elapsedTime2_create_withStartTime">
+      <value name="START_TIME"><block type="system_nanoTime"></block></value>
+    </block>
+    <block type="elapsedTime2_create_withResolution">
+      <value name="RESOLUTION"><shadow type="elapsedTime2_typedEnum_resolution"></shadow></value>
+    </block>
+    <block type="elapsedTime2_getProperty_Number">
+      <field name="PROP">StartTime</field>
+      <value name="ELAPSED_TIME"><block type="variables_get"><field name="VAR">myElapsedTime</field></block></value>
+    </block>
+    <block type="elapsedTime2_getProperty_Number">
+      <field name="PROP">Time</field>
+      <value name="ELAPSED_TIME"><block type="variables_get"><field name="VAR">myElapsedTime</field></block></value>
+    </block>
+    <block type="elapsedTime2_getProperty_Number">
+      <field name="PROP">Seconds</field>
+      <value name="ELAPSED_TIME"><block type="variables_get"><field name="VAR">myElapsedTime</field></block></value>
+    </block>
+    <block type="elapsedTime2_getProperty_Number">
+      <field name="PROP">Milliseconds</field>
+      <value name="ELAPSED_TIME"><block type="variables_get"><field name="VAR">myElapsedTime</field></block></value>
+    </block>
+    <block type="elapsedTime2_getProperty_Resolution">
+      <field name="PROP">Resolution</field>
+      <value name="ELAPSED_TIME"><block type="variables_get"><field name="VAR">myElapsedTime</field></block></value>
+    </block>
+    <block type="elapsedTime2_reset">
+      <value name="ELAPSED_TIME"><block type="variables_get"><field name="VAR">myElapsedTime</field></block></value>
+    </block>
+    <block type="elapsedTime2_log">
+      <value name="ELAPSED_TIME"><block type="variables_get"><field name="VAR">myElapsedTime</field></block></value>
+      <value name="LABEL"><shadow type="text"><field name="TEXT">label</field></shadow></value>
+    </block>
+    <block type="elapsedTime2_toText">
+      <value name="ELAPSED_TIME"><block type="variables_get"><field name="VAR">myElapsedTime</field></block></value>
+    </block>
+  </category>
   <category name="MagneticFlux">
     <block type="magneticFlux_getProperty_Number">
       <field name="PROP">X</field>
-      <value name="MAGNETIC_FLUX"><block type="variables_get"><field name="VAR">{magneticFluxVariable}</field></block></value>
+      <value name="MAGNETIC_FLUX"><block type="variables_get"><field name="VAR">myMagneticFlux</field></block></value>
     </block>
     <block type="magneticFlux_getProperty_Number">
       <field name="PROP">Y</field>
-      <value name="MAGNETIC_FLUX"><block type="variables_get"><field name="VAR">{magneticFluxVariable}</field></block></value>
+      <value name="MAGNETIC_FLUX"><block type="variables_get"><field name="VAR">myMagneticFlux</field></block></value>
     </block>
     <block type="magneticFlux_getProperty_Number">
       <field name="PROP">Z</field>
-      <value name="MAGNETIC_FLUX"><block type="variables_get"><field name="VAR">{magneticFluxVariable}</field></block></value>
+      <value name="MAGNETIC_FLUX"><block type="variables_get"><field name="VAR">myMagneticFlux</field></block></value>
     </block>
     <block type="magneticFlux_getProperty_Number">
       <field name="PROP">AcquisitionTime</field>
-      <value name="MAGNETIC_FLUX"><block type="variables_get"><field name="VAR">{magneticFluxVariable}</field></block></value>
+      <value name="MAGNETIC_FLUX"><block type="variables_get"><field name="VAR">myMagneticFlux</field></block></value>
     </block>
     <block type="magneticFlux_toText">
-      <value name="MAGNETIC_FLUX"><block type="variables_get"><field name="VAR">{magneticFluxVariable}</field></block></value>
+      <value name="MAGNETIC_FLUX"><block type="variables_get"><field name="VAR">myMagneticFlux</field></block></value>
     </block>
     <block type="magneticFlux_create"></block>
     <block type="magneticFlux_create_withArgs">
@@ -248,12 +288,12 @@
   <category name="Matrix">
     <block type="openGLMatrix_identityMatrix"></block>
     <block type="openGLMatrix_multiplied">
-      <value name="MATRIX1"><block type="variables_get"><field name="VAR">{matrixVariable}</field></block></value>
-      <value name="MATRIX2"><block type="variables_get"><field name="VAR">{matrixVariable}</field></block></value>
+      <value name="MATRIX1"><block type="variables_get"><field name="VAR">myMatrix1</field></block></value>
+      <value name="MATRIX2"><block type="variables_get"><field name="VAR">myMatrix2</field></block></value>
     </block>
     <block type="openGLMatrix_multiply">
-      <value name="MATRIX1"><block type="variables_get"><field name="VAR">{matrixVariable}</field></block></value>
-      <value name="MATRIX2"><block type="variables_get"><field name="VAR">{matrixVariable}</field></block></value>
+      <value name="MATRIX1"><block type="variables_get"><field name="VAR">myMatrix1</field></block></value>
+      <value name="MATRIX2"><block type="variables_get"><field name="VAR">myMatrix2</field></block></value>
     </block>
     <block type="openGLMatrix_rotation">
       <value name="ANGLE_UNIT"><shadow type="navigation_typedEnum_angleUnit"></shadow></value>
@@ -271,7 +311,7 @@
       <value name="THIRD_ANGLE"><shadow type="math_number"><field name="NUM">90</field></shadow></value>
     </block>
     <block type="openGLMatrix_rotate">
-      <value name="MATRIX"><block type="variables_get"><field name="VAR">{matrixVariable}</field></block></value>
+      <value name="MATRIX"><block type="variables_get"><field name="VAR">myMatrix</field></block></value>
       <value name="ANGLE_UNIT"><shadow type="navigation_typedEnum_angleUnit"></shadow></value>
       <value name="ANGLE"><shadow type="math_number"><field name="NUM">90</field></shadow></value>
       <value name="DX"><shadow type="math_number"><field name="NUM">10</field></shadow></value>
@@ -279,7 +319,7 @@
       <value name="DZ"><shadow type="math_number"><field name="NUM">30</field></shadow></value>
     </block>
     <block type="openGLMatrix_rotate_withAxesArgs">
-      <value name="MATRIX"><block type="variables_get"><field name="VAR">{matrixVariable}</field></block></value>
+      <value name="MATRIX"><block type="variables_get"><field name="VAR">myMatrix</field></block></value>
       <value name="AXES_REFERENCE"><shadow type="navigation_typedEnum_axesReference"></shadow></value>
       <value name="AXES_ORDER"><shadow type="navigation_typedEnum_axesOrder"></shadow></value>
       <value name="ANGLE_UNIT"><shadow type="navigation_typedEnum_angleUnit"></shadow></value>
@@ -288,7 +328,7 @@
       <value name="THIRD_ANGLE"><shadow type="math_number"><field name="NUM">90</field></shadow></value>
     </block>
     <block type="openGLMatrix_rotated">
-      <value name="MATRIX"><block type="variables_get"><field name="VAR">{matrixVariable}</field></block></value>
+      <value name="MATRIX"><block type="variables_get"><field name="VAR">myMatrix</field></block></value>
       <value name="ANGLE_UNIT"><shadow type="navigation_typedEnum_angleUnit"></shadow></value>
       <value name="ANGLE"><shadow type="math_number"><field name="NUM">90</field></shadow></value>
       <value name="DX"><shadow type="math_number"><field name="NUM">10</field></shadow></value>
@@ -296,7 +336,7 @@
       <value name="DZ"><shadow type="math_number"><field name="NUM">30</field></shadow></value>
     </block>
     <block type="openGLMatrix_rotated_withAxesArgs">
-      <value name="MATRIX"><block type="variables_get"><field name="VAR">{matrixVariable}</field></block></value>
+      <value name="MATRIX"><block type="variables_get"><field name="VAR">myMatrix</field></block></value>
       <value name="AXES_REFERENCE"><shadow type="navigation_typedEnum_axesReference"></shadow></value>
       <value name="AXES_ORDER"><shadow type="navigation_typedEnum_axesOrder"></shadow></value>
       <value name="ANGLE_UNIT"><shadow type="navigation_typedEnum_angleUnit"></shadow></value>
@@ -305,23 +345,23 @@
       <value name="THIRD_ANGLE"><shadow type="math_number"><field name="NUM">90</field></shadow></value>
     </block>
     <block type="openGLMatrix_scale_with3">
-      <value name="MATRIX"><block type="variables_get"><field name="VAR">{matrixVariable}</field></block></value>
+      <value name="MATRIX"><block type="variables_get"><field name="VAR">myMatrix</field></block></value>
       <value name="SCALE_X"><shadow type="math_number"><field name="NUM">10</field></shadow></value>
       <value name="SCALE_Y"><shadow type="math_number"><field name="NUM">20</field></shadow></value>
       <value name="SCALE_Z"><shadow type="math_number"><field name="NUM">30</field></shadow></value>
     </block>
     <block type="openGLMatrix_scale_with1">
-      <value name="MATRIX"><block type="variables_get"><field name="VAR">{matrixVariable}</field></block></value>
+      <value name="MATRIX"><block type="variables_get"><field name="VAR">myMatrix</field></block></value>
       <value name="SCALE"><shadow type="math_number"><field name="NUM">10</field></shadow></value>
     </block>
     <block type="openGLMatrix_scaled_with3">
-      <value name="MATRIX"><block type="variables_get"><field name="VAR">{matrixVariable}</field></block></value>
+      <value name="MATRIX"><block type="variables_get"><field name="VAR">myMatrix</field></block></value>
       <value name="SCALE_X"><shadow type="math_number"><field name="NUM">10</field></shadow></value>
       <value name="SCALE_Y"><shadow type="math_number"><field name="NUM">20</field></shadow></value>
       <value name="SCALE_Z"><shadow type="math_number"><field name="NUM">30</field></shadow></value>
     </block>
     <block type="openGLMatrix_scaled_with1">
-      <value name="MATRIX"><block type="variables_get"><field name="VAR">{matrixVariable}</field></block></value>
+      <value name="MATRIX"><block type="variables_get"><field name="VAR">myMatrix</field></block></value>
       <value name="SCALE"><shadow type="math_number"><field name="NUM">10</field></shadow></value>
     </block>
     <block type="openGLMatrix_translation">
@@ -330,196 +370,196 @@
       <value name="DZ"><shadow type="math_number"><field name="NUM">30</field></shadow></value>
     </block>
     <block type="openGLMatrix_translate">
-      <value name="MATRIX"><block type="variables_get"><field name="VAR">{matrixVariable}</field></block></value>
+      <value name="MATRIX"><block type="variables_get"><field name="VAR">myMatrix</field></block></value>
       <value name="DX"><shadow type="math_number"><field name="NUM">10</field></shadow></value>
       <value name="DY"><shadow type="math_number"><field name="NUM">20</field></shadow></value>
       <value name="DZ"><shadow type="math_number"><field name="NUM">30</field></shadow></value>
     </block>
     <block type="openGLMatrix_translated">
-      <value name="MATRIX"><block type="variables_get"><field name="VAR">{matrixVariable}</field></block></value>
+      <value name="MATRIX"><block type="variables_get"><field name="VAR">myMatrix</field></block></value>
       <value name="DX"><shadow type="math_number"><field name="NUM">10</field></shadow></value>
       <value name="DY"><shadow type="math_number"><field name="NUM">20</field></shadow></value>
       <value name="DZ"><shadow type="math_number"><field name="NUM">30</field></shadow></value>
     </block>
     <block type="openGLMatrix_create"></block>
     <block type="openGLMatrix_create_withMatrixF">
-      <value name="MATRIX"><block type="variables_get"><field name="VAR">{matrixVariable}</field></block></value>
+      <value name="MATRIX"><block type="variables_get"><field name="VAR">myMatrix</field></block></value>
     </block>
     <block type="matrixF_getProperty_Number">
       <field name="PROP">NumCols</field>
-      <value name="MATRIX"><block type="variables_get"><field name="VAR">{matrixVariable}</field></block></value>
+      <value name="MATRIX"><block type="variables_get"><field name="VAR">myMatrix</field></block></value>
     </block>
     <block type="matrixF_getProperty_Number">
       <field name="PROP">NumRows</field>
-      <value name="MATRIX"><block type="variables_get"><field name="VAR">{matrixVariable}</field></block></value>
+      <value name="MATRIX"><block type="variables_get"><field name="VAR">myMatrix</field></block></value>
     </block>
     <block type="matrixF_diagonalMatrix">
       <value name="DIM"><shadow type="math_number"><field name="NUM">4</field></shadow></value>
       <value name="SCALE"><shadow type="math_number"><field name="NUM">10</field></shadow></value>
     </block>
     <block type="matrixF_diagonalMatrix_withVector">
-      <value name="VECTOR"><block type="variables_get"><field name="VAR">{vectorVariable}</field></block></value>
+      <value name="VECTOR"><block type="variables_get"><field name="VAR">myVector</field></block></value>
     </block>
     <block type="matrixF_identityMatrix">
       <value name="DIM"><shadow type="math_number"><field name="NUM">4</field></shadow></value>
     </block>
     <block type="matrixF_get">
-      <value name="MATRIX"><block type="variables_get"><field name="VAR">{matrixVariable}</field></block></value>
+      <value name="MATRIX"><block type="variables_get"><field name="VAR">myMatrix</field></block></value>
       <value name="ROW"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
       <value name="COL"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
     </block>
     <block type="matrixF_put">
-      <value name="MATRIX"><block type="variables_get"><field name="VAR">{matrixVariable}</field></block></value>
+      <value name="MATRIX"><block type="variables_get"><field name="VAR">myMatrix</field></block></value>
       <value name="ROW"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
       <value name="COL"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
       <value name="VALUE"><shadow type="math_number"><field name="NUM">123</field></shadow></value>
     </block>
     <block type="matrixF_getRow">
-      <value name="MATRIX"><block type="variables_get"><field name="VAR">{matrixVariable}</field></block></value>
+      <value name="MATRIX"><block type="variables_get"><field name="VAR">myMatrix</field></block></value>
       <value name="ROW"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
     </block>
     <block type="matrixF_getColumn">
-      <value name="MATRIX"><block type="variables_get"><field name="VAR">{matrixVariable}</field></block></value>
+      <value name="MATRIX"><block type="variables_get"><field name="VAR">myMatrix</field></block></value>
       <value name="COL"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
     </block>
     <block type="matrixF_added_withMatrix">
-      <value name="MATRIX1"><block type="variables_get"><field name="VAR">{matrixVariable}</field></block></value>
-      <value name="MATRIX2"><block type="variables_get"><field name="VAR">{matrixVariable}</field></block></value>
+      <value name="MATRIX1"><block type="variables_get"><field name="VAR">myMatrix1</field></block></value>
+      <value name="MATRIX2"><block type="variables_get"><field name="VAR">myMatrix2</field></block></value>
     </block>
     <block type="matrixF_added_withVector">
-      <value name="MATRIX"><block type="variables_get"><field name="VAR">{matrixVariable}</field></block></value>
-      <value name="VECTOR"><block type="variables_get"><field name="VAR">{vectorVariable}</field></block></value>
+      <value name="MATRIX"><block type="variables_get"><field name="VAR">myMatrix</field></block></value>
+      <value name="VECTOR"><block type="variables_get"><field name="VAR">myVector</field></block></value>
     </block>
     <block type="matrixF_add_withMatrix">
-      <value name="MATRIX1"><block type="variables_get"><field name="VAR">{matrixVariable}</field></block></value>
-      <value name="MATRIX2"><block type="variables_get"><field name="VAR">{matrixVariable}</field></block></value>
+      <value name="MATRIX1"><block type="variables_get"><field name="VAR">myMatrix1</field></block></value>
+      <value name="MATRIX2"><block type="variables_get"><field name="VAR">myMatrix2</field></block></value>
     </block>
     <block type="matrixF_add_withVector">
-      <value name="MATRIX"><block type="variables_get"><field name="VAR">{matrixVariable}</field></block></value>
-      <value name="VECTOR"><block type="variables_get"><field name="VAR">{vectorVariable}</field></block></value>
+      <value name="MATRIX"><block type="variables_get"><field name="VAR">myMatrix</field></block></value>
+      <value name="VECTOR"><block type="variables_get"><field name="VAR">myVector</field></block></value>
     </block>
     <block type="matrixF_multiplied_withMatrix">
-      <value name="MATRIX1"><block type="variables_get"><field name="VAR">{matrixVariable}</field></block></value>
-      <value name="MATRIX2"><block type="variables_get"><field name="VAR">{matrixVariable}</field></block></value>
+      <value name="MATRIX1"><block type="variables_get"><field name="VAR">myMatrix1</field></block></value>
+      <value name="MATRIX2"><block type="variables_get"><field name="VAR">myMatrix2</field></block></value>
     </block>
     <block type="matrixF_multiplied_withScale">
-      <value name="MATRIX"><block type="variables_get"><field name="VAR">{matrixVariable}</field></block></value>
+      <value name="MATRIX"><block type="variables_get"><field name="VAR">myMatrix</field></block></value>
       <value name="SCALE"><shadow type="math_number"><field name="NUM">10</field></shadow></value>
     </block>
     <block type="matrixF_multiplied_withVector">
-      <value name="MATRIX"><block type="variables_get"><field name="VAR">{matrixVariable}</field></block></value>
-      <value name="VECTOR"><block type="variables_get"><field name="VAR">{vectorVariable}</field></block></value>
+      <value name="MATRIX"><block type="variables_get"><field name="VAR">myMatrix</field></block></value>
+      <value name="VECTOR"><block type="variables_get"><field name="VAR">myVector</field></block></value>
     </block>
     <block type="matrixF_multiply_withMatrix">
-      <value name="MATRIX1"><block type="variables_get"><field name="VAR">{matrixVariable}</field></block></value>
-      <value name="MATRIX2"><block type="variables_get"><field name="VAR">{matrixVariable}</field></block></value>
+      <value name="MATRIX1"><block type="variables_get"><field name="VAR">myMatrix1</field></block></value>
+      <value name="MATRIX2"><block type="variables_get"><field name="VAR">myMatrix2</field></block></value>
     </block>
     <block type="matrixF_multiply_withScale">
-      <value name="MATRIX"><block type="variables_get"><field name="VAR">{matrixVariable}</field></block></value>
+      <value name="MATRIX"><block type="variables_get"><field name="VAR">myMatrix</field></block></value>
       <value name="SCALE"><shadow type="math_number"><field name="NUM">10</field></shadow></value>
     </block>
     <block type="matrixF_multiply_withVector">
-      <value name="MATRIX"><block type="variables_get"><field name="VAR">{matrixVariable}</field></block></value>
-      <value name="VECTOR"><block type="variables_get"><field name="VAR">{vectorVariable}</field></block></value>
+      <value name="MATRIX"><block type="variables_get"><field name="VAR">myMatrix</field></block></value>
+      <value name="VECTOR"><block type="variables_get"><field name="VAR">myVector</field></block></value>
     </block>
     <block type="matrixF_slice">
-      <value name="MATRIX"><block type="variables_get"><field name="VAR">{matrixVariable}</field></block></value>
+      <value name="MATRIX"><block type="variables_get"><field name="VAR">myMatrix</field></block></value>
       <value name="ROW"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
       <value name="COL"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
       <value name="NUM_ROWS"><shadow type="math_number"><field name="NUM">2</field></shadow></value>
       <value name="NUM_COLS"><shadow type="math_number"><field name="NUM">2</field></shadow></value>
     </block>
     <block type="matrixF_subtracted_withMatrix">
-      <value name="MATRIX1"><block type="variables_get"><field name="VAR">{matrixVariable}</field></block></value>
-      <value name="MATRIX2"><block type="variables_get"><field name="VAR">{matrixVariable}</field></block></value>
+      <value name="MATRIX1"><block type="variables_get"><field name="VAR">myMatrix1</field></block></value>
+      <value name="MATRIX2"><block type="variables_get"><field name="VAR">myMatrix2</field></block></value>
     </block>
     <block type="matrixF_subtracted_withVector">
-      <value name="MATRIX"><block type="variables_get"><field name="VAR">{matrixVariable}</field></block></value>
-      <value name="VECTOR"><block type="variables_get"><field name="VAR">{vectorVariable}</field></block></value>
+      <value name="MATRIX"><block type="variables_get"><field name="VAR">myMatrix</field></block></value>
+      <value name="VECTOR"><block type="variables_get"><field name="VAR">myVector</field></block></value>
     </block>
     <block type="matrixF_subtract_withMatrix">
-      <value name="MATRIX1"><block type="variables_get"><field name="VAR">{matrixVariable}</field></block></value>
-      <value name="MATRIX2"><block type="variables_get"><field name="VAR">{matrixVariable}</field></block></value>
+      <value name="MATRIX1"><block type="variables_get"><field name="VAR">myMatrix1</field></block></value>
+      <value name="MATRIX2"><block type="variables_get"><field name="VAR">myMatrix2</field></block></value>
     </block>
     <block type="matrixF_subtract_withVector">
-      <value name="MATRIX"><block type="variables_get"><field name="VAR">{matrixVariable}</field></block></value>
-      <value name="VECTOR"><block type="variables_get"><field name="VAR">{vectorVariable}</field></block></value>
+      <value name="MATRIX"><block type="variables_get"><field name="VAR">myMatrix</field></block></value>
+      <value name="VECTOR"><block type="variables_get"><field name="VAR">myVector</field></block></value>
     </block>
     <block type="matrixF_inverted">
-      <value name="MATRIX"><block type="variables_get"><field name="VAR">{matrixVariable}</field></block></value>
+      <value name="MATRIX"><block type="variables_get"><field name="VAR">myMatrix</field></block></value>
     </block>
     <block type="matrixF_transform">
-      <value name="MATRIX"><block type="variables_get"><field name="VAR">{matrixVariable}</field></block></value>
-      <value name="VECTOR"><block type="variables_get"><field name="VAR">{vectorVariable}</field></block></value>
+      <value name="MATRIX"><block type="variables_get"><field name="VAR">myMatrix</field></block></value>
+      <value name="VECTOR"><block type="variables_get"><field name="VAR">myVector</field></block></value>
     </block>
     <block type="matrixF_transposed">
-      <value name="MATRIX"><block type="variables_get"><field name="VAR">{matrixVariable}</field></block></value>
+      <value name="MATRIX"><block type="variables_get"><field name="VAR">myMatrix</field></block></value>
     </block>
     <block type="matrixF_toText">
-      <value name="MATRIX"><block type="variables_get"><field name="VAR">{matrixVariable}</field></block></value>
+      <value name="MATRIX"><block type="variables_get"><field name="VAR">myMatrix</field></block></value>
     </block>
     <block type="matrixF_formatAsTransform">
-      <value name="MATRIX"><block type="variables_get"><field name="VAR">{matrixVariable}</field></block></value>
+      <value name="MATRIX"><block type="variables_get"><field name="VAR">myMatrix</field></block></value>
     </block>
     <block type="matrixF_formatAsTransform_withArgs">
-      <value name="MATRIX"><block type="variables_get"><field name="VAR">{matrixVariable}</field></block></value>
+      <value name="MATRIX"><block type="variables_get"><field name="VAR">myMatrix</field></block></value>
       <value name="AXES_REFERENCE"><shadow type="navigation_typedEnum_axesReference"></shadow></value>
       <value name="AXES_ORDER"><shadow type="navigation_typedEnum_axesOrder"></shadow></value>
       <value name="ANGLE_UNIT"><shadow type="navigation_typedEnum_angleUnit"></shadow></value>
     </block>
     <block type="matrixF_toVector">
-      <value name="MATRIX"><block type="variables_get"><field name="VAR">{matrixVariable}</field></block></value>
+      <value name="MATRIX"><block type="variables_get"><field name="VAR">myMatrix</field></block></value>
     </block>
     <block type="matrixF_getTranslation">
-      <value name="MATRIX"><block type="variables_get"><field name="VAR">{matrixVariable}</field></block></value>
+      <value name="MATRIX"><block type="variables_get"><field name="VAR">myMatrix</field></block></value>
     </block>
   </category>
   <category name="Orientation">
     <block type="orientation_getProperty_AxesReference">
       <field name="PROP">AxesReference</field>
-      <value name="ORIENTATION"><block type="variables_get"><field name="VAR">{orientationVariable}</field></block></value>
+      <value name="ORIENTATION"><block type="variables_get"><field name="VAR">myOrientation</field></block></value>
     </block>
     <block type="orientation_getProperty_AxesOrder">
       <field name="PROP">AxesOrder</field>
-      <value name="ORIENTATION"><block type="variables_get"><field name="VAR">{orientationVariable}</field></block></value>
+      <value name="ORIENTATION"><block type="variables_get"><field name="VAR">myOrientation</field></block></value>
     </block>
     <block type="orientation_getProperty_AngleUnit">
       <field name="PROP">AngleUnit</field>
-      <value name="ORIENTATION"><block type="variables_get"><field name="VAR">{orientationVariable}</field></block></value>
+      <value name="ORIENTATION"><block type="variables_get"><field name="VAR">myOrientation</field></block></value>
     </block>
     <block type="orientation_getProperty_Number">
       <field name="PROP">FirstAngle</field>
-      <value name="ORIENTATION"><block type="variables_get"><field name="VAR">{orientationVariable}</field></block></value>
+      <value name="ORIENTATION"><block type="variables_get"><field name="VAR">myOrientation</field></block></value>
     </block>
     <block type="orientation_getProperty_Number">
       <field name="PROP">SecondAngle</field>
-      <value name="ORIENTATION"><block type="variables_get"><field name="VAR">{orientationVariable}</field></block></value>
+      <value name="ORIENTATION"><block type="variables_get"><field name="VAR">myOrientation</field></block></value>
     </block>
     <block type="orientation_getProperty_Number">
       <field name="PROP">ThirdAngle</field>
-      <value name="ORIENTATION"><block type="variables_get"><field name="VAR">{orientationVariable}</field></block></value>
+      <value name="ORIENTATION"><block type="variables_get"><field name="VAR">myOrientation</field></block></value>
     </block>
     <block type="orientation_getProperty_Number">
       <field name="PROP">AcquisitionTime</field>
-      <value name="ORIENTATION"><block type="variables_get"><field name="VAR">{orientationVariable}</field></block></value>
+      <value name="ORIENTATION"><block type="variables_get"><field name="VAR">myOrientation</field></block></value>
     </block>
     <block type="orientation_toAngleUnit">
-      <value name="ORIENTATION"><block type="variables_get"><field name="VAR">{orientationVariable}</field></block></value>
+      <value name="ORIENTATION"><block type="variables_get"><field name="VAR">myOrientation</field></block></value>
       <value name="ANGLE_UNIT"><shadow type="navigation_typedEnum_angleUnit"></shadow></value>
     </block>
     <block type="orientation_toAxesReference">
-      <value name="ORIENTATION"><block type="variables_get"><field name="VAR">{orientationVariable}</field></block></value>
+      <value name="ORIENTATION"><block type="variables_get"><field name="VAR">myOrientation</field></block></value>
       <value name="AXES_REFERENCE"><shadow type="navigation_typedEnum_axesReference"></shadow></value>
     </block>
     <block type="orientation_toAxesOrder">
-      <value name="ORIENTATION"><block type="variables_get"><field name="VAR">{orientationVariable}</field></block></value>
+      <value name="ORIENTATION"><block type="variables_get"><field name="VAR">myOrientation</field></block></value>
       <value name="AXES_ORDER"><shadow type="navigation_typedEnum_axesOrder"></shadow></value>
     </block>
     <block type="orientation_toText">
-      <value name="ORIENTATION"><block type="variables_get"><field name="VAR">{orientationVariable}</field></block></value>
+      <value name="ORIENTATION"><block type="variables_get"><field name="VAR">myOrientation</field></block></value>
     </block>
     <block type="orientation_getRotationMatrix">
-      <value name="ORIENTATION"><block type="variables_get"><field name="VAR">{orientationVariable}</field></block></value>
+      <value name="ORIENTATION"><block type="variables_get"><field name="VAR">myOrientation</field></block></value>
     </block>
     <block type="orientation_getRotationMatrix_withArgs">
       <value name="AXES_REFERENCE"><shadow type="navigation_typedEnum_axesReference"></shadow></value>
@@ -562,85 +602,85 @@
       <value name="F"><shadow type="math_number"><field name="NUM">7</field></shadow></value>
     </block>
     <block type="pidfCoefficients_create_withPIDFCoefficients">
-      <value name="PIDF_COEFFICIENTS"><block type="variables_get"><field name="VAR">{pidfCoefficientsVariable}</field></block></value>
+      <value name="PIDF_COEFFICIENTS"><block type="variables_get"><field name="VAR">myPidfCoefficients</field></block></value>
     </block>
     <block type="pidfCoefficients_setProperty_Number">
       <field name="PROP">P</field>
-      <value name="PIDF_COEFFICIENTS"><block type="variables_get"><field name="VAR">{pidfCoefficientsVariable}</field></block></value>
+      <value name="PIDF_COEFFICIENTS"><block type="variables_get"><field name="VAR">myPidfCoefficients</field></block></value>
       <value name="VALUE"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
     </block>
     <block type="pidfCoefficients_getProperty_Number">
       <field name="PROP">P</field>
-      <value name="PIDF_COEFFICIENTS"><block type="variables_get"><field name="VAR">{pidfCoefficientsVariable}</field></block></value>
+      <value name="PIDF_COEFFICIENTS"><block type="variables_get"><field name="VAR">myPidfCoefficients</field></block></value>
     </block>
     <block type="pidfCoefficients_setProperty_Number">
       <field name="PROP">I</field>
-      <value name="PIDF_COEFFICIENTS"><block type="variables_get"><field name="VAR">{pidfCoefficientsVariable}</field></block></value>
+      <value name="PIDF_COEFFICIENTS"><block type="variables_get"><field name="VAR">myPidfCoefficients</field></block></value>
       <value name="VALUE"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
     </block>
     <block type="pidfCoefficients_getProperty_Number">
       <field name="PROP">I</field>
-      <value name="PIDF_COEFFICIENTS"><block type="variables_get"><field name="VAR">{pidfCoefficientsVariable}</field></block></value>
+      <value name="PIDF_COEFFICIENTS"><block type="variables_get"><field name="VAR">myPidfCoefficients</field></block></value>
     </block>
     <block type="pidfCoefficients_setProperty_Number">
       <field name="PROP">D</field>
-      <value name="PIDF_COEFFICIENTS"><block type="variables_get"><field name="VAR">{pidfCoefficientsVariable}</field></block></value>
+      <value name="PIDF_COEFFICIENTS"><block type="variables_get"><field name="VAR">myPidfCoefficients</field></block></value>
       <value name="VALUE"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
     </block>
     <block type="pidfCoefficients_getProperty_Number">
       <field name="PROP">D</field>
-      <value name="PIDF_COEFFICIENTS"><block type="variables_get"><field name="VAR">{pidfCoefficientsVariable}</field></block></value>
+      <value name="PIDF_COEFFICIENTS"><block type="variables_get"><field name="VAR">myPidfCoefficients</field></block></value>
     </block>
     <block type="pidfCoefficients_setProperty_Number">
       <field name="PROP">F</field>
-      <value name="PIDF_COEFFICIENTS"><block type="variables_get"><field name="VAR">{pidfCoefficientsVariable}</field></block></value>
+      <value name="PIDF_COEFFICIENTS"><block type="variables_get"><field name="VAR">myPidfCoefficients</field></block></value>
       <value name="VALUE"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
     </block>
     <block type="pidfCoefficients_getProperty_Number">
       <field name="PROP">F</field>
-      <value name="PIDF_COEFFICIENTS"><block type="variables_get"><field name="VAR">{pidfCoefficientsVariable}</field></block></value>
+      <value name="PIDF_COEFFICIENTS"><block type="variables_get"><field name="VAR">myPidfCoefficients</field></block></value>
     </block>
     <block type="pidfCoefficients_setProperty_MotorControlAlgorithm">
       <field name="PROP">Algorithm</field>
-      <value name="PIDF_COEFFICIENTS"><block type="variables_get"><field name="VAR">{pidfCoefficientsVariable}</field></block></value>
+      <value name="PIDF_COEFFICIENTS"><block type="variables_get"><field name="VAR">myPidfCoefficients</field></block></value>
       <value name="VALUE"><shadow type="pidfCoefficients_typedEnum_motorControlAlgorithm">
         <field name="MOTOR_CONTROL_ALGORITHM">PIDF</field></shadow></value>
     </block>
     <block type="pidfCoefficients_getProperty_MotorControlAlgorithm">
       <field name="PROP">Algorithm</field>
-      <value name="PIDF_COEFFICIENTS"><block type="variables_get"><field name="VAR">{pidfCoefficientsVariable}</field></block></value>
+      <value name="PIDF_COEFFICIENTS"><block type="variables_get"><field name="VAR">myPidfCoefficients</field></block></value>
     </block>
     <block type="pidfCoefficients_toText">
-      <value name="PIDF_COEFFICIENTS"><block type="variables_get"><field name="VAR">{pidfCoefficientsVariable}</field></block></value>
+      <value name="PIDF_COEFFICIENTS"><block type="variables_get"><field name="VAR">myPidfCoefficients</field></block></value>
     </block>
   </category>
   <category name="Position">
     <block type="position_getProperty_DistanceUnit">
       <field name="PROP">DistanceUnit</field>
-      <value name="POSITION"><block type="variables_get"><field name="VAR">{positionVariable}</field></block></value>
+      <value name="POSITION"><block type="variables_get"><field name="VAR">myPosition</field></block></value>
     </block>
     <block type="position_getProperty_Number">
       <field name="PROP">X</field>
-      <value name="POSITION"><block type="variables_get"><field name="VAR">{positionVariable}</field></block></value>
+      <value name="POSITION"><block type="variables_get"><field name="VAR">myPosition</field></block></value>
     </block>
     <block type="position_getProperty_Number">
       <field name="PROP">Y</field>
-      <value name="POSITION"><block type="variables_get"><field name="VAR">{positionVariable}</field></block></value>
+      <value name="POSITION"><block type="variables_get"><field name="VAR">myPosition</field></block></value>
     </block>
     <block type="position_getProperty_Number">
       <field name="PROP">Z</field>
-      <value name="POSITION"><block type="variables_get"><field name="VAR">{positionVariable}</field></block></value>
+      <value name="POSITION"><block type="variables_get"><field name="VAR">myPosition</field></block></value>
     </block>
     <block type="position_getProperty_Number">
       <field name="PROP">AcquisitionTime</field>
-      <value name="POSITION"><block type="variables_get"><field name="VAR">{positionVariable}</field></block></value>
+      <value name="POSITION"><block type="variables_get"><field name="VAR">myPosition</field></block></value>
     </block>
     <block type="position_toDistanceUnit">
-      <value name="POSITION"><block type="variables_get"><field name="VAR">{positionVariable}</field></block></value>
+      <value name="POSITION"><block type="variables_get"><field name="VAR">myPosition</field></block></value>
       <value name="DISTANCE_UNIT"><shadow type="navigation_typedEnum_distanceUnit"></shadow></value>
     </block>
     <block type="position_toText">
-      <value name="POSITION"><block type="variables_get"><field name="VAR">{positionVariable}</field></block></value>
+      <value name="POSITION"><block type="variables_get"><field name="VAR">myPosition</field></block></value>
     </block>
     <block type="position_create"></block>
     <block type="position_create_withArgs">
@@ -654,32 +694,32 @@
   <category name="Quaternion">
     <block type="quaternion_getProperty_Number">
       <field name="PROP">W</field>
-      <value name="QUATERNION"><block type="variables_get"><field name="VAR">{quaternionVariable}</field></block></value>
+      <value name="QUATERNION"><block type="variables_get"><field name="VAR">myQuaternion</field></block></value>
     </block>
     <block type="quaternion_getProperty_Number">
       <field name="PROP">X</field>
-      <value name="QUATERNION"><block type="variables_get"><field name="VAR">{quaternionVariable}</field></block></value>
+      <value name="QUATERNION"><block type="variables_get"><field name="VAR">myQuaternion</field></block></value>
     </block>
     <block type="quaternion_getProperty_Number">
       <field name="PROP">Y</field>
-      <value name="QUATERNION"><block type="variables_get"><field name="VAR">{quaternionVariable}</field></block></value>
+      <value name="QUATERNION"><block type="variables_get"><field name="VAR">myQuaternion</field></block></value>
     </block>
     <block type="quaternion_getProperty_Number">
       <field name="PROP">Z</field>
-      <value name="QUATERNION"><block type="variables_get"><field name="VAR">{quaternionVariable}</field></block></value>
+      <value name="QUATERNION"><block type="variables_get"><field name="VAR">myQuaternion</field></block></value>
     </block>
     <block type="quaternion_getProperty_Number">
       <field name="PROP">AcquisitionTime</field>
-      <value name="QUATERNION"><block type="variables_get"><field name="VAR">{quaternionVariable}</field></block></value>
+      <value name="QUATERNION"><block type="variables_get"><field name="VAR">myQuaternion</field></block></value>
     </block>
     <block type="quaternion_normalized">
-      <value name="QUATERNION"><block type="variables_get"><field name="VAR">{quaternionVariable}</field></block></value>
+      <value name="QUATERNION"><block type="variables_get"><field name="VAR">myQuaternion</field></block></value>
     </block>
     <block type="quaternion_conjugate">
-      <value name="QUATERNION"><block type="variables_get"><field name="VAR">{quaternionVariable}</field></block></value>
+      <value name="QUATERNION"><block type="variables_get"><field name="VAR">myQuaternion</field></block></value>
     </block>
     <block type="quaternion_toText">
-      <value name="QUATERNION"><block type="variables_get"><field name="VAR">{quaternionVariable}</field></block></value>
+      <value name="QUATERNION"><block type="variables_get"><field name="VAR">myQuaternion</field></block></value>
     </block>
     <block type="quaternion_create"></block>
     <block type="quaternion_create_withArgs">
@@ -725,6 +765,9 @@
         <value name="PRECISION"><shadow type="math_number"><field name="NUM">2</field></shadow></value>
       </block></value>
     </block>
+    <block type="telemetry_addLine">
+      <value name="TEXT"><shadow type="text"><field name="TEXT">text</field></shadow></value>
+    </block>
     <block type="telemetry_update">
     </block>
     <block type="telemetry_speak">
@@ -742,15 +785,15 @@
   <category name="Temperature">
     <block type="temperature_getProperty_TempUnit">
       <field name="PROP">TempUnit</field>
-      <value name="TEMPERATURE"><block type="variables_get"><field name="VAR">{temperatureVariable}</field></block></value>
+      <value name="TEMPERATURE"><block type="variables_get"><field name="VAR">myTemperature</field></block></value>
     </block>
     <block type="temperature_getProperty_Number">
       <field name="PROP">Temperature</field>
-      <value name="TEMPERATURE"><block type="variables_get"><field name="VAR">{temperatureVariable}</field></block></value>
+      <value name="TEMPERATURE"><block type="variables_get"><field name="VAR">myTemperature</field></block></value>
     </block>
     <block type="temperature_getProperty_Number">
       <field name="PROP">AcquisitionTime</field>
-      <value name="TEMPERATURE"><block type="variables_get"><field name="VAR">{temperatureVariable}</field></block></value>
+      <value name="TEMPERATURE"><block type="variables_get"><field name="VAR">myTemperature</field></block></value>
     </block>
     <block type="temperature_create"></block>
     <block type="temperature_create_withArgs">
@@ -759,115 +802,75 @@
       <value name="ACQUISITION_TIME"><block type="system_nanoTime"></block></value>
     </block>
     <block type="temperature_toTempUnit">
-      <value name="TEMPERATURE"><block type="variables_get"><field name="VAR">{temperatureVariable}</field></block></value>
+      <value name="TEMPERATURE"><block type="variables_get"><field name="VAR">myTemperature</field></block></value>
       <value name="TEMP_UNIT"><shadow type="navigation_typedEnum_tempUnit"></shadow></value>
     </block>
   </category>
-  <placeholder_tfod_tensorFlowObjectDetection/>
   <category name="Time">
     <block type="system_nanoTime"></block>
-    <category name="ElapsedTime">
-      <block type="elapsedTime2_create"></block>
-      <block type="elapsedTime2_create_withStartTime">
-        <value name="START_TIME"><block type="system_nanoTime"></block></value>
-      </block>
-      <block type="elapsedTime2_create_withResolution">
-        <value name="RESOLUTION"><shadow type="elapsedTime2_typedEnum_resolution"></shadow></value>
-      </block>
-      <block type="elapsedTime2_getProperty_Number">
-        <field name="PROP">StartTime</field>
-        <value name="ELAPSED_TIME"><block type="variables_get"><field name="VAR">{elapsedTimeVariable}</field></block></value>
-      </block>
-      <block type="elapsedTime2_getProperty_Number">
-        <field name="PROP">Time</field>
-        <value name="ELAPSED_TIME"><block type="variables_get"><field name="VAR">{elapsedTimeVariable}</field></block></value>
-      </block>
-      <block type="elapsedTime2_getProperty_Number">
-        <field name="PROP">Seconds</field>
-        <value name="ELAPSED_TIME"><block type="variables_get"><field name="VAR">{elapsedTimeVariable}</field></block></value>
-      </block>
-      <block type="elapsedTime2_getProperty_Number">
-        <field name="PROP">Milliseconds</field>
-        <value name="ELAPSED_TIME"><block type="variables_get"><field name="VAR">{elapsedTimeVariable}</field></block></value>
-      </block>
-      <block type="elapsedTime2_getProperty_Resolution">
-        <field name="PROP">Resolution</field>
-        <value name="ELAPSED_TIME"><block type="variables_get"><field name="VAR">{elapsedTimeVariable}</field></block></value>
-      </block>
-      <block type="elapsedTime2_reset">
-        <value name="ELAPSED_TIME"><block type="variables_get"><field name="VAR">{elapsedTimeVariable}</field></block></value>
-      </block>
-      <block type="elapsedTime2_log">
-        <value name="ELAPSED_TIME"><block type="variables_get"><field name="VAR">{elapsedTimeVariable}</field></block></value>
-        <value name="LABEL"><shadow type="text"><field name="TEXT">label</field></shadow></value>
-      </block>
-      <block type="elapsedTime2_toText">
-        <value name="ELAPSED_TIME"><block type="variables_get"><field name="VAR">{elapsedTimeVariable}</field></block></value>
-      </block>
-    </category>
   </category>
   <category name="Vector">
     <block type="vectorF_getProperty_Number">
       <field name="PROP">Length</field>
-      <value name="VECTOR"><block type="variables_get"><field name="VAR">{vectorVariable}</field></block></value>
+      <value name="VECTOR"><block type="variables_get"><field name="VAR">myVector</field></block></value>
     </block>
     <block type="vectorF_getProperty_Number">
       <field name="PROP">Magnitude</field>
-      <value name="VECTOR"><block type="variables_get"><field name="VAR">{vectorVariable}</field></block></value>
+      <value name="VECTOR"><block type="variables_get"><field name="VAR">myVector</field></block></value>
     </block>
     <block type="vectorF_get">
-      <value name="VECTOR"><block type="variables_get"><field name="VAR">{vectorVariable}</field></block></value>
+      <value name="VECTOR"><block type="variables_get"><field name="VAR">myVector</field></block></value>
       <value name="INDEX"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
     </block>
     <block type="vectorF_put">
-      <value name="VECTOR"><block type="variables_get"><field name="VAR">{vectorVariable}</field></block></value>
+      <value name="VECTOR"><block type="variables_get"><field name="VAR">myVector</field></block></value>
       <value name="INDEX"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
       <value name="VALUE"><shadow type="math_number"><field name="NUM">123</field></shadow></value>
     </block>
     <block type="vectorF_toText">
-      <value name="VECTOR"><block type="variables_get"><field name="VAR">{vectorVariable}</field></block></value>
+      <value name="VECTOR"><block type="variables_get"><field name="VAR">myVector</field></block></value>
     </block>
     <block type="vectorF_normalized3D">
-      <value name="VECTOR"><block type="variables_get"><field name="VAR">{vectorVariable}</field></block></value>
+      <value name="VECTOR"><block type="variables_get"><field name="VAR">myVector</field></block></value>
     </block>
     <block type="vectorF_dotProduct">
-      <value name="VECTOR1"><block type="variables_get"><field name="VAR">{vectorVariable}</field></block></value>
-      <value name="VECTOR2"><block type="variables_get"><field name="VAR">{vectorVariable}</field></block></value>
+      <value name="VECTOR1"><block type="variables_get"><field name="VAR">myVector</field></block></value>
+      <value name="VECTOR2"><block type="variables_get"><field name="VAR">myVector</field></block></value>
     </block>
     <block type="vectorF_multiplied">
-      <value name="VECTOR"><block type="variables_get"><field name="VAR">{vectorVariable}</field></block></value>
-      <value name="MATRIX"><block type="variables_get"><field name="VAR">{matrixVariable}</field></block></value>
+      <value name="VECTOR"><block type="variables_get"><field name="VAR">myVector</field></block></value>
+      <value name="MATRIX"><block type="variables_get"><field name="VAR">myMatrix</field></block></value>
     </block>
     <block type="vectorF_added_withMatrix">
-      <value name="VECTOR"><block type="variables_get"><field name="VAR">{vectorVariable}</field></block></value>
-      <value name="MATRIX"><block type="variables_get"><field name="VAR">{matrixVariable}</field></block></value>
+      <value name="VECTOR"><block type="variables_get"><field name="VAR">myVector</field></block></value>
+      <value name="MATRIX"><block type="variables_get"><field name="VAR">myMatrix</field></block></value>
     </block>
     <block type="vectorF_added_withVector">
-      <value name="VECTOR1"><block type="variables_get"><field name="VAR">{vectorVariable}</field></block></value>
-      <value name="VECTOR2"><block type="variables_get"><field name="VAR">{vectorVariable}</field></block></value>
+      <value name="VECTOR1"><block type="variables_get"><field name="VAR">myVector</field></block></value>
+      <value name="VECTOR2"><block type="variables_get"><field name="VAR">myVector</field></block></value>
     </block>
     <block type="vectorF_add_withVector">
-      <value name="VECTOR1"><block type="variables_get"><field name="VAR">{vectorVariable}</field></block></value>
-      <value name="VECTOR2"><block type="variables_get"><field name="VAR">{vectorVariable}</field></block></value>
+      <value name="VECTOR1"><block type="variables_get"><field name="VAR">myVector</field></block></value>
+      <value name="VECTOR2"><block type="variables_get"><field name="VAR">myVector</field></block></value>
     </block>
     <block type="vectorF_subtracted_withMatrix">
-      <value name="VECTOR"><block type="variables_get"><field name="VAR">{vectorVariable}</field></block></value>
-      <value name="MATRIX"><block type="variables_get"><field name="VAR">{matrixVariable}</field></block></value>
+      <value name="VECTOR"><block type="variables_get"><field name="VAR">myVector</field></block></value>
+      <value name="MATRIX"><block type="variables_get"><field name="VAR">myMatrix</field></block></value>
     </block>
     <block type="vectorF_subtracted_withVector">
-      <value name="VECTOR1"><block type="variables_get"><field name="VAR">{vectorVariable}</field></block></value>
-      <value name="VECTOR2"><block type="variables_get"><field name="VAR">{vectorVariable}</field></block></value>
+      <value name="VECTOR1"><block type="variables_get"><field name="VAR">myVector</field></block></value>
+      <value name="VECTOR2"><block type="variables_get"><field name="VAR">myVector</field></block></value>
     </block>
     <block type="vectorF_subtract_withVector">
-      <value name="VECTOR1"><block type="variables_get"><field name="VAR">{vectorVariable}</field></block></value>
-      <value name="VECTOR2"><block type="variables_get"><field name="VAR">{vectorVariable}</field></block></value>
+      <value name="VECTOR1"><block type="variables_get"><field name="VAR">myVector</field></block></value>
+      <value name="VECTOR2"><block type="variables_get"><field name="VAR">myVector</field></block></value>
     </block>
     <block type="vectorF_multiplied_withScale">
-      <value name="VECTOR"><block type="variables_get"><field name="VAR">{vectorVariable}</field></block></value>
+      <value name="VECTOR"><block type="variables_get"><field name="VAR">myVector</field></block></value>
       <value name="SCALE"><shadow type="math_number"><field name="NUM">10</field></shadow></value>
     </block>
     <block type="vectorF_multiply_withScale">
-      <value name="VECTOR"><block type="variables_get"><field name="VAR">{vectorVariable}</field></block></value>
+      <value name="VECTOR"><block type="variables_get"><field name="VAR">myVector</field></block></value>
       <value name="SCALE"><shadow type="math_number"><field name="NUM">10</field></shadow></value>
     </block>
     <block type="vectorF_create">
@@ -877,30 +880,30 @@
   <category name="Velocity">
     <block type="velocity_getProperty_DistanceUnit">
       <field name="PROP">DistanceUnit</field>
-      <value name="VELOCITY"><block type="variables_get"><field name="VAR">{velocityVariable}</field></block></value>
+      <value name="VELOCITY"><block type="variables_get"><field name="VAR">myVelocity</field></block></value>
     </block>
     <block type="velocity_getProperty_Number">
       <field name="PROP">XVeloc</field>
-      <value name="VELOCITY"><block type="variables_get"><field name="VAR">{velocityVariable}</field></block></value>
+      <value name="VELOCITY"><block type="variables_get"><field name="VAR">myVelocity</field></block></value>
     </block>
     <block type="velocity_getProperty_Number">
       <field name="PROP">YVeloc</field>
-      <value name="VELOCITY"><block type="variables_get"><field name="VAR">{velocityVariable}</field></block></value>
+      <value name="VELOCITY"><block type="variables_get"><field name="VAR">myVelocity</field></block></value>
     </block>
     <block type="velocity_getProperty_Number">
       <field name="PROP">ZVeloc</field>
-      <value name="VELOCITY"><block type="variables_get"><field name="VAR">{velocityVariable}</field></block></value>
+      <value name="VELOCITY"><block type="variables_get"><field name="VAR">myVelocity</field></block></value>
     </block>
     <block type="velocity_getProperty_Number">
       <field name="PROP">AcquisitionTime</field>
-      <value name="VELOCITY"><block type="variables_get"><field name="VAR">{velocityVariable}</field></block></value>
+      <value name="VELOCITY"><block type="variables_get"><field name="VAR">myVelocity</field></block></value>
     </block>
     <block type="velocity_toDistanceUnit">
-      <value name="VELOCITY"><block type="variables_get"><field name="VAR">{velocityVariable}</field></block></value>
+      <value name="VELOCITY"><block type="variables_get"><field name="VAR">myVelocity</field></block></value>
       <value name="DISTANCE_UNIT"><shadow type="navigation_typedEnum_distanceUnit"></shadow></value>
     </block>
     <block type="velocity_toText">
-      <value name="VELOCITY"><block type="variables_get"><field name="VAR">{velocityVariable}</field></block></value>
+      <value name="VELOCITY"><block type="variables_get"><field name="VAR">myVelocity</field></block></value>
     </block>
     <block type="velocity_create"></block>
     <block type="velocity_create_withArgs">
@@ -911,29 +914,28 @@
       <value name="ACQUISITION_TIME"><block type="system_nanoTime"></block></value>
     </block>
   </category>
-  <placeholder_vuforia_vuforia/>
   <category name="YawPitchRollAngles">
     <block type="yawPitchRollAngles_getPropertyWithAngleUnit_Number">
       <field name="PROP">Yaw</field>
-      <value name="YAW_PITCH_ROLL_ANGLES"><block type="variables_get"><field name="VAR">{yawPitchRollAnglesVariable}</field></block></value>
+      <value name="YAW_PITCH_ROLL_ANGLES"><block type="variables_get"><field name="VAR">myYawPitchRollAngles</field></block></value>
       <value name="ANGLE_UNIT"><shadow type="navigation_typedEnum_angleUnit"></shadow></value>
     </block>
     <block type="yawPitchRollAngles_getPropertyWithAngleUnit_Number">
       <field name="PROP">Pitch</field>
-      <value name="YAW_PITCH_ROLL_ANGLES"><block type="variables_get"><field name="VAR">{yawPitchRollAnglesVariable}</field></block></value>
+      <value name="YAW_PITCH_ROLL_ANGLES"><block type="variables_get"><field name="VAR">myYawPitchRollAngles</field></block></value>
       <value name="ANGLE_UNIT"><shadow type="navigation_typedEnum_angleUnit"></shadow></value>
     </block>
     <block type="yawPitchRollAngles_getPropertyWithAngleUnit_Number">
       <field name="PROP">Roll</field>
-      <value name="YAW_PITCH_ROLL_ANGLES"><block type="variables_get"><field name="VAR">{yawPitchRollAnglesVariable}</field></block></value>
+      <value name="YAW_PITCH_ROLL_ANGLES"><block type="variables_get"><field name="VAR">myYawPitchRollAngles</field></block></value>
       <value name="ANGLE_UNIT"><shadow type="navigation_typedEnum_angleUnit"></shadow></value>
     </block>
     <block type="yawPitchRollAngles_getProperty_Number">
       <field name="PROP">AcquisitionTime</field>
-      <value name="YAW_PITCH_ROLL_ANGLES"><block type="variables_get"><field name="VAR">{yawPitchRollAnglesVariable}</field></block></value>
+      <value name="YAW_PITCH_ROLL_ANGLES"><block type="variables_get"><field name="VAR">myYawPitchRollAngles</field></block></value>
     </block>
     <block type="yawPitchRollAngles_toText">
-      <value name="YAW_PITCH_ROLL_ANGLES"><block type="variables_get"><field name="VAR">{yawPitchRollAnglesVariable}</field></block></value>
+      <value name="YAW_PITCH_ROLL_ANGLES"><block type="variables_get"><field name="VAR">myYawPitchRollAngles</field></block></value>
     </block>
     <block type="yawPitchRollAngles_create_withArgs">
       <value name="ANGLE_UNIT"><shadow type="navigation_typedEnum_angleUnit"></shadow></value>

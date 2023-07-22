@@ -84,17 +84,13 @@ public class FetchFileTree implements WebHandler {
         return projectTree();
     }
 
-    private static class FileTree {
-        final boolean allowExternalLibraries;
+    static class FileTree {
         final List<String> src = new ArrayList<>();
 
         private FileTree(List<String> src, List<String> extLibList) {
-            this.allowExternalLibraries = OnBotJavaManager.ALLOW_EXTERNAL_LIBRARIES;
             this.src.addAll(src);
-            if (OnBotJavaManager.ALLOW_EXTERNAL_LIBRARIES) {
-                for (String lib : extLibList) {
-                    this.src.add(OnBotJavaManager.EXTERNAL_LIBRARIES + '/' + lib);
-                }
+            for (String lib : extLibList) {
+                this.src.add(OnBotJavaManager.EXTERNAL_LIBRARIES + '/' + lib);
             }
         }
     }

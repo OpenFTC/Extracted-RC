@@ -16,7 +16,7 @@
 
 package com.google.blocks.ftcrobotcontroller.runtime;
 
-enum BlockType {
+public enum BlockType {
   SPECIAL,
   EVENT,
   CREATE,

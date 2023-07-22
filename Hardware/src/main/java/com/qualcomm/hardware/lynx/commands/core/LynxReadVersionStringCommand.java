@@ -81,6 +81,12 @@ public class LynxReadVersionStringCommand extends LynxDekaInterfaceCommand<LynxR
         ByteBuffer buffer = ByteBuffer.wrap(rgb).order(LynxDatagram.LYNX_ENDIAN);
         }
 
+    @Override
+    public boolean isDangerous()
+        {
+        return false;
+        }
+
     @Override protected boolean usePretendResponseIfRealModuleDoesntSupport()
         {
         return true;

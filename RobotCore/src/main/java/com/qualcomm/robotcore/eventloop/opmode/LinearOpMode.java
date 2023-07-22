@@ -166,6 +166,12 @@ public abstract class LinearOpMode extends OpMode {
   @Override
   final void internalRunOpMode() throws InterruptedException {
     // Do NOT call super.internalRunOpMode().
+
+    // We need to reset these fields because BlocksOpMode (which is a subclass of LinearOpMode)
+    // instances are re-used.
+    userMethodReturned = false;
+    userMonitoredForStart = false;
+
     runOpMode();
     userMethodReturned = true;
     RobotLog.d("User runOpModeMethod exited");

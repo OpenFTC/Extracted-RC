@@ -95,4 +95,10 @@ public class LynxI2cWriteSingleByteCommand extends LynxDekaInterfaceCommand<Lynx
         this.i2cAddr7Bit = buffer.get();
         this.bValue = buffer.get();
         }
+
+    @Override
+    public boolean isDangerous()
+        {
+        return false;
+        }
     }

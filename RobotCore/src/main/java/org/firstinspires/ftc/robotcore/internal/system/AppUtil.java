@@ -748,6 +748,16 @@ public class AppUtil
             return getDefContext().getString(R.string.appNameUnknown);
         }
 
+    public static String getSdkVersionString(int majorSdkVersion, int minorSdkVersion, int pointSdkVersion)
+        {
+        return String.format(Locale.US, "%d.%d.%d", majorSdkVersion, minorSdkVersion, pointSdkVersion);
+        }
+
+    public static String getSdkVersionString()
+        {
+        return getSdkVersionString(BuildConfig.SDK_MAJOR_VERSION, BuildConfig.SDK_MINOR_VERSION, BuildConfig.SDK_POINT_VERSION);
+        }
+
     //----------------------------------------------------------------------------------------------
     // General UI interaction
     //----------------------------------------------------------------------------------------------
@@ -1614,6 +1624,17 @@ public class AppUtil
             iso8601DateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.US);
             }
         return iso8601DateFormat;
+        }
+
+    /**
+     * Returns a DateTimeFormatter that can be used to parse a string that looks like an ISO8601, but may not have a timezone
+     *
+     * <p>This is useful for displaying times to humans.</p>
+     * @return
+     */
+    public DateTimeFormatter getLocalIso8601DateTimeFormatter()
+        {
+            return DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.US);
         }
 
     public YearMonth getYearMonthFromIso8601(String timeString)

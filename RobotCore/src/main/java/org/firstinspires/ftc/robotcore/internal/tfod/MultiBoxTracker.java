@@ -17,24 +17,18 @@ package org.firstinspires.ftc.robotcore.internal.tfod;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Matrix;
-import android.graphics.Paint;
-import android.graphics.Paint.Cap;
-import android.graphics.Paint.Join;
-import android.graphics.Paint.Style;
 import android.graphics.RectF;
-import android.text.TextUtils;
 import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.google.ftcresearch.tfod.tracking.ObjectTracker;
 import com.google.ftcresearch.tfod.tracking.ObjectTracker.TrackedObject;
-import com.google.ftcresearch.tfod.util.ImageUtils;
 import com.google.ftcresearch.tfod.util.Size;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import org.firstinspires.ftc.robotcore.external.tfod.TfodParameters;
 import org.firstinspires.ftc.robotcore.internal.tfod.LabeledObject.CoordinateSystem;
 
 /**
@@ -61,15 +55,6 @@ public class MultiBoxTracker {
     Color.parseColor("#AA33AA"),
     Color.parseColor("#0D0068")
   };
-  private static final Paint boxPaint = new Paint();
-  static {
-    boxPaint.setColor(Color.RED);
-    boxPaint.setStyle(Style.STROKE);
-    boxPaint.setStrokeWidth(12.0f);
-    boxPaint.setStrokeCap(Cap.ROUND);
-    boxPaint.setStrokeJoin(Join.ROUND);
-    boxPaint.setStrokeMiter(100);
-  }
 
   private final TfodParameters params;
   private final Size trackerSize;
@@ -95,7 +80,7 @@ public class MultiBoxTracker {
     }
   }
 
-  private synchronized List<LabeledObject> getLabeledObjects() {
+  synchronized List<LabeledObject> getLabeledObjects() {
     List<LabeledObject> labeledObjects = new ArrayList<>();
     for (TrackedRecognition trackedRecognition : trackedRecognitions) {
       RectF location = trackedRecognition.getCurrentPosition();
@@ -257,22 +242,6 @@ public class MultiBoxTracker {
     trackedRecognitions.add(trackedRecognition);
   }
 
-  public synchronized void draw(Canvas canvas, BorderedText borderedText, Matrix matrix) {
-    for (TrackedRecognition trackedRecognition : trackedRecognitions) {
-      RectF trackedPos = trackedRecognition.getCurrentPosition();
-      matrix.mapRect(trackedPos);
-      boxPaint.setColor(trackedRecognition.color);
-
-      float cornerSize = Math.min(trackedPos.width(), trackedPos.height()) / 8.0f;
-      canvas.drawRoundRect(trackedPos, cornerSize, cornerSize, boxPaint);
-
-      String labelString = !TextUtils.isEmpty(trackedRecognition.labeledObject.label)
-          ? String.format("%s %.2f", trackedRecognition.labeledObject.label, trackedRecognition.labeledObject.confidence)
-          : String.format("%.2f", trackedRecognition.labeledObject.confidence);
-      borderedText.drawText(canvas, trackedPos.left + cornerSize, trackedPos.bottom, labelString);
-    }
-  }
-
   private static RectF getTrackedPosition(TrackedObject trackedObject) {
     return new RectF(trackedObject.getTrackedPositionInPreviewFrame());
   }
@@ -284,7 +253,7 @@ public class MultiBoxTracker {
 
     private TrackedRecognition(@NonNull LabeledObject labeledObject, int color,
         @Nullable TrackedObject trackedObject) {
-      this.labeledObject = labeledObject;
+      this.labeledObject = new LabeledObject(labeledObject, color);
       this.color = color;
       this.trackedObject = trackedObject;
     }

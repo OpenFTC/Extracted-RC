@@ -21823,7 +21823,7 @@
       this._interp = new import_ParserATNSimulator.ParserATNSimulator(_Java8Parser._ATN, this);
     }
     literal() {
-      let _localctx = new LiteralContext(this._ctx, this.state);
+      const _localctx = new LiteralContext(this._ctx, this.state);
       this.enterRule(_localctx, 0, _Java8Parser.RULE_literal);
       let _la;
       try {
@@ -21855,7 +21855,7 @@
       return _localctx;
     }
     primitiveType() {
-      let _localctx = new PrimitiveTypeContext(this._ctx, this.state);
+      const _localctx = new PrimitiveTypeContext(this._ctx, this.state);
       this.enterRule(_localctx, 2, _Java8Parser.RULE_primitiveType);
       let _la;
       try {
@@ -21919,7 +21919,7 @@
       return _localctx;
     }
     numericType() {
-      let _localctx = new NumericTypeContext(this._ctx, this.state);
+      const _localctx = new NumericTypeContext(this._ctx, this.state);
       this.enterRule(_localctx, 4, _Java8Parser.RULE_numericType);
       try {
         this.state = 492;
@@ -21961,7 +21961,7 @@
       return _localctx;
     }
     integralType() {
-      let _localctx = new IntegralTypeContext(this._ctx, this.state);
+      const _localctx = new IntegralTypeContext(this._ctx, this.state);
       this.enterRule(_localctx, 6, _Java8Parser.RULE_integralType);
       let _la;
       try {
@@ -21993,7 +21993,7 @@
       return _localctx;
     }
     floatingPointType() {
-      let _localctx = new FloatingPointTypeContext(this._ctx, this.state);
+      const _localctx = new FloatingPointTypeContext(this._ctx, this.state);
       this.enterRule(_localctx, 8, _Java8Parser.RULE_floatingPointType);
       let _la;
       try {
@@ -22025,7 +22025,7 @@
       return _localctx;
     }
     referenceType() {
-      let _localctx = new ReferenceTypeContext(this._ctx, this.state);
+      const _localctx = new ReferenceTypeContext(this._ctx, this.state);
       this.enterRule(_localctx, 10, _Java8Parser.RULE_referenceType);
       try {
         this.state = 501;
@@ -22067,7 +22067,7 @@
       return _localctx;
     }
     classOrInterfaceType() {
-      let _localctx = new ClassOrInterfaceTypeContext(this._ctx, this.state);
+      const _localctx = new ClassOrInterfaceTypeContext(this._ctx, this.state);
       this.enterRule(_localctx, 12, _Java8Parser.RULE_classOrInterfaceType);
       try {
         let _alt;
@@ -22132,7 +22132,7 @@
       return _localctx;
     }
     classType() {
-      let _localctx = new ClassTypeContext(this._ctx, this.state);
+      const _localctx = new ClassTypeContext(this._ctx, this.state);
       this.enterRule(_localctx, 14, _Java8Parser.RULE_classType);
       let _la;
       try {
@@ -22218,7 +22218,7 @@
       return _localctx;
     }
     classType_lf_classOrInterfaceType() {
-      let _localctx = new ClassType_lf_classOrInterfaceTypeContext(this._ctx, this.state);
+      const _localctx = new ClassType_lf_classOrInterfaceTypeContext(this._ctx, this.state);
       this.enterRule(_localctx, 16, _Java8Parser.RULE_classType_lf_classOrInterfaceType);
       let _la;
       try {
@@ -22267,7 +22267,7 @@
       return _localctx;
     }
     classType_lfno_classOrInterfaceType() {
-      let _localctx = new ClassType_lfno_classOrInterfaceTypeContext(this._ctx, this.state);
+      const _localctx = new ClassType_lfno_classOrInterfaceTypeContext(this._ctx, this.state);
       this.enterRule(_localctx, 18, _Java8Parser.RULE_classType_lfno_classOrInterfaceType);
       let _la;
       try {
@@ -22314,7 +22314,7 @@
       return _localctx;
     }
     interfaceType() {
-      let _localctx = new InterfaceTypeContext(this._ctx, this.state);
+      const _localctx = new InterfaceTypeContext(this._ctx, this.state);
       this.enterRule(_localctx, 20, _Java8Parser.RULE_interfaceType);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -22336,7 +22336,7 @@
       return _localctx;
     }
     interfaceType_lf_classOrInterfaceType() {
-      let _localctx = new InterfaceType_lf_classOrInterfaceTypeContext(this._ctx, this.state);
+      const _localctx = new InterfaceType_lf_classOrInterfaceTypeContext(this._ctx, this.state);
       this.enterRule(_localctx, 22, _Java8Parser.RULE_interfaceType_lf_classOrInterfaceType);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -22358,7 +22358,7 @@
       return _localctx;
     }
     interfaceType_lfno_classOrInterfaceType() {
-      let _localctx = new InterfaceType_lfno_classOrInterfaceTypeContext(this._ctx, this.state);
+      const _localctx = new InterfaceType_lfno_classOrInterfaceTypeContext(this._ctx, this.state);
       this.enterRule(_localctx, 24, _Java8Parser.RULE_interfaceType_lfno_classOrInterfaceType);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -22380,7 +22380,7 @@
       return _localctx;
     }
     typeVariable() {
-      let _localctx = new TypeVariableContext(this._ctx, this.state);
+      const _localctx = new TypeVariableContext(this._ctx, this.state);
       this.enterRule(_localctx, 26, _Java8Parser.RULE_typeVariable);
       let _la;
       try {
@@ -22417,7 +22417,7 @@
       return _localctx;
     }
     arrayType() {
-      let _localctx = new ArrayTypeContext(this._ctx, this.state);
+      const _localctx = new ArrayTypeContext(this._ctx, this.state);
       this.enterRule(_localctx, 28, _Java8Parser.RULE_arrayType);
       try {
         this.state = 582;
@@ -22465,7 +22465,7 @@
       return _localctx;
     }
     dims() {
-      let _localctx = new DimsContext(this._ctx, this.state);
+      const _localctx = new DimsContext(this._ctx, this.state);
       this.enterRule(_localctx, 30, _Java8Parser.RULE_dims);
       let _la;
       try {
@@ -22537,7 +22537,7 @@
       return _localctx;
     }
     typeParameter() {
-      let _localctx = new TypeParameterContext(this._ctx, this.state);
+      const _localctx = new TypeParameterContext(this._ctx, this.state);
       this.enterRule(_localctx, 32, _Java8Parser.RULE_typeParameter);
       let _la;
       try {
@@ -22583,7 +22583,7 @@
       return _localctx;
     }
     typeParameterModifier() {
-      let _localctx = new TypeParameterModifierContext(this._ctx, this.state);
+      const _localctx = new TypeParameterModifierContext(this._ctx, this.state);
       this.enterRule(_localctx, 34, _Java8Parser.RULE_typeParameterModifier);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -22605,7 +22605,7 @@
       return _localctx;
     }
     typeBound() {
-      let _localctx = new TypeBoundContext(this._ctx, this.state);
+      const _localctx = new TypeBoundContext(this._ctx, this.state);
       this.enterRule(_localctx, 36, _Java8Parser.RULE_typeBound);
       let _la;
       try {
@@ -22659,7 +22659,7 @@
       return _localctx;
     }
     additionalBound() {
-      let _localctx = new AdditionalBoundContext(this._ctx, this.state);
+      const _localctx = new AdditionalBoundContext(this._ctx, this.state);
       this.enterRule(_localctx, 38, _Java8Parser.RULE_additionalBound);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -22683,7 +22683,7 @@
       return _localctx;
     }
     typeArguments() {
-      let _localctx = new TypeArgumentsContext(this._ctx, this.state);
+      const _localctx = new TypeArgumentsContext(this._ctx, this.state);
       this.enterRule(_localctx, 40, _Java8Parser.RULE_typeArguments);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -22709,7 +22709,7 @@
       return _localctx;
     }
     typeArgumentList() {
-      let _localctx = new TypeArgumentListContext(this._ctx, this.state);
+      const _localctx = new TypeArgumentListContext(this._ctx, this.state);
       this.enterRule(_localctx, 42, _Java8Parser.RULE_typeArgumentList);
       let _la;
       try {
@@ -22748,7 +22748,7 @@
       return _localctx;
     }
     typeArgument() {
-      let _localctx = new TypeArgumentContext(this._ctx, this.state);
+      const _localctx = new TypeArgumentContext(this._ctx, this.state);
       this.enterRule(_localctx, 44, _Java8Parser.RULE_typeArgument);
       try {
         this.state = 646;
@@ -22783,7 +22783,7 @@
       return _localctx;
     }
     wildcard() {
-      let _localctx = new WildcardContext(this._ctx, this.state);
+      const _localctx = new WildcardContext(this._ctx, this.state);
       this.enterRule(_localctx, 46, _Java8Parser.RULE_wildcard);
       let _la;
       try {
@@ -22829,7 +22829,7 @@
       return _localctx;
     }
     wildcardBounds() {
-      let _localctx = new WildcardBoundsContext(this._ctx, this.state);
+      const _localctx = new WildcardBoundsContext(this._ctx, this.state);
       this.enterRule(_localctx, 48, _Java8Parser.RULE_wildcardBounds);
       try {
         this.state = 662;
@@ -22873,11 +22873,11 @@
       if (_p === void 0) {
         _p = 0;
       }
-      let _parentctx = this._ctx;
-      let _parentState = this.state;
+      const _parentctx = this._ctx;
+      const _parentState = this.state;
       let _localctx = new PackageNameContext(this._ctx, _parentState);
       let _prevctx = _localctx;
-      let _startState = 50;
+      const _startState = 50;
       this.enterRecursionRule(_localctx, 50, _Java8Parser.RULE_packageName, _p);
       try {
         let _alt;
@@ -22931,7 +22931,7 @@
       return _localctx;
     }
     typeName() {
-      let _localctx = new TypeNameContext(this._ctx, this.state);
+      const _localctx = new TypeNameContext(this._ctx, this.state);
       this.enterRule(_localctx, 52, _Java8Parser.RULE_typeName);
       try {
         this.state = 680;
@@ -22973,11 +22973,11 @@
       if (_p === void 0) {
         _p = 0;
       }
-      let _parentctx = this._ctx;
-      let _parentState = this.state;
+      const _parentctx = this._ctx;
+      const _parentState = this.state;
       let _localctx = new PackageOrTypeNameContext(this._ctx, _parentState);
       let _prevctx = _localctx;
-      let _startState = 54;
+      const _startState = 54;
       this.enterRecursionRule(_localctx, 54, _Java8Parser.RULE_packageOrTypeName, _p);
       try {
         let _alt;
@@ -23031,7 +23031,7 @@
       return _localctx;
     }
     expressionName() {
-      let _localctx = new ExpressionNameContext(this._ctx, this.state);
+      const _localctx = new ExpressionNameContext(this._ctx, this.state);
       this.enterRule(_localctx, 56, _Java8Parser.RULE_expressionName);
       try {
         this.state = 698;
@@ -23070,7 +23070,7 @@
       return _localctx;
     }
     methodName() {
-      let _localctx = new MethodNameContext(this._ctx, this.state);
+      const _localctx = new MethodNameContext(this._ctx, this.state);
       this.enterRule(_localctx, 58, _Java8Parser.RULE_methodName);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -23095,11 +23095,11 @@
       if (_p === void 0) {
         _p = 0;
       }
-      let _parentctx = this._ctx;
-      let _parentState = this.state;
+      const _parentctx = this._ctx;
+      const _parentState = this.state;
       let _localctx = new AmbiguousNameContext(this._ctx, _parentState);
       let _prevctx = _localctx;
-      let _startState = 60;
+      const _startState = 60;
       this.enterRecursionRule(_localctx, 60, _Java8Parser.RULE_ambiguousName, _p);
       try {
         let _alt;
@@ -23153,7 +23153,7 @@
       return _localctx;
     }
     compilationUnit() {
-      let _localctx = new CompilationUnitContext(this._ctx, this.state);
+      const _localctx = new CompilationUnitContext(this._ctx, this.state);
       this.enterRule(_localctx, 62, _Java8Parser.RULE_compilationUnit);
       let _la;
       try {
@@ -23214,7 +23214,7 @@
       return _localctx;
     }
     packageDeclaration() {
-      let _localctx = new PackageDeclarationContext(this._ctx, this.state);
+      const _localctx = new PackageDeclarationContext(this._ctx, this.state);
       this.enterRule(_localctx, 64, _Java8Parser.RULE_packageDeclaration);
       let _la;
       try {
@@ -23255,7 +23255,7 @@
       return _localctx;
     }
     packageModifier() {
-      let _localctx = new PackageModifierContext(this._ctx, this.state);
+      const _localctx = new PackageModifierContext(this._ctx, this.state);
       this.enterRule(_localctx, 66, _Java8Parser.RULE_packageModifier);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -23277,7 +23277,7 @@
       return _localctx;
     }
     importDeclaration() {
-      let _localctx = new ImportDeclarationContext(this._ctx, this.state);
+      const _localctx = new ImportDeclarationContext(this._ctx, this.state);
       this.enterRule(_localctx, 68, _Java8Parser.RULE_importDeclaration);
       try {
         this.state = 746;
@@ -23326,7 +23326,7 @@
       return _localctx;
     }
     singleTypeImportDeclaration() {
-      let _localctx = new SingleTypeImportDeclarationContext(this._ctx, this.state);
+      const _localctx = new SingleTypeImportDeclarationContext(this._ctx, this.state);
       this.enterRule(_localctx, 70, _Java8Parser.RULE_singleTypeImportDeclaration);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -23352,7 +23352,7 @@
       return _localctx;
     }
     typeImportOnDemandDeclaration() {
-      let _localctx = new TypeImportOnDemandDeclarationContext(this._ctx, this.state);
+      const _localctx = new TypeImportOnDemandDeclarationContext(this._ctx, this.state);
       this.enterRule(_localctx, 72, _Java8Parser.RULE_typeImportOnDemandDeclaration);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -23382,7 +23382,7 @@
       return _localctx;
     }
     singleStaticImportDeclaration() {
-      let _localctx = new SingleStaticImportDeclarationContext(this._ctx, this.state);
+      const _localctx = new SingleStaticImportDeclarationContext(this._ctx, this.state);
       this.enterRule(_localctx, 74, _Java8Parser.RULE_singleStaticImportDeclaration);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -23414,7 +23414,7 @@
       return _localctx;
     }
     staticImportOnDemandDeclaration() {
-      let _localctx = new StaticImportOnDemandDeclarationContext(this._ctx, this.state);
+      const _localctx = new StaticImportOnDemandDeclarationContext(this._ctx, this.state);
       this.enterRule(_localctx, 76, _Java8Parser.RULE_staticImportOnDemandDeclaration);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -23446,7 +23446,7 @@
       return _localctx;
     }
     typeDeclaration() {
-      let _localctx = new TypeDeclarationContext(this._ctx, this.state);
+      const _localctx = new TypeDeclarationContext(this._ctx, this.state);
       this.enterRule(_localctx, 78, _Java8Parser.RULE_typeDeclaration);
       try {
         this.state = 775;
@@ -23488,7 +23488,7 @@
       return _localctx;
     }
     classDeclaration() {
-      let _localctx = new ClassDeclarationContext(this._ctx, this.state);
+      const _localctx = new ClassDeclarationContext(this._ctx, this.state);
       this.enterRule(_localctx, 80, _Java8Parser.RULE_classDeclaration);
       try {
         this.state = 779;
@@ -23523,7 +23523,7 @@
       return _localctx;
     }
     normalClassDeclaration() {
-      let _localctx = new NormalClassDeclarationContext(this._ctx, this.state);
+      const _localctx = new NormalClassDeclarationContext(this._ctx, this.state);
       this.enterRule(_localctx, 82, _Java8Parser.RULE_normalClassDeclaration);
       let _la;
       try {
@@ -23591,7 +23591,7 @@
       return _localctx;
     }
     classModifier() {
-      let _localctx = new ClassModifierContext(this._ctx, this.state);
+      const _localctx = new ClassModifierContext(this._ctx, this.state);
       this.enterRule(_localctx, 84, _Java8Parser.RULE_classModifier);
       try {
         this.state = 808;
@@ -23670,7 +23670,7 @@
       return _localctx;
     }
     typeParameters() {
-      let _localctx = new TypeParametersContext(this._ctx, this.state);
+      const _localctx = new TypeParametersContext(this._ctx, this.state);
       this.enterRule(_localctx, 86, _Java8Parser.RULE_typeParameters);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -23696,7 +23696,7 @@
       return _localctx;
     }
     typeParameterList() {
-      let _localctx = new TypeParameterListContext(this._ctx, this.state);
+      const _localctx = new TypeParameterListContext(this._ctx, this.state);
       this.enterRule(_localctx, 88, _Java8Parser.RULE_typeParameterList);
       let _la;
       try {
@@ -23735,7 +23735,7 @@
       return _localctx;
     }
     superclass() {
-      let _localctx = new SuperclassContext(this._ctx, this.state);
+      const _localctx = new SuperclassContext(this._ctx, this.state);
       this.enterRule(_localctx, 90, _Java8Parser.RULE_superclass);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -23759,7 +23759,7 @@
       return _localctx;
     }
     superinterfaces() {
-      let _localctx = new SuperinterfacesContext(this._ctx, this.state);
+      const _localctx = new SuperinterfacesContext(this._ctx, this.state);
       this.enterRule(_localctx, 92, _Java8Parser.RULE_superinterfaces);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -23783,7 +23783,7 @@
       return _localctx;
     }
     interfaceTypeList() {
-      let _localctx = new InterfaceTypeListContext(this._ctx, this.state);
+      const _localctx = new InterfaceTypeListContext(this._ctx, this.state);
       this.enterRule(_localctx, 94, _Java8Parser.RULE_interfaceTypeList);
       let _la;
       try {
@@ -23822,7 +23822,7 @@
       return _localctx;
     }
     classBody() {
-      let _localctx = new ClassBodyContext(this._ctx, this.state);
+      const _localctx = new ClassBodyContext(this._ctx, this.state);
       this.enterRule(_localctx, 96, _Java8Parser.RULE_classBody);
       let _la;
       try {
@@ -23861,7 +23861,7 @@
       return _localctx;
     }
     classBodyDeclaration() {
-      let _localctx = new ClassBodyDeclarationContext(this._ctx, this.state);
+      const _localctx = new ClassBodyDeclarationContext(this._ctx, this.state);
       this.enterRule(_localctx, 98, _Java8Parser.RULE_classBodyDeclaration);
       try {
         this.state = 849;
@@ -23910,7 +23910,7 @@
       return _localctx;
     }
     classMemberDeclaration() {
-      let _localctx = new ClassMemberDeclarationContext(this._ctx, this.state);
+      const _localctx = new ClassMemberDeclarationContext(this._ctx, this.state);
       this.enterRule(_localctx, 100, _Java8Parser.RULE_classMemberDeclaration);
       try {
         this.state = 856;
@@ -23966,7 +23966,7 @@
       return _localctx;
     }
     fieldDeclaration() {
-      let _localctx = new FieldDeclarationContext(this._ctx, this.state);
+      const _localctx = new FieldDeclarationContext(this._ctx, this.state);
       this.enterRule(_localctx, 102, _Java8Parser.RULE_fieldDeclaration);
       let _la;
       try {
@@ -24007,7 +24007,7 @@
       return _localctx;
     }
     fieldModifier() {
-      let _localctx = new FieldModifierContext(this._ctx, this.state);
+      const _localctx = new FieldModifierContext(this._ctx, this.state);
       this.enterRule(_localctx, 104, _Java8Parser.RULE_fieldModifier);
       try {
         this.state = 876;
@@ -24086,7 +24086,7 @@
       return _localctx;
     }
     variableDeclaratorList() {
-      let _localctx = new VariableDeclaratorListContext(this._ctx, this.state);
+      const _localctx = new VariableDeclaratorListContext(this._ctx, this.state);
       this.enterRule(_localctx, 106, _Java8Parser.RULE_variableDeclaratorList);
       let _la;
       try {
@@ -24125,7 +24125,7 @@
       return _localctx;
     }
     variableDeclarator() {
-      let _localctx = new VariableDeclaratorContext(this._ctx, this.state);
+      const _localctx = new VariableDeclaratorContext(this._ctx, this.state);
       this.enterRule(_localctx, 108, _Java8Parser.RULE_variableDeclarator);
       let _la;
       try {
@@ -24159,7 +24159,7 @@
       return _localctx;
     }
     variableDeclaratorId() {
-      let _localctx = new VariableDeclaratorIdContext(this._ctx, this.state);
+      const _localctx = new VariableDeclaratorIdContext(this._ctx, this.state);
       this.enterRule(_localctx, 110, _Java8Parser.RULE_variableDeclaratorId);
       let _la;
       try {
@@ -24191,7 +24191,7 @@
       return _localctx;
     }
     variableInitializer() {
-      let _localctx = new VariableInitializerContext(this._ctx, this.state);
+      const _localctx = new VariableInitializerContext(this._ctx, this.state);
       this.enterRule(_localctx, 112, _Java8Parser.RULE_variableInitializer);
       try {
         this.state = 897;
@@ -24254,7 +24254,7 @@
       return _localctx;
     }
     unannType() {
-      let _localctx = new UnannTypeContext(this._ctx, this.state);
+      const _localctx = new UnannTypeContext(this._ctx, this.state);
       this.enterRule(_localctx, 114, _Java8Parser.RULE_unannType);
       try {
         this.state = 901;
@@ -24289,7 +24289,7 @@
       return _localctx;
     }
     unannPrimitiveType() {
-      let _localctx = new UnannPrimitiveTypeContext(this._ctx, this.state);
+      const _localctx = new UnannPrimitiveTypeContext(this._ctx, this.state);
       this.enterRule(_localctx, 116, _Java8Parser.RULE_unannPrimitiveType);
       try {
         this.state = 905;
@@ -24332,7 +24332,7 @@
       return _localctx;
     }
     unannReferenceType() {
-      let _localctx = new UnannReferenceTypeContext(this._ctx, this.state);
+      const _localctx = new UnannReferenceTypeContext(this._ctx, this.state);
       this.enterRule(_localctx, 118, _Java8Parser.RULE_unannReferenceType);
       try {
         this.state = 910;
@@ -24374,7 +24374,7 @@
       return _localctx;
     }
     unannClassOrInterfaceType() {
-      let _localctx = new UnannClassOrInterfaceTypeContext(this._ctx, this.state);
+      const _localctx = new UnannClassOrInterfaceTypeContext(this._ctx, this.state);
       this.enterRule(_localctx, 120, _Java8Parser.RULE_unannClassOrInterfaceType);
       try {
         let _alt;
@@ -24439,7 +24439,7 @@
       return _localctx;
     }
     unannClassType() {
-      let _localctx = new UnannClassTypeContext(this._ctx, this.state);
+      const _localctx = new UnannClassTypeContext(this._ctx, this.state);
       this.enterRule(_localctx, 122, _Java8Parser.RULE_unannClassType);
       let _la;
       try {
@@ -24511,7 +24511,7 @@
       return _localctx;
     }
     unannClassType_lf_unannClassOrInterfaceType() {
-      let _localctx = new UnannClassType_lf_unannClassOrInterfaceTypeContext(this._ctx, this.state);
+      const _localctx = new UnannClassType_lf_unannClassOrInterfaceTypeContext(this._ctx, this.state);
       this.enterRule(_localctx, 124, _Java8Parser.RULE_unannClassType_lf_unannClassOrInterfaceType);
       let _la;
       try {
@@ -24559,7 +24559,7 @@
       return _localctx;
     }
     unannClassType_lfno_unannClassOrInterfaceType() {
-      let _localctx = new UnannClassType_lfno_unannClassOrInterfaceTypeContext(this._ctx, this.state);
+      const _localctx = new UnannClassType_lfno_unannClassOrInterfaceTypeContext(this._ctx, this.state);
       this.enterRule(_localctx, 126, _Java8Parser.RULE_unannClassType_lfno_unannClassOrInterfaceType);
       let _la;
       try {
@@ -24591,7 +24591,7 @@
       return _localctx;
     }
     unannInterfaceType() {
-      let _localctx = new UnannInterfaceTypeContext(this._ctx, this.state);
+      const _localctx = new UnannInterfaceTypeContext(this._ctx, this.state);
       this.enterRule(_localctx, 128, _Java8Parser.RULE_unannInterfaceType);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -24613,7 +24613,7 @@
       return _localctx;
     }
     unannInterfaceType_lf_unannClassOrInterfaceType() {
-      let _localctx = new UnannInterfaceType_lf_unannClassOrInterfaceTypeContext(this._ctx, this.state);
+      const _localctx = new UnannInterfaceType_lf_unannClassOrInterfaceTypeContext(this._ctx, this.state);
       this.enterRule(_localctx, 130, _Java8Parser.RULE_unannInterfaceType_lf_unannClassOrInterfaceType);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -24635,7 +24635,7 @@
       return _localctx;
     }
     unannInterfaceType_lfno_unannClassOrInterfaceType() {
-      let _localctx = new UnannInterfaceType_lfno_unannClassOrInterfaceTypeContext(this._ctx, this.state);
+      const _localctx = new UnannInterfaceType_lfno_unannClassOrInterfaceTypeContext(this._ctx, this.state);
       this.enterRule(_localctx, 132, _Java8Parser.RULE_unannInterfaceType_lfno_unannClassOrInterfaceType);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -24657,7 +24657,7 @@
       return _localctx;
     }
     unannTypeVariable() {
-      let _localctx = new UnannTypeVariableContext(this._ctx, this.state);
+      const _localctx = new UnannTypeVariableContext(this._ctx, this.state);
       this.enterRule(_localctx, 134, _Java8Parser.RULE_unannTypeVariable);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -24679,7 +24679,7 @@
       return _localctx;
     }
     unannArrayType() {
-      let _localctx = new UnannArrayTypeContext(this._ctx, this.state);
+      const _localctx = new UnannArrayTypeContext(this._ctx, this.state);
       this.enterRule(_localctx, 136, _Java8Parser.RULE_unannArrayType);
       try {
         this.state = 973;
@@ -24727,7 +24727,7 @@
       return _localctx;
     }
     methodDeclaration() {
-      let _localctx = new MethodDeclarationContext(this._ctx, this.state);
+      const _localctx = new MethodDeclarationContext(this._ctx, this.state);
       this.enterRule(_localctx, 138, _Java8Parser.RULE_methodDeclaration);
       let _la;
       try {
@@ -24766,7 +24766,7 @@
       return _localctx;
     }
     methodModifier() {
-      let _localctx = new MethodModifierContext(this._ctx, this.state);
+      const _localctx = new MethodModifierContext(this._ctx, this.state);
       this.enterRule(_localctx, 140, _Java8Parser.RULE_methodModifier);
       try {
         this.state = 994;
@@ -24859,7 +24859,7 @@
       return _localctx;
     }
     methodHeader() {
-      let _localctx = new MethodHeaderContext(this._ctx, this.state);
+      const _localctx = new MethodHeaderContext(this._ctx, this.state);
       this.enterRule(_localctx, 142, _Java8Parser.RULE_methodHeader);
       let _la;
       try {
@@ -24944,7 +24944,7 @@
       return _localctx;
     }
     result() {
-      let _localctx = new ResultContext(this._ctx, this.state);
+      const _localctx = new ResultContext(this._ctx, this.state);
       this.enterRule(_localctx, 144, _Java8Parser.RULE_result);
       try {
         this.state = 1017;
@@ -24989,7 +24989,7 @@
       return _localctx;
     }
     methodDeclarator() {
-      let _localctx = new MethodDeclaratorContext(this._ctx, this.state);
+      const _localctx = new MethodDeclaratorContext(this._ctx, this.state);
       this.enterRule(_localctx, 146, _Java8Parser.RULE_methodDeclarator);
       let _la;
       try {
@@ -25034,7 +25034,7 @@
       return _localctx;
     }
     formalParameterList() {
-      let _localctx = new FormalParameterListContext(this._ctx, this.state);
+      const _localctx = new FormalParameterListContext(this._ctx, this.state);
       this.enterRule(_localctx, 148, _Java8Parser.RULE_formalParameterList);
       try {
         this.state = 1034;
@@ -25080,7 +25080,7 @@
       return _localctx;
     }
     formalParameters() {
-      let _localctx = new FormalParametersContext(this._ctx, this.state);
+      const _localctx = new FormalParametersContext(this._ctx, this.state);
       this.enterRule(_localctx, 150, _Java8Parser.RULE_formalParameters);
       try {
         let _alt;
@@ -25152,7 +25152,7 @@
       return _localctx;
     }
     formalParameter() {
-      let _localctx = new FormalParameterContext(this._ctx, this.state);
+      const _localctx = new FormalParameterContext(this._ctx, this.state);
       this.enterRule(_localctx, 152, _Java8Parser.RULE_formalParameter);
       let _la;
       try {
@@ -25191,7 +25191,7 @@
       return _localctx;
     }
     variableModifier() {
-      let _localctx = new VariableModifierContext(this._ctx, this.state);
+      const _localctx = new VariableModifierContext(this._ctx, this.state);
       this.enterRule(_localctx, 154, _Java8Parser.RULE_variableModifier);
       try {
         this.state = 1065;
@@ -25228,7 +25228,7 @@
       return _localctx;
     }
     lastFormalParameter() {
-      let _localctx = new LastFormalParameterContext(this._ctx, this.state);
+      const _localctx = new LastFormalParameterContext(this._ctx, this.state);
       this.enterRule(_localctx, 156, _Java8Parser.RULE_lastFormalParameter);
       let _la;
       try {
@@ -25296,7 +25296,7 @@
       return _localctx;
     }
     receiverParameter() {
-      let _localctx = new ReceiverParameterContext(this._ctx, this.state);
+      const _localctx = new ReceiverParameterContext(this._ctx, this.state);
       this.enterRule(_localctx, 158, _Java8Parser.RULE_receiverParameter);
       let _la;
       try {
@@ -25346,7 +25346,7 @@
       return _localctx;
     }
     throws_() {
-      let _localctx = new Throws_Context(this._ctx, this.state);
+      const _localctx = new Throws_Context(this._ctx, this.state);
       this.enterRule(_localctx, 160, _Java8Parser.RULE_throws_);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -25370,7 +25370,7 @@
       return _localctx;
     }
     exceptionTypeList() {
-      let _localctx = new ExceptionTypeListContext(this._ctx, this.state);
+      const _localctx = new ExceptionTypeListContext(this._ctx, this.state);
       this.enterRule(_localctx, 162, _Java8Parser.RULE_exceptionTypeList);
       let _la;
       try {
@@ -25409,7 +25409,7 @@
       return _localctx;
     }
     exceptionType() {
-      let _localctx = new ExceptionTypeContext(this._ctx, this.state);
+      const _localctx = new ExceptionTypeContext(this._ctx, this.state);
       this.enterRule(_localctx, 164, _Java8Parser.RULE_exceptionType);
       try {
         this.state = 1112;
@@ -25444,7 +25444,7 @@
       return _localctx;
     }
     methodBody() {
-      let _localctx = new MethodBodyContext(this._ctx, this.state);
+      const _localctx = new MethodBodyContext(this._ctx, this.state);
       this.enterRule(_localctx, 166, _Java8Parser.RULE_methodBody);
       try {
         this.state = 1116;
@@ -25481,7 +25481,7 @@
       return _localctx;
     }
     instanceInitializer() {
-      let _localctx = new InstanceInitializerContext(this._ctx, this.state);
+      const _localctx = new InstanceInitializerContext(this._ctx, this.state);
       this.enterRule(_localctx, 168, _Java8Parser.RULE_instanceInitializer);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -25503,7 +25503,7 @@
       return _localctx;
     }
     staticInitializer() {
-      let _localctx = new StaticInitializerContext(this._ctx, this.state);
+      const _localctx = new StaticInitializerContext(this._ctx, this.state);
       this.enterRule(_localctx, 170, _Java8Parser.RULE_staticInitializer);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -25527,7 +25527,7 @@
       return _localctx;
     }
     constructorDeclaration() {
-      let _localctx = new ConstructorDeclarationContext(this._ctx, this.state);
+      const _localctx = new ConstructorDeclarationContext(this._ctx, this.state);
       this.enterRule(_localctx, 172, _Java8Parser.RULE_constructorDeclaration);
       let _la;
       try {
@@ -25575,7 +25575,7 @@
       return _localctx;
     }
     constructorModifier() {
-      let _localctx = new ConstructorModifierContext(this._ctx, this.state);
+      const _localctx = new ConstructorModifierContext(this._ctx, this.state);
       this.enterRule(_localctx, 174, _Java8Parser.RULE_constructorModifier);
       try {
         this.state = 1139;
@@ -25626,7 +25626,7 @@
       return _localctx;
     }
     constructorDeclarator() {
-      let _localctx = new ConstructorDeclaratorContext(this._ctx, this.state);
+      const _localctx = new ConstructorDeclaratorContext(this._ctx, this.state);
       this.enterRule(_localctx, 176, _Java8Parser.RULE_constructorDeclarator);
       let _la;
       try {
@@ -25671,7 +25671,7 @@
       return _localctx;
     }
     simpleTypeName() {
-      let _localctx = new SimpleTypeNameContext(this._ctx, this.state);
+      const _localctx = new SimpleTypeNameContext(this._ctx, this.state);
       this.enterRule(_localctx, 178, _Java8Parser.RULE_simpleTypeName);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -25693,7 +25693,7 @@
       return _localctx;
     }
     constructorBody() {
-      let _localctx = new ConstructorBodyContext(this._ctx, this.state);
+      const _localctx = new ConstructorBodyContext(this._ctx, this.state);
       this.enterRule(_localctx, 180, _Java8Parser.RULE_constructorBody);
       let _la;
       try {
@@ -25737,7 +25737,7 @@
       return _localctx;
     }
     explicitConstructorInvocation() {
-      let _localctx = new ExplicitConstructorInvocationContext(this._ctx, this.state);
+      const _localctx = new ExplicitConstructorInvocationContext(this._ctx, this.state);
       this.enterRule(_localctx, 182, _Java8Parser.RULE_explicitConstructorInvocation);
       let _la;
       try {
@@ -25891,7 +25891,7 @@
       return _localctx;
     }
     enumDeclaration() {
-      let _localctx = new EnumDeclarationContext(this._ctx, this.state);
+      const _localctx = new EnumDeclarationContext(this._ctx, this.state);
       this.enterRule(_localctx, 184, _Java8Parser.RULE_enumDeclaration);
       let _la;
       try {
@@ -25941,7 +25941,7 @@
       return _localctx;
     }
     enumBody() {
-      let _localctx = new EnumBodyContext(this._ctx, this.state);
+      const _localctx = new EnumBodyContext(this._ctx, this.state);
       this.enterRule(_localctx, 186, _Java8Parser.RULE_enumBody);
       let _la;
       try {
@@ -25993,7 +25993,7 @@
       return _localctx;
     }
     enumConstantList() {
-      let _localctx = new EnumConstantListContext(this._ctx, this.state);
+      const _localctx = new EnumConstantListContext(this._ctx, this.state);
       this.enterRule(_localctx, 188, _Java8Parser.RULE_enumConstantList);
       try {
         let _alt;
@@ -26034,7 +26034,7 @@
       return _localctx;
     }
     enumConstant() {
-      let _localctx = new EnumConstantContext(this._ctx, this.state);
+      const _localctx = new EnumConstantContext(this._ctx, this.state);
       this.enterRule(_localctx, 190, _Java8Parser.RULE_enumConstant);
       let _la;
       try {
@@ -26100,7 +26100,7 @@
       return _localctx;
     }
     enumConstantModifier() {
-      let _localctx = new EnumConstantModifierContext(this._ctx, this.state);
+      const _localctx = new EnumConstantModifierContext(this._ctx, this.state);
       this.enterRule(_localctx, 192, _Java8Parser.RULE_enumConstantModifier);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -26122,7 +26122,7 @@
       return _localctx;
     }
     enumBodyDeclarations() {
-      let _localctx = new EnumBodyDeclarationsContext(this._ctx, this.state);
+      const _localctx = new EnumBodyDeclarationsContext(this._ctx, this.state);
       this.enterRule(_localctx, 194, _Java8Parser.RULE_enumBodyDeclarations);
       let _la;
       try {
@@ -26159,7 +26159,7 @@
       return _localctx;
     }
     interfaceDeclaration() {
-      let _localctx = new InterfaceDeclarationContext(this._ctx, this.state);
+      const _localctx = new InterfaceDeclarationContext(this._ctx, this.state);
       this.enterRule(_localctx, 196, _Java8Parser.RULE_interfaceDeclaration);
       try {
         this.state = 1271;
@@ -26194,7 +26194,7 @@
       return _localctx;
     }
     normalInterfaceDeclaration() {
-      let _localctx = new NormalInterfaceDeclarationContext(this._ctx, this.state);
+      const _localctx = new NormalInterfaceDeclarationContext(this._ctx, this.state);
       this.enterRule(_localctx, 198, _Java8Parser.RULE_normalInterfaceDeclaration);
       let _la;
       try {
@@ -26253,7 +26253,7 @@
       return _localctx;
     }
     interfaceModifier() {
-      let _localctx = new InterfaceModifierContext(this._ctx, this.state);
+      const _localctx = new InterfaceModifierContext(this._ctx, this.state);
       this.enterRule(_localctx, 200, _Java8Parser.RULE_interfaceModifier);
       try {
         this.state = 1296;
@@ -26325,7 +26325,7 @@
       return _localctx;
     }
     extendsInterfaces() {
-      let _localctx = new ExtendsInterfacesContext(this._ctx, this.state);
+      const _localctx = new ExtendsInterfacesContext(this._ctx, this.state);
       this.enterRule(_localctx, 202, _Java8Parser.RULE_extendsInterfaces);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -26349,7 +26349,7 @@
       return _localctx;
     }
     interfaceBody() {
-      let _localctx = new InterfaceBodyContext(this._ctx, this.state);
+      const _localctx = new InterfaceBodyContext(this._ctx, this.state);
       this.enterRule(_localctx, 204, _Java8Parser.RULE_interfaceBody);
       let _la;
       try {
@@ -26388,7 +26388,7 @@
       return _localctx;
     }
     interfaceMemberDeclaration() {
-      let _localctx = new InterfaceMemberDeclarationContext(this._ctx, this.state);
+      const _localctx = new InterfaceMemberDeclarationContext(this._ctx, this.state);
       this.enterRule(_localctx, 206, _Java8Parser.RULE_interfaceMemberDeclaration);
       try {
         this.state = 1315;
@@ -26444,7 +26444,7 @@
       return _localctx;
     }
     constantDeclaration() {
-      let _localctx = new ConstantDeclarationContext(this._ctx, this.state);
+      const _localctx = new ConstantDeclarationContext(this._ctx, this.state);
       this.enterRule(_localctx, 208, _Java8Parser.RULE_constantDeclaration);
       let _la;
       try {
@@ -26485,7 +26485,7 @@
       return _localctx;
     }
     constantModifier() {
-      let _localctx = new ConstantModifierContext(this._ctx, this.state);
+      const _localctx = new ConstantModifierContext(this._ctx, this.state);
       this.enterRule(_localctx, 210, _Java8Parser.RULE_constantModifier);
       try {
         this.state = 1331;
@@ -26536,7 +26536,7 @@
       return _localctx;
     }
     interfaceMethodDeclaration() {
-      let _localctx = new InterfaceMethodDeclarationContext(this._ctx, this.state);
+      const _localctx = new InterfaceMethodDeclarationContext(this._ctx, this.state);
       this.enterRule(_localctx, 212, _Java8Parser.RULE_interfaceMethodDeclaration);
       let _la;
       try {
@@ -26575,7 +26575,7 @@
       return _localctx;
     }
     interfaceMethodModifier() {
-      let _localctx = new InterfaceMethodModifierContext(this._ctx, this.state);
+      const _localctx = new InterfaceMethodModifierContext(this._ctx, this.state);
       this.enterRule(_localctx, 214, _Java8Parser.RULE_interfaceMethodModifier);
       try {
         this.state = 1348;
@@ -26640,7 +26640,7 @@
       return _localctx;
     }
     annotationTypeDeclaration() {
-      let _localctx = new AnnotationTypeDeclarationContext(this._ctx, this.state);
+      const _localctx = new AnnotationTypeDeclarationContext(this._ctx, this.state);
       this.enterRule(_localctx, 216, _Java8Parser.RULE_annotationTypeDeclaration);
       try {
         let _alt;
@@ -26685,7 +26685,7 @@
       return _localctx;
     }
     annotationTypeBody() {
-      let _localctx = new AnnotationTypeBodyContext(this._ctx, this.state);
+      const _localctx = new AnnotationTypeBodyContext(this._ctx, this.state);
       this.enterRule(_localctx, 218, _Java8Parser.RULE_annotationTypeBody);
       let _la;
       try {
@@ -26724,7 +26724,7 @@
       return _localctx;
     }
     annotationTypeMemberDeclaration() {
-      let _localctx = new AnnotationTypeMemberDeclarationContext(this._ctx, this.state);
+      const _localctx = new AnnotationTypeMemberDeclarationContext(this._ctx, this.state);
       this.enterRule(_localctx, 220, _Java8Parser.RULE_annotationTypeMemberDeclaration);
       try {
         this.state = 1375;
@@ -26780,7 +26780,7 @@
       return _localctx;
     }
     annotationTypeElementDeclaration() {
-      let _localctx = new AnnotationTypeElementDeclarationContext(this._ctx, this.state);
+      const _localctx = new AnnotationTypeElementDeclarationContext(this._ctx, this.state);
       this.enterRule(_localctx, 222, _Java8Parser.RULE_annotationTypeElementDeclaration);
       let _la;
       try {
@@ -26843,7 +26843,7 @@
       return _localctx;
     }
     annotationTypeElementModifier() {
-      let _localctx = new AnnotationTypeElementModifierContext(this._ctx, this.state);
+      const _localctx = new AnnotationTypeElementModifierContext(this._ctx, this.state);
       this.enterRule(_localctx, 224, _Java8Parser.RULE_annotationTypeElementModifier);
       try {
         this.state = 1398;
@@ -26887,7 +26887,7 @@
       return _localctx;
     }
     defaultValue() {
-      let _localctx = new DefaultValueContext(this._ctx, this.state);
+      const _localctx = new DefaultValueContext(this._ctx, this.state);
       this.enterRule(_localctx, 226, _Java8Parser.RULE_defaultValue);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -26911,7 +26911,7 @@
       return _localctx;
     }
     annotation() {
-      let _localctx = new AnnotationContext(this._ctx, this.state);
+      const _localctx = new AnnotationContext(this._ctx, this.state);
       this.enterRule(_localctx, 228, _Java8Parser.RULE_annotation);
       try {
         this.state = 1406;
@@ -26953,7 +26953,7 @@
       return _localctx;
     }
     normalAnnotation() {
-      let _localctx = new NormalAnnotationContext(this._ctx, this.state);
+      const _localctx = new NormalAnnotationContext(this._ctx, this.state);
       this.enterRule(_localctx, 230, _Java8Parser.RULE_normalAnnotation);
       let _la;
       try {
@@ -26991,7 +26991,7 @@
       return _localctx;
     }
     elementValuePairList() {
-      let _localctx = new ElementValuePairListContext(this._ctx, this.state);
+      const _localctx = new ElementValuePairListContext(this._ctx, this.state);
       this.enterRule(_localctx, 232, _Java8Parser.RULE_elementValuePairList);
       let _la;
       try {
@@ -27030,7 +27030,7 @@
       return _localctx;
     }
     elementValuePair() {
-      let _localctx = new ElementValuePairContext(this._ctx, this.state);
+      const _localctx = new ElementValuePairContext(this._ctx, this.state);
       this.enterRule(_localctx, 234, _Java8Parser.RULE_elementValuePair);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -27056,7 +27056,7 @@
       return _localctx;
     }
     elementValue() {
-      let _localctx = new ElementValueContext(this._ctx, this.state);
+      const _localctx = new ElementValueContext(this._ctx, this.state);
       this.enterRule(_localctx, 236, _Java8Parser.RULE_elementValue);
       try {
         this.state = 1431;
@@ -27098,7 +27098,7 @@
       return _localctx;
     }
     elementValueArrayInitializer() {
-      let _localctx = new ElementValueArrayInitializerContext(this._ctx, this.state);
+      const _localctx = new ElementValueArrayInitializerContext(this._ctx, this.state);
       this.enterRule(_localctx, 238, _Java8Parser.RULE_elementValueArrayInitializer);
       let _la;
       try {
@@ -27141,7 +27141,7 @@
       return _localctx;
     }
     elementValueList() {
-      let _localctx = new ElementValueListContext(this._ctx, this.state);
+      const _localctx = new ElementValueListContext(this._ctx, this.state);
       this.enterRule(_localctx, 240, _Java8Parser.RULE_elementValueList);
       try {
         let _alt;
@@ -27182,7 +27182,7 @@
       return _localctx;
     }
     markerAnnotation() {
-      let _localctx = new MarkerAnnotationContext(this._ctx, this.state);
+      const _localctx = new MarkerAnnotationContext(this._ctx, this.state);
       this.enterRule(_localctx, 242, _Java8Parser.RULE_markerAnnotation);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -27206,7 +27206,7 @@
       return _localctx;
     }
     singleElementAnnotation() {
-      let _localctx = new SingleElementAnnotationContext(this._ctx, this.state);
+      const _localctx = new SingleElementAnnotationContext(this._ctx, this.state);
       this.enterRule(_localctx, 244, _Java8Parser.RULE_singleElementAnnotation);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -27236,7 +27236,7 @@
       return _localctx;
     }
     arrayInitializer() {
-      let _localctx = new ArrayInitializerContext(this._ctx, this.state);
+      const _localctx = new ArrayInitializerContext(this._ctx, this.state);
       this.enterRule(_localctx, 246, _Java8Parser.RULE_arrayInitializer);
       let _la;
       try {
@@ -27279,7 +27279,7 @@
       return _localctx;
     }
     variableInitializerList() {
-      let _localctx = new VariableInitializerListContext(this._ctx, this.state);
+      const _localctx = new VariableInitializerListContext(this._ctx, this.state);
       this.enterRule(_localctx, 248, _Java8Parser.RULE_variableInitializerList);
       try {
         let _alt;
@@ -27320,7 +27320,7 @@
       return _localctx;
     }
     block() {
-      let _localctx = new BlockContext(this._ctx, this.state);
+      const _localctx = new BlockContext(this._ctx, this.state);
       this.enterRule(_localctx, 250, _Java8Parser.RULE_block);
       let _la;
       try {
@@ -27354,7 +27354,7 @@
       return _localctx;
     }
     blockStatements() {
-      let _localctx = new BlockStatementsContext(this._ctx, this.state);
+      const _localctx = new BlockStatementsContext(this._ctx, this.state);
       this.enterRule(_localctx, 252, _Java8Parser.RULE_blockStatements);
       let _la;
       try {
@@ -27389,7 +27389,7 @@
       return _localctx;
     }
     blockStatement() {
-      let _localctx = new BlockStatementContext(this._ctx, this.state);
+      const _localctx = new BlockStatementContext(this._ctx, this.state);
       this.enterRule(_localctx, 254, _Java8Parser.RULE_blockStatement);
       try {
         this.state = 1490;
@@ -27431,7 +27431,7 @@
       return _localctx;
     }
     localVariableDeclarationStatement() {
-      let _localctx = new LocalVariableDeclarationStatementContext(this._ctx, this.state);
+      const _localctx = new LocalVariableDeclarationStatementContext(this._ctx, this.state);
       this.enterRule(_localctx, 256, _Java8Parser.RULE_localVariableDeclarationStatement);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -27455,7 +27455,7 @@
       return _localctx;
     }
     localVariableDeclaration() {
-      let _localctx = new LocalVariableDeclarationContext(this._ctx, this.state);
+      const _localctx = new LocalVariableDeclarationContext(this._ctx, this.state);
       this.enterRule(_localctx, 258, _Java8Parser.RULE_localVariableDeclaration);
       let _la;
       try {
@@ -27494,7 +27494,7 @@
       return _localctx;
     }
     statement() {
-      let _localctx = new StatementContext(this._ctx, this.state);
+      const _localctx = new StatementContext(this._ctx, this.state);
       this.enterRule(_localctx, 260, _Java8Parser.RULE_statement);
       try {
         this.state = 1510;
@@ -27557,7 +27557,7 @@
       return _localctx;
     }
     statementNoShortIf() {
-      let _localctx = new StatementNoShortIfContext(this._ctx, this.state);
+      const _localctx = new StatementNoShortIfContext(this._ctx, this.state);
       this.enterRule(_localctx, 262, _Java8Parser.RULE_statementNoShortIf);
       try {
         this.state = 1517;
@@ -27613,7 +27613,7 @@
       return _localctx;
     }
     statementWithoutTrailingSubstatement() {
-      let _localctx = new StatementWithoutTrailingSubstatementContext(this._ctx, this.state);
+      const _localctx = new StatementWithoutTrailingSubstatementContext(this._ctx, this.state);
       this.enterRule(_localctx, 264, _Java8Parser.RULE_statementWithoutTrailingSubstatement);
       try {
         this.state = 1531;
@@ -27742,7 +27742,7 @@
       return _localctx;
     }
     emptyStatement() {
-      let _localctx = new EmptyStatementContext(this._ctx, this.state);
+      const _localctx = new EmptyStatementContext(this._ctx, this.state);
       this.enterRule(_localctx, 266, _Java8Parser.RULE_emptyStatement);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -27764,7 +27764,7 @@
       return _localctx;
     }
     labeledStatement() {
-      let _localctx = new LabeledStatementContext(this._ctx, this.state);
+      const _localctx = new LabeledStatementContext(this._ctx, this.state);
       this.enterRule(_localctx, 268, _Java8Parser.RULE_labeledStatement);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -27790,7 +27790,7 @@
       return _localctx;
     }
     labeledStatementNoShortIf() {
-      let _localctx = new LabeledStatementNoShortIfContext(this._ctx, this.state);
+      const _localctx = new LabeledStatementNoShortIfContext(this._ctx, this.state);
       this.enterRule(_localctx, 270, _Java8Parser.RULE_labeledStatementNoShortIf);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -27816,7 +27816,7 @@
       return _localctx;
     }
     expressionStatement() {
-      let _localctx = new ExpressionStatementContext(this._ctx, this.state);
+      const _localctx = new ExpressionStatementContext(this._ctx, this.state);
       this.enterRule(_localctx, 272, _Java8Parser.RULE_expressionStatement);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -27840,7 +27840,7 @@
       return _localctx;
     }
     statementExpression() {
-      let _localctx = new StatementExpressionContext(this._ctx, this.state);
+      const _localctx = new StatementExpressionContext(this._ctx, this.state);
       this.enterRule(_localctx, 274, _Java8Parser.RULE_statementExpression);
       try {
         this.state = 1553;
@@ -27910,7 +27910,7 @@
       return _localctx;
     }
     ifThenStatement() {
-      let _localctx = new IfThenStatementContext(this._ctx, this.state);
+      const _localctx = new IfThenStatementContext(this._ctx, this.state);
       this.enterRule(_localctx, 276, _Java8Parser.RULE_ifThenStatement);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -27940,7 +27940,7 @@
       return _localctx;
     }
     ifThenElseStatement() {
-      let _localctx = new IfThenElseStatementContext(this._ctx, this.state);
+      const _localctx = new IfThenElseStatementContext(this._ctx, this.state);
       this.enterRule(_localctx, 278, _Java8Parser.RULE_ifThenElseStatement);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -27974,7 +27974,7 @@
       return _localctx;
     }
     ifThenElseStatementNoShortIf() {
-      let _localctx = new IfThenElseStatementNoShortIfContext(this._ctx, this.state);
+      const _localctx = new IfThenElseStatementNoShortIfContext(this._ctx, this.state);
       this.enterRule(_localctx, 280, _Java8Parser.RULE_ifThenElseStatementNoShortIf);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -28008,7 +28008,7 @@
       return _localctx;
     }
     assertStatement() {
-      let _localctx = new AssertStatementContext(this._ctx, this.state);
+      const _localctx = new AssertStatementContext(this._ctx, this.state);
       this.enterRule(_localctx, 282, _Java8Parser.RULE_assertStatement);
       try {
         this.state = 1587;
@@ -28055,7 +28055,7 @@
       return _localctx;
     }
     switchStatement() {
-      let _localctx = new SwitchStatementContext(this._ctx, this.state);
+      const _localctx = new SwitchStatementContext(this._ctx, this.state);
       this.enterRule(_localctx, 284, _Java8Parser.RULE_switchStatement);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -28085,7 +28085,7 @@
       return _localctx;
     }
     switchBlock() {
-      let _localctx = new SwitchBlockContext(this._ctx, this.state);
+      const _localctx = new SwitchBlockContext(this._ctx, this.state);
       this.enterRule(_localctx, 286, _Java8Parser.RULE_switchBlock);
       let _la;
       try {
@@ -28141,7 +28141,7 @@
       return _localctx;
     }
     switchBlockStatementGroup() {
-      let _localctx = new SwitchBlockStatementGroupContext(this._ctx, this.state);
+      const _localctx = new SwitchBlockStatementGroupContext(this._ctx, this.state);
       this.enterRule(_localctx, 288, _Java8Parser.RULE_switchBlockStatementGroup);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -28165,7 +28165,7 @@
       return _localctx;
     }
     switchLabels() {
-      let _localctx = new SwitchLabelsContext(this._ctx, this.state);
+      const _localctx = new SwitchLabelsContext(this._ctx, this.state);
       this.enterRule(_localctx, 290, _Java8Parser.RULE_switchLabels);
       let _la;
       try {
@@ -28202,7 +28202,7 @@
       return _localctx;
     }
     switchLabel() {
-      let _localctx = new SwitchLabelContext(this._ctx, this.state);
+      const _localctx = new SwitchLabelContext(this._ctx, this.state);
       this.enterRule(_localctx, 292, _Java8Parser.RULE_switchLabel);
       try {
         this.state = 1630;
@@ -28254,7 +28254,7 @@
       return _localctx;
     }
     enumConstantName() {
-      let _localctx = new EnumConstantNameContext(this._ctx, this.state);
+      const _localctx = new EnumConstantNameContext(this._ctx, this.state);
       this.enterRule(_localctx, 294, _Java8Parser.RULE_enumConstantName);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -28276,7 +28276,7 @@
       return _localctx;
     }
     whileStatement() {
-      let _localctx = new WhileStatementContext(this._ctx, this.state);
+      const _localctx = new WhileStatementContext(this._ctx, this.state);
       this.enterRule(_localctx, 296, _Java8Parser.RULE_whileStatement);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -28306,7 +28306,7 @@
       return _localctx;
     }
     whileStatementNoShortIf() {
-      let _localctx = new WhileStatementNoShortIfContext(this._ctx, this.state);
+      const _localctx = new WhileStatementNoShortIfContext(this._ctx, this.state);
       this.enterRule(_localctx, 298, _Java8Parser.RULE_whileStatementNoShortIf);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -28336,7 +28336,7 @@
       return _localctx;
     }
     doStatement() {
-      let _localctx = new DoStatementContext(this._ctx, this.state);
+      const _localctx = new DoStatementContext(this._ctx, this.state);
       this.enterRule(_localctx, 300, _Java8Parser.RULE_doStatement);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -28370,7 +28370,7 @@
       return _localctx;
     }
     forStatement() {
-      let _localctx = new ForStatementContext(this._ctx, this.state);
+      const _localctx = new ForStatementContext(this._ctx, this.state);
       this.enterRule(_localctx, 302, _Java8Parser.RULE_forStatement);
       try {
         this.state = 1656;
@@ -28405,7 +28405,7 @@
       return _localctx;
     }
     forStatementNoShortIf() {
-      let _localctx = new ForStatementNoShortIfContext(this._ctx, this.state);
+      const _localctx = new ForStatementNoShortIfContext(this._ctx, this.state);
       this.enterRule(_localctx, 304, _Java8Parser.RULE_forStatementNoShortIf);
       try {
         this.state = 1660;
@@ -28440,7 +28440,7 @@
       return _localctx;
     }
     basicForStatement() {
-      let _localctx = new BasicForStatementContext(this._ctx, this.state);
+      const _localctx = new BasicForStatementContext(this._ctx, this.state);
       this.enterRule(_localctx, 306, _Java8Parser.RULE_basicForStatement);
       let _la;
       try {
@@ -28500,7 +28500,7 @@
       return _localctx;
     }
     basicForStatementNoShortIf() {
-      let _localctx = new BasicForStatementNoShortIfContext(this._ctx, this.state);
+      const _localctx = new BasicForStatementNoShortIfContext(this._ctx, this.state);
       this.enterRule(_localctx, 308, _Java8Parser.RULE_basicForStatementNoShortIf);
       let _la;
       try {
@@ -28560,7 +28560,7 @@
       return _localctx;
     }
     forInit() {
-      let _localctx = new ForInitContext(this._ctx, this.state);
+      const _localctx = new ForInitContext(this._ctx, this.state);
       this.enterRule(_localctx, 310, _Java8Parser.RULE_forInit);
       try {
         this.state = 1696;
@@ -28595,7 +28595,7 @@
       return _localctx;
     }
     forUpdate() {
-      let _localctx = new ForUpdateContext(this._ctx, this.state);
+      const _localctx = new ForUpdateContext(this._ctx, this.state);
       this.enterRule(_localctx, 312, _Java8Parser.RULE_forUpdate);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -28617,7 +28617,7 @@
       return _localctx;
     }
     statementExpressionList() {
-      let _localctx = new StatementExpressionListContext(this._ctx, this.state);
+      const _localctx = new StatementExpressionListContext(this._ctx, this.state);
       this.enterRule(_localctx, 314, _Java8Parser.RULE_statementExpressionList);
       let _la;
       try {
@@ -28656,7 +28656,7 @@
       return _localctx;
     }
     enhancedForStatement() {
-      let _localctx = new EnhancedForStatementContext(this._ctx, this.state);
+      const _localctx = new EnhancedForStatementContext(this._ctx, this.state);
       this.enterRule(_localctx, 316, _Java8Parser.RULE_enhancedForStatement);
       let _la;
       try {
@@ -28707,7 +28707,7 @@
       return _localctx;
     }
     enhancedForStatementNoShortIf() {
-      let _localctx = new EnhancedForStatementNoShortIfContext(this._ctx, this.state);
+      const _localctx = new EnhancedForStatementNoShortIfContext(this._ctx, this.state);
       this.enterRule(_localctx, 318, _Java8Parser.RULE_enhancedForStatementNoShortIf);
       let _la;
       try {
@@ -28758,7 +28758,7 @@
       return _localctx;
     }
     breakStatement() {
-      let _localctx = new BreakStatementContext(this._ctx, this.state);
+      const _localctx = new BreakStatementContext(this._ctx, this.state);
       this.enterRule(_localctx, 320, _Java8Parser.RULE_breakStatement);
       let _la;
       try {
@@ -28792,7 +28792,7 @@
       return _localctx;
     }
     continueStatement() {
-      let _localctx = new ContinueStatementContext(this._ctx, this.state);
+      const _localctx = new ContinueStatementContext(this._ctx, this.state);
       this.enterRule(_localctx, 322, _Java8Parser.RULE_continueStatement);
       let _la;
       try {
@@ -28826,7 +28826,7 @@
       return _localctx;
     }
     returnStatement() {
-      let _localctx = new ReturnStatementContext(this._ctx, this.state);
+      const _localctx = new ReturnStatementContext(this._ctx, this.state);
       this.enterRule(_localctx, 324, _Java8Parser.RULE_returnStatement);
       let _la;
       try {
@@ -28860,7 +28860,7 @@
       return _localctx;
     }
     throwStatement() {
-      let _localctx = new ThrowStatementContext(this._ctx, this.state);
+      const _localctx = new ThrowStatementContext(this._ctx, this.state);
       this.enterRule(_localctx, 326, _Java8Parser.RULE_throwStatement);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -28886,7 +28886,7 @@
       return _localctx;
     }
     synchronizedStatement() {
-      let _localctx = new SynchronizedStatementContext(this._ctx, this.state);
+      const _localctx = new SynchronizedStatementContext(this._ctx, this.state);
       this.enterRule(_localctx, 328, _Java8Parser.RULE_synchronizedStatement);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -28916,7 +28916,7 @@
       return _localctx;
     }
     tryStatement() {
-      let _localctx = new TryStatementContext(this._ctx, this.state);
+      const _localctx = new TryStatementContext(this._ctx, this.state);
       this.enterRule(_localctx, 330, _Java8Parser.RULE_tryStatement);
       let _la;
       try {
@@ -28976,7 +28976,7 @@
       return _localctx;
     }
     catches() {
-      let _localctx = new CatchesContext(this._ctx, this.state);
+      const _localctx = new CatchesContext(this._ctx, this.state);
       this.enterRule(_localctx, 332, _Java8Parser.RULE_catches);
       let _la;
       try {
@@ -29013,7 +29013,7 @@
       return _localctx;
     }
     catchClause() {
-      let _localctx = new CatchClauseContext(this._ctx, this.state);
+      const _localctx = new CatchClauseContext(this._ctx, this.state);
       this.enterRule(_localctx, 334, _Java8Parser.RULE_catchClause);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -29043,7 +29043,7 @@
       return _localctx;
     }
     catchFormalParameter() {
-      let _localctx = new CatchFormalParameterContext(this._ctx, this.state);
+      const _localctx = new CatchFormalParameterContext(this._ctx, this.state);
       this.enterRule(_localctx, 336, _Java8Parser.RULE_catchFormalParameter);
       let _la;
       try {
@@ -29082,7 +29082,7 @@
       return _localctx;
     }
     catchType() {
-      let _localctx = new CatchTypeContext(this._ctx, this.state);
+      const _localctx = new CatchTypeContext(this._ctx, this.state);
       this.enterRule(_localctx, 338, _Java8Parser.RULE_catchType);
       let _la;
       try {
@@ -29121,7 +29121,7 @@
       return _localctx;
     }
     finally_() {
-      let _localctx = new Finally_Context(this._ctx, this.state);
+      const _localctx = new Finally_Context(this._ctx, this.state);
       this.enterRule(_localctx, 340, _Java8Parser.RULE_finally_);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -29145,7 +29145,7 @@
       return _localctx;
     }
     tryWithResourcesStatement() {
-      let _localctx = new TryWithResourcesStatementContext(this._ctx, this.state);
+      const _localctx = new TryWithResourcesStatementContext(this._ctx, this.state);
       this.enterRule(_localctx, 342, _Java8Parser.RULE_tryWithResourcesStatement);
       let _la;
       try {
@@ -29190,7 +29190,7 @@
       return _localctx;
     }
     resourceSpecification() {
-      let _localctx = new ResourceSpecificationContext(this._ctx, this.state);
+      const _localctx = new ResourceSpecificationContext(this._ctx, this.state);
       this.enterRule(_localctx, 344, _Java8Parser.RULE_resourceSpecification);
       let _la;
       try {
@@ -29226,7 +29226,7 @@
       return _localctx;
     }
     resourceList() {
-      let _localctx = new ResourceListContext(this._ctx, this.state);
+      const _localctx = new ResourceListContext(this._ctx, this.state);
       this.enterRule(_localctx, 346, _Java8Parser.RULE_resourceList);
       try {
         let _alt;
@@ -29267,7 +29267,7 @@
       return _localctx;
     }
     resource() {
-      let _localctx = new ResourceContext(this._ctx, this.state);
+      const _localctx = new ResourceContext(this._ctx, this.state);
       this.enterRule(_localctx, 348, _Java8Parser.RULE_resource);
       let _la;
       try {
@@ -29310,7 +29310,7 @@
       return _localctx;
     }
     primary() {
-      let _localctx = new PrimaryContext(this._ctx, this.state);
+      const _localctx = new PrimaryContext(this._ctx, this.state);
       this.enterRule(_localctx, 350, _Java8Parser.RULE_primary);
       try {
         let _alt;
@@ -29363,7 +29363,7 @@
       return _localctx;
     }
     primaryNoNewArray() {
-      let _localctx = new PrimaryNoNewArrayContext(this._ctx, this.state);
+      const _localctx = new PrimaryNoNewArrayContext(this._ctx, this.state);
       this.enterRule(_localctx, 352, _Java8Parser.RULE_primaryNoNewArray);
       let _la;
       try {
@@ -29494,7 +29494,7 @@
       return _localctx;
     }
     primaryNoNewArray_lf_arrayAccess() {
-      let _localctx = new PrimaryNoNewArray_lf_arrayAccessContext(this._ctx, this.state);
+      const _localctx = new PrimaryNoNewArray_lf_arrayAccessContext(this._ctx, this.state);
       this.enterRule(_localctx, 354, _Java8Parser.RULE_primaryNoNewArray_lf_arrayAccess);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -29514,7 +29514,7 @@
       return _localctx;
     }
     primaryNoNewArray_lfno_arrayAccess() {
-      let _localctx = new PrimaryNoNewArray_lfno_arrayAccessContext(this._ctx, this.state);
+      const _localctx = new PrimaryNoNewArray_lfno_arrayAccessContext(this._ctx, this.state);
       this.enterRule(_localctx, 356, _Java8Parser.RULE_primaryNoNewArray_lfno_arrayAccess);
       let _la;
       try {
@@ -29638,7 +29638,7 @@
       return _localctx;
     }
     primaryNoNewArray_lf_primary() {
-      let _localctx = new PrimaryNoNewArray_lf_primaryContext(this._ctx, this.state);
+      const _localctx = new PrimaryNoNewArray_lf_primaryContext(this._ctx, this.state);
       this.enterRule(_localctx, 358, _Java8Parser.RULE_primaryNoNewArray_lf_primary);
       try {
         this.state = 1926;
@@ -29694,7 +29694,7 @@
       return _localctx;
     }
     primaryNoNewArray_lf_primary_lf_arrayAccess_lf_primary() {
-      let _localctx = new PrimaryNoNewArray_lf_primary_lf_arrayAccess_lf_primaryContext(this._ctx, this.state);
+      const _localctx = new PrimaryNoNewArray_lf_primary_lf_arrayAccess_lf_primaryContext(this._ctx, this.state);
       this.enterRule(_localctx, 360, _Java8Parser.RULE_primaryNoNewArray_lf_primary_lf_arrayAccess_lf_primary);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -29714,7 +29714,7 @@
       return _localctx;
     }
     primaryNoNewArray_lf_primary_lfno_arrayAccess_lf_primary() {
-      let _localctx = new PrimaryNoNewArray_lf_primary_lfno_arrayAccess_lf_primaryContext(this._ctx, this.state);
+      const _localctx = new PrimaryNoNewArray_lf_primary_lfno_arrayAccess_lf_primaryContext(this._ctx, this.state);
       this.enterRule(_localctx, 362, _Java8Parser.RULE_primaryNoNewArray_lf_primary_lfno_arrayAccess_lf_primary);
       try {
         this.state = 1934;
@@ -29763,7 +29763,7 @@
       return _localctx;
     }
     primaryNoNewArray_lfno_primary() {
-      let _localctx = new PrimaryNoNewArray_lfno_primaryContext(this._ctx, this.state);
+      const _localctx = new PrimaryNoNewArray_lfno_primaryContext(this._ctx, this.state);
       this.enterRule(_localctx, 364, _Java8Parser.RULE_primaryNoNewArray_lfno_primary);
       let _la;
       try {
@@ -29921,7 +29921,7 @@
       return _localctx;
     }
     primaryNoNewArray_lfno_primary_lf_arrayAccess_lfno_primary() {
-      let _localctx = new PrimaryNoNewArray_lfno_primary_lf_arrayAccess_lfno_primaryContext(this._ctx, this.state);
+      const _localctx = new PrimaryNoNewArray_lfno_primary_lf_arrayAccess_lfno_primaryContext(this._ctx, this.state);
       this.enterRule(_localctx, 366, _Java8Parser.RULE_primaryNoNewArray_lfno_primary_lf_arrayAccess_lfno_primary);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -29941,7 +29941,7 @@
       return _localctx;
     }
     primaryNoNewArray_lfno_primary_lfno_arrayAccess_lfno_primary() {
-      let _localctx = new PrimaryNoNewArray_lfno_primary_lfno_arrayAccess_lfno_primaryContext(this._ctx, this.state);
+      const _localctx = new PrimaryNoNewArray_lfno_primary_lfno_arrayAccess_lfno_primaryContext(this._ctx, this.state);
       this.enterRule(_localctx, 368, _Java8Parser.RULE_primaryNoNewArray_lfno_primary_lfno_arrayAccess_lfno_primary);
       let _la;
       try {
@@ -30092,7 +30092,7 @@
       return _localctx;
     }
     classInstanceCreationExpression() {
-      let _localctx = new ClassInstanceCreationExpressionContext(this._ctx, this.state);
+      const _localctx = new ClassInstanceCreationExpressionContext(this._ctx, this.state);
       this.enterRule(_localctx, 370, _Java8Parser.RULE_classInstanceCreationExpression);
       let _la;
       try {
@@ -30341,7 +30341,7 @@
       return _localctx;
     }
     classInstanceCreationExpression_lf_primary() {
-      let _localctx = new ClassInstanceCreationExpression_lf_primaryContext(this._ctx, this.state);
+      const _localctx = new ClassInstanceCreationExpression_lf_primaryContext(this._ctx, this.state);
       this.enterRule(_localctx, 372, _Java8Parser.RULE_classInstanceCreationExpression_lf_primary);
       let _la;
       try {
@@ -30423,7 +30423,7 @@
       return _localctx;
     }
     classInstanceCreationExpression_lfno_primary() {
-      let _localctx = new ClassInstanceCreationExpression_lfno_primaryContext(this._ctx, this.state);
+      const _localctx = new ClassInstanceCreationExpression_lfno_primaryContext(this._ctx, this.state);
       this.enterRule(_localctx, 374, _Java8Parser.RULE_classInstanceCreationExpression_lfno_primary);
       let _la;
       try {
@@ -30609,7 +30609,7 @@
       return _localctx;
     }
     typeArgumentsOrDiamond() {
-      let _localctx = new TypeArgumentsOrDiamondContext(this._ctx, this.state);
+      const _localctx = new TypeArgumentsOrDiamondContext(this._ctx, this.state);
       this.enterRule(_localctx, 376, _Java8Parser.RULE_typeArgumentsOrDiamond);
       try {
         this.state = 2193;
@@ -30646,7 +30646,7 @@
       return _localctx;
     }
     fieldAccess() {
-      let _localctx = new FieldAccessContext(this._ctx, this.state);
+      const _localctx = new FieldAccessContext(this._ctx, this.state);
       this.enterRule(_localctx, 378, _Java8Parser.RULE_fieldAccess);
       try {
         this.state = 2208;
@@ -30704,7 +30704,7 @@
       return _localctx;
     }
     fieldAccess_lf_primary() {
-      let _localctx = new FieldAccess_lf_primaryContext(this._ctx, this.state);
+      const _localctx = new FieldAccess_lf_primaryContext(this._ctx, this.state);
       this.enterRule(_localctx, 380, _Java8Parser.RULE_fieldAccess_lf_primary);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -30728,7 +30728,7 @@
       return _localctx;
     }
     fieldAccess_lfno_primary() {
-      let _localctx = new FieldAccess_lfno_primaryContext(this._ctx, this.state);
+      const _localctx = new FieldAccess_lfno_primaryContext(this._ctx, this.state);
       this.enterRule(_localctx, 382, _Java8Parser.RULE_fieldAccess_lfno_primary);
       try {
         this.state = 2222;
@@ -30777,7 +30777,7 @@
       return _localctx;
     }
     arrayAccess() {
-      let _localctx = new ArrayAccessContext(this._ctx, this.state);
+      const _localctx = new ArrayAccessContext(this._ctx, this.state);
       this.enterRule(_localctx, 384, _Java8Parser.RULE_arrayAccess);
       let _la;
       try {
@@ -30846,7 +30846,7 @@
       return _localctx;
     }
     arrayAccess_lf_primary() {
-      let _localctx = new ArrayAccess_lf_primaryContext(this._ctx, this.state);
+      const _localctx = new ArrayAccess_lf_primaryContext(this._ctx, this.state);
       this.enterRule(_localctx, 386, _Java8Parser.RULE_arrayAccess_lf_primary);
       try {
         let _alt;
@@ -30899,7 +30899,7 @@
       return _localctx;
     }
     arrayAccess_lfno_primary() {
-      let _localctx = new ArrayAccess_lfno_primaryContext(this._ctx, this.state);
+      const _localctx = new ArrayAccess_lfno_primaryContext(this._ctx, this.state);
       this.enterRule(_localctx, 388, _Java8Parser.RULE_arrayAccess_lfno_primary);
       try {
         let _alt;
@@ -30970,7 +30970,7 @@
       return _localctx;
     }
     methodInvocation() {
-      let _localctx = new MethodInvocationContext(this._ctx, this.state);
+      const _localctx = new MethodInvocationContext(this._ctx, this.state);
       this.enterRule(_localctx, 390, _Java8Parser.RULE_methodInvocation);
       let _la;
       try {
@@ -31181,7 +31181,7 @@
       return _localctx;
     }
     methodInvocation_lf_primary() {
-      let _localctx = new MethodInvocation_lf_primaryContext(this._ctx, this.state);
+      const _localctx = new MethodInvocation_lf_primaryContext(this._ctx, this.state);
       this.enterRule(_localctx, 392, _Java8Parser.RULE_methodInvocation_lf_primary);
       let _la;
       try {
@@ -31228,7 +31228,7 @@
       return _localctx;
     }
     methodInvocation_lfno_primary() {
-      let _localctx = new MethodInvocation_lfno_primaryContext(this._ctx, this.state);
+      const _localctx = new MethodInvocation_lfno_primaryContext(this._ctx, this.state);
       this.enterRule(_localctx, 394, _Java8Parser.RULE_methodInvocation_lfno_primary);
       let _la;
       try {
@@ -31406,7 +31406,7 @@
       return _localctx;
     }
     argumentList() {
-      let _localctx = new ArgumentListContext(this._ctx, this.state);
+      const _localctx = new ArgumentListContext(this._ctx, this.state);
       this.enterRule(_localctx, 396, _Java8Parser.RULE_argumentList);
       let _la;
       try {
@@ -31445,7 +31445,7 @@
       return _localctx;
     }
     methodReference() {
-      let _localctx = new MethodReferenceContext(this._ctx, this.state);
+      const _localctx = new MethodReferenceContext(this._ctx, this.state);
       this.enterRule(_localctx, 398, _Java8Parser.RULE_methodReference);
       let _la;
       try {
@@ -31602,7 +31602,7 @@
       return _localctx;
     }
     methodReference_lf_primary() {
-      let _localctx = new MethodReference_lf_primaryContext(this._ctx, this.state);
+      const _localctx = new MethodReference_lf_primaryContext(this._ctx, this.state);
       this.enterRule(_localctx, 400, _Java8Parser.RULE_methodReference_lf_primary);
       let _la;
       try {
@@ -31636,7 +31636,7 @@
       return _localctx;
     }
     methodReference_lfno_primary() {
-      let _localctx = new MethodReference_lfno_primaryContext(this._ctx, this.state);
+      const _localctx = new MethodReference_lfno_primaryContext(this._ctx, this.state);
       this.enterRule(_localctx, 402, _Java8Parser.RULE_methodReference_lfno_primary);
       let _la;
       try {
@@ -31773,7 +31773,7 @@
       return _localctx;
     }
     arrayCreationExpression() {
-      let _localctx = new ArrayCreationExpressionContext(this._ctx, this.state);
+      const _localctx = new ArrayCreationExpressionContext(this._ctx, this.state);
       this.enterRule(_localctx, 404, _Java8Parser.RULE_arrayCreationExpression);
       try {
         this.state = 2549;
@@ -31862,7 +31862,7 @@
       return _localctx;
     }
     dimExprs() {
-      let _localctx = new DimExprsContext(this._ctx, this.state);
+      const _localctx = new DimExprsContext(this._ctx, this.state);
       this.enterRule(_localctx, 406, _Java8Parser.RULE_dimExprs);
       try {
         let _alt;
@@ -31901,7 +31901,7 @@
       return _localctx;
     }
     dimExpr() {
-      let _localctx = new DimExprContext(this._ctx, this.state);
+      const _localctx = new DimExprContext(this._ctx, this.state);
       this.enterRule(_localctx, 408, _Java8Parser.RULE_dimExpr);
       let _la;
       try {
@@ -31942,7 +31942,7 @@
       return _localctx;
     }
     constantExpression() {
-      let _localctx = new ConstantExpressionContext(this._ctx, this.state);
+      const _localctx = new ConstantExpressionContext(this._ctx, this.state);
       this.enterRule(_localctx, 410, _Java8Parser.RULE_constantExpression);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -31964,7 +31964,7 @@
       return _localctx;
     }
     expression() {
-      let _localctx = new ExpressionContext(this._ctx, this.state);
+      const _localctx = new ExpressionContext(this._ctx, this.state);
       this.enterRule(_localctx, 412, _Java8Parser.RULE_expression);
       try {
         this.state = 2572;
@@ -31999,7 +31999,7 @@
       return _localctx;
     }
     lambdaExpression() {
-      let _localctx = new LambdaExpressionContext(this._ctx, this.state);
+      const _localctx = new LambdaExpressionContext(this._ctx, this.state);
       this.enterRule(_localctx, 414, _Java8Parser.RULE_lambdaExpression);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -32025,7 +32025,7 @@
       return _localctx;
     }
     lambdaParameters() {
-      let _localctx = new LambdaParametersContext(this._ctx, this.state);
+      const _localctx = new LambdaParametersContext(this._ctx, this.state);
       this.enterRule(_localctx, 416, _Java8Parser.RULE_lambdaParameters);
       let _la;
       try {
@@ -32083,7 +32083,7 @@
       return _localctx;
     }
     inferredFormalParameterList() {
-      let _localctx = new InferredFormalParameterListContext(this._ctx, this.state);
+      const _localctx = new InferredFormalParameterListContext(this._ctx, this.state);
       this.enterRule(_localctx, 418, _Java8Parser.RULE_inferredFormalParameterList);
       let _la;
       try {
@@ -32122,7 +32122,7 @@
       return _localctx;
     }
     lambdaBody() {
-      let _localctx = new LambdaBodyContext(this._ctx, this.state);
+      const _localctx = new LambdaBodyContext(this._ctx, this.state);
       this.enterRule(_localctx, 420, _Java8Parser.RULE_lambdaBody);
       try {
         this.state = 2600;
@@ -32185,7 +32185,7 @@
       return _localctx;
     }
     assignmentExpression() {
-      let _localctx = new AssignmentExpressionContext(this._ctx, this.state);
+      const _localctx = new AssignmentExpressionContext(this._ctx, this.state);
       this.enterRule(_localctx, 422, _Java8Parser.RULE_assignmentExpression);
       try {
         this.state = 2604;
@@ -32220,7 +32220,7 @@
       return _localctx;
     }
     assignment() {
-      let _localctx = new AssignmentContext(this._ctx, this.state);
+      const _localctx = new AssignmentContext(this._ctx, this.state);
       this.enterRule(_localctx, 424, _Java8Parser.RULE_assignment);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -32246,7 +32246,7 @@
       return _localctx;
     }
     leftHandSide() {
-      let _localctx = new LeftHandSideContext(this._ctx, this.state);
+      const _localctx = new LeftHandSideContext(this._ctx, this.state);
       this.enterRule(_localctx, 426, _Java8Parser.RULE_leftHandSide);
       try {
         this.state = 2613;
@@ -32288,7 +32288,7 @@
       return _localctx;
     }
     assignmentOperator() {
-      let _localctx = new AssignmentOperatorContext(this._ctx, this.state);
+      const _localctx = new AssignmentOperatorContext(this._ctx, this.state);
       this.enterRule(_localctx, 428, _Java8Parser.RULE_assignmentOperator);
       let _la;
       try {
@@ -32320,7 +32320,7 @@
       return _localctx;
     }
     conditionalExpression() {
-      let _localctx = new ConditionalExpressionContext(this._ctx, this.state);
+      const _localctx = new ConditionalExpressionContext(this._ctx, this.state);
       this.enterRule(_localctx, 430, _Java8Parser.RULE_conditionalExpression);
       try {
         this.state = 2624;
@@ -32366,11 +32366,11 @@
       if (_p === void 0) {
         _p = 0;
       }
-      let _parentctx = this._ctx;
-      let _parentState = this.state;
+      const _parentctx = this._ctx;
+      const _parentState = this.state;
       let _localctx = new ConditionalOrExpressionContext(this._ctx, _parentState);
       let _prevctx = _localctx;
-      let _startState = 432;
+      const _startState = 432;
       this.enterRecursionRule(_localctx, 432, _Java8Parser.RULE_conditionalOrExpression, _p);
       try {
         let _alt;
@@ -32427,11 +32427,11 @@
       if (_p === void 0) {
         _p = 0;
       }
-      let _parentctx = this._ctx;
-      let _parentState = this.state;
+      const _parentctx = this._ctx;
+      const _parentState = this.state;
       let _localctx = new ConditionalAndExpressionContext(this._ctx, _parentState);
       let _prevctx = _localctx;
-      let _startState = 434;
+      const _startState = 434;
       this.enterRecursionRule(_localctx, 434, _Java8Parser.RULE_conditionalAndExpression, _p);
       try {
         let _alt;
@@ -32488,11 +32488,11 @@
       if (_p === void 0) {
         _p = 0;
       }
-      let _parentctx = this._ctx;
-      let _parentState = this.state;
+      const _parentctx = this._ctx;
+      const _parentState = this.state;
       let _localctx = new InclusiveOrExpressionContext(this._ctx, _parentState);
       let _prevctx = _localctx;
-      let _startState = 436;
+      const _startState = 436;
       this.enterRecursionRule(_localctx, 436, _Java8Parser.RULE_inclusiveOrExpression, _p);
       try {
         let _alt;
@@ -32549,11 +32549,11 @@
       if (_p === void 0) {
         _p = 0;
       }
-      let _parentctx = this._ctx;
-      let _parentState = this.state;
+      const _parentctx = this._ctx;
+      const _parentState = this.state;
       let _localctx = new ExclusiveOrExpressionContext(this._ctx, _parentState);
       let _prevctx = _localctx;
-      let _startState = 438;
+      const _startState = 438;
       this.enterRecursionRule(_localctx, 438, _Java8Parser.RULE_exclusiveOrExpression, _p);
       try {
         let _alt;
@@ -32610,11 +32610,11 @@
       if (_p === void 0) {
         _p = 0;
       }
-      let _parentctx = this._ctx;
-      let _parentState = this.state;
+      const _parentctx = this._ctx;
+      const _parentState = this.state;
       let _localctx = new AndExpressionContext(this._ctx, _parentState);
       let _prevctx = _localctx;
-      let _startState = 440;
+      const _startState = 440;
       this.enterRecursionRule(_localctx, 440, _Java8Parser.RULE_andExpression, _p);
       try {
         let _alt;
@@ -32671,11 +32671,11 @@
       if (_p === void 0) {
         _p = 0;
       }
-      let _parentctx = this._ctx;
-      let _parentState = this.state;
+      const _parentctx = this._ctx;
+      const _parentState = this.state;
       let _localctx = new EqualityExpressionContext(this._ctx, _parentState);
       let _prevctx = _localctx;
-      let _startState = 442;
+      const _startState = 442;
       this.enterRecursionRule(_localctx, 442, _Java8Parser.RULE_equalityExpression, _p);
       try {
         let _alt;
@@ -32752,11 +32752,11 @@
       if (_p === void 0) {
         _p = 0;
       }
-      let _parentctx = this._ctx;
-      let _parentState = this.state;
+      const _parentctx = this._ctx;
+      const _parentState = this.state;
       let _localctx = new RelationalExpressionContext(this._ctx, _parentState);
       let _prevctx = _localctx;
-      let _startState = 444;
+      const _startState = 444;
       this.enterRecursionRule(_localctx, 444, _Java8Parser.RULE_relationalExpression, _p);
       try {
         let _alt;
@@ -32875,11 +32875,11 @@
       if (_p === void 0) {
         _p = 0;
       }
-      let _parentctx = this._ctx;
-      let _parentState = this.state;
+      const _parentctx = this._ctx;
+      const _parentState = this.state;
       let _localctx = new ShiftExpressionContext(this._ctx, _parentState);
       let _prevctx = _localctx;
-      let _startState = 446;
+      const _startState = 446;
       this.enterRecursionRule(_localctx, 446, _Java8Parser.RULE_shiftExpression, _p);
       try {
         let _alt;
@@ -32978,11 +32978,11 @@
       if (_p === void 0) {
         _p = 0;
       }
-      let _parentctx = this._ctx;
-      let _parentState = this.state;
+      const _parentctx = this._ctx;
+      const _parentState = this.state;
       let _localctx = new AdditiveExpressionContext(this._ctx, _parentState);
       let _prevctx = _localctx;
-      let _startState = 448;
+      const _startState = 448;
       this.enterRecursionRule(_localctx, 448, _Java8Parser.RULE_additiveExpression, _p);
       try {
         let _alt;
@@ -33059,11 +33059,11 @@
       if (_p === void 0) {
         _p = 0;
       }
-      let _parentctx = this._ctx;
-      let _parentState = this.state;
+      const _parentctx = this._ctx;
+      const _parentState = this.state;
       let _localctx = new MultiplicativeExpressionContext(this._ctx, _parentState);
       let _prevctx = _localctx;
-      let _startState = 450;
+      const _startState = 450;
       this.enterRecursionRule(_localctx, 450, _Java8Parser.RULE_multiplicativeExpression, _p);
       try {
         let _alt;
@@ -33151,7 +33151,7 @@
       return _localctx;
     }
     unaryExpression() {
-      let _localctx = new UnaryExpressionContext(this._ctx, this.state);
+      const _localctx = new UnaryExpressionContext(this._ctx, this.state);
       this.enterRule(_localctx, 452, _Java8Parser.RULE_unaryExpression);
       try {
         this.state = 2777;
@@ -33235,7 +33235,7 @@
       return _localctx;
     }
     preIncrementExpression() {
-      let _localctx = new PreIncrementExpressionContext(this._ctx, this.state);
+      const _localctx = new PreIncrementExpressionContext(this._ctx, this.state);
       this.enterRule(_localctx, 454, _Java8Parser.RULE_preIncrementExpression);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -33259,7 +33259,7 @@
       return _localctx;
     }
     preDecrementExpression() {
-      let _localctx = new PreDecrementExpressionContext(this._ctx, this.state);
+      const _localctx = new PreDecrementExpressionContext(this._ctx, this.state);
       this.enterRule(_localctx, 456, _Java8Parser.RULE_preDecrementExpression);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -33283,7 +33283,7 @@
       return _localctx;
     }
     unaryExpressionNotPlusMinus() {
-      let _localctx = new UnaryExpressionNotPlusMinusContext(this._ctx, this.state);
+      const _localctx = new UnaryExpressionNotPlusMinusContext(this._ctx, this.state);
       this.enterRule(_localctx, 458, _Java8Parser.RULE_unaryExpressionNotPlusMinus);
       try {
         this.state = 2791;
@@ -33336,7 +33336,7 @@
       return _localctx;
     }
     postfixExpression() {
-      let _localctx = new PostfixExpressionContext(this._ctx, this.state);
+      const _localctx = new PostfixExpressionContext(this._ctx, this.state);
       this.enterRule(_localctx, 460, _Java8Parser.RULE_postfixExpression);
       try {
         let _alt;
@@ -33403,7 +33403,7 @@
       return _localctx;
     }
     postIncrementExpression() {
-      let _localctx = new PostIncrementExpressionContext(this._ctx, this.state);
+      const _localctx = new PostIncrementExpressionContext(this._ctx, this.state);
       this.enterRule(_localctx, 462, _Java8Parser.RULE_postIncrementExpression);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -33427,7 +33427,7 @@
       return _localctx;
     }
     postIncrementExpression_lf_postfixExpression() {
-      let _localctx = new PostIncrementExpression_lf_postfixExpressionContext(this._ctx, this.state);
+      const _localctx = new PostIncrementExpression_lf_postfixExpressionContext(this._ctx, this.state);
       this.enterRule(_localctx, 464, _Java8Parser.RULE_postIncrementExpression_lf_postfixExpression);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -33449,7 +33449,7 @@
       return _localctx;
     }
     postDecrementExpression() {
-      let _localctx = new PostDecrementExpressionContext(this._ctx, this.state);
+      const _localctx = new PostDecrementExpressionContext(this._ctx, this.state);
       this.enterRule(_localctx, 466, _Java8Parser.RULE_postDecrementExpression);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -33473,7 +33473,7 @@
       return _localctx;
     }
     postDecrementExpression_lf_postfixExpression() {
-      let _localctx = new PostDecrementExpression_lf_postfixExpressionContext(this._ctx, this.state);
+      const _localctx = new PostDecrementExpression_lf_postfixExpressionContext(this._ctx, this.state);
       this.enterRule(_localctx, 468, _Java8Parser.RULE_postDecrementExpression_lf_postfixExpression);
       try {
         this.enterOuterAlt(_localctx, 1);
@@ -33495,7 +33495,7 @@
       return _localctx;
     }
     castExpression() {
-      let _localctx = new CastExpressionContext(this._ctx, this.state);
+      const _localctx = new CastExpressionContext(this._ctx, this.state);
       this.enterRule(_localctx, 470, _Java8Parser.RULE_castExpression);
       let _la;
       try {
@@ -42847,9 +42847,9 @@ d\rdd\u0390dddddeeeeeffgghhiijjkkllmmnnooppqq
         return defaultHandler(e, this);
     }
     once(eventName, callback) {
-      callback && this.addEventListener(eventName, function newCallback() {
+      callback && this.addEventListener(eventName, function newCallback(...args) {
         this.removeEventListener(eventName, newCallback);
-        callback.apply(null, arguments);
+        callback(...args);
       }, false);
     }
     setDefaultHandler(eventName, callback) {
@@ -43010,7 +43010,7 @@ d\rdd\u0390dddddeeeeeffgghhiijjkkllmmnnooppqq
       this.document.on("change", this.$onChange);
     }
     $clipPositionToDocument(row, column) {
-      let pos = { column: 0, row: 0 };
+      const pos = { column: 0, row: 0 };
       if (row >= this.document.getLength()) {
         pos.row = Math.max(0, this.document.getLength() - 1);
         pos.column = this.document.getLine(pos.row).length;
@@ -43265,7 +43265,7 @@ d\rdd\u0390dddddeeeeeffgghhiijjkkllmmnnooppqq
     $detectNewLine(text) {
       const match = text.match(/^.*?(\r\n|\r|\n)/m);
       this.$autoNewLine = match ? match[1] : "\n";
-      this._signal("changeNewLineMode");
+      this._signal("changeNewLineMode", {});
     }
     getNewLineCharacter() {
       switch (this.$newLineMode) {
@@ -43281,7 +43281,7 @@ d\rdd\u0390dddddeeeeeffgghhiijjkkllmmnnooppqq
       if (this.$newLineMode === newLineMode)
         return;
       this.$newLineMode = newLineMode;
-      this._signal("changeNewLineMode");
+      this._signal("changeNewLineMode", {});
     }
     getNewLineMode() {
       return this.$newLineMode;
@@ -43555,10 +43555,10 @@ d\rdd\u0390dddddeeeeeffgghhiijjkkllmmnnooppqq
       this.$timeout = 500;
       this.sender = sender2;
       this.doc = new document_default("");
-      let deferredUpdate = this.deferredUpdate = lang.delayedCall(this.onUpdate.bind(this));
-      let _self = this;
+      const deferredUpdate = this.deferredUpdate = lang.delayedCall(this.onUpdate.bind(this));
+      const _self = this;
       sender2.on("change", (e) => {
-        let data = e.data;
+        const data = e.data;
         if (data[0].start) {
           _self.doc.applyDeltas(data);
         } else {
@@ -43575,7 +43575,7 @@ d\rdd\u0390dddddeeeeeffgghhiijjkkllmmnnooppqq
         if (_self.$timeout)
           return deferredUpdate.schedule(_self.$timeout);
         _self.onUpdate();
-      });
+      }, false);
     }
     setTimeout(timeout) {
       this.$timeout = timeout;
@@ -43648,7 +43648,7 @@ d\rdd\u0390dddddeeeeeffgghhiijjkkllmmnnooppqq
       this.scope.parent.push(this.scope.current);
       this.packageName = null;
       this.className = null;
-      this.parentClassName = null;
+      this.parentClassName = "Object";
       this.interfaceNames = [];
     }
     exitPackageDeclaration(ctx) {
@@ -43668,7 +43668,7 @@ d\rdd\u0390dddddeeeeeffgghhiijjkkllmmnnooppqq
     exitClassDeclaration(ctx) {
       if (this.scope.current.level !== 0)
         return;
-      let normalClass = ctx.normalClassDeclaration();
+      const normalClass = ctx.normalClassDeclaration();
       if (!normalClass) {
         console.warn("top most class isn't a normal class, not yet implemented");
       }
@@ -43681,6 +43681,12 @@ d\rdd\u0390dddddeeeeeffgghhiijjkkllmmnnooppqq
       }
     }
     exitTypeName(ctx) {
+      this.typesRequired.push(ctx.text);
+    }
+    exitClassType(ctx) {
+      this.typesRequired.push(ctx.text);
+    }
+    exitInterfaceType(ctx) {
       this.typesRequired.push(ctx.text);
     }
     exitAnnotationName(ctx) {
@@ -43708,6 +43714,7 @@ d\rdd\u0390dddddeeeeeffgghhiijjkkllmmnnooppqq
       ids.forEach((id) => {
         this.variables.push({
           scope: this.scope.current,
+          level: this.scope.current.level,
           type,
           id,
           decType,
@@ -43718,18 +43725,18 @@ d\rdd\u0390dddddeeeeeffgghhiijjkkllmmnnooppqq
     exitMethodDeclaration(ctx) {
       if (this.scope.current.level !== 0)
         return;
-      let methodModifiers = ctx.methodModifier();
-      let methodHeader = ctx.methodHeader();
-      let securityModifierTokens = methodModifiers.filter((x) => !(x instanceof AnnotationContext));
+      const methodModifiers = ctx.methodModifier();
+      const methodHeader = ctx.methodHeader();
+      const securityModifierTokens = methodModifiers.filter((x) => !(x instanceof AnnotationContext));
       let modifier = "";
       if (securityModifierTokens.length > 0) {
         modifier = securityModifierTokens.pop().text;
       }
-      let type = methodHeader.result().text;
+      const type = methodHeader.result().text;
       let formalParameterTypes = [];
       if (methodHeader.methodDeclarator().formalParameterList()) {
-        let lastFormalParameter = methodHeader.methodDeclarator().formalParameterList().lastFormalParameter();
-        let formalParameters = methodHeader.methodDeclarator().formalParameterList().formalParameters();
+        const lastFormalParameter = methodHeader.methodDeclarator().formalParameterList().lastFormalParameter();
+        const formalParameters = methodHeader.methodDeclarator().formalParameterList().formalParameters();
         if (formalParameters) {
           formalParameterTypes = formalParameters.formalParameter().map((x) => x.unannType().text);
           formalParameterTypes.push(lastFormalParameter.unannType().text);
@@ -43737,12 +43744,12 @@ d\rdd\u0390dddddeeeeeffgghhiijjkkllmmnnooppqq
           if (lastFormalParameter.formalParameter()) {
             formalParameterTypes = [lastFormalParameter.formalParameter().unannType().text];
           } else {
-            let unannTypeContext = lastFormalParameter.unannType();
+            const unannTypeContext = lastFormalParameter.unannType();
             formalParameterTypes = [unannTypeContext.text];
           }
         }
       }
-      let name = methodHeader.methodDeclarator().Identifier().text;
+      const name = methodHeader.methodDeclarator().Identifier().text;
       if (!this.methods.get(name)) {
         this.methods.set(name, []);
       }
@@ -43756,7 +43763,7 @@ d\rdd\u0390dddddeeeeeffgghhiijjkkllmmnnooppqq
     enterBlock() {
       const parentScope = this.scope.current;
       this.scope.parent.push(parentScope);
-      let currentId = this.scope.nextId;
+      const currentId = this.scope.nextId;
       this.scope.nextId++;
       this.scope.current = {
         start: 0,
@@ -43794,6 +43801,7 @@ d\rdd\u0390dddddeeeeeffgghhiijjkkllmmnnooppqq
       this.level = level ? level : 0;
       this.variables = [];
       this.scopes = [];
+      this.parent = null;
     }
   };
 
@@ -43813,7 +43821,7 @@ d\rdd\u0390dddddeeeeeffgghhiijjkkllmmnnooppqq
       function walkScope(id2, node2) {
         if (id2 === node2.id)
           return node2;
-        for (let x of node2.scopes) {
+        for (const x of node2.scopes) {
           const test = walkScope(id2, x);
           if (test !== null) {
             return test;
@@ -43911,7 +43919,7 @@ d\rdd\u0390dddddeeeeeffgghhiijjkkllmmnnooppqq
   var sender = null;
   var main = null;
   onmessage = function(e) {
-    var msg = e.data;
+    const msg = e.data;
     if (msg.event && sender) {
       sender._signal(msg.event, msg.data);
     } else if (msg.command) {

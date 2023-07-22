@@ -74,6 +74,11 @@ public class LynxGetModuleLEDPatternResponse extends LynxStandardResponse
         return getStandardCommandNumber();
         }
 
+    public Blinker.Step getStep(int index)
+        {
+            return steps.steps.get(index);
+        }
+
     @Override
     public byte[] toPayloadByteArray()
         {

@@ -76,7 +76,6 @@ public class CoreRobotWebServer implements WebServer {
     private final Object lock;
 
     // mutable state variables, all accesses are guarded by lock
-    private long timeServerStartedMillis;
     private NetworkConnection networkConnection;
     private String networkName;
     private InetAddress connectionOwnerAddress;
@@ -136,8 +135,6 @@ public class CoreRobotWebServer implements WebServer {
                 webSocketServer.start();
                 synchronized (lock)
                 {
-                    timeServerStartedMillis = System.currentTimeMillis();
-
                     // By this time, the NetworkConnection should already have been created. Therefore it should
                     // be OK to pass null for the context.
                     networkConnection = NetworkConnectionFactory.getNetworkConnection(networkType, null);
@@ -210,7 +207,7 @@ public class CoreRobotWebServer implements WebServer {
             return new RobotControllerWebInfo(
                     networkName,
                     networkConnection != null ? networkConnection.getPassphrase() : AppUtil.getDefContext().getString(R.string.manage_page_no_network),
-                    serverUrl, serverIsAlive, timeServerStartedMillis);
+                    serverUrl, serverIsAlive);
         }
     }
 

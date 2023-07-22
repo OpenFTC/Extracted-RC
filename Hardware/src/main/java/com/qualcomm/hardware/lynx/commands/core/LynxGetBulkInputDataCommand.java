@@ -75,4 +75,10 @@ public class LynxGetBulkInputDataCommand extends LynxDekaInterfaceCommand<LynxGe
         {
         }
 
+    @Override
+    public boolean isDangerous()
+        {
+        return false;
+        }
+
     }

@@ -189,9 +189,10 @@ public class ConfigurationUtility
             if (metas == null) metas = new LynxModuleMetaList(serialNumber);
             RobotLog.vv(TAG, "buildLynxUsbDevice(): discovered lynx modules: %s", metas);
 
+            LynxModuleMeta parentMeta = metas.getParent();
             LynxModuleImuType parentImuType;
 
-            if (metas.getParent() == null)
+            if (parentMeta == null)
                 {
                 parentImuType = LynxModuleImuType.NONE;
                 }
@@ -238,9 +239,15 @@ public class ConfigurationUtility
                         }
                     }
 
+                int parentModuleAddress = -1;
+                if (parentMeta != null)
+                    {
+                    parentModuleAddress = parentMeta.getModuleAddress();
+                    }
+
                 modules.add(buildNewLynxModule(
                         meta.getModuleAddress(),
-                        meta.isParent(),
+                        parentModuleAddress,
                         syntheticImuType,
                         true,
                         isEmbeddedControlHubModule));
@@ -263,9 +270,12 @@ public class ConfigurationUtility
             }
         }
 
+    /**
+     * To build a parent lynx module, pass the same number to both moduleAddress and parentModuleAddress
+     */
     public LynxModuleConfiguration buildNewLynxModule(
             int moduleAddress,
-            boolean isParent,
+            int parentModuleAddress,
             LynxModuleImuType syntheticImuType,
             boolean isEnabled,
             boolean isEmbeddedControlHubModule)
@@ -279,7 +289,7 @@ public class ConfigurationUtility
             name = createUniqueName(BuiltInConfigurationType.LYNX_MODULE, R.string.counted_lynx_module_name, moduleAddress);
         }
 
-        LynxModuleConfiguration lynxModuleConfiguration = buildEmptyLynxModule(name, moduleAddress, isParent, isEnabled);
+        LynxModuleConfiguration lynxModuleConfiguration = buildEmptyLynxModule(name, moduleAddress, parentModuleAddress, isEnabled);
 
         // Add the embedded IMU device to the newly created configuration, if applicable
         if (syntheticImuType != LynxModuleImuType.NONE && syntheticImuType != LynxModuleImuType.UNKNOWN)
@@ -374,7 +384,10 @@ public class ConfigurationUtility
         return buildEmptyDevices(initialPort, size, ServoConfigurationType.getStandardServoType());
         }
 
-    protected LynxModuleConfiguration buildEmptyLynxModule(String name, int moduleAddress, boolean isParent, boolean isEnabled)
+    /**
+     * To build a parent lynx module, pass the same number to both moduleAddress and parentModuleAddress
+     */
+    protected LynxModuleConfiguration buildEmptyLynxModule(String name, int moduleAddress, int parentModuleAddress, boolean isEnabled)
         {
         RobotLog.vv(TAG, "buildEmptyLynxModule() mod#=%d...", moduleAddress);
         //
@@ -382,7 +395,7 @@ public class ConfigurationUtility
         //
         LynxModuleConfiguration moduleConfiguration = new LynxModuleConfiguration(name);
         moduleConfiguration.setModuleAddress(moduleAddress);
-        moduleConfiguration.setIsParent(isParent);
+        moduleConfiguration.setParentModuleAddress(parentModuleAddress);
         moduleConfiguration.setEnabled(isEnabled);
         //
         RobotLog.vv(TAG, "...buildEmptyLynxModule() mod#=%d", moduleAddress);

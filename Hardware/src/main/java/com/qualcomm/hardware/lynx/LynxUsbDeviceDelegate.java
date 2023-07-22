@@ -38,6 +38,7 @@ import androidx.annotation.Nullable;
 import com.qualcomm.hardware.lynx.commands.LynxMessage;
 import com.qualcomm.robotcore.exception.RobotCoreException;
 import com.qualcomm.robotcore.hardware.HardwareDeviceCloseOnTearDown;
+import com.qualcomm.robotcore.hardware.LynxModuleDescription;
 import com.qualcomm.robotcore.hardware.LynxModuleMetaList;
 import com.qualcomm.robotcore.hardware.usb.RobotUsbDevice;
 import com.qualcomm.robotcore.hardware.usb.RobotUsbModule;
@@ -48,6 +49,9 @@ import org.firstinspires.ftc.robotcore.external.Consumer;
 import org.firstinspires.ftc.robotcore.internal.network.RobotCoreCommandList;
 import org.firstinspires.ftc.robotcore.internal.system.Assert;
 import org.firstinspires.ftc.robotcore.internal.ui.ProgressParameters;
+
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * This delegation class simply forwards calls on, with the single exception that it turns
@@ -164,27 +168,44 @@ public class LynxUsbDeviceDelegate implements LynxUsbDevice, HardwareDeviceClose
         assertOpen();
         delegate.changeModuleAddress(module, newAddress, runnable);
         }
-    @Override public void noteMissingModule(LynxModule module, String moduleName)
+    @Override public void noteMissingModule(int moduleAddress, String moduleName)
         {
         assertOpen();
-        delegate.noteMissingModule(module, moduleName);
+        delegate.noteMissingModule(moduleAddress, moduleName);
         }
 
-    @Override public void performSystemOperationOnConnectedModule(int moduleAddress, boolean isParent, @Nullable Consumer<LynxModule> moduleConsumer) throws RobotCoreException, InterruptedException
+    @Override public void performSystemOperationOnParentModule(int parentAddress,
+                                                               @Nullable Consumer<LynxModule> operation,
+                                                               int timeout,
+                                                               TimeUnit timeoutUnit)
+            throws RobotCoreException, InterruptedException, TimeoutException
         {
         assertOpen();
-        delegate.performSystemOperationOnConnectedModule(moduleAddress, isParent, moduleConsumer);
+        delegate.performSystemOperationOnParentModule(parentAddress, operation, timeout, timeoutUnit);
         }
 
-    @Override public LynxModule addConfiguredModule(LynxModule module) throws RobotCoreException, InterruptedException
+    @Override public void performSystemOperationOnConnectedModule(int moduleAddress,
+                                                                  int parentAddress,
+                                                                  @Nullable Consumer<LynxModule> operation,
+                                                                  int timeout,
+                                                                  TimeUnit timeoutUnit)
+            throws RobotCoreException, InterruptedException, TimeoutException
         {
         assertOpen();
-        return delegate.addConfiguredModule(module);
+        delegate.performSystemOperationOnConnectedModule(moduleAddress, parentAddress, operation, timeout, timeoutUnit);
         }
-    @Nullable public LynxModule getConfiguredModule(int moduleAddress)
+
+    @Override public SystemOperationHandle keepConnectedModuleAliveForSystemOperations(int moduleAddress, int parentAddress)
+            throws RobotCoreException, InterruptedException
         {
         assertOpen();
-        return delegate.getConfiguredModule(moduleAddress);
+        return delegate.keepConnectedModuleAliveForSystemOperations(moduleAddress, parentAddress);
+        }
+
+    @Override public LynxModule getOrAddModule(LynxModuleDescription moduleDescription) throws RobotCoreException, InterruptedException
+        {
+        assertOpen();
+        return delegate.getOrAddModule(moduleDescription);
         }
     @Override public void removeConfiguredModule(LynxModule module)
         {

@@ -94,4 +94,10 @@ public class LynxSetMotorConstantPowerCommand extends LynxDekaInterfaceCommand<L
         this.motor = buffer.get();
         this.power = buffer.getShort();
         }
+
+    @Override
+    public boolean isDangerous()
+        {
+        return power != 0;
+        }
     }

@@ -93,4 +93,10 @@ public class LynxSetModuleLEDColorCommand extends LynxStandardCommand<LynxAck>
         this.green = rgb[1];
         this.blue  = rgb[2];
         }
+
+    @Override
+    public boolean isDangerous()
+        {
+        return false;
+        }
     }

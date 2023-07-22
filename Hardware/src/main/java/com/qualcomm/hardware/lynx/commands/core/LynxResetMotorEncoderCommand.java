@@ -86,4 +86,10 @@ public class LynxResetMotorEncoderCommand extends LynxDekaInterfaceCommand<LynxR
         ByteBuffer buffer = ByteBuffer.wrap(rgb).order(LynxDatagram.LYNX_ENDIAN);
         this.motor = buffer.get();
         }
+
+    @Override
+    public boolean isDangerous()
+        {
+        return false;
+        }
     }

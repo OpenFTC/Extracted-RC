@@ -35,6 +35,7 @@ package com.qualcomm.robotcore.hardware.configuration;
 import android.os.Build;
 import androidx.annotation.Nullable;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Device;
 import com.qualcomm.robotcore.util.SerialNumber;
 
@@ -212,6 +213,27 @@ public class LynxConstants
         {
         if (digitalIOZ < 0 || digitalIOZ >= NUMBER_OF_DIGITAL_IOS)
             throw new IllegalArgumentException(String.format("invalid digital pin: %d", digitalIOZ));
+        }
+
+    public static DcMotor.RunMode lynxMotorModeToRunMode(byte lynxMotorMode)
+        {
+        switch (lynxMotorMode)
+            {
+            case 0: return DcMotor.RunMode.RUN_WITHOUT_ENCODER;
+            case 1: return DcMotor.RunMode.RUN_USING_ENCODER;
+            case 2: return DcMotor.RunMode.RUN_TO_POSITION;
+            default: throw new IllegalStateException(String.format("illegal mode byte: 0x%02x", lynxMotorMode));
+            }
+        }
+    public static byte runModeToLynxMotorMode(DcMotor.RunMode runMode)
+        {
+        switch (runMode)
+            {
+            case RUN_WITHOUT_ENCODER:  return 0;
+            case RUN_USING_ENCODER:    return 1;
+            case RUN_TO_POSITION:      return 2;
+            default: throw new IllegalArgumentException(String.format("illegal mode %s", runMode));
+            }
         }
 
     }

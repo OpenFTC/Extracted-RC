@@ -1,0 +1,1099 @@
+<category name="Vision">
+  <category name="VisionPortal.Builder">
+    <block type="visionPortalBuilder_create_assign">
+      <comment pinned="false" h="150" w="325">Create a VisionPortal.Builder object so you can specify attributes about the cameras.
+      </comment>
+      <field name="VISION_PORTAL_BUILDER" variabletype="VisionPortal.Builder">myVisionPortalBuilder</field>
+    </block>
+    <placeholder_camera_visionPortalBuilder_setCamera_withCameraDirection/>
+    <placeholder_webcam_visionPortalBuilder_setCamera_withWebcam/>
+    <placeholder_switchableCamera_visionPortalBuilder_setCamera_withSwitchableCameraName/>
+    <block type="visionPortalBuilder_setStreamFormat">
+      <comment pinned="false" h="150" w="325">Set the stream format.
+      </comment>
+      <field name="VISION_PORTAL_BUILDER" variabletype="VisionPortal.Builder">myVisionPortalBuilder</field>
+      <value name="STREAM_FORMAT"><shadow type="visionPortal_typedEnum_streamFormat"></shadow></value>
+    </block>
+    <block type="visionPortalBuilder_enableCameraMonitoring">
+      <comment pinned="false" h="150" w="325">Enable the camera monitor live view (RC preview).
+      </comment>
+      <field name="VISION_PORTAL_BUILDER" variabletype="VisionPortal.Builder">myVisionPortalBuilder</field>
+      <value name="ENABLE_CAMERA_MONITORING"><shadow type="logic_boolean"><field name="BOOL">TRUE</field></shadow></value>
+    </block>
+    <block type="visionPortalBuilder_setAutoStopLiveView">
+      <comment pinned="false" h="150" w="325">Set whether to automatically stop the live view (RC preview) when all vision processors are disabled.
+      </comment>
+      <field name="VISION_PORTAL_BUILDER" variabletype="VisionPortal.Builder">myVisionPortalBuilder</field>
+      <value name="AUTO_STOP_LIVE_VIEW"><shadow type="logic_boolean"><field name="BOOL">TRUE</field></shadow></value>
+    </block>
+    <block type="visionPortalBuilder_setCameraMonitorViewId">
+      <comment pinned="false" h="150" w="325">Set the camera monitor view id.
+      </comment>
+      <field name="VISION_PORTAL_BUILDER" variabletype="VisionPortal.Builder">myVisionPortalBuilder</field>
+    </block>
+    <block type="visionPortalBuilder_setCameraResolution">
+      <comment pinned="false" h="150" w="325">Set the camera resolution.
+      </comment>
+      <field name="VISION_PORTAL_BUILDER" variabletype="VisionPortal.Builder">myVisionPortalBuilder</field>
+      <value name="CAMERA_WIDTH"><shadow type="math_number"><field name="NUM">640</field></shadow></value>
+      <value name="CAMERA_HEIGHT"><shadow type="math_number"><field name="NUM">480</field></shadow></value>
+    </block>
+    <block type="visionPortalBuilder_addProcessor">
+      <comment pinned="false" h="150" w="325">Add the AprilTag processor.
+      </comment>
+      <field name="VISION_PORTAL_BUILDER" variabletype="VisionPortal.Builder">myVisionPortalBuilder</field>
+      <value name="VISION_PROCESSOR"><block type="variables_get"><field name="VAR">myAprilTagProcessor</field></block></value>
+    </block>
+    <block type="visionPortalBuilder_addProcessor">
+      <comment pinned="false" h="150" w="325">Add the TensorFlow Object Detection processor.
+      </comment>
+      <field name="VISION_PORTAL_BUILDER" variabletype="VisionPortal.Builder">myVisionPortalBuilder</field>
+      <value name="VISION_PROCESSOR"><block type="variables_get"><field name="VAR">myTfodProcessor</field></block></value>
+    </block>
+    <block type="variables_set">
+      <comment pinned="false" h="150" w="325">Build the VisionPortal object and assign it to a variable.
+      </comment>
+      <field name="VAR">myVisionPortal</field>
+      <value name="VALUE">
+        <block type="visionPortalBuilder_build">
+          <field name="VISION_PORTAL_BUILDER" variabletype="VisionPortal.Builder">myVisionPortalBuilder</field>
+        </block>
+      </value>
+    </block>
+  </category>
+  <category name="VisionPortal">
+    <placeholder_camera_visionPortal_easyCreate_withCameraDirection/>
+    <placeholder_webcam_visionPortal_easyCreate_withWebcam/>
+    <placeholder_switchableCamera_visionPortal_easyCreate_withSwitchableCameraName/>
+    <block type="visionPortal_setProcessorEnabled">
+      <comment pinned="false" h="150" w="325">Enable or disable the AprilTag processor.
+      </comment>
+      <value name="VISION_PORTAL"><block type="variables_get"><field name="VAR">myVisionPortal</field></block></value>
+      <value name="VISION_PROCESSOR"><block type="variables_get"><field name="VAR">myAprilTagProcessor</field></block></value>
+      <value name="ENABLED"><shadow type="logic_boolean"><field name="BOOL">TRUE</field></shadow></value>
+    </block>
+    <block type="visionPortal_setProcessorEnabled">
+      <comment pinned="false" h="150" w="325">Enable or disable the TensorFlow Object Detection processor.
+      </comment>
+      <value name="VISION_PORTAL"><block type="variables_get"><field name="VAR">myVisionPortal</field></block></value>
+      <value name="VISION_PROCESSOR"><block type="variables_get"><field name="VAR">myTfodProcessor</field></block></value>
+      <value name="ENABLED"><shadow type="logic_boolean"><field name="BOOL">TRUE</field></shadow></value>
+    </block>
+    <block type="visionPortal_getProcessorEnabled">
+      <comment pinned="false" h="150" w="325">Get whether the AprilTag processor is enabled.
+      </comment>
+      <value name="VISION_PORTAL"><block type="variables_get"><field name="VAR">myVisionPortal</field></block></value>
+      <value name="VISION_PROCESSOR"><block type="variables_get"><field name="VAR">myAprilTagProcessor</field></block></value>
+    </block>
+    <block type="visionPortal_getProcessorEnabled">
+      <comment pinned="false" h="150" w="325">Get whether the TensorFlow Object Detection processor is enabled.
+      </comment>
+      <value name="VISION_PORTAL"><block type="variables_get"><field name="VAR">myVisionPortal</field></block></value>
+      <value name="VISION_PROCESSOR"><block type="variables_get"><field name="VAR">myTfodProcessor</field></block></value>
+    </block>
+    <block type="visionPortal_getCameraState">
+      <comment pinned="false" h="150" w="325">Get the state of the camera.
+      </comment>
+      <value name="VISION_PORTAL"><block type="variables_get"><field name="VAR">myVisionPortal</field></block></value>
+    </block>
+    <block type="visionPortal_typedEnum_cameraState"><field name="CAMERA_STATE">STREAMING</field></block>
+    <block type="visionPortal_stopStreaming">
+      <comment pinned="false" h="150" w="325">Temporarily stop the streaming session. This can save CPU resources, with the ability to resume quickly when needed.
+      </comment>
+      <value name="VISION_PORTAL"><block type="variables_get"><field name="VAR">myVisionPortal</field></block></value>
+    </block>
+    <block type="visionPortal_resumeStreaming">
+      <comment pinned="false" h="150" w="325">Resume the streaming session if previously stopped.
+      </comment>
+      <value name="VISION_PORTAL"><block type="variables_get"><field name="VAR">myVisionPortal</field></block></value>
+    </block>
+    <block type="visionPortal_stopLiveView">
+      <comment pinned="false" h="150" w="325">Temporarily stop the live view (RC preview).
+      </comment>
+      <value name="VISION_PORTAL"><block type="variables_get"><field name="VAR">myVisionPortal</field></block></value>
+    </block>
+    <block type="visionPortal_resumeLiveView">
+      <comment pinned="false" h="150" w="325">Start the live view (RC preview) again.
+      </comment>
+      <value name="VISION_PORTAL"><block type="variables_get"><field name="VAR">myVisionPortal</field></block></value>
+    </block>
+    <block type="visionPortal_getFps">
+      <comment pinned="false" h="150" w="325">Get the current vision frame rate.
+      </comment>
+      <value name="VISION_PORTAL"><block type="variables_get"><field name="VAR">myVisionPortal</field></block></value>
+    </block>
+    <block type="visionPortal_makeMultiPortalView">
+      <value name="NUM_PORTALS"><shadow type="math_number"><field name="NUM">2</field></shadow></value>
+      <value name="MULTI_PORTAL_LAYOUT"><shadow type="visionPortal_typedEnum_multiPortalLayout"><field name="MULTI_PORTAL_LAYOUT">HORIZONTAL</field></shadow></value>
+    </block>
+    <placeholder_switchableCamera_switchableCamera/>
+    <block type="variables_set">
+      <field name="VAR">myExposureControl</field>
+      <value name="VALUE">
+        <block type="visionPortal_getExposureControl">
+          <comment pinned="false" h="150" w="325">Get the ExposureControl object, to allow adjusting the camera's exposure.
+          </comment>
+          <value name="VISION_PORTAL"><block type="variables_get"><field name="VAR">myVisionPortal</field></block></value>
+        </block>
+      </value>
+    </block>
+    <block type="variables_set">
+      <field name="VAR">myFocusControl</field>
+      <value name="VALUE">
+        <block type="visionPortal_getFocusControl">
+          <comment pinned="false" h="150" w="325">Get the FocusControl object, to allow adjusting the camera's focus length.
+          </comment>
+          <value name="VISION_PORTAL"><block type="variables_get"><field name="VAR">myVisionPortal</field></block></value>
+        </block>
+      </value>
+    </block>
+    <block type="variables_set">
+      <field name="VAR">myGainControl</field>
+      <value name="VALUE">
+        <block type="visionPortal_getGainControl">
+          <comment pinned="false" h="150" w="325">Get the GainControl object, to allow adjusting the camera's gain.
+          </comment>
+          <value name="VISION_PORTAL"><block type="variables_get"><field name="VAR">myVisionPortal</field></block></value>
+        </block>
+      </value>
+    </block>
+    <block type="variables_set">
+      <field name="VAR">myPtzControl</field>
+      <value name="VALUE">
+        <block type="visionPortal_getPtzControl">
+          <comment pinned="false" h="150" w="325">Get the PtzControl object, to allow adjusting the camera's pan, tilt, and zoom.
+          </comment>
+          <value name="VISION_PORTAL"><block type="variables_get"><field name="VAR">myVisionPortal</field></block></value>
+        </block>
+      </value>
+    </block>
+    <block type="variables_set">
+      <field name="VAR">myWhiteBalanceControl</field>
+      <value name="VALUE">
+        <block type="visionPortal_getWhiteBalanceControl">
+          <comment pinned="false" h="150" w="325">Get the WhiteBalanceControl object, to allow adjusting the camera's white balance temperature.
+          </comment>
+          <value name="VISION_PORTAL"><block type="variables_get"><field name="VAR">myVisionPortal</field></block></value>
+        </block>
+      </value>
+    </block>
+    <block type="visionPortal_close">
+      <comment pinned="false" h="150" w="325">Save computing resources by closing the camera stream, if no longer needed.
+      </comment>
+      <value name="VISION_PORTAL"><block type="variables_get"><field name="VAR">myVisionPortal</field></block></value>
+    </block>
+  </category>
+  <category name="AprilTag">
+    <category name="AprilTagProcessor.Builder">
+      <block type="aprilTagProcessorBuilder_create_assign">
+        <comment pinned="false" h="150" w="325">Create a new AprilTagProcessor.Builder object and assign it to a variable.
+        </comment>
+        <field name="APRIL_TAG_PROCESSOR_BUILDER" variabletype="AprilTagProcessor.Builder">myAprilTagProcessorBuilder</field>
+      </block>
+      <block type="aprilTagProcessorBuilder_setDrawAxes">
+        <comment pinned="false" h="150" w="325">Set whether or not to draw the axes on detections.
+        </comment>
+        <field name="APRIL_TAG_PROCESSOR_BUILDER" variabletype="AprilTagProcessor.Builder">myAprilTagProcessorBuilder</field>
+        <value name="DRAW_AXES"><shadow type="logic_boolean"><field name="BOOL">TRUE</field></shadow></value>
+      </block>
+      <block type="aprilTagProcessorBuilder_setDrawCubeProjection">
+        <comment pinned="false" h="150" w="325">Set whether or not to draw the cube projection on detections.
+        </comment>
+        <field name="APRIL_TAG_PROCESSOR_BUILDER" variabletype="AprilTagProcessor.Builder">myAprilTagProcessorBuilder</field>
+        <value name="DRAW_CUBE"><shadow type="logic_boolean"><field name="BOOL">TRUE</field></shadow></value>
+      </block>
+      <block type="aprilTagProcessorBuilder_setDrawTagOutline">
+        <comment pinned="false" h="150" w="325">Set whether or not to draw the tag outline on detections.
+        </comment>
+        <field name="APRIL_TAG_PROCESSOR_BUILDER" variabletype="AprilTagProcessor.Builder">myAprilTagProcessorBuilder</field>
+        <value name="DRAW_OUTLINE"><shadow type="logic_boolean"><field name="BOOL">TRUE</field></shadow></value>
+      </block>
+      <block type="aprilTagProcessorBuilder_setDrawTagID">
+        <comment pinned="false" h="150" w="325">Set whether or not to draw the tag ID on detections.
+        </comment>
+        <field name="APRIL_TAG_PROCESSOR_BUILDER" variabletype="AprilTagProcessor.Builder">myAprilTagProcessorBuilder</field>
+        <value name="DRAW_TAG_ID"><shadow type="logic_boolean"><field name="BOOL">TRUE</field></shadow></value>
+      </block>
+      <block type="aprilTagProcessorBuilder_setLensIntrinsics">
+        <comment pinned="false" h="150" w="325">Set the lens intrinsics, obtained from a camera calibration.
+        </comment>
+        <field name="APRIL_TAG_PROCESSOR_BUILDER" variabletype="AprilTagProcessor.Builder">myAprilTagProcessorBuilder</field>
+        <value name="FX"><shadow type="math_number"><field name="NUM">578.272</field></shadow></value>
+        <value name="FY"><shadow type="math_number"><field name="NUM">578.272</field></shadow></value>
+        <value name="CX"><shadow type="math_number"><field name="NUM">402.145</field></shadow></value>
+        <value name="CY"><shadow type="math_number"><field name="NUM">221.506</field></shadow></value>
+      </block>
+      <block type="aprilTagProcessorBuilder_setNumThreads">
+        <comment pinned="false" h="150" w="325">Set the number of threads to use for detection.
+        </comment>
+        <field name="APRIL_TAG_PROCESSOR_BUILDER" variabletype="AprilTagProcessor.Builder">myAprilTagProcessorBuilder</field>
+        <value name="NUM_THREADS"><shadow type="math_number"><field name="NUM">3</field></shadow></value>
+      </block>
+      <block type="aprilTagProcessorBuilder_setOutputUnits">
+        <comment pinned="false" h="150" w="325">Set the output units.
+        </comment>
+        <field name="APRIL_TAG_PROCESSOR_BUILDER" variabletype="AprilTagProcessor.Builder">myAprilTagProcessorBuilder</field>
+        <value name="DISTANCE_UNIT"><shadow type="navigation_typedEnum_distanceUnit"><field name="DISTANCE_UNIT">INCH</field></shadow></value>
+        <value name="ANGLE_UNIT"><shadow type="navigation_typedEnum_angleUnit"><field name="ANGLE_UNIT">DEGREES</field></shadow></value>
+      </block>
+      <block type="aprilTagProcessorBuilder_setTagFamily">
+        <comment pinned="false" h="150" w="325">Set the tag family to be detected.
+        </comment>
+        <field name="APRIL_TAG_PROCESSOR_BUILDER" variabletype="AprilTagProcessor.Builder">myAprilTagProcessorBuilder</field>
+        <value name="TAG_FAMILY"><shadow type="aprilTag_typedEnum_tagFamily"><field name="TAG_FAMILY">TAG_36h11</field></shadow></value>
+      </block>
+      <block type="aprilTagProcessorBuilder_setTagLibrary">
+        <comment pinned="false" h="150" w="325">Set the tag library.
+        </comment>
+        <field name="APRIL_TAG_PROCESSOR_BUILDER" variabletype="AprilTagProcessor.Builder">myAprilTagProcessorBuilder</field>
+        <value name="APRIL_TAG_LIBRARY"><block type="variables_get"><field name="VAR">myAprilTagLibrary</field></block></value>
+      </block>
+      <block type="variables_set">
+        <comment pinned="false" h="150" w="325">Build the AprilTag processor and assign it to a variable.
+        </comment>
+        <field name="VAR">myAprilTagProcessor</field>
+        <value name="VALUE">
+          <block type="aprilTagProcessorBuilder_build">
+            <field name="APRIL_TAG_PROCESSOR_BUILDER" variabletype="AprilTagProcessor.Builder">myAprilTagProcessorBuilder</field>
+          </block>
+        </value>
+      </block>
+    </category>
+    <category name="AprilTagProcessor">
+      <block type="variables_set">
+        <comment pinned="false" h="150" w="325">Create the AprilTag processor and assign it to a variable.
+        </comment>
+        <field name="VAR">myAprilTagProcessor</field>
+        <value name="VALUE">
+          <block type="aprilTagProcessor_easyCreateWithDefaults"></block>
+        </value>
+      </block>
+      <block type="variables_set">
+        <field name="VAR">myAprilTagDetections</field>
+        <value name="VALUE">
+          <block type="aprilTagProcessor_getDetections">
+            <comment pinned="false" h="150" w="325">Get a list containing the latest detections, which may be stale.
+            </comment>
+            <value name="APRIL_TAG_PROCESSOR"><block type="variables_get"><field name="VAR">myAprilTagProcessor</field></block></value>
+          </block>
+        </value>
+      </block>
+      <block type="variables_set">
+        <field name="VAR">myAprilTagDetections</field>
+        <value name="VALUE">
+          <block type="aprilTagProcessor_getFreshDetections">
+          <comment pinned="false" h="150" w="325">Get a list containing detections that were detected since the last call to this method,
+or null if no new detections are available. This is useful to avoid re-processing the same
+detections multiple times.
+          </comment>
+            <value name="APRIL_TAG_PROCESSOR"><block type="variables_get"><field name="VAR">myAprilTagProcessor</field></block></value>
+          </block>
+        </value>
+      </block>
+      <block type="aprilTagProcessor_setDecimation">
+        <comment pinned="false" h="150" w="325">Set the detector decimation.
+        </comment>
+        <value name="APRIL_TAG_PROCESSOR"><block type="variables_get"><field name="VAR">myAprilTagProcessor</field></block></value>
+        <value name="DECIMATION"><shadow type="math_number"><field name="NUM">1</field></shadow></value>
+      </block>
+      <block type="aprilTagProcessor_setPoseSolver">
+        <comment pinned="false" h="150" w="325">Set the pose solver.
+        </comment>
+        <value name="APRIL_TAG_PROCESSOR"><block type="variables_get"><field name="VAR">myAprilTagProcessor</field></block></value>
+        <value name="POSE_SOLVER"><shadow type="aprilTag_typedEnum_poseSolver"><field name="POSE_SOLVER">APRILTAG_BUILTIN</field></shadow></value>
+      </block>
+      <block type="aprilTagProcessor_getPerTagAvgPoseSolveTime">
+        <comment pinned="false" h="150" w="325">Get the per tag average pose solve time.
+        </comment>
+        <value name="APRIL_TAG_PROCESSOR"><block type="variables_get"><field name="VAR">myAprilTagProcessor</field></block></value>
+      </block>
+    </category>
+    <category name="AprilTagDetection">
+      <block type="aprilTagDetection_getProperty_Number">
+        <field name="PROP">id</field>
+        <value name="APRIL_TAG_DETECTION"><block type="variables_get"><field name="VAR">myAprilTagDetection</field></block></value>
+      </block>
+      <block type="aprilTagDetection_getProperty_Number">
+        <field name="PROP">hamming</field>
+        <value name="APRIL_TAG_DETECTION"><block type="variables_get"><field name="VAR">myAprilTagDetection</field></block></value>
+      </block>
+      <block type="aprilTagDetection_getProperty_Number">
+        <field name="PROP">decisionMargin</field>
+        <value name="APRIL_TAG_DETECTION"><block type="variables_get"><field name="VAR">myAprilTagDetection</field></block></value>
+      </block>
+      <block type="aprilTagDetection_getProperty_Number">
+        <field name="PROP">center.x</field>
+        <value name="APRIL_TAG_DETECTION"><block type="variables_get"><field name="VAR">myAprilTagDetection</field></block></value>
+      </block>
+      <block type="aprilTagDetection_getProperty_Number">
+        <field name="PROP">center.y</field>
+        <value name="APRIL_TAG_DETECTION"><block type="variables_get"><field name="VAR">myAprilTagDetection</field></block></value>
+      </block>
+      <block type="aprilTagDetection_getProperty_Number">
+        <field name="PROP">corners[0].x</field>
+        <value name="APRIL_TAG_DETECTION"><block type="variables_get"><field name="VAR">myAprilTagDetection</field></block></value>
+      </block>
+      <block type="aprilTagDetection_getProperty_Number">
+        <field name="PROP">corners[0].y</field>
+        <value name="APRIL_TAG_DETECTION"><block type="variables_get"><field name="VAR">myAprilTagDetection</field></block></value>
+      </block>
+      <block type="aprilTagDetection_getProperty_Number">
+        <field name="PROP">corners[1].x</field>
+        <value name="APRIL_TAG_DETECTION"><block type="variables_get"><field name="VAR">myAprilTagDetection</field></block></value>
+      </block>
+      <block type="aprilTagDetection_getProperty_Number">
+        <field name="PROP">corners[1].y</field>
+        <value name="APRIL_TAG_DETECTION"><block type="variables_get"><field name="VAR">myAprilTagDetection</field></block></value>
+      </block>
+      <block type="aprilTagDetection_getProperty_Number">
+        <field name="PROP">corners[2].x</field>
+        <value name="APRIL_TAG_DETECTION"><block type="variables_get"><field name="VAR">myAprilTagDetection</field></block></value>
+      </block>
+      <block type="aprilTagDetection_getProperty_Number">
+        <field name="PROP">corners[2].y</field>
+        <value name="APRIL_TAG_DETECTION"><block type="variables_get"><field name="VAR">myAprilTagDetection</field></block></value>
+      </block>
+      <block type="aprilTagDetection_getProperty_Number">
+        <field name="PROP">corners[3].x</field>
+        <value name="APRIL_TAG_DETECTION"><block type="variables_get"><field name="VAR">myAprilTagDetection</field></block></value>
+      </block>
+      <block type="aprilTagDetection_getProperty_Number">
+        <field name="PROP">corners[3].y</field>
+        <value name="APRIL_TAG_DETECTION"><block type="variables_get"><field name="VAR">myAprilTagDetection</field></block></value>
+      </block>
+      <block type="aprilTagDetection_getProperty_IsNotNull">
+        <field name="PROP">metadata</field>
+        <value name="APRIL_TAG_DETECTION"><block type="variables_get"><field name="VAR">myAprilTagDetection</field></block></value>
+      </block>
+      <block type="aprilTagDetection_getProperty_String">
+        <field name="PROP">metadata.name</field>
+        <value name="APRIL_TAG_DETECTION"><block type="variables_get"><field name="VAR">myAprilTagDetection</field></block></value>
+      </block>
+      <block type="aprilTagDetection_getProperty_AprilTagMetadata">
+        <field name="PROP">metadata</field>
+        <value name="APRIL_TAG_DETECTION"><block type="variables_get"><field name="VAR">myAprilTagDetection</field></block></value>
+      </block>
+      <block type="aprilTagDetection_getProperty_IsNotNull">
+        <field name="PROP">ftcPose</field>
+        <value name="APRIL_TAG_DETECTION"><block type="variables_get"><field name="VAR">myAprilTagDetection</field></block></value>
+      </block>
+      <block type="aprilTagDetection_getProperty_Number">
+        <field name="PROP">ftcPose.x</field>
+        <value name="APRIL_TAG_DETECTION"><block type="variables_get"><field name="VAR">myAprilTagDetection</field></block></value>
+      </block>
+      <block type="aprilTagDetection_getProperty_Number">
+        <field name="PROP">ftcPose.y</field>
+        <value name="APRIL_TAG_DETECTION"><block type="variables_get"><field name="VAR">myAprilTagDetection</field></block></value>
+      </block>
+      <block type="aprilTagDetection_getProperty_Number">
+        <field name="PROP">ftcPose.z</field>
+        <value name="APRIL_TAG_DETECTION"><block type="variables_get"><field name="VAR">myAprilTagDetection</field></block></value>
+      </block>
+      <block type="aprilTagDetection_getProperty_Number">
+        <field name="PROP">ftcPose.yaw</field>
+        <value name="APRIL_TAG_DETECTION"><block type="variables_get"><field name="VAR">myAprilTagDetection</field></block></value>
+      </block>
+      <block type="aprilTagDetection_getProperty_Number">
+        <field name="PROP">ftcPose.pitch</field>
+        <value name="APRIL_TAG_DETECTION"><block type="variables_get"><field name="VAR">myAprilTagDetection</field></block></value>
+      </block>
+      <block type="aprilTagDetection_getProperty_Number">
+        <field name="PROP">ftcPose.roll</field>
+        <value name="APRIL_TAG_DETECTION"><block type="variables_get"><field name="VAR">myAprilTagDetection</field></block></value>
+      </block>
+      <block type="aprilTagDetection_getProperty_Number">
+        <field name="PROP">ftcPose.range</field>
+        <value name="APRIL_TAG_DETECTION"><block type="variables_get"><field name="VAR">myAprilTagDetection</field></block></value>
+      </block>
+      <block type="aprilTagDetection_getProperty_Number">
+        <field name="PROP">ftcPose.bearing</field>
+        <value name="APRIL_TAG_DETECTION"><block type="variables_get"><field name="VAR">myAprilTagDetection</field></block></value>
+      </block>
+      <block type="aprilTagDetection_getProperty_Number">
+        <field name="PROP">ftcPose.elevation</field>
+        <value name="APRIL_TAG_DETECTION"><block type="variables_get"><field name="VAR">myAprilTagDetection</field></block></value>
+      </block>
+      <block type="aprilTagDetection_getProperty_AprilTagPoseFtc">
+        <field name="PROP">ftcPose</field>
+        <value name="APRIL_TAG_DETECTION"><block type="variables_get"><field name="VAR">myAprilTagDetection</field></block></value>
+      </block>
+      <block type="aprilTagDetection_getProperty_IsNotNull">
+        <field name="PROP">rawPose</field>
+        <value name="APRIL_TAG_DETECTION"><block type="variables_get"><field name="VAR">myAprilTagDetection</field></block></value>
+      </block>
+      <block type="aprilTagDetection_getProperty_Number">
+        <field name="PROP">rawPose.x</field>
+        <value name="APRIL_TAG_DETECTION"><block type="variables_get"><field name="VAR">myAprilTagDetection</field></block></value>
+      </block>
+      <block type="aprilTagDetection_getProperty_Number">
+        <field name="PROP">rawPose.y</field>
+        <value name="APRIL_TAG_DETECTION"><block type="variables_get"><field name="VAR">myAprilTagDetection</field></block></value>
+      </block>
+      <block type="aprilTagDetection_getProperty_Number">
+        <field name="PROP">rawPose.z</field>
+        <value name="APRIL_TAG_DETECTION"><block type="variables_get"><field name="VAR">myAprilTagDetection</field></block></value>
+      </block>
+      <block type="aprilTagDetection_getProperty_MatrixF">
+        <field name="PROP">rawPose.R</field>
+        <value name="APRIL_TAG_DETECTION"><block type="variables_get"><field name="VAR">myAprilTagDetection</field></block></value>
+      </block>
+      <block type="aprilTagDetection_getProperty_AprilTagPoseRaw">
+        <field name="PROP">rawPose</field>
+        <value name="APRIL_TAG_DETECTION"><block type="variables_get"><field name="VAR">myAprilTagDetection</field></block></value>
+      </block>
+    </category>
+    <category name="AprilTagLibrary">
+      <block type="variables_set">
+        <field name="VAR">myAprilTagLibrary</field>
+        <value name="VALUE">
+          <block type="aprilTagGameDatabase_getCurrentGameTagLibrary">
+            <comment pinned="false" h="150" w="325">Get the AprilTagLibrary for the current season.
+            </comment>
+          </block>
+        </value>
+      </block>
+      <block type="variables_set">
+        <field name="VAR">myAprilTagLibrary</field>
+        <value name="VALUE">
+          <block type="aprilTagGameDatabase_getCenterStageTagLibrary">
+            <comment pinned="false" h="150" w="325">Get the AprilTagLibrary for the Center Stage FTC game.
+            </comment>
+          </block>
+        </value>
+      </block>
+      <block type="variables_set">
+        <field name="VAR">myAprilTagLibrary</field>
+        <value name="VALUE">
+          <block type="aprilTagGameDatabase_getSampleTagLibrary">
+            <comment pinned="false" h="150" w="325">Get the AprilTagLibrary for the tags used in the sample OpModes.
+            </comment>
+          </block>
+        </value>
+      </block>
+      <block type="aprilTagLibraryBuilder_create_assign">
+        <comment pinned="false" h="150" w="325">Create a new AprilTagLibrary.Builder objectand assigns it to a variable.
+        </comment>
+        <field name="APRIL_TAG_LIBRARY_BUILDER" variabletype="AprilTagLibrary.Builder">myAprilTagLibraryBuilder</field>
+      </block>
+      <block type="aprilTagLibraryBuilder_setAllowOverwrite">
+        <comment pinned="false" h="150" w="325">Set whether to allow a new tag to be added when the library already contains a tag with the same ID.
+        </comment>
+        <field name="APRIL_TAG_LIBRARY_BUILDER" variabletype="AprilTagLibrary.Builder">myAprilTagLibraryBuilder</field>
+        <value name="ALLOW_OVERWRITE"><shadow type="logic_boolean"><field name="BOOL">TRUE</field></shadow></value>
+      </block>
+      <block type="aprilTagLibraryBuilder_addTag_withMetadata">
+        <comment pinned="false" h="150" w="325">Add a tag to the AprilTagLibrary.Builder.
+        </comment>
+        <field name="APRIL_TAG_LIBRARY_BUILDER" variabletype="AprilTagLibrary.Builder">myAprilTagLibraryBuilder</field>
+        <value name="APRIL_TAG_METADATA"><block type="variables_get"><field name="VAR">myAprilTagMetadata</field></block></value>
+      </block>
+      <block type="aprilTagLibraryBuilder_addTag_withoutPoseInfo">
+        <comment pinned="false" h="150" w="325">Add a tag, without pose information, to the AprilTagLibrary.Builder.
+        </comment>
+        <field name="APRIL_TAG_LIBRARY_BUILDER" variabletype="AprilTagLibrary.Builder">myAprilTagLibraryBuilder</field>
+        <value name="ID"><shadow type="math_number"><field name="NUM">67</field></shadow></value>
+        <value name="NAME"><shadow type="text"><field name="TEXT">Team Tag</field></shadow></value>
+        <value name="TAG_SIZE"><shadow type="math_number"><field name="NUM">0.125</field></shadow></value>
+        <value name="DISTANCE_UNIT"><shadow type="navigation_typedEnum_distanceUnit"><field name="DISTANCE_UNIT">INCH</field></shadow></value>
+      </block>
+      <block type="aprilTagLibraryBuilder_addTag">
+        <comment pinned="false" h="150" w="325">Add a tag to the AprilTagLibrary.Builder.
+        </comment>
+        <field name="APRIL_TAG_LIBRARY_BUILDER" variabletype="AprilTagLibrary.Builder">myAprilTagLibraryBuilder</field>
+        <value name="ID"><shadow type="math_number"><field name="NUM">67</field></shadow></value>
+        <value name="NAME"><shadow type="text"><field name="TEXT">Team Tag</field></shadow></value>
+        <value name="TAG_SIZE"><shadow type="math_number"><field name="NUM">0.125</field></shadow></value>
+        <value name="FIELD_POSITION"><block type="variables_get"><field name="VAR">myVector</field></block></value>
+        <value name="DISTANCE_UNIT"><shadow type="navigation_typedEnum_distanceUnit"><field name="DISTANCE_UNIT">INCH</field></shadow></value>
+        <value name="FIELD_ORIENTATION"><block type="variables_get"><field name="VAR">myQuaternion</field></block></value>
+      </block>
+      <block type="aprilTagLibraryBuilder_addTags">
+        <comment pinned="false" h="150" w="325">Add all the tags from the given AprilTagLibrary to the AprilTagLibrary.Builder.
+        </comment>
+        <field name="APRIL_TAG_LIBRARY_BUILDER" variabletype="AprilTagLibrary.Builder">myAprilTagLibraryBuilder</field>
+        <value name="APRIL_TAG_LIBRARY"><block type="variables_get"><field name="VAR">myAprilTagLibrary</field></block></value>
+      </block>
+      <block type="variables_set">
+        <comment pinned="false" h="150" w="325">Build the AprilTag library and assign it to a variable.
+        </comment>
+        <field name="VAR">myAprilTagLibrary</field>
+        <value name="VALUE">
+          <block type="aprilTagLibraryBuilder_build">
+            <field name="APRIL_TAG_LIBRARY_BUILDER" variabletype="AprilTagLibrary.Builder">myAprilTagLibraryBuilder</field>
+          </block>
+        </value>
+      </block>
+      <block type="variables_set">
+        <field name="VAR">myAprilTagMetadata</field>
+        <value name="VALUE">
+          <block type="aprilTagLibrary_lookupTag">
+            <comment pinned="false" h="150" w="325">Look up a tag id in the AprilTagLibrary.
+            </comment>
+            <value name="APRIL_TAG_LIBRARY"><block type="variables_get"><field name="VAR">myAprilTagLibrary</field></block></value>
+            <value name="ID">
+              <block type="aprilTagDetection_getProperty_Number">
+                <field name="PROP">id</field>
+                <value name="APRIL_TAG_DETECTION"><block type="variables_get"><field name="VAR">myAprilTagDetection</field></block></value>
+              </block>
+            </value>
+          </block>
+        </value>
+      </block>
+    </category>
+    <category name="AprilTagMetadata">
+      <block type="variables_set">
+        <comment pinned="false" h="150" w="325">Create a new AprilTagMetdata object and assign it to a variable.
+        </comment>
+        <field name="VAR">myAprilTagMetadata</field>
+        <value name="VALUE">
+          <block type="aprilTagMetadata_create">
+            <value name="ID"><shadow type="math_number"><field name="NUM">67</field></shadow></value>
+            <value name="NAME"><shadow type="text"><field name="TEXT">Team Tag</field></shadow></value>
+            <value name="TAG_SIZE"><shadow type="math_number"><field name="NUM">0.125</field></shadow></value>
+            <value name="FIELD_POSITION"><block type="variables_get"><field name="VAR">myVector</field></block></value>
+            <value name="DISTANCE_UNIT"><shadow type="navigation_typedEnum_distanceUnit"><field name="DISTANCE_UNIT">INCH</field></shadow></value>
+            <value name="FIELD_ORIENTATION"><block type="variables_get"><field name="VAR">myQuaternion</field></block></value>
+          </block>
+        </value>
+      </block>
+      <block type="variables_set">
+        <comment pinned="false" h="150" w="325">Create a new AprilTagMetdata object and assign it to a variable.
+        </comment>
+        <field name="VAR">myAprilTagMetadata</field>
+        <value name="VALUE">
+          <block type="aprilTagMetadata_create_withoutPoseInfo">
+            <value name="ID"><shadow type="math_number"><field name="NUM">67</field></shadow></value>
+            <value name="NAME"><shadow type="text"><field name="TEXT">Team Tag</field></shadow></value>
+            <value name="TAG_SIZE"><shadow type="math_number"><field name="NUM">0.125</field></shadow></value>
+            <value name="DISTANCE_UNIT"><shadow type="navigation_typedEnum_distanceUnit"><field name="DISTANCE_UNIT">INCH</field></shadow></value>
+          </block>
+        </value>
+      </block>
+      <block type="aprilTagMetadata_getProperty_DistanceUnit">
+        <field name="PROP">distanceUnit</field>
+        <value name="APRIL_TAG_METADATA"><block type="variables_get"><field name="VAR">myAprilTagMetadata</field></block></value>
+      </block>
+      <block type="aprilTagMetadata_getProperty_Quaternion">
+        <field name="PROP">fieldOrientation</field>
+        <value name="APRIL_TAG_METADATA"><block type="variables_get"><field name="VAR">myAprilTagMetadata</field></block></value>
+      </block>
+      <block type="aprilTagMetadata_getProperty_VectorF">
+        <field name="PROP">fieldPosition</field>
+        <value name="APRIL_TAG_METADATA"><block type="variables_get"><field name="VAR">myAprilTagMetadata</field></block></value>
+      </block>
+      <block type="aprilTagMetadata_getProperty_Number">
+        <field name="PROP">id</field>
+        <value name="APRIL_TAG_METADATA"><block type="variables_get"><field name="VAR">myAprilTagMetadata</field></block></value>
+      </block>
+      <block type="aprilTagMetadata_getProperty_String">
+        <field name="PROP">name</field>
+        <value name="APRIL_TAG_METADATA"><block type="variables_get"><field name="VAR">myAprilTagMetadata</field></block></value>
+      </block>
+      <block type="aprilTagMetadata_getProperty_Number">
+        <field name="PROP">tagsize</field>
+        <value name="APRIL_TAG_METADATA"><block type="variables_get"><field name="VAR">myAprilTagMetadata</field></block></value>
+      </block>
+    </category>
+  </category>
+  <category name="TensorFlow">
+    <category name="TfodProcessor.Builder">
+      <block type="tfodProcessorBuilder_create_assign">
+        <comment pinned="false" h="150" w="325">Create a new TfodProcessor.Builder object.
+        </comment>
+        <field name="TFOD_PROCESSOR_BUILDER" variabletype="TfodProcessor.Builder">myTfodProcessorBuilder</field>
+      </block>
+      <block type="tfodProcessorBuilder_setModelAssetName">
+        <comment pinned="false" h="150" w="325">Set the name of the asset where the model can be found.
+        </comment>
+        <field name="TFOD_PROCESSOR_BUILDER" variabletype="TfodProcessor.Builder">myTfodProcessorBuilder</field>
+        <value name="MODEL_ASSET_NAME"><shadow type="text"><field name="TEXT">PowerPlay.tflite</field></shadow></value>
+      </block>
+      <block type="tfodProcessorBuilder_setModelFileName">
+        <comment pinned="false" h="150" w="325">Set the name of the file where the model can be found.
+        </comment>
+        <field name="TFOD_PROCESSOR_BUILDER" variabletype="TfodProcessor.Builder">myTfodProcessorBuilder</field>
+        <value name="MODEL_FILE_NAME"><shadow type="text"><field name="TEXT">MyCustomModel.tflite</field></shadow></value>
+      </block>
+      <block type="tfodProcessorBuilder_setModelLabels">
+        <comment pinned="false" h="150" w="325">Set the full ordered list of labels the model is trained to recognize.
+        </comment>
+        <field name="TFOD_PROCESSOR_BUILDER" variabletype="TfodProcessor.Builder">myTfodProcessorBuilder</field>
+        <value name="LABELS"><block type="lists_create_with"><mutation items="3"/>
+          <value name="ADD0"><block type="text"><field name="TEXT">1 Bolt</field></block></value>
+          <value name="ADD1"><block type="text"><field name="TEXT">2 Bulb</field></block></value>
+          <value name="ADD2"><block type="text"><field name="TEXT">3 Panel</field></block></value>
+          </block></value>
+      </block>
+      <block type="tfodProcessorBuilder_setIsModelTensorFlow2">
+        <comment pinned="false" h="150" w="325">Set whether the model is a TensorFlow2 model.
+        </comment>
+        <field name="TFOD_PROCESSOR_BUILDER" variabletype="TfodProcessor.Builder">myTfodProcessorBuilder</field>
+        <value name="IS_MODEL_TENSORFLOW_2"><shadow type="logic_boolean"><field name="BOOL">TRUE</field></shadow></value>
+      </block>
+      <block type="tfodProcessorBuilder_setIsModelQuantized">
+        <comment pinned="false" h="150" w="325">Set whether the model is quantized.
+        </comment>
+        <field name="TFOD_PROCESSOR_BUILDER" variabletype="TfodProcessor.Builder">myTfodProcessorBuilder</field>
+        <value name="IS_MODEL_QUANTIZED"><shadow type="logic_boolean"><field name="BOOL">TRUE</field></shadow></value>
+      </block>
+      <block type="tfodProcessorBuilder_setModelInputSize">
+        <comment pinned="false" h="150" w="325">Set the size, in pixels, of images input to the network.
+        </comment>
+        <field name="TFOD_PROCESSOR_BUILDER" variabletype="TfodProcessor.Builder">myTfodProcessorBuilder</field>
+        <value name="MODEL_INPUT_SIZE"><shadow type="math_number"><field name="NUM">300</field></shadow></value>
+      </block>
+      <block type="tfodProcessorBuilder_setModelAspectRatio">
+        <comment pinned="false" h="150" w="325">Set the aspect ratio for the images used when the model was created.
+        </comment>
+        <field name="TFOD_PROCESSOR_BUILDER" variabletype="TfodProcessor.Builder">myTfodProcessorBuilder</field>
+        <value name="MODEL_ASPECT_RATIO">
+          <block type="math_arithmetic">
+            <field name="OP">DIVIDE</field>
+            <value name="A"><shadow type="math_number"><field name="NUM">16</field></shadow></value>
+            <value name="B"><shadow type="math_number"><field name="NUM">9</field></shadow></value>
+          </block>
+        </value>
+      </block>
+      <block type="tfodProcessorBuilder_setNumExecutorThreads">
+        <comment pinned="false" h="150" w="325">Set the number of executor threads to use. Each executor corresponds to one TensorFlow Object Detector.
+        </comment>
+        <field name="TFOD_PROCESSOR_BUILDER" variabletype="TfodProcessor.Builder">myTfodProcessorBuilder</field>
+        <value name="NUM_EXECUTOR_THREADS"><shadow type="math_number"><field name="NUM">2</field></shadow></value>
+      </block>
+      <block type="tfodProcessorBuilder_setNumDetectorThreads">
+        <comment pinned="false" h="150" w="325">Set the number of threads that each individual TensorFlow object detector is allowed to use.
+        </comment>
+        <field name="TFOD_PROCESSOR_BUILDER" variabletype="TfodProcessor.Builder">myTfodProcessorBuilder</field>
+        <value name="NUM_DETECTOR_THREADS"><shadow type="math_number"><field name="NUM">1</field></shadow></value>
+      </block>
+      <block type="tfodProcessorBuilder_setMaxNumRecognitions">
+        <comment pinned="false" h="150" w="325">Set the maximum number of recognitions the network will return.
+        </comment>
+        <field name="TFOD_PROCESSOR_BUILDER" variabletype="TfodProcessor.Builder">myTfodProcessorBuilder</field>
+        <value name="MAX_NUM_RECOGNITIONS"><shadow type="math_number"><field name="NUM">10</field></shadow></value>
+      </block>
+      <block type="tfodProcessorBuilder_setUseObjectTracker">
+        <comment pinned="false" h="150" w="325">Set whether to use the object tracker.
+        </comment>
+        <field name="TFOD_PROCESSOR_BUILDER" variabletype="TfodProcessor.Builder">myTfodProcessorBuilder</field>
+        <value name="USE_OBJECT_TRACKER"><shadow type="logic_boolean"><field name="BOOL">TRUE</field></shadow></value>
+      </block>
+      <block type="tfodProcessorBuilder_setTrackerMaxOverlap">
+        <comment pinned="false" h="150" w="325">Set the maximum percentage of a box that can be overlapped by another box at recognition time.
+        </comment>
+        <field name="TFOD_PROCESSOR_BUILDER" variabletype="TfodProcessor.Builder">myTfodProcessorBuilder</field>
+        <value name="TRACKER_MAX_OVERLAP"><shadow type="math_number"><field name="NUM">0.2</field></shadow></value>
+      </block>
+      <block type="tfodProcessorBuilder_setTrackerMinSize">
+        <comment pinned="false" h="150" w="325">Set the minimum size of an object that the object tracker will track.
+        </comment>
+        <field name="TFOD_PROCESSOR_BUILDER" variabletype="TfodProcessor.Builder">myTfodProcessorBuilder</field>
+        <value name="TRACKER_MIN_SIZE"><shadow type="math_number"><field name="NUM">16</field></shadow></value>
+      </block>
+      <block type="tfodProcessorBuilder_setTrackerMarginalCorrelation">
+        <comment pinned="false" h="150" w="325">Allow replacement of the tracked box with new results if correlation has dropped below trackerMarginalCorrelation.
+        </comment>
+        <field name="TFOD_PROCESSOR_BUILDER" variabletype="TfodProcessor.Builder">myTfodProcessorBuilder</field>
+        <value name="TRACKER_MARGINAL_CORRELATION"><shadow type="math_number"><field name="NUM">0.75</field></shadow></value>
+      </block>
+      <block type="tfodProcessorBuilder_setTrackerMinCorrelation">
+        <comment pinned="false" h="150" w="325">Consider an object to be lost if correlation falls below trackerMinCorrelation.
+        </comment>
+        <field name="TFOD_PROCESSOR_BUILDER" variabletype="TfodProcessor.Builder">myTfodProcessorBuilder</field>
+        <value name="TRACKER_MIN_CORRELATION"><shadow type="math_number"><field name="NUM">0.3</field></shadow></value>
+      </block>
+      <block type="variables_set">
+        <comment pinned="false" h="150" w="325">Build the TensorFlow Object Detection processor and assign it to a variable.
+        </comment>
+        <field name="VAR">myTfodProcessor</field>
+        <value name="VALUE">
+          <block type="tfodProcessorBuilder_build">
+            <field name="TFOD_PROCESSOR_BUILDER" variabletype="TfodProcessor.Builder">myTfodProcessorBuilder</field>
+          </block>
+        </value>
+      </block>
+    </category>
+    <category name="TfodProcessor">
+      <block type="variables_set">
+        <comment pinned="false" h="150" w="325">Create the TensorFlow Object Detection processor and assign it to a variable.
+        </comment>
+        <field name="VAR">myTfodProcessor</field>
+        <value name="VALUE">
+          <block type="tfodProcessor_easyCreateWithDefaults"></block>
+        </value>
+      </block>
+      <block type="tfodProcessor_setMinResultConfidence">
+        <comment pinned="false" h="150" w="325">Set the minimum confidence at which to keep recognitions.
+        </comment>
+        <value name="TFOD_PROCESSOR"><block type="variables_get"><field name="VAR">myTfodProcessor</field></block></value>
+        <value name="MIN_RESULT_CONFIDENCE"><shadow type="math_number"><field name="NUM">0.75</field></shadow></value>
+      </block>
+      <block type="tfodProcessor_setClippingMargins">
+        <comment pinned="false" h="150" w="325">Set the number of pixels to obscure on the left,
+top, right, and bottom edges of each image passed to the TensorFlow object detector. The size of the
+images are not changed, but the pixels in the margins are colored black.
+      </comment>
+        <value name="TFOD_PROCESSOR"><block type="variables_get"><field name="VAR">myTfodProcessor</field></block></value>
+        <value name="LEFT"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
+        <value name="TOP"><shadow type="math_number"><field name="NUM">200</field></shadow></value>
+        <value name="RIGHT"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
+        <value name="BOTTOM"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
+      </block>
+      <block type="tfodProcessor_setZoom">
+        <comment pinned="false" h="150" w="325">Indicate that only the zoomed center area of each
+image will be passed to the TensorFlow object detector. For no zooming, set magnification to 1.0.
+        </comment>
+        <value name="TFOD_PROCESSOR"><block type="variables_get"><field name="VAR">myTfodProcessor</field></block></value>
+        <value name="MAGNIFICATION"><shadow type="math_number"><field name="NUM">1.0</field></shadow></value>
+      </block>
+      <block type="variables_set">
+        <field name="VAR">myTfodRecognitions</field>
+        <value name="VALUE">
+          <block type="tfodProcessor_getRecognitions">
+            <comment pinned="false" h="150" w="325">Get a list containing the latest recognitions, which may be stale.
+            </comment>
+            <value name="TFOD_PROCESSOR"><block type="variables_get"><field name="VAR">myTfodProcessor</field></block></value>
+          </block>
+        </value>
+      </block>
+      <block type="variables_set">
+        <field name="VAR">myTfodRecognitions</field>
+        <value name="VALUE">
+          <block type="tfodProcessor_getFreshRecognitions">
+            <comment pinned="false" h="150" w="325">Get a list containing recognitions that were detected since the last call to this method,
+or null if no new recognitions are available. This is useful to avoid re-processing the same
+recognitions multiple times.
+          </comment>
+            <value name="TFOD_PROCESSOR"><block type="variables_get"><field name="VAR">myTfodProcessor</field></block></value>
+          </block>
+        </value>
+      </block>
+    </category>
+    <category name="Recognition">
+      <block type="tfodRecognition_getProperty_String">
+        <field name="PROP">Label</field>
+        <value name="TFOD_RECOGNITION"><block type="variables_get"><field name="VAR">myTfodRecognition</field></block></value>
+      </block>
+      <block type="tfodRecognition_getProperty_Number">
+        <field name="PROP">Confidence</field>
+        <value name="TFOD_RECOGNITION"><block type="variables_get"><field name="VAR">myTfodRecognition</field></block></value>
+      </block>
+      <block type="tfodRecognition_getProperty_Number">
+        <field name="PROP">Left</field>
+        <value name="TFOD_RECOGNITION"><block type="variables_get"><field name="VAR">myTfodRecognition</field></block></value>
+      </block>
+      <block type="tfodRecognition_getProperty_Number">
+        <field name="PROP">Right</field>
+        <value name="TFOD_RECOGNITION"><block type="variables_get"><field name="VAR">myTfodRecognition</field></block></value>
+      </block>
+      <block type="tfodRecognition_getProperty_Number">
+        <field name="PROP">Top</field>
+        <value name="TFOD_RECOGNITION"><block type="variables_get"><field name="VAR">myTfodRecognition</field></block></value>
+      </block>
+      <block type="tfodRecognition_getProperty_Number">
+        <field name="PROP">Bottom</field>
+        <value name="TFOD_RECOGNITION"><block type="variables_get"><field name="VAR">myTfodRecognition</field></block></value>
+      </block>
+      <block type="tfodRecognition_getProperty_Number">
+        <field name="PROP">Width</field>
+        <value name="TFOD_RECOGNITION"><block type="variables_get"><field name="VAR">myTfodRecognition</field></block></value>
+      </block>
+      <block type="tfodRecognition_getProperty_Number">
+        <field name="PROP">Height</field>
+        <value name="TFOD_RECOGNITION"><block type="variables_get"><field name="VAR">myTfodRecognition</field></block></value>
+      </block>
+      <block type="tfodRecognition_getProperty_Number">
+        <field name="PROP">ImageWidth</field>
+        <value name="TFOD_RECOGNITION"><block type="variables_get"><field name="VAR">myTfodRecognition</field></block></value>
+      </block>
+      <block type="tfodRecognition_getProperty_Number">
+        <field name="PROP">ImageHeight</field>
+        <value name="TFOD_RECOGNITION"><block type="variables_get"><field name="VAR">myTfodRecognition</field></block></value>
+      </block>
+      <block type="tfodRecognition_toText">
+        <value name="TFOD_RECOGNITION"><block type="variables_get"><field name="VAR">myTfodRecognition</field></block></value>
+      </block>
+      <block type="tfodRecognition_estimateAngleToObject">
+        <value name="TFOD_RECOGNITION"><block type="variables_get"><field name="VAR">myTfodRecognition</field></block></value>
+        <value name="ANGLE_UNIT"><shadow type="navigation_typedEnum_angleUnit"></shadow></value>
+      </block>
+      <placeholder_vision_tfodCurrentGameLabels/>
+    </category>
+  </category>
+  <category name="Webcam Controls">
+    <category name="ExposureControl">
+      <block type="exposureControl_getMode">
+        <comment pinned="false" h="150" w="325">Get the current exposure mode value.
+        </comment>
+        <value name="EXPOSURE_CONTROL"><block type="variables_get"><field name="VAR">myExposureControl</field></block></value>
+      </block>
+      <block type="exposureControl_setMode">
+        <comment pinned="false" h="150" w="325">Set the exposure mode value.
+        </comment>
+        <value name="EXPOSURE_CONTROL"><block type="variables_get"><field name="VAR">myExposureControl</field></block></value>
+        <value name="MODE"><shadow type="exposureControl_typedEnum_mode"><field name="MODE">Manual</field></shadow></value>
+      </block>
+      <block type="exposureControl_isModeSupported">
+        <comment pinned="false" h="150" w="325">Get whether the given ExposureControl.Mode is supported.
+        </comment>
+        <value name="EXPOSURE_CONTROL"><block type="variables_get"><field name="VAR">myExposureControl</field></block></value>
+        <value name="MODE"><shadow type="exposureControl_typedEnum_mode"><field name="MODE">Manual</field></shadow></value>
+      </block>
+      <block type="exposureControl_typedEnum_mode"><field name="MODE">Manual</field></block>
+      <block type="exposureControl_getExposure">
+        <comment pinned="false" h="150" w="325">Get the current (or minimum or maximum) exposure.
+        </comment>
+        <field name="FUNC">getMinExposure</field>
+        <value name="EXPOSURE_CONTROL"><block type="variables_get"><field name="VAR">myExposureControl</field></block></value>
+        <value name="TIME_UNIT"><shadow type="misc_typedEnum_TimeUnit"><field name="TIME_UNIT">MILLISECONDS</field></shadow></value>
+      </block>
+      <block type="exposureControl_getExposure">
+        <comment pinned="false" h="150" w="325">Get the current (or minimum or maximum) exposure.
+        </comment>
+        <field name="FUNC">getMaxExposure</field>
+        <value name="EXPOSURE_CONTROL"><block type="variables_get"><field name="VAR">myExposureControl</field></block></value>
+        <value name="TIME_UNIT"><shadow type="misc_typedEnum_TimeUnit"><field name="TIME_UNIT">MILLISECONDS</field></shadow></value>
+      </block>
+      <block type="exposureControl_getExposure">
+        <comment pinned="false" h="150" w="325">Get the current (or minimum or maximum) exposure.
+        </comment>
+        <field name="FUNC">getExposure</field>
+        <value name="EXPOSURE_CONTROL"><block type="variables_get"><field name="VAR">myExposureControl</field></block></value>
+        <value name="TIME_UNIT"><shadow type="misc_typedEnum_TimeUnit"><field name="TIME_UNIT">MILLISECONDS</field></shadow></value>
+      </block>
+      <block type="exposureControl_setExposure">
+        <comment pinned="false" h="150" w="325">Set the exposure.
+        </comment>
+        <value name="EXPOSURE_CONTROL"><block type="variables_get"><field name="VAR">myExposureControl</field></block></value>
+        <value name="DURATION"><shadow type="math_number"><field name="NUM">30</field></shadow></value>
+        <value name="TIME_UNIT"><shadow type="misc_typedEnum_TimeUnit"><field name="TIME_UNIT">MILLISECONDS</field></shadow></value>
+      </block>
+      <block type="exposureControl_isExposureSupported">
+        <comment pinned="false" h="150" w="325">Get whether exposure is supported.
+        </comment>
+        <value name="EXPOSURE_CONTROL"><block type="variables_get"><field name="VAR">myExposureControl</field></block></value>
+      </block>
+      <block type="exposureControl_getAePriority">
+        <comment pinned="false" h="150" w="325">Get the AE priority.
+        </comment>
+        <value name="EXPOSURE_CONTROL"><block type="variables_get"><field name="VAR">myExposureControl</field></block></value>
+      </block>
+      <block type="exposureControl_setAePriority">
+        <comment pinned="false" h="150" w="325">Set the AE priority.
+        </comment>
+        <value name="EXPOSURE_CONTROL"><block type="variables_get"><field name="VAR">myExposureControl</field></block></value>
+        <value name="PRIORITY"><shadow type="logic_boolean"><field name="BOOL">TRUE</field></shadow></value>
+      </block>
+    </category>
+    <category name="FocusControl">
+      <block type="focusControl_getMode">
+        <comment pinned="false" h="150" w="325">Get the current focus mode value.
+        </comment>
+        <value name="FOCUS_CONTROL"><block type="variables_get"><field name="VAR">myFocusControl</field></block></value>
+      </block>
+      <block type="focusControl_setMode">
+        <comment pinned="false" h="150" w="325">Set the focus mode value.
+        </comment>
+        <value name="FOCUS_CONTROL"><block type="variables_get"><field name="VAR">myFocusControl</field></block></value>
+        <value name="MODE"><shadow type="focusControl_typedEnum_mode"><field name="MODE">Fixed</field></shadow></value>
+      </block>
+      <block type="focusControl_isModeSupported">
+        <comment pinned="false" h="150" w="325">Get whether the given FocusControl.Mode is supported.
+        </comment>
+        <value name="FOCUS_CONTROL"><block type="variables_get"><field name="VAR">myFocusControl</field></block></value>
+        <value name="MODE"><shadow type="focusControl_typedEnum_mode"><field name="MODE">Fixed</field></shadow></value>
+      </block>
+      <block type="focusControl_typedEnum_mode"><field name="MODE">Fixed</field></block>
+      <block type="focusControl_getFocusLength">
+        <comment pinned="false" h="150" w="325">Get the current (or minimum or maximum) focus length.
+        </comment>
+        <field name="FUNC">getMinFocusLength</field>
+        <value name="FOCUS_CONTROL"><block type="variables_get"><field name="VAR">myFocusControl</field></block></value>
+      </block>
+      <block type="focusControl_getFocusLength">
+        <comment pinned="false" h="150" w="325">Get the current (or minimum or maximum) focus length.
+        </comment>
+        <field name="FUNC">getMaxFocusLength</field>
+        <value name="FOCUS_CONTROL"><block type="variables_get"><field name="VAR">myFocusControl</field></block></value>
+      </block>
+      <block type="focusControl_getFocusLength">
+        <comment pinned="false" h="150" w="325">Get the current (or minimum or maximum) focus length.
+        </comment>
+        <field name="FUNC">getFocusLength</field>
+        <value name="FOCUS_CONTROL"><block type="variables_get"><field name="VAR">myFocusControl</field></block></value>
+      </block>
+      <block type="focusControl_setFocusLength">
+        <comment pinned="false" h="150" w="325">Set the focus length.
+        </comment>
+        <value name="FOCUS_CONTROL"><block type="variables_get"><field name="VAR">myFocusControl</field></block></value>
+        <value name="FOCUS_LENGTH"><shadow type="math_number"><field name="NUM">100</field></shadow></value>
+      </block>
+      <block type="focusControl_isFocusLengthSupported">
+        <comment pinned="false" h="150" w="325">Get whether focus is supported.
+        </comment>
+        <value name="FOCUS_CONTROL"><block type="variables_get"><field name="VAR">myFocusControl</field></block></value>
+      </block>
+    </category>
+    <category name="GainControl">
+      <block type="gainControl_getGain">
+        <comment pinned="false" h="150" w="325">Get the current (or minimum or maximum) gain.
+        </comment>
+        <field name="FUNC">getMinGain</field>
+        <value name="GAIN_CONTROL"><block type="variables_get"><field name="VAR">myGainControl</field></block></value>
+      </block>
+      <block type="gainControl_getGain">
+        <comment pinned="false" h="150" w="325">Get the current (or minimum or maximum) gain.
+        </comment>
+        <field name="FUNC">getMaxGain</field>
+        <value name="GAIN_CONTROL"><block type="variables_get"><field name="VAR">myGainControl</field></block></value>
+      </block>
+      <block type="gainControl_getGain">
+        <comment pinned="false" h="150" w="325">Get the current (or minimum or maximum) gain.
+        </comment>
+        <field name="FUNC">getGain</field>
+        <value name="GAIN_CONTROL"><block type="variables_get"><field name="VAR">myGainControl</field></block></value>
+      </block>
+      <block type="gainControl_setGain">
+        <comment pinned="false" h="150" w="325">Set the gain. Requires Exposure Control Mode to be MANUAL.
+        </comment>
+        <value name="GAIN_CONTROL"><block type="variables_get"><field name="VAR">myGainControl</field></block></value>
+        <value name="GAIN"><shadow type="math_number"><field name="NUM">25</field></shadow></value>
+      </block>
+    </category>
+    <category name="PtzControl">
+      <block type="variables_set">
+        <field name="VAR">myPanTiltHolder</field>
+        <value name="VALUE">
+          <block type="ptzControl_getPanTilt">
+            <comment pinned="false" h="150" w="325">Get the current (or minimum or maximum) virtual pan/tilt.
+            </comment>
+            <field name="FUNC">getMinPanTilt</field>
+            <value name="PTZ_CONTROL"><block type="variables_get"><field name="VAR">myPtzControl</field></block></value>
+          </block>
+        </value>
+      </block>
+      <block type="variables_set">
+        <field name="VAR">myPanTiltHolder</field>
+        <value name="VALUE">
+          <block type="ptzControl_getPanTilt">
+            <comment pinned="false" h="150" w="325">Get the current (or minimum or maximum) virtual pan/tilt.
+            </comment>
+            <field name="FUNC">getMaxPanTilt</field>
+            <value name="PTZ_CONTROL"><block type="variables_get"><field name="VAR">myPtzControl</field></block></value>
+          </block>
+        </value>
+      </block>
+      <block type="variables_set">
+        <field name="VAR">myPanTiltHolder</field>
+        <value name="VALUE">
+          <block type="ptzControl_getPanTilt">
+            <comment pinned="false" h="150" w="325">Get the current (or minimum or maximum) virtual pan/tilt.
+            </comment>
+            <field name="FUNC">getPanTilt</field>
+            <value name="PTZ_CONTROL"><block type="variables_get"><field name="VAR">myPtzControl</field></block></value>
+          </block>
+        </value>
+      </block>
+      <block type="ptzControl_setPanTilt">
+        <comment pinned="false" h="150" w="325">Set the virtual pan/tilt.
+        </comment>
+        <value name="PTZ_CONTROL"><block type="variables_get"><field name="VAR">myPtzControl</field></block></value>
+        <value name="PAN_TILT_HOLDER"><block type="variables_get"><field name="VAR">myPanTiltHolder</field></block></value>
+      </block>
+      <block type="variables_set">
+        <field name="VAR">myPanTiltHolder</field>
+        <value name="VALUE">
+          <block type="panTiltHolder_create"></block>
+        </value>
+      </block>
+      <block type="panTiltHolder_getProperty_Number">
+        <comment pinned="false" h="150" w="325">Get the pan value from the given PanTiltHolder object.
+        </comment>
+        <field name="PROP">pan</field>
+        <value name="PAN_TILT_HOLDER"><block type="variables_get"><field name="VAR">myPanTiltHolder</field></block></value>
+      </block>
+      <block type="panTiltHolder_getProperty_Number">
+        <comment pinned="false" h="150" w="325">Get the tilt value from the given PanTiltHolder object.
+        </comment>
+        <field name="PROP">tilt</field>
+        <value name="PAN_TILT_HOLDER"><block type="variables_get"><field name="VAR">myPanTiltHolder</field></block></value>
+      </block>
+      <block type="panTiltHolder_setProperty_Number">
+        <comment pinned="false" h="150" w="325">Set the pan field in the given PanTiltHolder object.
+        </comment>
+        <field name="PROP">pan</field>
+        <value name="PAN_TILT_HOLDER"><block type="variables_get"><field name="VAR">myPanTiltHolder</field></block></value>
+        <value name="VALUE"><shadow type="math_number"><field name="NUM">5</field></shadow></value>
+      </block>
+      <block type="panTiltHolder_setProperty_Number">
+        <comment pinned="false" h="150" w="325">Set the tilt value in the given PanTiltHolder object
+        </comment>
+        <field name="PROP">tilt</field>
+        <value name="PAN_TILT_HOLDER"><block type="variables_get"><field name="VAR">myPanTiltHolder</field></block></value>
+        <value name="VALUE"><shadow type="math_number"><field name="NUM">10</field></shadow></value>
+      </block>
+      <block type="ptzControl_getZoom">
+        <comment pinned="false" h="150" w="325">Get the current (or minimum or maximum) zoom.
+        </comment>
+        <field name="FUNC">getMinZoom</field>
+        <value name="PTZ_CONTROL"><block type="variables_get"><field name="VAR">myPtzControl</field></block></value>
+      </block>
+      <block type="ptzControl_getZoom">
+        <comment pinned="false" h="150" w="325">Get the current (or minimum or maximum) zoom.
+        </comment>
+        <field name="FUNC">getMaxZoom</field>
+        <value name="PTZ_CONTROL"><block type="variables_get"><field name="VAR">myPtzControl</field></block></value>
+      </block>
+      <block type="ptzControl_getZoom">
+        <comment pinned="false" h="150" w="325">Get the current (or minimum or maximum) zoom.
+        </comment>
+        <field name="FUNC">getZoom</field>
+        <value name="PTZ_CONTROL"><block type="variables_get"><field name="VAR">myPtzControl</field></block></value>
+      </block>
+      <block type="ptzControl_setZoom">
+        <comment pinned="false" h="150" w="325">Set the zoom.
+        </comment>
+        <value name="PTZ_CONTROL"><block type="variables_get"><field name="VAR">myPtzControl</field></block></value>
+        <value name="ZOOM"><shadow type="math_number"><field name="NUM">3</field></shadow></value>
+      </block>
+    </category>
+    <category name="WhiteBalanceControl">
+      <block type="whiteBalanceControl_getMode">
+        <comment pinned="false" h="150" w="325">Get the current white balance mode value.
+        </comment>
+        <value name="WHITE_BALANCE_CONTROL"><block type="variables_get"><field name="VAR">myWhiteBalanceControl</field></block></value>
+      </block>
+      <block type="whiteBalanceControl_setMode">
+        <comment pinned="false" h="150" w="325">Set the white balance mode value.
+        </comment>
+        <value name="WHITE_BALANCE_CONTROL"><block type="variables_get"><field name="VAR">myWhiteBalanceControl</field></block></value>
+        <value name="MODE"><shadow type="whiteBalanceControl_typedEnum_mode"><field name="MODE">MANUAL</field></shadow></value>
+      </block>
+      <block type="whiteBalanceControl_typedEnum_mode"><field name="MODE">MANUAL</field></block>
+      <block type="whiteBalanceControl_getWhiteBalanceTemperature">
+        <comment pinned="false" h="150" w="325">Get the current (or minimum or maximum) white balance temperature, in degrees Kelvin.
+        </comment>
+        <field name="FUNC">getMinWhiteBalanceTemperature</field>
+        <value name="WHITE_BALANCE_CONTROL"><block type="variables_get"><field name="VAR">myWhiteBalanceControl</field></block></value>
+      </block>
+      <block type="whiteBalanceControl_getWhiteBalanceTemperature">
+        <comment pinned="false" h="150" w="325">Get the current (or minimum or maximum) white balance temperature, in degrees Kelvin.
+        </comment>
+        <field name="FUNC">getMaxWhiteBalanceTemperature</field>
+        <value name="WHITE_BALANCE_CONTROL"><block type="variables_get"><field name="VAR">myWhiteBalanceControl</field></block></value>
+      </block>
+      <block type="whiteBalanceControl_getWhiteBalanceTemperature">
+        <comment pinned="false" h="150" w="325">Get the current (or minimum or maximum) white balance temperature, in degrees Kelvin.
+        </comment>
+        <field name="FUNC">getWhiteBalanceTemperature</field>
+        <value name="WHITE_BALANCE_CONTROL"><block type="variables_get"><field name="VAR">myWhiteBalanceControl</field></block></value>
+      </block>
+      <block type="whiteBalanceControl_setWhiteBalanceTemperature">
+        <comment pinned="false" h="150" w="325">Set the white balance temperature, in degrees Kelvin.
+        </comment>
+        <value name="WHITE_BALANCE_CONTROL"><block type="variables_get"><field name="VAR">myWhiteBalanceControl</field></block></value>
+        <value name="WHITE_BALANCE_TEMPERATURE"><shadow type="math_number"><field name="NUM">3000</field></shadow></value>
+      </block>
+    </category>
+  </category>
+</category>

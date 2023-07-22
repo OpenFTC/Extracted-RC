@@ -17,7 +17,6 @@
 package org.firstinspires.ftc.robotcore.internal.tfod;
 
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.RectF;
 import android.util.Log;
 import java.nio.MappedByteBuffer;
@@ -26,6 +25,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.firstinspires.ftc.robotcore.external.function.Consumer;
 import org.firstinspires.ftc.robotcore.external.tfod.CameraInformation;
+import org.firstinspires.ftc.robotcore.external.tfod.TfodParameters;
 import org.firstinspires.ftc.robotcore.internal.tfod.LabeledObject.CoordinateSystem;
 import org.tensorflow.lite.support.image.TensorImage;
 import org.tensorflow.lite.support.label.Category;
@@ -40,11 +40,10 @@ import org.tensorflow.lite.task.vision.detector.ObjectDetector.ObjectDetectorOpt
  * @author lizlooney@google.com (Liz Looney)
  */
 class TfodFrameManager2 extends TfodFrameManager {
-  TfodFrameManager2(MappedByteBuffer modelData, List<String> labels, TfodParameters params,
-      CameraInformation cameraInformation, ClippingMargins clippingMargins, Zoom zoom,
-      ResultsCallback resultsCallback, Consumer<Bitmap> annotatedFrameCallback) {
-    super(modelData, labels, params, cameraInformation, clippingMargins, zoom, resultsCallback,
-        annotatedFrameCallback);
+  TfodFrameManager2(MappedByteBuffer modelData, TfodParameters params,
+      CameraInformation cameraInformation, float minResultConfidence,
+      ClippingMargins clippingMargins, Zoom zoom, ResultsCallback resultsCallback) {
+    super(modelData, params, cameraInformation, minResultConfidence, clippingMargins, zoom, resultsCallback);
   }
 
   @Override
@@ -60,8 +59,8 @@ class TfodFrameManager2 extends TfodFrameManager {
 
       // Create the ObjectDetector.
       ObjectDetectorOptions options = ObjectDetectorOptions.builder()
-          .setMaxResults(params.maxNumDetections)
-          .setNumThreads(params.numInterpreterThreads)
+          .setMaxResults(params.maxNumRecognitions)
+          .setNumThreads(params.numDetectorThreads)
           .build();
       objectDetector = ObjectDetector.createFromBufferAndOptions(modelData, options);
     }
@@ -84,12 +83,12 @@ class TfodFrameManager2 extends TfodFrameManager {
       for (Detection detection : detections) {
         for (Category category : detection.getCategories()) {
           float detectionScore = category.getScore();
-          if (detectionScore < params.minResultConfidence) {
+          if (detectionScore < minResultConfidence) {
             continue;
           }
 
           int detectedClass = category.getIndex();
-          if (detectedClass < 0 || detectedClass >= labels.size()) {
+          if (detectedClass < 0 || detectedClass >= params.modelLabels.size()) {
             Log.w("RecognizerPipeline2.postProcessDetections",
                 "got a detection with an invalid class: " + detectedClass);
             continue;
@@ -100,7 +99,7 @@ class TfodFrameManager2 extends TfodFrameManager {
           tfodToZoomAreaMatrix.mapRect(detectionBox, detection.getBoundingBox());
 
           LabeledObject labeledObject = new LabeledObject(
-              labels.get(detectedClass), detectionScore,
+              params.modelLabels.get(detectedClass), boxColor, detectionScore,
               zoomHelper, CoordinateSystem.ZOOM_AREA,
               detectionBox.left, detectionBox.top, detectionBox.right, detectionBox.bottom);
           labeledObjects.add(labeledObject);

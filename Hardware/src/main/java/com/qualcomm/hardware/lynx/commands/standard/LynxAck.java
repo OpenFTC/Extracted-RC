@@ -106,4 +106,10 @@ public class LynxAck extends LynxMessage
         {
         return true;
         }
+
+    @Override
+    public boolean isDangerous()
+        {
+        return false;
+        }
     }

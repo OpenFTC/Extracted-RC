@@ -20,6 +20,39 @@
  * @author lizlooney@google.com (Liz Looney)
  */
 
+// NOTE(lizlooney): If/when we update to a newer version of blockly, we need to check that thie
+// following still works.
+Blockly.Block.prototype.original_setCommentText = Blockly.Block.prototype.setCommentText;
+
+Blockly.Block.prototype.setCommentText = function(text) {
+  this.original_setCommentText(text);
+  if (text == null) {
+    clearBlockCommentPosition(block);
+  }
+}
+
+// NOTE(lizlooney): If/when we update to a newer version of blockly, we need to check that thie
+// following still works.
+Blockly.Comment.prototype.original_setVisible = Blockly.Comment.prototype.setVisible;
+
+Blockly.Comment.prototype.setVisible = function(visible) {
+  const alreadyHadBubble = (this.bubble_ ? true : false);
+
+  // If this comment is becoming invisible, save its bubble's position, which won't be available
+  // after it becomes invisible.
+  if (this.block_ && this.bubble_ && !visible) {
+    saveBlockCommentPosition(this.block_, this.bubble_);
+  }
+
+  this.original_setVisible(visible);
+
+  // If this comment didn't have a bubble before and now has a bubble, restore the bubble's saved
+  // position.
+  if (this.block_ && !alreadyHadBubble && this.bubble_) {
+    restoreBlockCommentPosition(this.block_, this.bubble_);
+  }
+};
+
 function initializeFtcBlocks() {
   fetchJavaScriptForHardware(function(jsHardware, errorMessage) {
     if (jsHardware) {
@@ -194,11 +227,16 @@ function yesSaveWithWarningsDialog() {
 }
 
 function getCurrentBlkFileContent() {
-  // Get the blocks as xml (text).
   var allBlocks = workspace.getAllBlocks();
   for (var iBlock = 0, block; block = allBlocks[iBlock]; iBlock++) {
     saveBlockWarningHidden(block);
+    if (block.comment && block.comment.bubble_) {
+      saveBlockCommentPosition(block, block.comment.bubble_);
+    } else if (!block.comment) {
+      clearBlockCommentPosition(block);
+    }
   }
+  // Get the blocks as xml (text).
   var blocksContent = Blockly.Xml.domToText(Blockly.Xml.workspaceToDom(workspace));
   var flavorSelect = document.getElementById('project_flavor');
   var flavor = flavorSelect.options[flavorSelect.selectedIndex].value;
@@ -279,6 +317,7 @@ function initializeSplit() {
 function initializeBlockly() {
   addReservedWordsForJavaScript();
   addReservedWordsForFtcJava();
+  addReservedWordsForFtcJavaObsolete();
 
   document.addEventListener('mousemove', onMouseMove);
   document.addEventListener('keydown', onKeyDown);
@@ -439,6 +478,7 @@ function resizeBlocklyArea() {
 function initializeToolbox() {
   workspace.updateToolbox(getToolbox());
   addToolboxIcons(workspace);
+  //testAllBlocksInToolbox(workspace);
 }
 
 function loadBlocks(blkFileContent, opt_blocksLoaded_callback) {
@@ -477,6 +517,7 @@ function loadBlocks(blkFileContent, opt_blocksLoaded_callback) {
   }
 
   loadBlocksIntoWorkspace(blocksContent, opt_blocksLoaded_callback);
+  repositionBlockComments()
   checkDownloadImageFeature();
 }
 
@@ -516,6 +557,16 @@ function loadBlocksIntoWorkspace(blocksContent, opt_blocksLoaded_callback) {
     }
   }, 50);
 }
+
+function repositionBlockComments() {
+  var allBlocks = workspace.getAllBlocks();
+  for (var iBlock = 0, block; block = allBlocks[iBlock]; iBlock++) {
+    if (block.comment && block.comment.bubble_) {
+      restoreBlockCommentPosition(block, block.comment.bubble_);
+    }
+  }
+}
+
 
 /**
  * Add/remove the block warning if the given block's identifier(s) are not in the active
@@ -577,8 +628,8 @@ function checkBlock(block, missingHardware) {
           var visibleIdentifierName;
           if (block.data) {
             if (block.data.startsWith('{')) {
-              var visibleIdentifierNames = parseBlockDataJSON(block);
-              visibleIdentifierName = visibleIdentifierNames[identifierFieldName];
+              var data = parseBlockDataJSON(block);
+              visibleIdentifierName = data[identifierFieldName];
             } else {
               // Some older versions save as plain text instead of JSON.
               visibleIdentifierName = block.data;
@@ -588,69 +639,45 @@ function checkBlock(block, missingHardware) {
             // The best we can do is to remove the hardware identifier suffix if there is one.
             visibleIdentifierName = removeHardwareIdentifierSuffix(identifierFieldValue);
           }
-          if (typeof field.setText === 'function') {
-            field.setText(visibleIdentifierName);
-          }
-          if (!missingHardware.includes(visibleIdentifierName)) {
-            missingHardware.push(visibleIdentifierName);
-          }
-          warningBits |= WarningBits.MISSING_HARDWARE;
-          if (fieldHasOptions) {
-            warningText = addWarning(warningText,
-                '"' + visibleIdentifierName + '" is not in the current robot configuration.\n\n' +
-                'Please activate the configuration that contains the hardware device named "' +
-                visibleIdentifierName + '",\nor select a device that is in the current robot configuration.');
-          } else {
-            warningText = addWarning(warningText,
-                '"' + visibleIdentifierName + '" is not in the current robot configuration.\n\n' +
-                'Please activate the configuration that contains the hardware device named "' +
-                visibleIdentifierName + '".');
+          if (typeof visibleIdentifierName === 'string') {
+            if (typeof field.setText === 'function') {
+              field.setText(visibleIdentifierName);
+            }
+            if (!missingHardware.includes(visibleIdentifierName)) {
+              missingHardware.push(visibleIdentifierName);
+            }
+            warningBits |= WarningBits.MISSING_HARDWARE;
+            if (fieldHasOptions) {
+              warningText = addWarning(warningText,
+                  '"' + visibleIdentifierName + '" is not in the current robot configuration.\n\n' +
+                  'Please activate the configuration that contains the hardware device named "' +
+                  visibleIdentifierName + '",\nor select a device that is in the current robot configuration.');
+            } else {
+              warningText = addWarning(warningText,
+                  '"' + visibleIdentifierName + '" is not in the current robot configuration.\n\n' +
+                  'Please activate the configuration that contains the hardware device named "' +
+                  visibleIdentifierName + '".');
+            }
           }
         }
       }
     }
-    if (block.type == 'vuforia_initialize' ||
-        block.type == 'vuforia_initializeExtended' ||
-        block.type == 'vuforia_initializeExtendedNoKey' ||
-        block.type == 'vuforia_initialize_withWebcam' ||
-        block.type == 'vuforia_activate' ||
-        block.type == 'vuforia_deactivate' ||
-        block.type == 'vuforia_track' ||
-        block.type == 'vuforia_trackPose' ||
-        block.type == 'vuforia_typedEnum_trackableName' ||
-        block.type == 'vuforiaTrackingResults_getProperty_RelicRecoveryVuMark' ||
-        block.type == 'vuMarks_typedEnum_relicRecoveryVuMark') {
+    if (isObsolete(block)) {
+      warningBits |= WarningBits.OBSOLETE;
+      warningText = addWarning(warningText,
+          'This block is obsolete and will not work correctly now.');
+    } else if (wasForRelicRecovery(block)) {
       warningBits |= WarningBits.RELIC_RECOVERY;
       warningText = addWarning(warningText,
-          'This block is optimized for Relic Recovery (2017-2018) and will not work correctly ' +
-          'for other FTC games.\n\n' +
-          'Please replace this block with the corresponding one from the ' +
-          'Optimized for ' + vuforiaCurrentGameName + ' toolbox category.');
-    } else if (block.type == 'vuforiaRoverRuckus_initialize_withCameraDirection' ||
-        block.type == 'vuforiaRoverRuckus_initialize_withWebcam' ||
-        block.type == 'vuforiaRoverRuckus_activate' ||
-        block.type == 'vuforiaRoverRuckus_deactivate' ||
-        block.type == 'vuforiaRoverRuckus_track' ||
-        block.type == 'vuforiaRoverRuckus_trackPose' ||
-        block.type == 'vuforiaRoverRuckus_typedEnum_trackableName') {
+          'This block was for RelicRecovery (2017-2018) and will not work correctly now.');
+    } else if (wasForRoverRuckus(block)) {
       warningBits |= WarningBits.ROVER_RUCKUS;
       warningText = addWarning(warningText,
-          'This block is optimized for Rover Ruckus (2018-2019) and will not work correctly ' +
-          'for other FTC games.\n\n' +
-          'Please replace this block with the corresponding one from the ' +
-          'Optimized for ' + vuforiaCurrentGameName + ' toolbox category.');
-    } else if (block.type == 'tfodRoverRuckus_initialize' ||
-        block.type == 'tfodRoverRuckus_activate' ||
-        block.type == 'tfodRoverRuckus_deactivate' ||
-        block.type == 'tfodRoverRuckus_setClippingMargins' ||
-        block.type == 'tfodRoverRuckus_getRecognitions' ||
-        block.type == 'tfodRoverRuckus_typedEnum_label') {
-      warningBits |= WarningBits.ROVER_RUCKUS;
+          'This block was for RoverRuckus (2018-2019) and will not work correctly now.');
+    } else if (wasForSkyStone(block)) {
+      warningBits |= WarningBits.SKY_STONE;
       warningText = addWarning(warningText,
-          'This block is optimized for Rover Ruckus (2018-2019) and will not work correctly ' +
-          'for other FTC games.\n\n' +
-          'Please replace this block with the corresponding one from the ' +
-          'TensorFlow Object Detection toolbox category.');
+          'This block was for SkyStone (2019-2020) and will not work correctly now.');
     } else if (block.type == 'misc_callJava_return' ||
         block.type == 'misc_callJava_noReturn' ||
         block.type == 'misc_callHardware_return' ||
@@ -713,6 +740,13 @@ function parseBlockDataJSON(block) {
   return null;
 }
 
+function stringifyBlockDataJSON(block, data) {
+  block.data = data ? JSON.stringify(data) : null;
+  if (block.data == '{}') {
+    block.data = null;
+  }
+}
+
 function saveBlockWarningHidden(block) {
   var data = parseBlockDataJSON(block);
   if (block.warning) {
@@ -728,7 +762,7 @@ function saveBlockWarningHidden(block) {
     }
   }
 
-  block.data = data ? JSON.stringify(data) : null;
+  stringifyBlockDataJSON(block, data);
 }
 
 function readBlockWarningHidden(block) {
@@ -740,6 +774,41 @@ function readBlockWarningHidden(block) {
   }
 
   return false;
+}
+
+// NOTE(lizlooney): If/when we update to a newer version of blockly, we need to check that thie
+// following still works.
+function saveBlockCommentPosition(block, bubble) {
+  var data = parseBlockDataJSON(block);
+  if (!data) {
+    data = Object.create(null);
+  }
+  data.commentPositionLeft = Math.round(bubble.relativeLeft_);
+  data.commentPositionTop = Math.round(bubble.relativeTop_);
+  stringifyBlockDataJSON(block, data);
+}
+
+function clearBlockCommentPosition(block) {
+  var data = parseBlockDataJSON(block);
+  if (data) {
+    delete data.commentPositionLeft;
+    delete data.commentPositionTop;
+    stringifyBlockDataJSON(block, data);
+  }
+}
+
+// NOTE(lizlooney): If/when we update to a newer version of blockly, we need to check that thie
+// following still works.
+function restoreBlockCommentPosition(block, bubble) {
+  var data = parseBlockDataJSON(block);
+  if (data && typeof data.commentPositionLeft == "number" && typeof data.commentPositionTop == "number") {
+    if (bubble.relativeLeft_ != data.commentPositionLeft || bubble.relativeTop_ != data.commentPositionTop) {
+      bubble.relativeLeft_ = data.commentPositionLeft
+      bubble.relativeTop_ = data.commentPositionTop
+      bubble.positionBubble_();
+      bubble.renderArrow_();
+    }
+  }
 }
 
 function saveVisibleIdentifiers(block) {
@@ -764,7 +833,7 @@ function saveVisibleIdentifiers(block) {
     }
   }
 
-  block.data = data ? JSON.stringify(data) : null;
+  stringifyBlockDataJSON(block, data);
 }
 
 function onMouseMove(e) {

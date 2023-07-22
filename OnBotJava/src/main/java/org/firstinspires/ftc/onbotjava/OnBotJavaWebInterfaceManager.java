@@ -53,6 +53,7 @@ public class OnBotJavaWebInterfaceManager {
     private static final List<String> packagesToAutocomplete = Arrays.asList(
             "org/firstinspires/ftc/ftccommon/external",
             "org/firstinspires/ftc/robotcore/external",
+            "org/firstinspires/ftc/vision",
             "com/qualcomm/robotcore/eventloop/opmode",
             "com/qualcomm/robotcore/hardware",
             "com/qualcomm/robotcore/robot",

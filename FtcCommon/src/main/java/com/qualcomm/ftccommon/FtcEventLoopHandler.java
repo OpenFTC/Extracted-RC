@@ -32,27 +32,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.qualcomm.ftccommon;
 
 import android.content.Context;
-import androidx.annotation.Nullable;
 
-import com.qualcomm.ftccommon.configuration.USBScanManager;
 import com.qualcomm.hardware.HardwareFactory;
-import com.qualcomm.hardware.lynx.LynxUsbDevice;
-import com.qualcomm.hardware.lynx.LynxUsbDeviceImpl;
 import com.qualcomm.robotcore.eventloop.EventLoopManager;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;
-import com.qualcomm.robotcore.eventloop.opmode.OpModeManagerImpl;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeManagerNotifier;
 import com.qualcomm.robotcore.exception.RobotCoreException;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareDeviceCloseOnTearDown;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.ScannedDevices;
 import com.qualcomm.robotcore.hardware.ServoController;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
-import com.qualcomm.robotcore.hardware.configuration.ConfigurationUtility;
-import com.qualcomm.robotcore.hardware.configuration.ControllerConfiguration;
-import com.qualcomm.robotcore.hardware.usb.RobotArmingStateNotifier;
 import com.qualcomm.robotcore.robocol.Command;
 import com.qualcomm.robotcore.robocol.TelemetryMessage;
 import com.qualcomm.robotcore.robot.RobotState;
@@ -60,15 +51,9 @@ import com.qualcomm.robotcore.util.BatteryChecker;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.MovingStatistics;
 import com.qualcomm.robotcore.util.RobotLog;
-import com.qualcomm.robotcore.util.SerialNumber;
 
-import org.firstinspires.ftc.robotcore.external.function.Supplier;
 import org.firstinspires.ftc.robotcore.internal.network.NetworkConnectionHandler;
 import org.firstinspires.ftc.robotcore.internal.network.RobotCoreCommandList;
-import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @SuppressWarnings("WeakerAccess")
 public class FtcEventLoopHandler implements BatteryChecker.BatteryWatcher {
@@ -116,8 +101,6 @@ public class FtcEventLoopHandler implements BatteryChecker.BatteryWatcher {
 
   /** the actual hardware map seen by the user */
   protected HardwareMap       hardwareMap               = null;
-  /** the hardware map in which we keep any extra devices (ones not used by the user) we need to instantiate */
-  protected HardwareMap       hardwareMapExtra          = null;
 
   //------------------------------------------------------------------------------------------------
   // Construction
@@ -146,7 +129,6 @@ public class FtcEventLoopHandler implements BatteryChecker.BatteryWatcher {
 
     // shutdown everything we have open
     closeHardwareMap(hardwareMap);
-    closeHardwareMap(hardwareMapExtra);
 
     // Stop the battery monitoring so we don't send stale telemetry
     closeBatteryMonitoring();
@@ -181,133 +163,8 @@ public class FtcEventLoopHandler implements BatteryChecker.BatteryWatcher {
       if (hardwareMap==null) {
         // Create a newly-active hardware map
         hardwareMap = hardwareFactory.createHardwareMap(eventLoopManager, opModeNotifier);
-        hardwareMapExtra = new HardwareMap(robotControllerContext, opModeNotifier);
       }
       return hardwareMap;
-    }
-  }
-
-  public List<LynxUsbDeviceImpl> getExtantLynxDeviceImpls() {
-    synchronized (hardwareFactory) {
-      List<LynxUsbDeviceImpl> result = new ArrayList<LynxUsbDeviceImpl>();
-      if (hardwareMap != null) {
-        for (LynxUsbDevice lynxUsbDevice : hardwareMap.getAll(LynxUsbDevice.class)) {
-          if (lynxUsbDevice.getArmingState()==RobotArmingStateNotifier.ARMINGSTATE.ARMED) {
-            result.add(lynxUsbDevice.getDelegationTarget());
-          }
-        }
-      }
-      if (hardwareMapExtra != null) {
-        for (LynxUsbDevice lynxUsbDevice : hardwareMapExtra.getAll(LynxUsbDevice.class)) {
-          if (lynxUsbDevice.getArmingState()==RobotArmingStateNotifier.ARMINGSTATE.ARMED) {
-            result.add(lynxUsbDevice.getDelegationTarget());
-          }
-        }
-      }
-      return result;
-    }
-  }
-
-  /**
-   * Returns the device whose serial number is the one indicated, from the hardware map if possible
-   * but instantiating / opening it if necessary. null is returned if the object cannot be
-   * accessed.
-   *
-   * @param classOrInterface        the interface to retrieve on the returned object
-   * @param serialNumber            the serial number of the object to retrieve
-   * @param usbScanManagerSupplier  how to get a {@link USBScanManager} if it ends up we need one
-   */
-  // TODO(Noah): Consider deleting this method, and related things like hardwareMapExtra and instantiateConfiguration().
-  //             This is only used for visual identification, so it is specifically used to get a
-  //             LynxModule. The problem is that if no matching LynxModule is configured, it creates
-  //             one in user mode, when this is actually for a system action. In addition, the
-  //             devices this method adds to hardwareMapExtra never get removed or closed out until
-  //             a Robot Restart. So the LynxModule returned by this method will stay green, even if
-  //             it never gets added. Sure, higher levels will do a robot restart after exiting the
-  //             configuration interface, but that's not a great thing to depend on. Ideally we'd
-  //             only do a Robot Restart after the active configuration is actually changed in some
-  //             way.    HOWEVER. For visual identification, it's important that the LynxModule
-  //             remains open, until the visual identification ends. So that means we need some
-  //             extra features in LynxUsbDevice.performSystemOperationOnConnectedModule(). One way
-  //             that should work is to have a different version of the method that returns an
-  //             object that can be used to indicate when the device can be closed, instead of
-  //             assuming that it can be closed after the consumer exits.
-  //
-  //
-  public @Nullable <T> T getHardwareDevice(Class<? extends T> classOrInterface, final SerialNumber serialNumber, Supplier<USBScanManager> usbScanManagerSupplier) {
-    synchronized (hardwareFactory) {
-      RobotLog.vv(TAG, "getHardwareDevice(%s)...", serialNumber);
-      try {
-        getHardwareMap(OpModeManagerImpl.getOpModeManagerOfActivity(AppUtil.getInstance().getActivity()));
-      } catch (InterruptedException e) {
-        Thread.currentThread().interrupt();
-        return null;
-      } catch (RobotCoreException e) {
-        return null;
-      }
-
-      Object oResult = hardwareMap.get(Object.class, serialNumber);
-
-      if (oResult == null) {
-        oResult = hardwareMapExtra.get(Object.class, serialNumber);
-      }
-
-      if (oResult == null) {
-        /** the device isn't in the hwmap. but is it actually attached? */
-        /** first, check for it's scannable */
-        final SerialNumber scannableSerialNumber = serialNumber.getScannableDeviceSerialNumber();
-
-        boolean tryScannable = true;
-        if (!scannableSerialNumber.equals(serialNumber)) { // already did that check
-          if (hardwareMap.get(Object.class, scannableSerialNumber) != null || hardwareMapExtra.get(Object.class, scannableSerialNumber) != null) {
-            // TODO(Noah): I don't know why this is considered as an error. This is the exact scenario that indicates that we should do a scan, right?
-            //             I believe not setting tryScannable to false would fix issue #1203
-            RobotLog.ee(TAG, "internal error: %s absent but scannable %s present", serialNumber, scannableSerialNumber);
-            tryScannable = false;
-          }
-        }
-
-        if (tryScannable) {
-          final USBScanManager usbScanManager = usbScanManagerSupplier.get();
-          if (usbScanManager != null) {
-            try {
-              ScannedDevices scannedDevices = usbScanManager.awaitScannedDevices();
-              if (scannedDevices.containsKey(scannableSerialNumber)) {
-                /** yes, it's there. build a new configuration for it */
-                ConfigurationUtility configurationUtility = new ConfigurationUtility();
-                ControllerConfiguration controllerConfiguration = configurationUtility.buildNewControllerConfiguration(scannableSerialNumber, scannedDevices.get(scannableSerialNumber), usbScanManager.getLynxModuleMetaListSupplier(scannableSerialNumber));
-                if (controllerConfiguration != null) {
-                  controllerConfiguration.setEnabled(true);
-                  controllerConfiguration.setKnownToBeAttached(true);
-                  /** get access to the actual device */
-                  hardwareFactory.instantiateConfiguration(hardwareMapExtra, controllerConfiguration, eventLoopManager);
-                  oResult = hardwareMapExtra.get(Object.class, serialNumber);
-                  RobotLog.ii(TAG, "found %s: hardwareMapExtra:", serialNumber);
-                  hardwareMapExtra.logDevices();
-                } else {
-                  RobotLog.ee(TAG, "buildNewControllerConfiguration(%s) failed", scannableSerialNumber);
-                }
-              } else {
-                RobotLog.ee(TAG, "");
-              }
-            } catch (InterruptedException e) {
-              Thread.currentThread().interrupt();
-            } catch (RobotCoreException e) {
-              RobotLog.ee(TAG, e, "exception in getHardwareDevice(%s)", serialNumber);
-            }
-          } else {
-            RobotLog.ee(TAG, "usbScanManager supplied as null");
-          }
-        }
-      }
-
-      T result = null;
-      if (oResult != null && classOrInterface.isInstance(oResult)) {
-        result = classOrInterface.cast(oResult);
-      }
-
-      RobotLog.vv(TAG, "...getHardwareDevice(%s)=%s,%s", serialNumber, oResult, result);
-      return result;
     }
   }
 

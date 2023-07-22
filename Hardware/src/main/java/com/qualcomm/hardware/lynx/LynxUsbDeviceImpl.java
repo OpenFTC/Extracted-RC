@@ -33,6 +33,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package com.qualcomm.hardware.lynx;
 
 import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -42,13 +43,15 @@ import com.qualcomm.hardware.lynx.commands.LynxDatagram;
 import com.qualcomm.hardware.lynx.commands.LynxMessage;
 import com.qualcomm.hardware.lynx.commands.standard.LynxDiscoveryCommand;
 import com.qualcomm.hardware.lynx.commands.standard.LynxDiscoveryResponse;
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsUsbDevice;
 import com.qualcomm.robotcore.eventloop.SyncdDevice;
 import com.qualcomm.robotcore.exception.RobotCoreException;
+import com.qualcomm.robotcore.hardware.DeviceManager;
+import com.qualcomm.robotcore.hardware.LynxModuleDescription;
 import com.qualcomm.robotcore.hardware.LynxModuleMeta;
 import com.qualcomm.robotcore.hardware.LynxModuleMetaList;
 import com.qualcomm.robotcore.hardware.configuration.LynxConstants;
 import com.qualcomm.robotcore.hardware.usb.RobotUsbDevice;
+import com.qualcomm.robotcore.hardware.usb.RobotUsbManager;
 import com.qualcomm.robotcore.hardware.usb.RobotUsbModule;
 import com.qualcomm.robotcore.hardware.usb.ftdi.RobotUsbDeviceFtdi;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -61,13 +64,13 @@ import com.qualcomm.robotcore.util.Util;
 import com.qualcomm.robotcore.util.WeakReferenceSet;
 
 import org.firstinspires.ftc.robotcore.external.Consumer;
+import org.firstinspires.ftc.robotcore.internal.hardware.TimeWindow;
 import org.firstinspires.ftc.robotcore.internal.hardware.android.AndroidBoard;
+import org.firstinspires.ftc.robotcore.internal.hardware.usb.ArmableUsbDevice;
 import org.firstinspires.ftc.robotcore.internal.network.RobotCoreCommandList;
 import org.firstinspires.ftc.robotcore.internal.system.AppAliveNotifier;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.robotcore.internal.system.Assert;
-import org.firstinspires.ftc.robotcore.internal.hardware.TimeWindow;
-import org.firstinspires.ftc.robotcore.internal.hardware.usb.ArmableUsbDevice;
 import org.firstinspires.ftc.robotcore.internal.ui.ProgressParameters;
 import org.firstinspires.ftc.robotcore.internal.usb.exception.RobotUsbDeviceClosedException;
 import org.firstinspires.ftc.robotcore.internal.usb.exception.RobotUsbException;
@@ -76,10 +79,16 @@ import org.firstinspires.ftc.robotcore.internal.usb.exception.RobotUsbUnspecifie
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * {@link LynxUsbDeviceImpl} controls the USB communication to one or more Lynx Modules.
@@ -119,8 +128,8 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
     protected       boolean                                 isEngaged;
     protected       boolean                                 wasPollingWhenEngaged;
     protected final Object                                  engageLock = new Object();  // must hold to access isEngaged
-    // performSystemOperationOnConnectedModule() and any methods that should not run concurrently it must hold this lock
-    protected final Object                                  systemOperationLock = new Object();
+    protected final Object                                  sysOpStartStopLock = new Object(); // Held before and after sysop runs
+    protected final Set<Object>                             runningSysOpTrackers =  new HashSet<>(); // Guarded by sysOpStartStopLock
     protected final LynxFirmwareUpdater                     lynxFirmwareUpdater = new LynxFirmwareUpdater(this);
 
     // The lynx hw schematic puts the reset and prog lines on particular pins, CBUS0 and CBUS1 respectively
@@ -142,10 +151,36 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    /** Use {@link #findOrCreateAndArm} instead */
-    protected LynxUsbDeviceImpl(final Context context, final SerialNumber serialNumber, SyncdDevice.Manager manager, final ModernRoboticsUsbDevice.OpenRobotUsbDevice openRobotUsbDevice)
+    public static ArmableUsbDevice.OpenRobotUsbDevice createUsbOpener(RobotUsbManager usbManager, SerialNumber serialNumber)
         {
-        super(context, serialNumber, manager, openRobotUsbDevice);
+        return () ->
+            {
+            RobotUsbDevice dev = null;
+            try
+                {
+                dev = LynxUsbUtil.openUsbDevice(true, usbManager, serialNumber);
+                if (!dev.getUsbIdentifiers().isLynxDevice())
+                    {
+                    dev.close();
+                    String msg = String.format(Locale.US, "Supposed Lynx USB device (serial number %s) does not have expected IDs", serialNumber);
+                    RobotLog.ee(TAG, msg);
+                    throw new RobotCoreException(msg);
+                    }
+                dev.setDeviceType(DeviceManager.UsbDeviceType.LYNX_USB_DEVICE);
+                }
+            catch (RobotCoreException | RuntimeException e)
+                {
+                if (dev != null) dev.close(); // avoid leakage of open FT_Devices
+                throw e;
+                }
+            return dev;
+            };
+        }
+
+    /** Use {@link #findOrCreateAndArm} instead */
+    protected LynxUsbDeviceImpl(final Context context, final SerialNumber serialNumber, @Nullable SyncdDevice.Manager manager, RobotUsbManager usbManager)
+        {
+        super(context, serialNumber, manager, createUsbOpener(usbManager, serialNumber));
         this.incomingDatagramPoller  = null;
         this.knownModules            = new ConcurrentHashMap<Integer, LynxModule>();
         this.knownModulesChanging    = new ConcurrentHashMap<Integer, LynxModule>();
@@ -170,7 +205,10 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
      * so that we can do reference counting (allowing multiple opens of the same device) while at
      * the same time maintaining the semantic that close() must be idempotent on a given instance.
      */
-    public static LynxUsbDevice findOrCreateAndArm(final Context context, final SerialNumber serialNumber, SyncdDevice.Manager manager, final ModernRoboticsUsbDevice.OpenRobotUsbDevice openRobotUsbDevice) throws RobotCoreException, InterruptedException
+    public static LynxUsbDevice findOrCreateAndArm(final Context context,
+                                                   final SerialNumber serialNumber,
+                                                   @Nullable SyncdDevice.Manager manager,
+                                                   RobotUsbManager robotUsbManager) throws RobotCoreException, InterruptedException
         {
         synchronized (extantDevices)
             {
@@ -184,7 +222,7 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
                     }
                 }
 
-            LynxUsbDeviceImpl newDevice = new LynxUsbDeviceImpl(context, serialNumber, manager, openRobotUsbDevice); // has ref count of one
+            LynxUsbDeviceImpl newDevice = new LynxUsbDeviceImpl(context, serialNumber, manager, robotUsbManager); // has ref count of one
             RobotLog.vv(TAG, "creating new [%s]: 0x%08x", serialNumber, newDevice.hashCode());
             newDevice.armOrPretend();
             return new LynxUsbDeviceDelegate(newDevice);
@@ -417,9 +455,49 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
 
     protected void closeModules()
         {
+        // We're about to wait for any currently-running system operations to finish. That should be fine, but since the
+        // operation may take some time (such as flashing the BHI260AP firmware), it's important to put the modules into
+        // a safe state before waiting.
         for (LynxModule module : getKnownModules())
             {
-            module.close();
+            try
+                {
+                module.failSafe();
+                }
+            catch (RobotCoreException | LynxNackException e)
+                {
+                RobotLog.ee(TAG, e, "Failed to put module into failsafe mode before closing");
+                }
+            catch (InterruptedException e)
+                {
+                Thread.currentThread().interrupt();
+                }
+            }
+
+        synchronized (sysOpStartStopLock)
+            {
+            try
+                {
+                // Wait for all running system operations to finish
+                // Do NOT wait for all modules to have systemOperationCounter set to 0, as we only want to wait
+                // for currently-in-progress operations to finish, and systemOperationCounter can merely
+                // indicate that a piece of code wants to keep the module open for now
+                while (runningSysOpTrackers.size() > 0)
+                    {
+                    // wait() relinquishes the lock and waits for notify() to be called on the lock
+                    sysOpStartStopLock.wait();
+                    }
+
+                // All system operations have now finished
+                for (LynxModule module : getKnownModules())
+                    {
+                    module.close();
+                    }
+                }
+            catch (InterruptedException e)
+                {
+                Thread.currentThread().interrupt();
+                }
             }
         }
 
@@ -507,10 +585,10 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
             }
         }
 
-    @Override public void noteMissingModule(LynxModule module, String moduleName)
+    @Override public void noteMissingModule(int moduleAddress, String moduleName)
         {
-        this.missingModules.put(module.getModuleAddress(), moduleName);
-        RobotLog.ee(TAG, "module #%d did not connect at startup: skip adding its hardware items to the hardwareMap", module.getModuleAddress());
+        this.missingModules.put(moduleAddress, moduleName);
+        RobotLog.ee(TAG, "module #%d did not connect at startup: skip adding its hardware items to the hardwareMap", moduleAddress);
         }
 
     /** For lynx modules, in addition to reporting arming issues, we also need to report
@@ -549,52 +627,52 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
      *
      * @throws RobotCoreException if trying to communicate with this module was unsuccessful.
      */
-    @Override public LynxModule addConfiguredModule(LynxModule module) throws InterruptedException, RobotCoreException
+    @Override public LynxModule getOrAddModule(LynxModuleDescription moduleDescription) throws InterruptedException, RobotCoreException
         {
-        // Don't allow one thread to configure a user module while another thread is calling
-        // performSystemOperationOnConnectedModule(). We don't want a race condition where
-        // performSystemOperationOnConnectedModule() closes a module that was just promoted to be a
-        // user module.
-        synchronized (systemOperationLock)
+        // Avoid potential race condition where performSystemOperationOnConnectedModule() closes a module that this
+        // method just promoted to be a user module.
+        synchronized (sysOpStartStopLock)
             {
-            RobotLog.vv(TAG, "addConfiguredModule() module#=%d", module.getModuleAddress());
+            int moduleAddress = moduleDescription.address;
+            RobotLog.vv(TAG, "addConfiguredModule() module#=%d", moduleAddress);
             boolean added = false;
-            LynxModule registeredModule;
+            LynxModule module;
 
             synchronized (this.knownModules)
                 {
-                if (!this.knownModules.containsKey(module.getModuleAddress()))
+                if (!this.knownModules.containsKey(moduleAddress))
                     {
-                    this.knownModules.put(module.getModuleAddress(), module);
+                    module = new LynxModule(this, moduleAddress, moduleDescription.isParent, moduleDescription.isUserModule);
+                    if (moduleDescription.isSystemSynthetic) { module.setSystemSynthetic(true); }
+                    this.knownModules.put(moduleAddress, module);
                     added = true;
-                    registeredModule = module;
                     }
                 else
                     {
-                    registeredModule = knownModules.get(module.getModuleAddress());
-                    RobotLog.vv(TAG, "addConfiguredModule() module#=%d: already exists", module.getModuleAddress());
+                    module = knownModules.get(moduleAddress);
+                    RobotLog.vv(TAG, "addConfiguredModule() module#=%d: already exists", moduleAddress);
 
                     //noinspection ConstantConditions
-                    if (module.isUserModule() && !registeredModule.isUserModule())
+                    if (moduleDescription.isUserModule && !module.isUserModule())
                         {
                         // The caller of this method is trying to set up a user module, but the
                         // currently-registered module is a non-user module, so we convert the
                         // registered module into a user module.
-                        RobotLog.vv(TAG, "Converting module #%d to a user module", registeredModule.getModuleAddress());
-                        registeredModule.setUserModule(true);
+                        RobotLog.vv(TAG, "Converting module #%d to a user module", module.getModuleAddress());
+                        module.setUserModule(true);
                         }
 
                     //noinspection ConstantConditions
-                    if (module.isUserModule() && module.isSystemSynthetic() && !registeredModule.isSystemSynthetic())
+                    if (moduleDescription.isUserModule && moduleDescription.isSystemSynthetic && !module.isSystemSynthetic())
                         {
                         // The caller of this method is trying to set up a user module that was added
                         // implicitly, rather than explicitly stated in the XML configuration. Add that
                         // property to the registered module.
-                        registeredModule.setSystemSynthetic(true);
+                        module.setSystemSynthetic(true);
                         }
 
                     //noinspection ConstantConditions
-                    if (module.isParent() != registeredModule.isParent())
+                    if (moduleDescription.isParent != module.isParent())
                         {
                         RobotLog.ww(TAG, "addConfiguredModule(): The active configuration file may be incorrect about whether Expansion Hub %d is the parent", module.getModuleAddress());
                         }
@@ -620,15 +698,7 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
                     }
                 }
 
-            return registeredModule;
-            }
-        }
-
-    public @Nullable LynxModule getConfiguredModule(int moduleAddress)
-        {
-        synchronized (this.knownModules)
-            {
-            return this.knownModules.get(moduleAddress);
+            return module;
             }
         }
 
@@ -645,36 +715,189 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
             }
         }
 
-    // If moduleConsumer is null, this method effectively just verifies that we can communicate with
-    // the specified module, throwing an exception if we cannot. However, it is not guaranteed that
-    // the module we communicated with has the specified "isParent" state.
-    @Override public void performSystemOperationOnConnectedModule(int moduleAddress, boolean isParent, @Nullable Consumer<LynxModule> moduleConsumer)
-            throws RobotCoreException, InterruptedException
+    /**
+     * The operation will run on a background thread, but this method will not return until the operation has completed.
+     * <p>
+     * If operation is null, this method effectively just verifies that we can communicate with the parent
+     * module, throwing an exception if we cannot.
+     */
+    @Override public void performSystemOperationOnParentModule(int parentAddress,
+                                                               @Nullable Consumer<LynxModule> operation,
+                                                               int timeout,
+                                                               TimeUnit timeoutUnit)
+            throws RobotCoreException, InterruptedException, TimeoutException
         {
-        synchronized (systemOperationLock)
+        performSystemOperationOnConnectedModule(parentAddress, parentAddress, operation, timeout, timeoutUnit);
+        }
+
+    /**
+     * The operation will run on a background thread, but this method will not return until the operation has completed.
+     * <p>
+     * If operation is null, this method effectively just verifies that we can communicate with the specified
+     * module, throwing an exception if we cannot.
+     */
+    @Override public void performSystemOperationOnConnectedModule(int moduleAddress,
+                                                                  int parentAddress,
+                                                                  @Nullable Consumer<LynxModule> operation,
+                                                                  int timeout,
+                                                                  TimeUnit timeoutUnit)
+            throws RobotCoreException, InterruptedException, TimeoutException
+        {
+        LynxModuleDescription parentModuleDescription = new LynxModuleDescription.Builder(parentAddress, true).build();
+        LynxModuleDescription moduleDescription = new LynxModuleDescription.Builder(moduleAddress, false).build();
+
+        LynxModule parentModule = getOrAddModule(parentModuleDescription);
+        LynxModule module;
+        if (moduleAddress == parentAddress)
             {
-            LynxModule module = new LynxModule(this, moduleAddress, isParent, false);
+            module = parentModule;
+            }
+        else
+            {
+            module = getOrAddModule(moduleDescription);
+            }
 
-            // addConfiguredModule will throw a checked exception if we are unable to communicate with the module
-            // It may return a different module instance than we passed in, which we need to use instead.
-            module = addConfiguredModule(module);
+        internalPerformSysOp(module, parentModule, operation, timeout, timeoutUnit);
+        }
 
-            try
-                {
-                if (moduleConsumer != null)
-                    {
-                    moduleConsumer.accept(module);
-                    }
+    protected void internalPerformSysOp(LynxModule module,
+                                        LynxModule parentModule,
+                                        @Nullable Consumer<LynxModule> operation,
+                                        int timeout,
+                                        TimeUnit timeoutUnit)
+            throws RobotCoreException, InterruptedException, TimeoutException
+        {
+        final Object sysOpTracker = new Object();
+
+        synchronized (sysOpStartStopLock)
+            {
+            try {
+                // Make sure we can currently communicate with this module (will throw an exception if not)
+                module.ping(false);
                 }
-            finally
+            catch (LynxNackException e)
                 {
-                // Only close/remove the configured module if it is currently not available to user code.
-                if (!module.isUserModule)
-                    {
-                    module.close();
-                    }
+                throw new RobotCoreException("Received NACK when pinging LynxModule: " + e.getNack());
+                }
+            parentModule.systemOperationCounter++;
+            module.systemOperationCounter++;
+
+            runningSysOpTrackers.add(sysOpTracker);
+            }
+
+        Future<?> operationFuture = null;
+        try
+            {
+            if (operation != null)
+                {
+                // Run on a background thread so that we can move on if the timeout expires
+                final LynxModule finalModule = module; // Final so that it's usable from the background thread
+                operationFuture = ThreadPool.getDefault().submit(() -> operation.accept(finalModule));
+                operationFuture.get(timeout, timeoutUnit);
                 }
             }
+        catch (TimeoutException e)
+            {
+            // Interrupt the background thread and rethrow
+            operationFuture.cancel(true);
+            throw e;
+            }
+        catch (ExecutionException executionException)
+            {
+            // Get the exception that was thrown from the background thread
+            Throwable cause = executionException.getCause();
+
+            // Throw the exception on this thread. If it's a runtime exception or an exception that this method is
+            // listed as throwing, we can cast it and throw it directly. Otherwise, we must wrap it in a RuntimeException.
+            // InterruptedException is a special case.
+            if (cause instanceof InterruptedException)
+                {
+                // We must NOT rethrow this exception, because that would indicate that *this* thread is interrupted,
+                // which is not the case.
+                throw new RobotCoreException("Background thread was interrupted while performing system operation", cause);
+                }
+            if (cause instanceof RobotCoreException)
+                {
+                throw (RobotCoreException) cause;
+                }
+            else if (cause instanceof RuntimeException)
+                {
+                throw (RuntimeException) cause;
+                }
+            else if (cause instanceof TimeoutException)
+                {
+                throw (TimeoutException) cause;
+                }
+            }
+        finally
+            {
+            synchronized (sysOpStartStopLock)
+                {
+                runningSysOpTrackers.remove(sysOpTracker);
+                // In case this LynxUsbDevice is in the process of trying to close, but is waiting on this operation to
+                // finish, notify that thread via the runningSysOpTrackers lock object.
+                sysOpStartStopLock.notifyAll();
+
+                parentModule.systemOperationCounter--;
+                internalCloseLynxModuleIfUnused(parentModule);
+
+                module.systemOperationCounter--;
+                internalCloseLynxModuleIfUnused(module);
+                }
+            }
+        }
+
+    protected void internalCloseLynxModuleIfUnused(LynxModule lynxModule)
+        {
+        synchronized (sysOpStartStopLock)
+            {
+            if (findKnownModule(lynxModule.getModuleAddress()) != lynxModule)
+                {
+                throw new RuntimeException("An unaffiliated module was passed in to internalCloseLynxModuleIfAppropriate()");
+                }
+
+            // Check that systemOperationCounter has a legal value
+            if (lynxModule.systemOperationCounter < 0)
+                {
+                RobotLog.ee(TAG, "systemOperationCounter for module %d was below 0", lynxModule.getModuleAddress());
+                }
+
+            // Close the module if it's not a user-visible module and there are no system operation handles on it
+            if (!lynxModule.isUserModule && lynxModule.systemOperationCounter <= 0)
+                {
+                lynxModule.close();
+                }
+            }
+        }
+
+    /**
+     * Open a {@link SystemOperationHandle} that will allow you to keep the LynxModule open for an unbounded length of time.
+     * <p>
+     * You can stop forcing the LynxModule to stay open by calling {@link SystemOperationHandle#close()}.
+     * <p>
+     * You can perform system operations on the module by calling {@link SystemOperationHandle#performSystemOperation(Consumer, int, TimeUnit)}.
+     * <p>
+     * This handle will continue working even if the module's address is changed.
+     */
+    public SystemOperationHandle keepConnectedModuleAliveForSystemOperations(int moduleAddress, int parentAddress)
+            throws RobotCoreException, InterruptedException
+        {
+        LynxModuleDescription parentModuleDescription = new LynxModuleDescription.Builder(parentAddress, true).build();
+        LynxModuleDescription moduleDescription = new LynxModuleDescription.Builder(moduleAddress, false).build();
+
+        LynxModule parentModule = getOrAddModule(parentModuleDescription);
+        LynxModule module;
+        if (moduleAddress == parentAddress)
+            {
+            module = parentModule;
+            }
+        else
+            {
+            module = getOrAddModule(moduleDescription);
+            }
+
+        // This constructor will continue the setup process
+        return new SystemOperationHandle(this, module, parentModule);
         }
 
     /**
@@ -687,7 +910,7 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
      */
     @Override public LynxModuleMetaList discoverModules(boolean checkForImus) throws RobotCoreException, InterruptedException
         {
-        RobotLog.vv(TAG, "lynx discovery beginning...transmitting LynxDiscoveryCommand()...");
+        RobotLog.vv(TAG, "lynx discovery beginning for device " + serialNumber);
 
         // TODO(Noah): ALWAYS call this method through USBScanManager, as modules will be missed if this method is called while discovery is already ongoing
         // Initialize our set of known modules and send out discovery requests
@@ -719,12 +942,32 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
             if (checkForImus)
                 {
                 RobotLog.vv(TAG, "Checking if discovered modules have onboard IMUs");
-                for (final LynxModuleMeta moduleMeta: discoveredModules.values())
+                LynxModuleMeta[] parents = discoveredModules.values().stream()
+                        .filter(LynxModuleMeta::isParent)
+                        .toArray(LynxModuleMeta[]::new);
+                if (parents.length > 0)
                     {
-                    performSystemOperationOnConnectedModule(
-                            moduleMeta.getModuleAddress(),
-                            moduleMeta.isParent(),
-                            module -> moduleMeta.setImuType(module.getImuType()));
+                    LynxModuleMeta parentInfo = parents[0];
+                    for (final LynxModuleMeta moduleMeta: discoveredModules.values())
+                        {
+                        try
+                            {
+                            performSystemOperationOnConnectedModule(
+                                    moduleMeta.getModuleAddress(),
+                                    parentInfo.getModuleAddress(),
+                                    module -> moduleMeta.setImuType(module.getImuType()),
+                                    250,
+                                    TimeUnit.MILLISECONDS);
+                            }
+                        catch (TimeoutException e)
+                            {
+                            RobotLog.ee(TAG, e, "Timeout expired while getting IMU type");
+                            }
+                        }
+                    }
+                else
+                    {
+                    RobotLog.ee(TAG, "Unable to check for onboard IMUs as the parent module was not found");
                     }
                 }
             }
@@ -761,7 +1004,7 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
 
         try
             {
-            performSystemOperationOnConnectedModule(LynxConstants.CH_EMBEDDED_MODULE_ADDRESS, true, null);
+            performSystemOperationOnParentModule(LynxConstants.CH_EMBEDDED_MODULE_ADDRESS, null, 250, TimeUnit.MILLISECONDS);
 
             // performSystemOperationOnConnectedModule will throw a checked exception if we were
             // unable to communicate with module 173. Therefore, if we reach this point, we know it
@@ -773,8 +1016,9 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
             RobotLog.vv(TAG, "Verified that the embedded Control Hub module has the correct address");
             return false;
             }
-        catch (RobotCoreException e)
+        catch (RobotCoreException | TimeoutException e)
             {
+            // TimeoutException should never actually get thrown here because we don't pass in an operation
             return handleEmbeddedModuleNotFoundAtExpectedAddress();
             }
         }
@@ -809,8 +1053,16 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
                 }
             }
 
-        setControlHubModuleAddress(discoveredParentModule);
-        return true;
+        try
+            {
+            setControlHubModuleAddress(discoveredParentModule);
+            return true;
+            }
+        catch (TimeoutException e)
+            {
+            RobotLog.ee(TAG, e, "Timeout expired while setting Control Hub module address");
+            return false;
+            }
         }
 
     private void autoReflashControlHubFirmware()
@@ -826,20 +1078,16 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
         resetDevice(robotUsbDevice);
         }
 
-    private void setControlHubModuleAddress(LynxModuleMeta discoveredParentModule) throws InterruptedException, RobotCoreException
+    private void setControlHubModuleAddress(LynxModuleMeta discoveredParentModule) throws InterruptedException, RobotCoreException, TimeoutException
         {
         int oldParentModuleAddress = discoveredParentModule.getModuleAddress();
         RobotLog.vv(TAG, "Found embedded module at address %d", oldParentModuleAddress);
 
-        performSystemOperationOnConnectedModule(oldParentModuleAddress, true, new Consumer<LynxModule>()
+        performSystemOperationOnParentModule(oldParentModuleAddress, parentModule ->
             {
-            @Override
-            public void accept(LynxModule parentModule)
-                {
-                RobotLog.vv(TAG, "Setting embedded module address to %d", LynxConstants.CH_EMBEDDED_MODULE_ADDRESS);
-                parentModule.setNewModuleAddress(LynxConstants.CH_EMBEDDED_MODULE_ADDRESS);
-                }
-            });
+            RobotLog.vv(TAG, "Setting embedded module address to %d", LynxConstants.CH_EMBEDDED_MODULE_ADDRESS);
+            parentModule.setNewModuleAddress(LynxConstants.CH_EMBEDDED_MODULE_ADDRESS);
+            }, 250, TimeUnit.MILLISECONDS);
         }
 
     protected void onLynxDiscoveryResponseReceived(LynxDatagram datagram)

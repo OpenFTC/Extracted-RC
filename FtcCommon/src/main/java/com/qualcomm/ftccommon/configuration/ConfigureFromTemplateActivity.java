@@ -87,7 +87,7 @@ public class ConfigureFromTemplateActivity extends EditActivity
     protected NetworkConnectionHandler  networkConnectionHandler    = NetworkConnectionHandler.getInstance();
     protected List<RobotConfigFile>     configurationList           = new CopyOnWriteArrayList<RobotConfigFile>();
     protected List<RobotConfigFile>     templateList                = new CopyOnWriteArrayList<RobotConfigFile>();
-    protected USBScanManager            usbScanManager;
+    protected final USBScanManager      usbScanManager              = USBScanManager.getInstance();
     protected ViewGroup                 feedbackAnchor;
     protected Map<String,String>        remoteTemplates             = new ConcurrentHashMap<String,String>();
     protected final Deque<StringProcessor> receivedConfigProcessors = new LinkedList<StringProcessor>();
@@ -110,8 +110,6 @@ public class ConfigureFromTemplateActivity extends EditActivity
             networkConnectionHandler.pushReceiveLoopCallback(commandCallback);
             }
 
-        usbScanManager = new USBScanManager(context, remoteConfigure);
-        this.usbScanManager.startExecutorService();
         this.usbScanManager.startDeviceScanIfNecessary();
 
         this.feedbackAnchor = (ViewGroup)findViewById(R.id.feedbackAnchor);
@@ -159,8 +157,6 @@ public class ConfigureFromTemplateActivity extends EditActivity
     protected void onDestroy()
         {
         super.onDestroy();
-        this.usbScanManager.stopExecutorService();
-        this.usbScanManager = null;
         if (remoteConfigure)
             {
             networkConnectionHandler.removeReceiveLoopCallback(commandCallback);
@@ -425,11 +421,7 @@ public class ConfigureFromTemplateActivity extends EditActivity
                 String name = command.getName();
                 String extra = command.getExtra();
 
-                if (name.equals(CommandList.CMD_SCAN_RESP))
-                    {
-                    result = handleCommandScanResp(extra);
-                    }
-                else if (name.equals(CommandList.CMD_REQUEST_CONFIGURATIONS_RESP))
+                if (name.equals(CommandList.CMD_REQUEST_CONFIGURATIONS_RESP))
                     {
                     result = handleCommandRequestConfigurationsResp(extra);
                     }
@@ -452,13 +444,6 @@ public class ConfigureFromTemplateActivity extends EditActivity
                 }
             return result;
             }
-        }
-
-    private CallbackResult handleCommandScanResp(String extra) throws RobotCoreException
-        {
-        Assert.assertTrue(remoteConfigure);
-        usbScanManager.handleCommandScanResponse(extra);
-        return CallbackResult.HANDLED_CONTINUE;  // someone else in the chain might want the same result
         }
 
     private CallbackResult handleCommandRequestParticularConfigurationResp(String config) throws RobotCoreException

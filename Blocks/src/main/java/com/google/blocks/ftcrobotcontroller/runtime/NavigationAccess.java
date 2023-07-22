@@ -17,6 +17,11 @@
 package com.google.blocks.ftcrobotcontroller.runtime;
 
 import android.webkit.JavascriptInterface;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.UnnormalizedAngleUnit;
 
@@ -26,9 +31,11 @@ import org.firstinspires.ftc.robotcore.external.navigation.UnnormalizedAngleUnit
  * @author lizlooney@google.com (Liz Looney)
  */
 class NavigationAccess extends Access {
+  private final HardwareMap hardwareMap;
 
-  NavigationAccess(BlocksOpMode blocksOpMode, String identifier) {
+  NavigationAccess(BlocksOpMode blocksOpMode, String identifier, HardwareMap hardwareMap) {
     super(blocksOpMode, identifier, "");
+    this.hardwareMap = hardwareMap;
   }
 
   @SuppressWarnings("unused")
@@ -88,5 +95,30 @@ class NavigationAccess extends Access {
     } finally {
       endBlockExecution();
     }
+  }
+
+  private BuiltinCameraDirection checkBuiltinCameraDirection(String cameraDirectionString) {
+    return checkArg(cameraDirectionString, BuiltinCameraDirection.class, "cameraDirection");
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(exclusiveToBlocks = true)
+  public BuiltinCameraDirection getBuiltinCameraDirection(String cameraDirectionString) {
+    return checkBuiltinCameraDirection(cameraDirectionString);
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(exclusiveToBlocks = true)
+  public WebcamName getWebcamName(String webcamNameString) {
+    return hardwareMap.tryGet(WebcamName.class, webcamNameString);
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(exclusiveToBlocks = true)
+  public CameraName createSwitchableCameraNameForAllWebcams() {
+    return ClassFactory.createSwitchableCameraNameForAllWebcams(hardwareMap);
   }
 }

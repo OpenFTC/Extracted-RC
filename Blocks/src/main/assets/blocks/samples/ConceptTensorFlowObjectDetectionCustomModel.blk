@@ -1,287 +1,48 @@
 <xml xmlns="https://developers.google.com/blockly/xml">
 <variables>
-<variable id="ZHu7]h(iKQ-7Q9eq/q3X">i</variable>
-<variable id="vP~n9zf$lW%hYD/C.j_-">recognition</variable>
-<variable id="C-j=_t;@/fsV)+=e~^La">recognitions</variable>
-<variable id="A7n%5a@8jC6}[rgS1GS8">index</variable>
+<variable id="OlJB[R?bruF2C6T]y:j,">myTfodRecognitions</variable>
+<variable type="TfodProcessor.Builder" id="nN$Hc]Yea=/(:3{Flx89">myTfodProcessorBuilder</variable>
+<variable id="3.)/eLHm(iRl1^Qsq;Hb">USE_WEBCAM</variable>
+<variable id="2(2G$#dr!gUmh_~QL5ZA">myTfodProcessor</variable>
+<variable id="0(Iv9ie]^GJxK3,fL}G(">myTfodRecognition</variable>
+<variable type="VisionPortal.Builder" id="wx@xgbnS_]b0DQL.08Qg">myVisionPortalBuilder</variable>
+<variable id="h_4q]^+cuMwY?7E#7$Pc">x</variable>
+<variable id="R{3+3{j6;,uRMizwTeH6">y</variable>
+<variable id="Xk!_{IPng0#/P|7dx?3N">myVisionPortal</variable>
 </variables>
-<block type="procedures_defnoreturn" id="WtpyD@tEu+EoY=P9iY,D" deletable="false" x="18" y="5">
+<block type="procedures_defnoreturn" id="WtpyD@tEu+EoY=P9iY,D" deletable="false" x="0" y="0">
 <field name="NAME">runOpMode</field>
 <comment pinned="false" h="45" w="532">This function is executed when this Op Mode is selected from the Driver Station.</comment>
 <statement name="STACK">
-<block type="comment" id="Lc#BFtj*NTB48YL;eBl.">
-<field name="COMMENT">Sample TFOD Op Mode using a Custom Model</field>
+<block type="comment" id="vG1;7$#*;crH,9)V$Lbq">
+<field name="COMMENT">This 2023-2024 OpMode illustrates the basics of TensorFlow Object Detection, using </field>
 <next>
-<block type="comment" id="#ul#WaXLbg~hUii+7AB_">
-<field name="COMMENT">Initialize Vuforia to provide TFOD with camera</field>
+<block type="comment" id="9x+Pw7NIMObh.ppqpbxk">
+<field name="COMMENT">a custom TFLite object detection model.</field>
 <next>
-<block type="comment" id="pPGDw!e4C3d-Twgqi%I~">
-<field name="COMMENT">images.</field>
-<next>
-<block type="comment" id="TkA;N4Hsf2KmM0v=I6.R">
-<field name="COMMENT">The following block uses the device's back camera.</field>
-<next>
-<block type="vuforiaCurrentGame_initialize_withCameraDirection_2" id="Wy1VYWYqC;ag4RonA9Q{">
-<value name="CAMERA_DIRECTION">
-<shadow type="navigation_typedEnum_cameraDirection" id="pXJI=x[Q,S!#tM!Tp)Dz">
-<field name="CAMERA_DIRECTION">BACK</field>
-</shadow>
-</value>
-<value name="USE_EXTENDED_TRACKING">
-<shadow type="logic_boolean" id="67+vN;e-rbS+Pkx#;!{5">
-<field name="BOOL">FALSE</field>
-</shadow>
-</value>
-<value name="ENABLE_CAMERA_MONITORING">
-<shadow type="logic_boolean" id="lHb:T[4h{E:~U)6(3{1b">
-<field name="BOOL">FALSE</field>
-</shadow>
-</value>
-<value name="CAMERA_MONITOR_FEEDBACK">
-<shadow type="navigation_typedEnum_cameraMonitorFeedback" id="N0Q*_r4#UU`7N#x$%ng=">
-<field name="CAMERA_MONITOR_FEEDBACK">NONE</field>
-</shadow>
-</value>
-<value name="DX">
-<shadow type="math_number" id="9`Bdk77gog6m|qMgZvP|">
-<field name="NUM">0</field>
-</shadow>
-</value>
-<value name="DY">
-<shadow type="math_number" id="%j)4r,Wk?_EmTOCHRUi{">
-<field name="NUM">0</field>
-</shadow>
-</value>
-<value name="DZ">
-<shadow type="math_number" id="XGWG3rvNh?9GM}Cc%,wG">
-<field name="NUM">0</field>
-</shadow>
-</value>
-<value name="AXES_ORDER">
-<shadow type="navigation_typedEnum_axesOrder" id="K8jWG:)SaZ?-YT@w(WSz">
-<field name="AXES_ORDER">XYZ</field>
-</shadow>
-</value>
-<value name="FIRST_ANGLE">
-<shadow type="math_number" id="Ggf9xVad$xKx*;~Yk-/3">
-<field name="NUM">0</field>
-</shadow>
-</value>
-<value name="SECOND_ANGLE">
-<shadow type="math_number" id="Y5NPS+^lsZ}s4DA+;)a0">
-<field name="NUM">-90</field>
-</shadow>
-</value>
-<value name="THIRD_ANGLE">
-<shadow type="math_number" id="UcehAfLhlyOrzf{EWGz:">
-<field name="NUM">0</field>
-</shadow>
-</value>
-<value name="USE_COMPETITION_FIELD_TARGET_LOCATIONS">
-<shadow type="logic_boolean" id="D|1~:n~#$~7^:=^u!p)u">
+<block type="variables_set" id="+WOa|3hz0c^Rah6+[;U4">
+<field name="VAR" id="3.)/eLHm(iRl1^Qsq;Hb">USE_WEBCAM</field>
+<value name="VALUE">
+<block type="logic_boolean" id="C]dWgdzJ2YW[h}=7w5QN">
 <field name="BOOL">TRUE</field>
-</shadow>
-</value>
-<next>
-<block type="comment" id="85/da`3R16Z~@4ac,}/8">
-<field name="COMMENT">The following block uses a webcam.</field>
-<next>
-<block type="vuforiaCurrentGame_initialize_withWebcam_2" id="]~OR:C{OyWXtCwfS%:fP" disabled="true">
-<value name="CAMERA_NAME">
-<shadow type="navigation_webcamName" id="32g~KH3`b0dG7fagWdd%">
-<field name="WEBCAM_NAME">Webcam 1</field>
-</shadow>
-</value>
-<value name="WEBCAM_CALIBRATION_FILE">
-<shadow type="text" id="MgsI)~c@;rq=Z0GlCZo_">
-<field name="TEXT"/>
-</shadow>
-</value>
-<value name="USE_EXTENDED_TRACKING">
-<shadow type="logic_boolean" id="z{BoY:4N:*#qDfe_Tyz3">
-<field name="BOOL">FALSE</field>
-</shadow>
-</value>
-<value name="ENABLE_CAMERA_MONITORING">
-<shadow type="logic_boolean" id="=h,@fq5L_6,vfP$M0Z)s">
-<field name="BOOL">FALSE</field>
-</shadow>
-</value>
-<value name="CAMERA_MONITOR_FEEDBACK">
-<shadow type="navigation_typedEnum_cameraMonitorFeedback" id="-A(kt^^YJc9oq67beLV5">
-<field name="CAMERA_MONITOR_FEEDBACK">NONE</field>
-</shadow>
-</value>
-<value name="DX">
-<shadow type="math_number" id=",Npd_U=q6dRDBHT.J^aJ">
-<field name="NUM">0</field>
-</shadow>
-</value>
-<value name="DY">
-<shadow type="math_number" id="K5^:kR~,!7Eg^Ae:x:LW">
-<field name="NUM">0</field>
-</shadow>
-</value>
-<value name="DZ">
-<shadow type="math_number" id="VN2,7TEqOK`l+)GsY;^1">
-<field name="NUM">0</field>
-</shadow>
-</value>
-<value name="AXES_ORDER">
-<shadow type="navigation_typedEnum_axesOrder" id="NRLU6tBjA2226MCU@I=6">
-<field name="AXES_ORDER">XZY</field>
-</shadow>
-</value>
-<value name="FIRST_ANGLE">
-<shadow type="math_number" id="+aNa@=cO/?6eIW,%o$+r">
-<field name="NUM">90</field>
-</shadow>
-</value>
-<value name="SECOND_ANGLE">
-<shadow type="math_number" id="O#s$+}n$jOw-|O)nuJ]^">
-<field name="NUM">90</field>
-</shadow>
-</value>
-<value name="THIRD_ANGLE">
-<shadow type="math_number" id="EDq!cUQhy?[CRU4x~wX;">
-<field name="NUM">0</field>
-</shadow>
-</value>
-<value name="USE_COMPETITION_FIELD_TARGET_LOCATIONS">
-<shadow type="logic_boolean" id="(]@r~]Q4BJ%Fo`rZgKNI">
-<field name="BOOL">TRUE</field>
-</shadow>
-</value>
-<next>
-<block type="comment" id="6]yP0{L.V#v3^DJf|2r=">
-<field name="COMMENT">Initialize TFOD before waitForStart.</field>
-<next>
-<block type="comment" id="XlE/;@YYr^-3vdxC4+Pe">
-<field name="COMMENT">Use the Manage page to upload your custom model.</field>
-<next>
-<block type="comment" id="Qr5~Qa,$Z#iJut$E0%^R">
-<field name="COMMENT">In the next block, replace </field>
-<next>
-<block type="comment" id="N3^.}#*]S#;+,sP5NKb6">
-<field name="COMMENT">YourCustomModel.tflite with the name of your </field>
-<next>
-<block type="comment" id="|~%NoB+=4G55S{BbQys*">
-<field name="COMMENT">custom model.</field>
-<next>
-<block type="tfod_useModelFromFile" id="Sw6c{!M{a`ZMz?;csW~q">
-<comment pinned="false" h="178" w="745">Set isModelTensorFlow2 to true if you used a TensorFlow 2 tool, such as ftc-ml, to create the model.
-
-Set isModelQuantized to true if the model is quantized. Models created with ftc-ml are quantized.
-
-Set inputSize to the image size corresponding to the model.
-If your model is based on SSD MobileNet v2 320x320, the image size is 300 (srsly!).
-If your model is based on SSD MobileNet V2 FPNLite 320x320, the image size is 320.
-If your model is based on SSD MobileNet V1 FPN 640x640 or SSD MobileNet V2 FPNLite 640x640, the image size is 640.</comment>
-<value name="FILE_NAME">
-<shadow type="text" id="D`9]8n/m+e#.r*O#xytH">
-<field name="TEXT">YourCustomModel.tflite</field>
-</shadow>
-</value>
-<value name="LABELS">
-<block type="lists_create_with" id="Ori_)Jr.cKV}4jq.I-hf">
-<mutation items="1"/>
-<value name="ADD0">
-<block type="text" id="U~,X}*5FU70=Y_r%01%C">
-<field name="TEXT">ball</field>
-</block>
-</value>
-</block>
-</value>
-<value name="IS_MODEL_TENSORFLOW_2">
-<shadow type="logic_boolean" id="3?M-eCvSlXfO3;dQ~uw9">
-<field name="BOOL">TRUE</field>
-</shadow>
-</value>
-<value name="IS_MODEL_QUANTIZED">
-<shadow type="logic_boolean" id="=7Aa+0qpPs/fA($n%}J{">
-<field name="BOOL">TRUE</field>
-</shadow>
-</value>
-<value name="INPUT_SIZE">
-<shadow type="math_number" id="vJ3@6ac;eADuQJ#8#*Hh">
-<field name="NUM">320</field>
-</shadow>
-</value>
-<next>
-<block type="tfod_initialize" id="Kqpz:y8Rludu#89T~ejA">
-<value name="MINIMUM_CONFIDENCE">
-<shadow type="math_number" id="d#u_1ZQ+%VL/cJQCBHpP">
-<field name="NUM">0.7</field>
-</shadow>
-</value>
-<value name="USE_OBJECT_TRACKER">
-<shadow type="logic_boolean" id="|^vO@~%=0C7;3XQqSS,T">
-<field name="BOOL">TRUE</field>
-</shadow>
-</value>
-<value name="ENABLE_CAMERA_MONITORING">
-<shadow type="logic_boolean" id="K.:h%}*0a/jDFxS.O:Ce">
-<field name="BOOL">TRUE</field>
-</shadow>
-</value>
-<next>
-<block type="tfod_setClippingMargins" id=".CQnt}kl=fP#LdfVsFIf">
-<value name="LEFT">
-<shadow type="math_number" id="-6u^{E:qs^yC]V__,XwN">
-<field name="NUM">0</field>
-</shadow>
-</value>
-<value name="TOP">
-<shadow type="math_number" id="!nJ`QBA~DM]M.kbPyA7T">
-<field name="NUM">80</field>
-</shadow>
-</value>
-<value name="RIGHT">
-<shadow type="math_number" id="ixMQyc0i)Vl+x_s:?}hc">
-<field name="NUM">0</field>
-</shadow>
-</value>
-<value name="BOTTOM">
-<shadow type="math_number" id="g7pW?3GL;Dj-w$1uwPi(">
-<field name="NUM">0</field>
-</shadow>
-</value>
-<next>
-<block type="tfod_activate" id="~9Y*gMfDaQ{gG4u/UR7V">
-<next>
-<block type="comment" id="4STF*QQxm)}IL3p2W3er">
-<field name="COMMENT">Enable following block to zoom in on target.</field>
-<next>
-<block type="tfod_setZoom" id=";ZJ]=-U*#}KtN^c{*n}K">
-<value name="MAGNIFICATION">
-<shadow type="math_number" id="U|o7?|l{@X,7N?tnx+E.">
-<field name="NUM">1.0</field>
-</shadow>
-</value>
-<value name="ASPECT_RATIO">
-<block type="math_arithmetic" id="mdf0^71{?/M@kO30(70C">
-<field name="OP">DIVIDE</field>
-<value name="A">
-<shadow type="math_number" id="6mS-L.w#!5)aD@_hoPN.">
-<field name="NUM">16</field>
-</shadow>
-</value>
-<value name="B">
-<shadow type="math_number" id="(.+dP;ZceagGlKdWAZEj">
-<field name="NUM">9</field>
-</shadow>
-</value>
 </block>
 </value>
 <next>
-<block type="telemetry_addTextData_All" id="`68Ki~5#,vIcAP88WX1(">
+<block type="procedures_callnoreturn" id="f5VC4xOrYYZrGzpFY}@G">
+<mutation name="initTfod"/>
+<comment pinned="false" h="60" w="270">Initialize TFOD before waitForStart.</comment>
+<next>
+<block type="comment" id="/TX8,^RvHuP6X%R,Py^^">
+<field name="COMMENT">Wait for the match to begin.</field>
+<next>
+<block type="telemetry_addTextData_All" id="Y/b(p3p_Ls7l_.)bQt%8">
 <value name="KEY">
-<shadow type="text" id="NR/.s-k*h;(/:vd7M:i7">
+<shadow type="text" id="]K/@Q[7z:EBSoy.ggFCo">
 <field name="TEXT">DS preview on/off</field>
 </shadow>
 </value>
 <value name="TEXT">
-<shadow type="text" id="5.,(}kQx4bdq1r[!MKjv">
+<shadow type="text" id="eV-62@bA|1V9{)n7lim2">
 <field name="TEXT">3 dots, Camera Stream</field>
 </shadow>
 </value>
@@ -294,14 +55,11 @@ If your model is based on SSD MobileNet V1 FPN 640x640 or SSD MobileNet V2 FPNLi
 </value>
 <value name="TEXT">
 <shadow type="text" id="^u5_oh+s(.Vs1Kk;$yw9">
-<field name="TEXT">Press Play to start</field>
+<field name="TEXT">Touch Play to start OpMode</field>
 </shadow>
 </value>
 <next>
 <block type="telemetry_update" id="CcM7+$syN,5p}u1NCi8q">
-<next>
-<block type="comment" id="ucY]w(tl5$!{2RX}=X;C">
-<field name="COMMENT">Wait for start command from Driver Station.</field>
 <next>
 <block type="linearOpMode_waitForStart" id=":`$wN_ci`O;o6P0~.(+g">
 <next>
@@ -322,363 +80,592 @@ If your model is based on SSD MobileNet V1 FPN 640x640 or SSD MobileNet V2 FPNLi
 <block type="comment" id="Jh/;L$n@JuX8AQJDFCul">
 <field name="COMMENT">Put loop blocks here.</field>
 <next>
-<block type="variables_set" id="G3vz:RD7CO6.%Sw)ZFK_">
-<field name="VAR" id="C-j=_t;@/fsV)+=e~^La">recognitions</field>
-<comment pinned="false" h="66" w="177">Get a list of recognitions from TFOD.</comment>
-<value name="VALUE">
-<block type="tfod_getRecognitions" id="GX+3lS*1)2{~?7v^L,E?"/>
-</value>
+<block type="procedures_callnoreturn" id="1gvMm%Z3sFW-i|1[op?W">
+<mutation name="telemetryTfod"/>
 <next>
-<block type="controls_if" id="ca@sg0@jzk|H6L@P2e^L">
-<mutation else="1"/>
-<comment pinned="false" h="102" w="202">If list is empty, inform the user. Otherwise, go through list and display info for each recognition.</comment>
+<block type="telemetry_update" id="exvivmft-pX$n!1,8Ea$">
+<comment pinned="false" h="55" w="295">Push telemetry to the Driver Station.</comment>
+<next>
+<block type="controls_if" id="!7_WSukNml?WxUrVW=}Y">
+<mutation elseif="1"/>
 <value name="IF0">
-<block type="logic_compare" id="=%o)vlFkvhu-xL,X/eo$">
-<field name="OP">EQ</field>
-<value name="A">
-<block type="lists_length" id="t!{SnHLGoo~PaP6awyK.">
-<value name="VALUE">
-<block type="variables_get" id="ZNj(tw{-HQNlj-7{iU](">
-<field name="VAR" id="C-j=_t;@/fsV)+=e~^La">recognitions</field>
-</block>
-</value>
-</block>
-</value>
-<value name="B">
-<block type="math_number" id="4XseN,4~X=LIU%~64FvC">
-<field name="NUM">0</field>
-</block>
-</value>
+<block type="gamepad_getProperty_Boolean" id="nHP+eLQXZnMf$GP.l+2:">
+<field name="IDENTIFIER">gamepad1</field>
+<field name="PROP">DpadDown</field>
+<data>{"IDENTIFIER":"gamepad1"}</data>
 </block>
 </value>
 <statement name="DO0">
-<block type="telemetry_addTextData_All" id="GlID$m:#pV1$]_9Xwr2R">
-<value name="KEY">
-<shadow type="text" id="M^km_K-P,B!{$$O:vELn">
-<field name="TEXT">TFOD</field>
+<block type="visionPortal_stopStreaming" id="WxT@T#Ky#v5b~U}F-piA">
+<comment pinned="false" h="150" w="325">Temporarily stop the streaming session.</comment>
+<value name="VISION_PORTAL">
+<block type="variables_get" id="+oda$..:Xa3Va0rMe{;L">
+<field name="VAR" id="Xk!_{IPng0#/P|7dx?3N">myVisionPortal</field>
+</block>
+</value>
+</block>
+</statement>
+<value name="IF1">
+<block type="gamepad_getProperty_Boolean" id="4p5t*;5@A|8*!R_$E^Fw">
+<field name="IDENTIFIER">gamepad1</field>
+<field name="PROP">DpadUp</field>
+<data>{"IDENTIFIER":"gamepad1"}</data>
+</block>
+</value>
+<statement name="DO1">
+<block type="visionPortal_resumeStreaming" id="TRp3/F9RhWFZnU3l.]ei">
+<comment pinned="false" h="150" w="325">Resume the streaming session if previously stopped.</comment>
+<value name="VISION_PORTAL">
+<block type="variables_get" id="{Bzk]pC5=f5AS/,gp5T{">
+<field name="VAR" id="Xk!_{IPng0#/P|7dx?3N">myVisionPortal</field>
+</block>
+</value>
+</block>
+</statement>
+<next>
+<block type="linearOpMode_sleep_Number" id="jjoCwI:;J87CrtGs%}K7">
+<comment pinned="false" h="46" w="191">Share the CPU.</comment>
+<value name="MILLISECONDS">
+<shadow type="math_number" id="w~.7$M*lJeh#@I/xsbHy">
+<field name="NUM">20</field>
 </shadow>
 </value>
-<value name="TEXT">
-<shadow type="text" id="p48vyO#GC!;Z;9]M-St7">
-<field name="TEXT">No items detected.</field>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+<block type="procedures_defnoreturn" id=":Un!nS!LS%^tq]:g4^?Z" x="0" y="828">
+<field name="NAME">initTfod</field>
+<comment pinned="false" h="80" w="160">Initialize TensorFlow Object Detection.</comment>
+<statement name="STACK">
+<block type="comment" id="d.6#F{^$gM[hYq-pIL_d">
+<field name="COMMENT">First, create a TfodProcessor.Builder.</field>
+<next>
+<block type="tfodProcessorBuilder_create_assign" id="OP55K=7Mnj%#1mm%VP3[">
+<field name="TFOD_PROCESSOR_BUILDER" id="nN$Hc]Yea=/(:3{Flx89" variabletype="TfodProcessor.Builder">myTfodProcessorBuilder</field>
+<next>
+<block type="tfodProcessorBuilder_setModelFileName" id="@h!a/FM@:Eov=Nn5~S]X">
+<field name="TFOD_PROCESSOR_BUILDER" id="nN$Hc]Yea=/(:3{Flx89" variabletype="TfodProcessor.Builder">myTfodProcessorBuilder</field>
+<comment pinned="false" h="73" w="263">Set the name of the file where the model can be found.</comment>
+<value name="MODEL_FILE_NAME">
+<shadow type="text" id="Y7G+MVY+W?(5FgHo5@VN">
+<field name="TEXT">MyCustomModel.tflite</field>
+</shadow>
+</value>
+<next>
+<block type="tfodProcessorBuilder_setModelLabels" id="k[)iz|;G9aYP!voFdm+0">
+<field name="TFOD_PROCESSOR_BUILDER" id="nN$Hc]Yea=/(:3{Flx89" variabletype="TfodProcessor.Builder">myTfodProcessorBuilder</field>
+<comment pinned="false" h="70" w="322">Set the full ordered list of labels the model is trained to recognize.</comment>
+<value name="LABELS">
+<block type="lists_create_with" id="MSfk~7I@{)P1Vpp@M/)o">
+<mutation items="2"/>
+<value name="ADD0">
+<block type="text" id="I.9Jd%KKnWJd`30{d^E(">
+<field name="TEXT">ball</field>
+</block>
+</value>
+<value name="ADD1">
+<block type="text" id="[iQm58V8(`:$+wRHBTd_">
+<field name="TEXT">cube</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="tfodProcessorBuilder_setModelAspectRatio" id="cHaB.iFvd-6U6egr:0rQ">
+<field name="TFOD_PROCESSOR_BUILDER" id="nN$Hc]Yea=/(:3{Flx89" variabletype="TfodProcessor.Builder">myTfodProcessorBuilder</field>
+<comment pinned="false" h="77" w="328">Set the aspect ratio for the images used when the model was created.</comment>
+<value name="MODEL_ASPECT_RATIO">
+<block type="math_arithmetic" id="QcvRd$,6)8Oy5l-Fo3JE">
+<field name="OP">DIVIDE</field>
+<value name="A">
+<shadow type="math_number" id="O}#GtpP#U,=^OiPz+563">
+<field name="NUM">16</field>
+</shadow>
+</value>
+<value name="B">
+<shadow type="math_number" id="IHa`v$]y5Gw}Rw[%sDI[">
+<field name="NUM">9</field>
+</shadow>
+</value>
+</block>
+</value>
+<next>
+<block type="comment" id="548kw:o%J6n~KZ`p~%]1">
+<field name="COMMENT">Create a TfodProcessor by calling build.</field>
+<next>
+<block type="variables_set" id="OSPSid-xCavf1!4^2aXU">
+<field name="VAR" id="2(2G$#dr!gUmh_~QL5ZA">myTfodProcessor</field>
+<value name="VALUE">
+<block type="tfodProcessorBuilder_build" id="kI8I`TUYX%.qVtsEsTt0">
+<field name="TFOD_PROCESSOR_BUILDER" id="nN$Hc]Yea=/(:3{Flx89" variabletype="TfodProcessor.Builder">myTfodProcessorBuilder</field>
+</block>
+</value>
+<next>
+<block type="comment" id="w{nzs#L5ZbP.GKW2S`x_">
+<field name="COMMENT">Next, create a VisionPortal.Builder and set attributes related to the camera.</field>
+<next>
+<block type="visionPortalBuilder_create_assign" id="s1^/ZS*LG[dC%CsYcl=%">
+<field name="VISION_PORTAL_BUILDER" id="wx@xgbnS_]b0DQL.08Qg" variabletype="VisionPortal.Builder">myVisionPortalBuilder</field>
+<next>
+<block type="controls_if" id="T`t))DI)e(S6b*Xls7U=">
+<mutation else="1"/>
+<value name="IF0">
+<block type="variables_get" id="Zr+H]wQb_aiB|J+{-0:G">
+<field name="VAR" id="3.)/eLHm(iRl1^Qsq;Hb">USE_WEBCAM</field>
+</block>
+</value>
+<statement name="DO0">
+<block type="visionPortalBuilder_setCamera" id="h;`Yd}]R=F.Fw89p`1N/">
+<field name="VISION_PORTAL_BUILDER" id="wx@xgbnS_]b0DQL.08Qg" variabletype="VisionPortal.Builder">myVisionPortalBuilder</field>
+<comment pinned="false" h="68" w="247">Use a webcam.</comment>
+<value name="CAMERA">
+<shadow type="navigation_webcamName" id="b`AjugjMrzm855@U*q;W">
+<field name="WEBCAM_NAME">Webcam 1</field>
 </shadow>
 </value>
 </block>
 </statement>
 <statement name="ELSE">
-<block type="variables_set" id="-$r0NK]~Nh7SKIq7SfSd">
-<field name="VAR" id="A7n%5a@8jC6}[rgS1GS8">index</field>
-<value name="VALUE">
-<block type="math_number" id="P1f]4HSIe|E0?Cj7x0B[">
-<field name="NUM">0</field>
+<block type="visionPortalBuilder_setCamera" id="pm=N,.9EB)-Y)[HJlB;-">
+<field name="VISION_PORTAL_BUILDER" id="wx@xgbnS_]b0DQL.08Qg" variabletype="VisionPortal.Builder">myVisionPortalBuilder</field>
+<comment pinned="false" h="56" w="298">Use the device's back camera.</comment>
+<value name="CAMERA">
+<shadow type="navigation_typedEnum_builtinCameraDirection" id="8u8O_}55dptgjBxmKq`9">
+<field name="CAMERA_DIRECTION">BACK</field>
+</shadow>
+</value>
+</block>
+</statement>
+<next>
+<block type="comment" id="-QJd~|I/HUP84GR.F=0N">
+<field name="COMMENT">Add myTfodProcessor to the VisionPortal.Builder.</field>
+<next>
+<block type="visionPortalBuilder_addProcessor" id="`A$k?7nl@kd=7y*v@/+-">
+<field name="VISION_PORTAL_BUILDER" id="wx@xgbnS_]b0DQL.08Qg" variabletype="VisionPortal.Builder">myVisionPortalBuilder</field>
+<value name="VISION_PROCESSOR">
+<block type="variables_get" id="KuIL0Tw$FCF,+=+Lq3gD">
+<field name="VAR" id="2(2G$#dr!gUmh_~QL5ZA">myTfodProcessor</field>
 </block>
 </value>
 <next>
-<block type="controls_forEach" id="|@Y$y8D~],V(MRQ+Cyv{">
-<field name="VAR" id="vP~n9zf$lW%hYD/C.j_-">recognition</field>
+<block type="comment" id="6Q2EYFS^A(u/rVLX*nI}">
+<field name="COMMENT">Create a VisionPortal by calling build.</field>
+<next>
+<block type="variables_set" id="UggZXj@UuhBf97)(oA;m">
+<field name="VAR" id="Xk!_{IPng0#/P|7dx?3N">myVisionPortal</field>
+<value name="VALUE">
+<block type="visionPortalBuilder_build" id="OBOV:tKH!^AaYsI{A$~x">
+<field name="VISION_PORTAL_BUILDER" id="wx@xgbnS_]b0DQL.08Qg" variabletype="VisionPortal.Builder">myVisionPortalBuilder</field>
+</block>
+</value>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+<block type="procedures_defnoreturn" id="/s7LjfD#rDF}9WK/VZch" x="0" y="1440">
+<field name="NAME">telemetryTfod</field>
+<comment pinned="false" h="80" w="160">Display info (using telemetry) for a detected object</comment>
+<statement name="STACK">
+<block type="variables_set" id="7Fucjwj^^ab7:laBHtNa">
+<field name="VAR" id="OlJB[R?bruF2C6T]y:j,">myTfodRecognitions</field>
+<comment pinned="false" h="80" w="160">Get a list of recognitions from TFOD.</comment>
+<value name="VALUE">
+<block type="tfodProcessor_getRecognitions" id="m%oMSElt[4!Yf)zPY(G=">
+<value name="TFOD_PROCESSOR">
+<block type="variables_get" id="9wqUsyPBEDPL!nRF+kLN">
+<field name="VAR" id="2(2G$#dr!gUmh_~QL5ZA">myTfodProcessor</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_addTextData_All" id="4%~%9+~2`{`n+-}ug?@N">
+<value name="KEY">
+<shadow type="text" id="pDbUKEeQO+jQ,aTx7g)_">
+<field name="TEXT"># Objects Detected</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id="DRWu-r*O-0eJ4pG2n$_l">
+<field name="TEXT"/>
+</shadow>
+<block type="lists_length" id="%T~z%r^aLI*/u+|`/[~}">
+<value name="VALUE">
+<block type="variables_get" id="0wnBnve[l+0LlXElc?aH">
+<field name="VAR" id="OlJB[R?bruF2C6T]y:j,">myTfodRecognitions</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="controls_forEach" id="-/47w@5g14o?VHJ#y=Jr">
+<field name="VAR" id="0(Iv9ie]^GJxK3,fL}G(">myTfodRecognition</field>
 <comment pinned="false" h="81" w="199">Iterate through list and call a function to display info for each recognized object.</comment>
 <value name="LIST">
-<block type="variables_get" id="W,d1s!eFWeDT0X}~eq,n">
-<field name="VAR" id="C-j=_t;@/fsV)+=e~^La">recognitions</field>
+<block type="variables_get" id="61gd{JV(~zM}Q8j+{|!/">
+<field name="VAR" id="OlJB[R?bruF2C6T]y:j,">myTfodRecognitions</field>
 </block>
 </value>
 <statement name="DO">
-<block type="comment" id="U@Dkpel-LMa.00jJsqA-">
-<field name="COMMENT">Display info.</field>
+<block type="comment" id="nH?fuNCsC3s^TFnm$]ri">
+<field name="COMMENT">Display info about the recognition.</field>
 <next>
-<block type="procedures_callnoreturn" id="}Ed*Qv]2hqyM9x`y/=fq">
-<mutation name="displayInfo">
-<arg name="i"/>
-</mutation>
-<value name="ARG0">
-<block type="variables_get" id="1ynw+j_dMgW{E_t3}D|E">
-<field name="VAR" id="A7n%5a@8jC6}[rgS1GS8">index</field>
-</block>
+<block type="telemetry_addLine" id="`7iZg86yqzf}E:v}Jh@D">
+<value name="TEXT">
+<shadow type="text" id="5IsZU#RzJNY)o5$1[7Wn">
+<field name="TEXT"/>
+</shadow>
 </value>
 <next>
-<block type="comment" id=",1(:%n^0JKFq_SFwTg^H">
-<field name="COMMENT">Increment index.</field>
+<block type="comment" id="tlc0F80BdB`b([Xp;XEc">
+<field name="COMMENT">Display label and confidence.</field>
 <next>
-<block type="variables_set" id="}(~W?+spH%5lnSN8((?=">
-<field name="VAR" id="A7n%5a@8jC6}[rgS1GS8">index</field>
-<value name="VALUE">
-<block type="math_arithmetic" id="?6nQyMGz}aU1fC+utj9g">
-<field name="OP">ADD</field>
+<block type="telemetry_addTextData_All" id=";6SFb8haRI5qo45n}iJ8">
+<comment pinned="false" h="80" w="160">Display the label and confidence for the recognition.</comment>
+<value name="KEY">
+<shadow type="text" id="_dKJensTqN?qDeXC6vm|">
+<field name="TEXT">Image</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id="#+^2[kj(=_-pPWHzSDN^">
+<field name="TEXT">text</field>
+</shadow>
+<block type="text_join" id="%Z8N#7U!NO[^?MZd~8tp">
+<mutation items="4"/>
+<value name="ADD0">
+<block type="tfodRecognition_getProperty_String" id="d7@$bcm+3wluc1@Wtq|u">
+<field name="PROP">Label</field>
+<value name="TFOD_RECOGNITION">
+<block type="variables_get" id="}u)$1QfMPe1)p,Qs5Ku;">
+<field name="VAR" id="0(Iv9ie]^GJxK3,fL}G(">myTfodRecognition</field>
+</block>
+</value>
+</block>
+</value>
+<value name="ADD1">
+<block type="text" id="hA{TP4y0BeN~b}s?-COU">
+<field name="TEXT"> (</field>
+</block>
+</value>
+<value name="ADD2">
+<block type="misc_formatNumber" id="W.:=!sbgnUq29]l%U@X,">
+<value name="NUMBER">
+<shadow type="math_number" id="s0SW(u(_U_AiC]RDGAM}">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="math_arithmetic" id="QPn7xN.bb^5UFF3{wc:=">
+<field name="OP">MULTIPLY</field>
 <value name="A">
-<shadow type="math_number" id="A(cWTP6GX-7F%pan2;S:">
+<shadow type="math_number" id="3x=;@]B}?wD~GAG,D^Jt">
 <field name="NUM">1</field>
 </shadow>
-<block type="variables_get" id="_Qa|p#!QpQ?:hR:4$)Ki">
-<field name="VAR" id="A7n%5a@8jC6}[rgS1GS8">index</field>
+<block type="tfodRecognition_getProperty_Number" id="Ap}Xk?:^Np+gC01Vh61Z">
+<field name="PROP">Confidence</field>
+<value name="TFOD_RECOGNITION">
+<block type="variables_get" id="CYsYZ30]JD*A%GRzMCMp">
+<field name="VAR" id="0(Iv9ie]^GJxK3,fL}G(">myTfodRecognition</field>
+</block>
+</value>
 </block>
 </value>
 <value name="B">
-<shadow type="math_number" id="cZn5/PfoHlpMu|xN+~eL">
-<field name="NUM">1</field>
+<shadow type="math_number" id="n#$#(wn9a]/ut+7OX@dg">
+<field name="NUM">100</field>
 </shadow>
 </value>
 </block>
 </value>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</statement>
-</block>
-</next>
-</block>
-</statement>
-<next>
-<block type="telemetry_update" id="exvivmft-pX$n!1,8Ea$"/>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</statement>
-</block>
-</next>
-</block>
-</statement>
-<next>
-<block type="comment" id="x3Da[L*)xMh=3e7zy7*{">
-<field name="COMMENT">Deactivate TFOD.</field>
-<next>
-<block type="tfod_deactivate" id="`zBI4[E-mb|Bi4MFMvKz"/>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</statement>
-</block>
-<block type="procedures_defnoreturn" id="yrA.?,jSqW-)W/]41!C6" x="22" y="2356">
-<mutation>
-<arg name="i" varid="ZHu7]h(iKQ-7Q9eq/q3X"/>
-</mutation>
-<field name="NAME">displayInfo</field>
-<comment pinned="false" h="80" w="160">Describe this function...</comment>
-<statement name="STACK">
-<block type="telemetry_addTextData_All" id="U%F6}J/e;@8*9amXGPRG">
-<comment pinned="false" h="100" w="200">Display the location of the top left corner of the detection boundary for the recognition</comment>
-<value name="KEY">
-<shadow type="text">
-<field name="TEXT">key</field>
+<value name="PRECISION">
+<shadow type="math_number" id="hKOX#ZdO}0q$?o;9]0^v">
+<field name="NUM">0</field>
 </shadow>
-<block type="text_join" id="K?}daHI2}i-4!gsOplGK">
-<mutation items="4"/>
-<value name="ADD0">
-<block type="text" id="z{$EV%koW41DYu.kQ~{6">
-<field name="TEXT">Label: </field>
-</block>
 </value>
-<value name="ADD1">
-<block type="tfodRecognition_getProperty_String" id="SmTm]y1r9B$,*)Yjr+#|">
-<field name="PROP">Label</field>
-<value name="TFOD_RECOGNITION">
-<block type="variables_get" id="uivMa?2B?u#.[wMadtZk">
-<field name="VAR" id="vP~n9zf$lW%hYD/C.j_-">recognition</field>
-</block>
-</value>
-</block>
-</value>
-<value name="ADD2">
-<block type="text" id="v0^^#8(;hN8/QSdG{e9F">
-<field name="TEXT">, Confidence: </field>
 </block>
 </value>
 <value name="ADD3">
-<block type="tfodRecognition_getProperty_Number" id="Y.)KMB9G./%n*{#~Bs.S">
-<field name="PROP">Confidence</field>
+<block type="text" id="oCx~}ujI~f;Jo|sBkHDT">
+<field name="TEXT"> % Conf.)</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="comment" id="_98!oDhsOCBdhLYUP4uf">
+<field name="COMMENT">Display position.</field>
+<next>
+<block type="variables_set" id="tkoR8MqhJB|mii==HBXx">
+<field name="VAR" id="h_4q]^+cuMwY?7E#7$Pc">x</field>
+<value name="VALUE">
+<block type="math_arithmetic" id="9tcFbr^OD)(ieS^R(%{)" inline="false">
+<field name="OP">DIVIDE</field>
+<value name="A">
+<shadow type="math_number" id="Qem;o3zyOo/TB?UYgNr.">
+<field name="NUM">1</field>
+</shadow>
+<block type="math_arithmetic" id="!sK0EY,5R7e}ONTT$AG5">
+<field name="OP">ADD</field>
+<value name="A">
+<shadow type="math_number" id="5k:P$((E2+D=.O4{A00w">
+<field name="NUM">1</field>
+</shadow>
+<block type="tfodRecognition_getProperty_Number" id="VeL$%e^~N33.uZUiGhUK">
+<field name="PROP">Left</field>
 <value name="TFOD_RECOGNITION">
-<block type="variables_get" id="s|5(ZhdfO=TvI9jZ_z`L">
-<field name="VAR" id="vP~n9zf$lW%hYD/C.j_-">recognition</field>
+<block type="variables_get" id="89kTVFyI498d3Mlqk$Do">
+<field name="VAR" id="0(Iv9ie]^GJxK3,fL}G(">myTfodRecognition</field>
 </block>
 </value>
 </block>
 </value>
+<value name="B">
+<shadow type="math_number" id="/peuJ)ZNE[JkyOvs4LA4">
+<field name="NUM">1</field>
+</shadow>
+<block type="tfodRecognition_getProperty_Number" id="ZD([Z9OSab:l*|ZfMWZA">
+<field name="PROP">Right</field>
+<value name="TFOD_RECOGNITION">
+<block type="variables_get" id="#H/|b#/i9aq2n(;9[6$i">
+<field name="VAR" id="0(Iv9ie]^GJxK3,fL}G(">myTfodRecognition</field>
+</block>
+</value>
+</block>
+</value>
+</block>
+</value>
+<value name="B">
+<shadow type="math_number" id="HUmc2^ax~%i~|SZfD!Kr">
+<field name="NUM">2</field>
+</shadow>
+</value>
+</block>
+</value>
+<next>
+<block type="variables_set" id="qcXVM!KstPoMrw:q18Fp">
+<field name="VAR" id="R{3+3{j6;,uRMizwTeH6">y</field>
+<value name="VALUE">
+<block type="math_arithmetic" id="usxV`d|lwAAg(rR`hoJJ" inline="false">
+<field name="OP">DIVIDE</field>
+<value name="A">
+<shadow type="math_number">
+<field name="NUM">1</field>
+</shadow>
+<block type="math_arithmetic" id="y)1NUwKRmeSRDnPx31tA">
+<field name="OP">ADD</field>
+<value name="A">
+<shadow type="math_number">
+<field name="NUM">1</field>
+</shadow>
+<block type="tfodRecognition_getProperty_Number" id="{Y!B`riuVrgTI~B@*v~-">
+<field name="PROP">Top</field>
+<value name="TFOD_RECOGNITION">
+<block type="variables_get" id="!pM%(0tvuGmPt8On73HP">
+<field name="VAR" id="0(Iv9ie]^GJxK3,fL}G(">myTfodRecognition</field>
+</block>
+</value>
+</block>
+</value>
+<value name="B">
+<shadow type="math_number">
+<field name="NUM">1</field>
+</shadow>
+<block type="tfodRecognition_getProperty_Number" id="gME}{7MPcASBr3H2sFD%">
+<field name="PROP">Bottom</field>
+<value name="TFOD_RECOGNITION">
+<block type="variables_get" id="Ll+R_yoUkk*u]q8|9]1d">
+<field name="VAR" id="0(Iv9ie]^GJxK3,fL}G(">myTfodRecognition</field>
+</block>
+</value>
+</block>
+</value>
+</block>
+</value>
+<value name="B">
+<shadow type="math_number" id="${Ys[4)NtlVmlf,Z.;}[">
+<field name="NUM">2</field>
+</shadow>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_addTextData_All" id="8nKd8v-zW;`u5BOb+C%9">
+<comment pinned="false" h="100" w="200">Display the position of the center of the detection boundary for the recognition</comment>
+<value name="KEY">
+<shadow type="text" id="_dKJensTqN?qDeXC6vm|">
+<field name="TEXT">key</field>
+</shadow>
+<block type="text" id="}g`_FiJaZ]3s$^FeZvgx">
+<field name="TEXT">- Position</field>
 </block>
 </value>
 <value name="TEXT">
-<shadow type="text">
+<shadow type="text" id="#+^2[kj(=_-pPWHzSDN^">
 <field name="TEXT">text</field>
 </shadow>
-<block type="text_join" id="]X~uiYr4E$KJ|)73O,Ek">
-<mutation items="4"/>
+<block type="text_join" id="DT/!lFr4vq[1YesUPQ_T">
+<mutation items="3"/>
 <value name="ADD0">
-<block type="text" id="`CAH%K7JJ{|dt/#B%]Y`">
-<field name="TEXT">X: </field>
-</block>
-</value>
-<value name="ADD1">
-<block type="math_round" id="H+o;zgwai5n9jv:0=;a0">
-<field name="OP">ROUND</field>
-<value name="NUM">
-<shadow type="math_number" id="XG!I5%g=dPGmbZ;Ha2mU">
-<field name="NUM">3.1</field>
-</shadow>
-<block type="math_on_list" id="lKYNl(bY|%Na/,uEq54,">
-<mutation op="AVERAGE"/>
-<field name="OP">AVERAGE</field>
-<value name="LIST">
-<block type="lists_create_with" id="Wp~!n`}g$|OonQ`BjnIP">
-<mutation items="2"/>
-<value name="ADD0">
-<block type="misc_roundDecimal" id="pP+LL|H@42eqtByFTz^m">
+<block type="misc_formatNumber" id="[3@]m1vvw_m4v9{ed!@E">
 <value name="NUMBER">
-<shadow type="math_number" id="xDd:iY1?)Ge5)oYdT2)[">
+<shadow type="math_number" id="JDE#f3wD%{i_3HX0)mD:">
 <field name="NUM">3.14159265</field>
 </shadow>
-<block type="tfodRecognition_getProperty_Number" id="(6zhMz{afQqO[I*+(D$i">
-<field name="PROP">Left</field>
-<value name="TFOD_RECOGNITION">
-<block type="variables_get" id="[$/f[S./+#l:-uz9qqR/">
-<field name="VAR" id="vP~n9zf$lW%hYD/C.j_-">recognition</field>
-</block>
-</value>
+<block type="variables_get" id="PWU+5f]nI6MV`20z_SD:">
+<field name="VAR" id="h_4q]^+cuMwY?7E#7$Pc">x</field>
 </block>
 </value>
 <value name="PRECISION">
-<shadow type="math_number" id="`FSX{X7]Q0Miz52+!#DD">
+<shadow type="math_number" id=",)w^tP$rbhT?BIWQ:E_2">
 <field name="NUM">0</field>
 </shadow>
 </value>
 </block>
 </value>
 <value name="ADD1">
-<block type="misc_roundDecimal" id="B)DWoi0q?h6S6wMN#3K=">
-<value name="NUMBER">
-<shadow type="math_number" id="$a+9TvEqj%KL1;`mD)Pb">
-<field name="NUM">3.14159265</field>
-</shadow>
-<block type="tfodRecognition_getProperty_Number" id="5@(iY];4~JxtdossZXJ+">
-<field name="PROP">Right</field>
-<value name="TFOD_RECOGNITION">
-<block type="variables_get" id="BH3{*x||X~DIzbRLNJ{2">
-<field name="VAR" id="vP~n9zf$lW%hYD/C.j_-">recognition</field>
-</block>
-</value>
-</block>
-</value>
-<value name="PRECISION">
-<shadow type="math_number" id="x{?)_DmbB$yyC4[U0*H=">
-<field name="NUM">0</field>
-</shadow>
-</value>
-</block>
-</value>
-</block>
-</value>
-</block>
-</value>
+<block type="text" id="ZhFl#/Fk+I)t}s)TnQ_?">
+<field name="TEXT">, </field>
 </block>
 </value>
 <value name="ADD2">
-<block type="text" id="Svq@4yq!_BLxeqDwRVBP">
-<field name="TEXT">, Y: </field>
-</block>
-</value>
-<value name="ADD3">
-<block type="math_round" id="/`LAIwHrwqVD=Iex%m0y">
-<field name="OP">ROUND</field>
-<value name="NUM">
-<shadow type="math_number" id="Y}~`tvUQW45;Tott(e/j">
-<field name="NUM">3.1</field>
-</shadow>
-<block type="math_on_list" id="8ZMfitgBP@D8~iBddH[M">
-<mutation op="AVERAGE"/>
-<field name="OP">AVERAGE</field>
-<value name="LIST">
-<block type="lists_create_with" id="ro!NGm#U#S/o0K5o@OqL">
-<mutation items="2"/>
-<value name="ADD0">
-<block type="misc_roundDecimal" id="p7^w.AzE8WDP14G/v2aD">
+<block type="misc_formatNumber" id="C,GVWvk]6xkx||Jt|!#t">
 <value name="NUMBER">
-<shadow type="math_number" id="C5jS)FNO3FR/^2tdm..H">
+<shadow type="math_number" id="`-4k?jGvmE}lx5(o6{9Q">
 <field name="NUM">3.14159265</field>
 </shadow>
-<block type="tfodRecognition_getProperty_Number" id="Xw;4h_a[H.|e2AhEKb_j">
-<field name="PROP">Top</field>
+<block type="variables_get" id="FK.8rCC8#Zwx]$t50PtJ">
+<field name="VAR" id="R{3+3{j6;,uRMizwTeH6">y</field>
+</block>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="eL+n:x65[BH]goM$ioOf">
+<field name="NUM">0</field>
+</shadow>
+</value>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="comment" id="~bRVN`9q9$vf6w0BSW@}">
+<field name="COMMENT">Display size</field>
+<next>
+<block type="telemetry_addTextData_All" id="Q+UdE@m8P2B.yiwA.w%$">
+<comment pinned="false" h="100" w="200">Display the size of detection boundary for the recognition</comment>
+<value name="KEY">
+<shadow type="text" id="_dKJensTqN?qDeXC6vm|">
+<field name="TEXT">key</field>
+</shadow>
+<block type="text" id="c7F~1],4bXjo0h].?:7C">
+<field name="TEXT">- Size</field>
+</block>
+</value>
+<value name="TEXT">
+<shadow type="text" id="#+^2[kj(=_-pPWHzSDN^">
+<field name="TEXT">text</field>
+</shadow>
+<block type="text_join" id="o8Gtc?kcbG~`#vx!7ck^">
+<mutation items="3"/>
+<value name="ADD0">
+<block type="misc_formatNumber" id="5AXz%qG~uB4rRHJy-?d!">
+<value name="NUMBER">
+<shadow type="math_number" id="#4u/hnTWMps|sDKAC9G1">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="tfodRecognition_getProperty_Number" id="F%|Lo.;yf5Od/%EqOuf)">
+<field name="PROP">Width</field>
 <value name="TFOD_RECOGNITION">
-<block type="variables_get" id="Kc9XqVJ/e.6?GyuM/$ER">
-<field name="VAR" id="vP~n9zf$lW%hYD/C.j_-">recognition</field>
+<block type="variables_get" id="TA34*WE*L([F@%Yk_x*4">
+<field name="VAR" id="0(Iv9ie]^GJxK3,fL}G(">myTfodRecognition</field>
 </block>
 </value>
 </block>
 </value>
 <value name="PRECISION">
-<shadow type="math_number" id="M:R:HBXJMl6m~y-HUB4]">
+<shadow type="math_number" id=".)=2[zYgs$ngVPyIh)EY">
 <field name="NUM">0</field>
 </shadow>
 </value>
 </block>
 </value>
 <value name="ADD1">
-<block type="misc_roundDecimal" id="|=_0.@a/FRA+fr6X,JZ2">
+<block type="text" id="okN|sYW[pdiqWcyAv-66">
+<field name="TEXT"> x </field>
+</block>
+</value>
+<value name="ADD2">
+<block type="misc_formatNumber" id="ERN(+zfvvG=u03A%,{g6">
 <value name="NUMBER">
-<shadow type="math_number" id="C5@[c(q[@:s+oZGoT)m3">
+<shadow type="math_number" id="l^$CWPamTtu$iSgKXrc!">
 <field name="NUM">3.14159265</field>
 </shadow>
-<block type="tfodRecognition_getProperty_Number" id="2tlx0TtHa`(M/drPg/~=">
-<field name="PROP">Bottom</field>
+<block type="tfodRecognition_getProperty_Number" id="B-6W%AK(jO!ur3t$S!h@">
+<field name="PROP">Height</field>
 <value name="TFOD_RECOGNITION">
-<block type="variables_get" id="#$RH{~.?D+$?-)|1xRb~">
-<field name="VAR" id="vP~n9zf$lW%hYD/C.j_-">recognition</field>
+<block type="variables_get" id="I%pBUv`--i6Yr0iXNPT4">
+<field name="VAR" id="0(Iv9ie]^GJxK3,fL}G(">myTfodRecognition</field>
 </block>
 </value>
 </block>
 </value>
 <value name="PRECISION">
-<shadow type="math_number" id="R{L#V2B$W1WHZNV5~7K6">
+<shadow type="math_number" id="/p,#N0JOWsst^5Z!{+.)">
 <field name="NUM">0</field>
 </shadow>
 </value>
@@ -687,11 +674,29 @@ If your model is based on SSD MobileNet V1 FPN 640x640 or SSD MobileNet V2 FPNLi
 </block>
 </value>
 </block>
-</value>
+</next>
 </block>
-</value>
+</next>
 </block>
-</value>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</next>
+</block>
+</next>
 </block>
 </statement>
 </block>

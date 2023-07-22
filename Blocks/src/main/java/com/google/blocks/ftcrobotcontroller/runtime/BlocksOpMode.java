@@ -27,6 +27,20 @@ import com.google.blocks.ftcrobotcontroller.hardware.HardwareItem;
 import com.google.blocks.ftcrobotcontroller.hardware.HardwareItemMap;
 import com.google.blocks.ftcrobotcontroller.hardware.HardwareType;
 import com.google.blocks.ftcrobotcontroller.hardware.HardwareUtil;
+import com.google.blocks.ftcrobotcontroller.runtime.obsolete.TfodAccess;
+import com.google.blocks.ftcrobotcontroller.runtime.obsolete.TfodCurrentGameAccess;
+import com.google.blocks.ftcrobotcontroller.runtime.obsolete.TfodCustomModelAccess;
+import com.google.blocks.ftcrobotcontroller.runtime.obsolete.TfodRoverRuckusAccess;
+import com.google.blocks.ftcrobotcontroller.runtime.obsolete.TfodSkyStoneAccess;
+import com.google.blocks.ftcrobotcontroller.runtime.obsolete.VuforiaCurrentGameAccess;
+import com.google.blocks.ftcrobotcontroller.runtime.obsolete.VuforiaLocalizerAccess;
+import com.google.blocks.ftcrobotcontroller.runtime.obsolete.VuforiaLocalizerParametersAccess;
+import com.google.blocks.ftcrobotcontroller.runtime.obsolete.VuforiaRelicRecoveryAccess;
+import com.google.blocks.ftcrobotcontroller.runtime.obsolete.VuforiaRoverRuckusAccess;
+import com.google.blocks.ftcrobotcontroller.runtime.obsolete.VuforiaSkyStoneAccess;
+import com.google.blocks.ftcrobotcontroller.runtime.obsolete.VuforiaTrackableAccess;
+import com.google.blocks.ftcrobotcontroller.runtime.obsolete.VuforiaTrackableDefaultListenerAccess;
+import com.google.blocks.ftcrobotcontroller.runtime.obsolete.VuforiaTrackablesAccess;
 import com.google.blocks.ftcrobotcontroller.util.FileUtil;
 import com.google.blocks.ftcrobotcontroller.util.Identifier;
 import com.google.blocks.ftcrobotcontroller.util.ProjectsUtil;
@@ -39,8 +53,8 @@ import com.qualcomm.robotcore.hardware.LynxModuleImuType;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion;
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaBase;
 import org.firstinspires.ftc.robotcore.internal.opmode.InstanceOpModeManager;
 import org.firstinspires.ftc.robotcore.internal.opmode.InstanceOpModeRegistrar;
 import org.firstinspires.ftc.robotcore.internal.opmode.OpModeMeta;
@@ -91,7 +105,6 @@ public final class BlocksOpMode extends LinearOpMode {
 
   private volatile boolean forceStopped = false;
   private volatile boolean wasTerminated = false;
-  private CameraName switchableCamera;
 
   /**
    * Instantiates a BlocksOpMode that loads JavaScript from a file and executes it when the op mode
@@ -144,7 +157,7 @@ public final class BlocksOpMode extends LinearOpMode {
     }
   }
 
-  void handleFatalException(Throwable e) {
+  public void handleFatalException(Throwable e) {
     String errorMessage = e.getClass().getSimpleName() + (e.getMessage() != null ? " - " + e.getMessage() : "");
     RuntimeException re = new RuntimeException(
         "Fatal error occurred while executing the block labeled \"" + getFullBlockLabel() + "\". " +
@@ -307,8 +320,6 @@ public final class BlocksOpMode extends LinearOpMode {
         RobotLog.i(getLogPrefix() + "runOpMode - after while !scriptFinished loop");
       }
 
-      clearSwitchableCamera();
-
       // Clean up the WebView component by calling clearScript on the UI thread.
       appUtil.runOnUiThread(new Runnable() {
         @Override
@@ -397,6 +408,14 @@ public final class BlocksOpMode extends LinearOpMode {
   @SuppressLint("JavascriptInterface")
   private void addJavascriptInterfaces(HardwareItemMap hardwareItemMap, Set<String> identifiersUsed) {
     addJavascriptInterfacesForIdentifiers();
+    addObsoleteJavascriptInterfaces();
+    // Make sure that all identifiers have been added.
+    for (Identifier identifier : Identifier.values()) {
+      if (!javascriptInterfaces.containsKey(identifier.identifierForJavaScript)) {
+        throw new RuntimeException("There is no javascript interface for Identifier." + identifier);
+      }
+    }
+
     addJavascriptInterfacesForHardware(hardwareItemMap, identifiersUsed);
 
     for (Map.Entry<String, Access> entry : javascriptInterfaces.entrySet()) {
@@ -406,106 +425,133 @@ public final class BlocksOpMode extends LinearOpMode {
     }
   }
 
+  private void addJavascriptInterface(String identifier, Access access) {
+    if (javascriptInterfaces.containsKey(identifier)) {
+      throw new RuntimeException("Duplicate identifier: " + identifier);
+    }
+    javascriptInterfaces.put(identifier, access);
+  }
+
   // Visible for testing.
   void addJavascriptInterfacesForIdentifiers() {
-    javascriptInterfaces.put(Identifier.ACCELERATION.identifierForJavaScript,
+    addJavascriptInterface(Identifier.ACCELERATION.identifierForJavaScript,
         new AccelerationAccess(this, Identifier.ACCELERATION.identifierForJavaScript));
-    javascriptInterfaces.put(Identifier.ANDROID_ACCELEROMETER.identifierForJavaScript,
+    addJavascriptInterface(Identifier.ANDROID_ACCELEROMETER.identifierForJavaScript,
         new AndroidAccelerometerAccess(this, Identifier.ANDROID_ACCELEROMETER.identifierForJavaScript));
-    javascriptInterfaces.put(Identifier.ANDROID_GYROSCOPE.identifierForJavaScript,
+    addJavascriptInterface(Identifier.ANDROID_GYROSCOPE.identifierForJavaScript,
         new AndroidGyroscopeAccess(this, Identifier.ANDROID_GYROSCOPE.identifierForJavaScript));
-    javascriptInterfaces.put(Identifier.ANDROID_ORIENTATION.identifierForJavaScript,
+    addJavascriptInterface(Identifier.ANDROID_ORIENTATION.identifierForJavaScript,
         new AndroidOrientationAccess(this, Identifier.ANDROID_ORIENTATION.identifierForJavaScript));
-    javascriptInterfaces.put(Identifier.ANDROID_SOUND_POOL.identifierForJavaScript,
+    addJavascriptInterface(Identifier.ANDROID_SOUND_POOL.identifierForJavaScript,
         new AndroidSoundPoolAccess(this, Identifier.ANDROID_SOUND_POOL.identifierForJavaScript));
-    javascriptInterfaces.put(Identifier.ANDROID_TEXT_TO_SPEECH.identifierForJavaScript,
+    addJavascriptInterface(Identifier.ANDROID_TEXT_TO_SPEECH.identifierForJavaScript,
         new AndroidTextToSpeechAccess(this, Identifier.ANDROID_TEXT_TO_SPEECH.identifierForJavaScript));
-    javascriptInterfaces.put(Identifier.ANGULAR_VELOCITY.identifierForJavaScript,
+    addJavascriptInterface(Identifier.ANGULAR_VELOCITY.identifierForJavaScript,
         new AngularVelocityAccess(this, Identifier.ANGULAR_VELOCITY.identifierForJavaScript));
-    javascriptInterfaces.put(Identifier.BLINKIN_PATTERN.identifierForJavaScript,
+    addJavascriptInterface(Identifier.APRIL_TAG.identifierForJavaScript,
+        new AprilTagAccess(this, Identifier.APRIL_TAG.identifierForJavaScript));
+    addJavascriptInterface(Identifier.BLINKIN_PATTERN.identifierForJavaScript,
         new BlinkinPatternAccess(this, Identifier.BLINKIN_PATTERN.identifierForJavaScript));
-    javascriptInterfaces.put(Identifier.BNO055IMU_PARAMETERS.identifierForJavaScript,
+    addJavascriptInterface(Identifier.BNO055IMU_PARAMETERS.identifierForJavaScript,
         new BNO055IMUParametersAccess(this, Identifier.BNO055IMU_PARAMETERS.identifierForJavaScript));
-    javascriptInterfaces.put(Identifier.COLOR.identifierForJavaScript,
+    addJavascriptInterface(Identifier.COLOR.identifierForJavaScript,
         new ColorAccess(this, Identifier.COLOR.identifierForJavaScript, activity));
-    javascriptInterfaces.put(Identifier.DBG_LOG.identifierForJavaScript,
+    addJavascriptInterface(Identifier.DBG_LOG.identifierForJavaScript,
         new DbgLogAccess(this, Identifier.DBG_LOG.identifierForJavaScript));
-    javascriptInterfaces.put(Identifier.ELAPSED_TIME.identifierForJavaScript,
+    addJavascriptInterface(Identifier.ELAPSED_TIME.identifierForJavaScript,
         new ElapsedTimeAccess(this, Identifier.ELAPSED_TIME.identifierForJavaScript));
-    javascriptInterfaces.put(Identifier.GAMEPAD_1.identifierForJavaScript,
+    addJavascriptInterface(Identifier.EXPOSURE_CONTROL.identifierForJavaScript,
+        new ExposureControlAccess(this, Identifier.EXPOSURE_CONTROL.identifierForJavaScript));
+    addJavascriptInterface(Identifier.FOCUS_CONTROL.identifierForJavaScript,
+        new FocusControlAccess(this, Identifier.FOCUS_CONTROL.identifierForJavaScript));
+    addJavascriptInterface(Identifier.GAIN_CONTROL.identifierForJavaScript,
+        new GainControlAccess(this, Identifier.GAIN_CONTROL.identifierForJavaScript));
+    addJavascriptInterface(Identifier.GAMEPAD_1.identifierForJavaScript,
         new GamepadAccess(this, Identifier.GAMEPAD_1.identifierForJavaScript, gamepad1));
-    javascriptInterfaces.put(Identifier.GAMEPAD_2.identifierForJavaScript,
+    addJavascriptInterface(Identifier.GAMEPAD_2.identifierForJavaScript,
         new GamepadAccess(this, Identifier.GAMEPAD_2.identifierForJavaScript, gamepad2));
-    javascriptInterfaces.put(Identifier.IMU_PARAMETERS.identifierForJavaScript,
+    addJavascriptInterface(Identifier.IMU_PARAMETERS.identifierForJavaScript,
         new ImuParametersAccess(this, Identifier.IMU_PARAMETERS.identifierForJavaScript));
-    javascriptInterfaces.put(Identifier.LED_EFFECT.identifierForJavaScript,
+    addJavascriptInterface(Identifier.LED_EFFECT.identifierForJavaScript,
         new LedEffectAccess(this, Identifier.LED_EFFECT.identifierForJavaScript));
-    javascriptInterfaces.put(Identifier.LINEAR_OP_MODE.identifierForJavaScript,
+    addJavascriptInterface(Identifier.LINEAR_OP_MODE.identifierForJavaScript,
         new LinearOpModeAccess(this, Identifier.LINEAR_OP_MODE.identifierForJavaScript, project));
-    javascriptInterfaces.put(Identifier.MAGNETIC_FLUX.identifierForJavaScript,
+    addJavascriptInterface(Identifier.MAGNETIC_FLUX.identifierForJavaScript,
         new MagneticFluxAccess(this, Identifier.MAGNETIC_FLUX.identifierForJavaScript));
-    javascriptInterfaces.put(Identifier.MATRIX_F.identifierForJavaScript,
+    addJavascriptInterface(Identifier.MATRIX_F.identifierForJavaScript,
         new MatrixFAccess(this, Identifier.MATRIX_F.identifierForJavaScript));
-    javascriptInterfaces.put(Identifier.MISC.identifierForJavaScript,
+    addJavascriptInterface(Identifier.MISC.identifierForJavaScript,
         new MiscAccess(this, Identifier.MISC.identifierForJavaScript, hardwareMap));
-    javascriptInterfaces.put(Identifier.NAVIGATION.identifierForJavaScript,
-        new NavigationAccess(this, Identifier.NAVIGATION.identifierForJavaScript));
-    javascriptInterfaces.put(Identifier.OPEN_GL_MATRIX.identifierForJavaScript,
+    addJavascriptInterface(Identifier.NAVIGATION.identifierForJavaScript,
+        new NavigationAccess(this, Identifier.NAVIGATION.identifierForJavaScript, hardwareMap));
+    addJavascriptInterface(Identifier.OPEN_GL_MATRIX.identifierForJavaScript,
         new OpenGLMatrixAccess(this, Identifier.OPEN_GL_MATRIX.identifierForJavaScript));
-    javascriptInterfaces.put(Identifier.ORIENTATION.identifierForJavaScript,
+    addJavascriptInterface(Identifier.ORIENTATION.identifierForJavaScript,
         new OrientationAccess(this, Identifier.ORIENTATION.identifierForJavaScript));
-    javascriptInterfaces.put(Identifier.PIDF_COEFFICIENTS.identifierForJavaScript,
+    addJavascriptInterface(Identifier.PIDF_COEFFICIENTS.identifierForJavaScript,
         new PIDFCoefficientsAccess(this, Identifier.PIDF_COEFFICIENTS.identifierForJavaScript));
-    javascriptInterfaces.put(Identifier.POSITION.identifierForJavaScript,
+    addJavascriptInterface(Identifier.POSITION.identifierForJavaScript,
         new PositionAccess(this, Identifier.POSITION.identifierForJavaScript));
-    javascriptInterfaces.put(Identifier.QUATERNION.identifierForJavaScript,
+    addJavascriptInterface(Identifier.PTZ_CONTROL.identifierForJavaScript,
+        new PtzControlAccess(this, Identifier.PTZ_CONTROL.identifierForJavaScript));
+    addJavascriptInterface(Identifier.QUATERNION.identifierForJavaScript,
         new QuaternionAccess(this, Identifier.QUATERNION.identifierForJavaScript));
-    javascriptInterfaces.put(Identifier.RANGE.identifierForJavaScript,
+    addJavascriptInterface(Identifier.RANGE.identifierForJavaScript,
         new RangeAccess(this, Identifier.RANGE.identifierForJavaScript));
-    javascriptInterfaces.put(Identifier.REV_HUB_ORIENTATION_ON_ROBOT.identifierForJavaScript,
+    addJavascriptInterface(Identifier.REV_HUB_ORIENTATION_ON_ROBOT.identifierForJavaScript,
         new RevHubOrientationOnRobotAccess(this, Identifier.REV_HUB_ORIENTATION_ON_ROBOT.identifierForJavaScript));
-    javascriptInterfaces.put(Identifier.RUMBLE_EFFECT.identifierForJavaScript,
+    addJavascriptInterface(Identifier.RUMBLE_EFFECT.identifierForJavaScript,
         new RumbleEffectAccess(this, Identifier.RUMBLE_EFFECT.identifierForJavaScript));
-    javascriptInterfaces.put(Identifier.SYSTEM.identifierForJavaScript,
+    addJavascriptInterface(Identifier.SYSTEM.identifierForJavaScript,
         new SystemAccess(this, Identifier.SYSTEM.identifierForJavaScript));
-    javascriptInterfaces.put(Identifier.TELEMETRY.identifierForJavaScript,
+    addJavascriptInterface(Identifier.TELEMETRY.identifierForJavaScript,
         new TelemetryAccess(this, Identifier.TELEMETRY.identifierForJavaScript, telemetry));
-    javascriptInterfaces.put(Identifier.TEMPERATURE.identifierForJavaScript,
+    addJavascriptInterface(Identifier.TEMPERATURE.identifierForJavaScript,
         new TemperatureAccess(this, Identifier.TEMPERATURE.identifierForJavaScript));
-    javascriptInterfaces.put(Identifier.TFOD.identifierForJavaScript,
-        new TfodAccess(this, Identifier.TFOD.identifierForJavaScript, hardwareMap));
-    javascriptInterfaces.put(Identifier.TFOD_CURRENT_GAME.identifierForJavaScript,
-        new TfodCurrentGameAccess(this, Identifier.TFOD_CURRENT_GAME.identifierForJavaScript, hardwareMap));
-    javascriptInterfaces.put(Identifier.TFOD_CUSTOM_MODEL.identifierForJavaScript,
-        new TfodCustomModelAccess(this, Identifier.TFOD_CUSTOM_MODEL.identifierForJavaScript, hardwareMap));
-    javascriptInterfaces.put(Identifier.TFOD_ROVER_RUCKUS.identifierForJavaScript,
-        new TfodRoverRuckusAccess(this, Identifier.TFOD_ROVER_RUCKUS.identifierForJavaScript, hardwareMap));
-    javascriptInterfaces.put(Identifier.TFOD_SKY_STONE.identifierForJavaScript,
-        new TfodSkyStoneAccess(this, Identifier.TFOD_SKY_STONE.identifierForJavaScript, hardwareMap));
-    javascriptInterfaces.put(Identifier.VECTOR_F.identifierForJavaScript,
+    addJavascriptInterface(Identifier.TENSOR_FLOW.identifierForJavaScript,
+        new TensorFlowAccess(this, Identifier.TENSOR_FLOW.identifierForJavaScript));
+    addJavascriptInterface(Identifier.VECTOR_F.identifierForJavaScript,
         new VectorFAccess(this, Identifier.VECTOR_F.identifierForJavaScript));
-    javascriptInterfaces.put(Identifier.VELOCITY.identifierForJavaScript,
+    addJavascriptInterface(Identifier.VELOCITY.identifierForJavaScript,
         new VelocityAccess(this, Identifier.VELOCITY.identifierForJavaScript));
-    javascriptInterfaces.put(Identifier.VUFORIA_CURRENT_GAME.identifierForJavaScript,
-        new VuforiaCurrentGameAccess(this, Identifier.VUFORIA_CURRENT_GAME.identifierForJavaScript, hardwareMap));
-    javascriptInterfaces.put(Identifier.VUFORIA_RELIC_RECOVERY.identifierForJavaScript,
-        new VuforiaRelicRecoveryAccess(this, Identifier.VUFORIA_RELIC_RECOVERY.identifierForJavaScript, hardwareMap));
-    javascriptInterfaces.put(Identifier.VUFORIA_ROVER_RUCKUS.identifierForJavaScript,
-        new VuforiaRoverRuckusAccess(this, Identifier.VUFORIA_ROVER_RUCKUS.identifierForJavaScript, hardwareMap));
-    javascriptInterfaces.put(Identifier.VUFORIA_SKY_STONE.identifierForJavaScript,
-        new VuforiaSkyStoneAccess(this, Identifier.VUFORIA_SKY_STONE.identifierForJavaScript, hardwareMap));
-    javascriptInterfaces.put(Identifier.VUFORIA_LOCALIZER.identifierForJavaScript,
-        new VuforiaLocalizerAccess(this, Identifier.VUFORIA_LOCALIZER.identifierForJavaScript));
-    javascriptInterfaces.put(Identifier.VUFORIA_LOCALIZER_PARAMETERS.identifierForJavaScript,
-        new VuforiaLocalizerParametersAccess(this, Identifier.VUFORIA_LOCALIZER_PARAMETERS.identifierForJavaScript, activity, hardwareMap));
-    javascriptInterfaces.put(Identifier.VUFORIA_TRACKABLE.identifierForJavaScript,
-        new VuforiaTrackableAccess(this, Identifier.VUFORIA_TRACKABLE.identifierForJavaScript));
-    javascriptInterfaces.put(Identifier.VUFORIA_TRACKABLE_DEFAULT_LISTENER.identifierForJavaScript,
-        new VuforiaTrackableDefaultListenerAccess(this, Identifier.VUFORIA_TRACKABLE_DEFAULT_LISTENER.identifierForJavaScript, hardwareMap));
-    javascriptInterfaces.put(Identifier.VUFORIA_TRACKABLES.identifierForJavaScript,
-        new VuforiaTrackablesAccess(this, Identifier.VUFORIA_TRACKABLES.identifierForJavaScript));
-    javascriptInterfaces.put(Identifier.YAW_PITCH_ROLL_ANGLES.identifierForJavaScript,
+    addJavascriptInterface(Identifier.VISION_PORTAL.identifierForJavaScript,
+        new VisionPortalAccess(this, Identifier.VISION_PORTAL.identifierForJavaScript, hardwareMap));
+    addJavascriptInterface(Identifier.WHITE_BALANCE_CONTROL.identifierForJavaScript,
+        new WhiteBalanceControlAccess(this, Identifier.WHITE_BALANCE_CONTROL.identifierForJavaScript));
+    addJavascriptInterface(Identifier.YAW_PITCH_ROLL_ANGLES.identifierForJavaScript,
         new YawPitchRollAnglesAccess(this, Identifier.YAW_PITCH_ROLL_ANGLES.identifierForJavaScript));
+  }
+
+  // Visible for testing.
+  void addObsoleteJavascriptInterfaces() {
+    addJavascriptInterface(Identifier.OBSOLETE_TFOD.identifierForJavaScript,
+        new TfodAccess(this, Identifier.OBSOLETE_TFOD.identifierForJavaScript));
+    addJavascriptInterface(Identifier.OBSOLETE_TFOD_CURRENT_GAME.identifierForJavaScript,
+        new TfodCurrentGameAccess(this, Identifier.OBSOLETE_TFOD_CURRENT_GAME.identifierForJavaScript));
+    addJavascriptInterface(Identifier.OBSOLETE_TFOD_CUSTOM_MODEL.identifierForJavaScript,
+        new TfodCustomModelAccess(this, Identifier.OBSOLETE_TFOD_CUSTOM_MODEL.identifierForJavaScript));
+    addJavascriptInterface(Identifier.OBSOLETE_TFOD_ROVER_RUCKUS.identifierForJavaScript,
+        new TfodRoverRuckusAccess(this, Identifier.OBSOLETE_TFOD_ROVER_RUCKUS.identifierForJavaScript));
+    addJavascriptInterface(Identifier.OBSOLETE_TFOD_SKY_STONE.identifierForJavaScript,
+        new TfodSkyStoneAccess(this, Identifier.OBSOLETE_TFOD_SKY_STONE.identifierForJavaScript));
+    addJavascriptInterface(Identifier.OBSOLETE_VUFORIA_CURRENT_GAME.identifierForJavaScript,
+        new VuforiaCurrentGameAccess(this, Identifier.OBSOLETE_VUFORIA_CURRENT_GAME.identifierForJavaScript));
+    addJavascriptInterface(Identifier.OBSOLETE_VUFORIA_RELIC_RECOVERY.identifierForJavaScript,
+        new VuforiaRelicRecoveryAccess(this, Identifier.OBSOLETE_VUFORIA_RELIC_RECOVERY.identifierForJavaScript));
+    addJavascriptInterface(Identifier.OBSOLETE_VUFORIA_ROVER_RUCKUS.identifierForJavaScript,
+        new VuforiaRoverRuckusAccess(this, Identifier.OBSOLETE_VUFORIA_ROVER_RUCKUS.identifierForJavaScript));
+    addJavascriptInterface(Identifier.OBSOLETE_VUFORIA_SKY_STONE.identifierForJavaScript,
+        new VuforiaSkyStoneAccess(this, Identifier.OBSOLETE_VUFORIA_SKY_STONE.identifierForJavaScript));
+    addJavascriptInterface(Identifier.OBSOLETE_VUFORIA_LOCALIZER.identifierForJavaScript,
+        new VuforiaLocalizerAccess(this, Identifier.OBSOLETE_VUFORIA_LOCALIZER.identifierForJavaScript));
+    addJavascriptInterface(Identifier.OBSOLETE_VUFORIA_LOCALIZER_PARAMETERS.identifierForJavaScript,
+        new VuforiaLocalizerParametersAccess(this, Identifier.OBSOLETE_VUFORIA_LOCALIZER_PARAMETERS.identifierForJavaScript));
+    addJavascriptInterface(Identifier.OBSOLETE_VUFORIA_TRACKABLE.identifierForJavaScript,
+        new VuforiaTrackableAccess(this, Identifier.OBSOLETE_VUFORIA_TRACKABLE.identifierForJavaScript));
+    addJavascriptInterface(Identifier.OBSOLETE_VUFORIA_TRACKABLE_DEFAULT_LISTENER.identifierForJavaScript,
+        new VuforiaTrackableDefaultListenerAccess(this, Identifier.OBSOLETE_VUFORIA_TRACKABLE_DEFAULT_LISTENER.identifierForJavaScript));
+    addJavascriptInterface(Identifier.OBSOLETE_VUFORIA_TRACKABLES.identifierForJavaScript,
+        new VuforiaTrackablesAccess(this, Identifier.OBSOLETE_VUFORIA_TRACKABLES.identifierForJavaScript));
   }
 
   private void addJavascriptInterfacesForHardware(HardwareItemMap hardwareItemMap, Set<String> identifiersUsed) {
@@ -544,17 +590,6 @@ public final class BlocksOpMode extends LinearOpMode {
       access.close();
       it.remove();
     }
-  }
-
-  CameraName getSwitchableCamera() {
-    if (switchableCamera == null) {
-      switchableCamera = VuforiaBase.getSwitchableCamera(hardwareMap);
-    }
-    return switchableCamera;
-  }
-
-  private void clearSwitchableCamera() {
-    switchableCamera = null;
   }
 
   private class BlocksOpModeAccess extends Access {

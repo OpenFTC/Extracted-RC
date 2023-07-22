@@ -1,0 +1,6 @@
+    <block type="visionPortalBuilder_setCamera">
+      <comment pinned="false" h="150" w="325">Set the camera to the specified webcam name.
+      </comment>
+      <field name="VISION_PORTAL_BUILDER" variabletype="VisionPortal.Builder">myVisionPortalBuilder</field>
+      <value name="CAMERA"><shadow type="navigation_webcamName"></shadow></value>
+    </block>

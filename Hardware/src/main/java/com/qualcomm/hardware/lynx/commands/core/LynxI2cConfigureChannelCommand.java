@@ -114,4 +114,10 @@ public class LynxI2cConfigureChannelCommand extends LynxDekaInterfaceCommand<Lyn
         this.i2cBus = buffer.get();
         this.speedCode = buffer.get();
         }
+
+    @Override
+    public boolean isDangerous()
+        {
+        return false;
+        }
     }

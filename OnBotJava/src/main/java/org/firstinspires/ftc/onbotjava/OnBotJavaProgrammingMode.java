@@ -42,15 +42,7 @@ import org.firstinspires.ftc.onbotjava.handlers.admin.Rearm;
 import org.firstinspires.ftc.onbotjava.handlers.admin.ResetOnBotJava;
 import org.firstinspires.ftc.onbotjava.handlers.admin.Settings;
 import org.firstinspires.ftc.onbotjava.handlers.admin.SettingsReset;
-import org.firstinspires.ftc.onbotjava.handlers.file.CopyFile;
-import org.firstinspires.ftc.onbotjava.handlers.file.DeleteFile;
-import org.firstinspires.ftc.onbotjava.handlers.file.DownloadFile;
-import org.firstinspires.ftc.onbotjava.handlers.file.FetchFileContents;
-import org.firstinspires.ftc.onbotjava.handlers.file.FetchFileTemplates;
-import org.firstinspires.ftc.onbotjava.handlers.file.FetchFileTree;
-import org.firstinspires.ftc.onbotjava.handlers.file.NewFile;
-import org.firstinspires.ftc.onbotjava.handlers.file.SaveFile;
-import org.firstinspires.ftc.onbotjava.handlers.file.UploadFiles;
+import org.firstinspires.ftc.onbotjava.handlers.file.*;
 import org.firstinspires.ftc.onbotjava.handlers.objbuild.FetchBuildStatus;
 import org.firstinspires.ftc.onbotjava.handlers.objbuild.FetchLog;
 import org.firstinspires.ftc.onbotjava.handlers.objbuild.LaunchBuild;
@@ -84,6 +76,7 @@ public class OnBotJavaProgrammingMode implements ProgrammingMode {
     public static final String URI_FILE_DELETE = URI_JAVA_PREFIX + "/file/delete";
     public static final String URI_FILE_DOWNLOAD = URI_JAVA_PREFIX + "/file/download";
     public static final String URI_FILE_GET = URI_JAVA_PREFIX + "/file/get";
+    public static final String URI_FILE_GET_TREE = URI_JAVA_PREFIX + "/file/all";
     public static final String URI_FILE_NEW = URI_JAVA_PREFIX + "/file/new";
     public static final String URI_FILE_SAVE = URI_JAVA_PREFIX + "/file/save";
     public static final String URI_FILE_TEMPLATES = URI_JAVA_PREFIX + "/file/templates";
@@ -115,7 +108,7 @@ public class OnBotJavaProgrammingMode implements ProgrammingMode {
 
     public void register(ProgrammingModeManager manager) {
         List<WebHandler> webHandlerList = Arrays.asList(new Clean(), new Rearm(), new ResetOnBotJava(), new Settings(), new SettingsReset(), new FetchBuildStatus(), new FetchLog(), new LaunchBuild(), new WaitForBuild(),
-                new CopyFile(), new DeleteFile(), new DownloadFile(), new FetchFileContents(), new FetchFileTemplates(), new FetchFileTree(), new NewFile(), new SaveFile(), new UploadFiles(), new FetchJavaScriptSettings(), new FetchAutocompleteJavaScript());
+                new CopyFile(), new DeleteFile(), new DownloadFile(), new FetchFileContents(), new FetchSourceTree(), new FetchFileTemplates(), new FetchFileTree(), new NewFile(), new SaveFile(), new UploadFiles(), new FetchJavaScriptSettings(), new FetchAutocompleteJavaScript());
 
         try {
             for (WebHandler webHandler : webHandlerList) {

@@ -98,4 +98,10 @@ public class LynxI2cWriteReadMultipleBytesCommand extends LynxDekaInterfaceComma
         this.cbToRead     = buffer.get();
         this.i2cStartAddr = buffer.get();
         }
+
+    @Override
+    public boolean isDangerous()
+        {
+        return false;
+        }
     }

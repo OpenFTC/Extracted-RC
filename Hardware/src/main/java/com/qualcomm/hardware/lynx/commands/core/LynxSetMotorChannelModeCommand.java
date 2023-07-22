@@ -37,8 +37,6 @@ import com.qualcomm.hardware.lynx.commands.standard.LynxAck;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.configuration.LynxConstants;
 import com.qualcomm.hardware.lynx.commands.LynxDatagram;
-import com.qualcomm.robotcore.exception.RobotCoreException;
-import com.qualcomm.robotcore.hardware.DcMotorController;
 
 import java.nio.ByteBuffer;
 
@@ -71,13 +69,7 @@ public class LynxSetMotorChannelModeCommand extends LynxDekaInterfaceCommand<Lyn
         this(module);
         LynxConstants.validateMotorZ(motorZ);
         this.motor = (byte)motorZ;
-        switch (mode)
-            {
-            case RUN_WITHOUT_ENCODER:  this.mode = 0; break;
-            case RUN_USING_ENCODER:    this.mode = 1; break;
-            case RUN_TO_POSITION:      this.mode = 2; break;
-            default: throw new IllegalArgumentException(String.format("illegal mode %s", mode.toString()));
-            }
+        this.mode = LynxConstants.runModeToLynxMotorMode(mode);
         this.floatAtZero = floatOrBrake== DcMotor.ZeroPowerBehavior.BRAKE ? (byte)0 : (byte)1;
         }
 
@@ -122,6 +114,14 @@ public class LynxSetMotorChannelModeCommand extends LynxDekaInterfaceCommand<Lyn
         this.motor = buffer.get();
         this.mode = buffer.get();
         this.floatAtZero = buffer.get();
+        }
+
+    @Override
+    public boolean isDangerous()
+        {
+        // The system needs to be able to send this command to set the zero-power behavior to FLOAT.
+        // Because a failsafe command gets sent as soon as the Op Mode is stopped, this command is not dangerous by itself.
+        return false;
         }
 
     }

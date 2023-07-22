@@ -159,6 +159,35 @@ Blockly.JavaScript['telemetry_addTextData_All'] =
 Blockly.FtcJava['telemetry_addTextData_All'] =
     Blockly.FtcJava['telemetry_addTextData'];
 
+Blockly.Blocks['telemetry_addLine'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('call')
+        .appendField(createNonEditableField('Telemetry'))
+        .appendField('.')
+        .appendField(createNonEditableField('addLine'));
+    this.appendValueInput('TEXT').setCheck('String')
+        .appendField('text')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setColour(functionColor);
+    this.setTooltip('Add a line of text to the telemetry output on the driver station.');
+  }
+};
+
+Blockly.JavaScript['telemetry_addLine'] = function(block) {
+  var text = Blockly.JavaScript.valueToCode(
+      block, 'TEXT', Blockly.JavaScript.ORDER_NONE);
+  return telemetryIdentifierForJavaScript + '.addLine(' + text + ');\n';
+};
+
+Blockly.FtcJava['telemetry_addLine'] = function(block) {
+  var text = Blockly.FtcJava.valueToCode(
+      block, 'TEXT', Blockly.FtcJava.ORDER_NONE);
+  return 'telemetry.addLine(' + text + ');\n';
+};
+
 Blockly.Blocks['telemetry_update'] = {
   init: function() {
     this.appendDummyInput()

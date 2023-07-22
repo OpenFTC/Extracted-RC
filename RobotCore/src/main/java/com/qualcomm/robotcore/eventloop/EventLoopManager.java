@@ -747,7 +747,7 @@ public class EventLoopManager implements RecvLoopRunnable.RecvLoopCallback, Netw
     // opModeManager will be null if not running FtcEventLoop right now
     if (opModeManager != null) {
       String msg = "Lost connection while running op mode: " + opModeManager.getActiveOpModeName();
-      opModeManager.initActiveOpMode(OpModeManager.DEFAULT_OP_MODE_NAME);
+      opModeManager.initOpMode(OpModeManager.DEFAULT_OP_MODE_NAME);
       RobotLog.ii(TAG, msg);
     }
     else {

@@ -84,4 +84,10 @@ public class LynxGetModuleLEDPatternCommand extends LynxStandardCommand<LynxGetM
     public void fromPayloadByteArray(byte[] rgb)
         {
         }
+
+    @Override
+    public boolean isDangerous()
+        {
+        return false;
+        }
     }

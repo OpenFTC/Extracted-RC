@@ -91,4 +91,12 @@ public class LynxSetSingleDIOOutputCommand extends LynxDekaInterfaceCommand<Lynx
         this.value = buffer.get();
         }
 
+    @Override
+    public boolean isDangerous()
+        {
+        // A digital channel could hypothetically be connected to something dangerous, but in practice it won't be.
+        // We also need to allow digital device drivers to put the channel they are assigned to into a known state if necessary.
+        return false;
+        }
+
     }

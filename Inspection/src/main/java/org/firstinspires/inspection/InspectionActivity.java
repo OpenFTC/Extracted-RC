@@ -437,19 +437,19 @@ public abstract class InspectionActivity extends ThemedActivity
         if (inspectingRc)
             {
             validation.appVersion = state.robotControllerInstalled &&
-                    state.majorAppVersion >= BuildConfig.SDK_MAJOR_VERSION &&
+                    state.majorSdkVersion >= BuildConfig.SDK_MAJOR_VERSION &&
                     !appIsObsolete;
             validation.otherApp = !state.driverStationInstalled;
             if (inspectingRemoteDevice())
                 {
-                validation.versionsMatch = state.majorAppVersion == BuildConfig.SDK_MAJOR_VERSION &&
-                                           state.minorAppVersion == BuildConfig.SDK_MINOR_VERSION;
+                validation.versionsMatch = state.majorSdkVersion == BuildConfig.SDK_MAJOR_VERSION &&
+                                           state.minorSdkVersion == BuildConfig.SDK_MINOR_VERSION;
                 }
             }
         else
             {
             validation.appVersion = state.driverStationInstalled &&
-                    state.majorAppVersion >= BuildConfig.SDK_MAJOR_VERSION &&
+                    state.majorSdkVersion >= BuildConfig.SDK_MAJOR_VERSION &&
                     !appIsObsolete;
             validation.otherApp = !state.robotControllerInstalled;
             }
@@ -551,7 +551,7 @@ public abstract class InspectionActivity extends ThemedActivity
         // check the installed apps.
         if (inspectingRobotController())
             {
-            refresh(isRCInstalled, validated.appVersion, state.appVersionString);
+            refresh(isRCInstalled, validated.appVersion, AppUtil.getSdkVersionString(state.majorSdkVersion, state.minorSdkVersion, state.pointSdkVersion));
             refresh(isDSInstalled,
                     validated.otherApp,
                     state.driverStationInstalled ? installed : notInstalled);
@@ -564,7 +564,7 @@ public abstract class InspectionActivity extends ThemedActivity
             }
         else // Inspecting driver station
             {
-            refresh(isDSInstalled, validated.appVersion, state.appVersionString);
+            refresh(isDSInstalled, validated.appVersion, AppUtil.getSdkVersionString(state.majorSdkVersion, state.minorSdkVersion, state.pointSdkVersion));
             refresh(isRCInstalled,
                     validated.otherApp,
                     state.robotControllerInstalled ? installed : notInstalled);

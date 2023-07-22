@@ -33,11 +33,11 @@ Blockly.Blocks['tfodRecognition_getProperty_String'] = {
     ];
     this.setOutput(true, 'String');
     this.appendDummyInput()
-        .appendField(createNonEditableField('Recognition'))
+        .appendField(createNonEditableField('TfodRecognition'))
         .appendField('.')
         .appendField(new Blockly.FieldDropdown(PROPERTY_CHOICES), 'PROP');
     this.appendValueInput('TFOD_RECOGNITION').setCheck('Recognition')
-        .appendField('recognition')
+        .appendField('tfodRecognition')
         .setAlign(Blockly.ALIGN_RIGHT);
     this.setColour(getPropertyColor);
     // Assign 'this' to a variable for use in the closures below.
@@ -62,7 +62,7 @@ Blockly.JavaScript['tfodRecognition_getProperty_String'] = function(block) {
   var tfodRecognition = Blockly.JavaScript.valueToCode(
       block, 'TFOD_RECOGNITION', Blockly.JavaScript.ORDER_MEMBER);
   var code = tfodRecognition + '.' + property;
-  var blockLabel = 'Recognition.' + block.getField('PROP').getText();
+  var blockLabel = 'TfodRecognition.' + block.getField('PROP').getText();
   return wrapJavaScriptCode(code, blockLabel);
 };
 
@@ -89,11 +89,11 @@ Blockly.Blocks['tfodRecognition_getProperty_Number'] = {
     ];
     this.setOutput(true, 'Number');
     this.appendDummyInput()
-        .appendField(createNonEditableField('Recognition'))
+        .appendField(createNonEditableField('TfodRecognition'))
         .appendField('.')
         .appendField(new Blockly.FieldDropdown(PROPERTY_CHOICES), 'PROP');
     this.appendValueInput('TFOD_RECOGNITION').setCheck('Recognition')
-        .appendField('recognition')
+        .appendField('tfodRecognition')
         .setAlign(Blockly.ALIGN_RIGHT);
     this.setColour(getPropertyColor);
     // Assign 'this' to a variable for use in the closures below.
@@ -144,7 +144,7 @@ Blockly.JavaScript['tfodRecognition_getProperty_Number'] = function(block) {
   var tfodRecognition = Blockly.JavaScript.valueToCode(
       block, 'TFOD_RECOGNITION', Blockly.JavaScript.ORDER_MEMBER);
   var code = tfodRecognition + '.' + property;
-  var blockLabel = 'Recognition.' + block.getField('PROP').getText();
+  var blockLabel = 'TfodRecognition.' + block.getField('PROP').getText();
   return wrapJavaScriptCode(code, blockLabel);
 };
 
@@ -161,14 +161,14 @@ Blockly.Blocks['tfodRecognition_toText'] = {
     this.setOutput(true, 'String');
     this.appendDummyInput()
         .appendField('call')
-        .appendField(createNonEditableField('Recognition'))
+        .appendField(createNonEditableField('TfodRecognition'))
         .appendField('.')
         .appendField(createNonEditableField('toText'));
     this.appendValueInput('TFOD_RECOGNITION').setCheck('Recognition')
-        .appendField('recognition')
+        .appendField('tfodRecognition')
         .setAlign(Blockly.ALIGN_RIGHT);
     this.setColour(functionColor);
-    this.setTooltip('Returns a text representation of the given Recognition.');
+    this.setTooltip('Returns a text representation of the given TfodRecognition.');
   }
 };
 
@@ -176,7 +176,7 @@ Blockly.JavaScript['tfodRecognition_toText'] = function(block) {
   var tfodRecognition = Blockly.JavaScript.valueToCode(
       block, 'TFOD_RECOGNITION', Blockly.JavaScript.ORDER_NONE);
   var code = 'JSON.stringify(' + tfodRecognition + ')';
-  var blockLabel = 'Recognition.toText';
+  var blockLabel = 'TfodRecognition.toText';
   return wrapJavaScriptCode(code, blockLabel);
 };
 
@@ -192,11 +192,11 @@ Blockly.Blocks['tfodRecognition_estimateAngleToObject'] = {
     this.setOutput(true, 'Number');
     this.appendDummyInput()
         .appendField('call')
-        .appendField(createNonEditableField('Recognition'))
+        .appendField(createNonEditableField('TfodRecognition'))
         .appendField('.')
         .appendField(createNonEditableField('estimateAngleToObject'));
     this.appendValueInput('TFOD_RECOGNITION').setCheck('Recognition')
-        .appendField('recognition')
+        .appendField('tfodRecognition')
         .setAlign(Blockly.ALIGN_RIGHT);
     this.appendValueInput('ANGLE_UNIT').setCheck('AngleUnit')
         .appendField('angleUnit')
@@ -215,7 +215,7 @@ Blockly.JavaScript['tfodRecognition_estimateAngleToObject'] = function(block) {
   var angleUnit = Blockly.JavaScript.valueToCode(
       block, 'ANGLE_UNIT', Blockly.JavaScript.ORDER_COMMA);
   var code = tfodRecognition + '.estimateAngleToObject';
-  var blockLabel = 'Recognition.estimateAngleToObject';
+  var blockLabel = 'TfodRecognition.estimateAngleToObject';
   var wrapped = wrapJavaScriptCode(code, blockLabel);
   code = navigationIdentifierForJavaScript + '.angleUnit_convert((' +
       wrapped[0] + '), "RADIANS", ' + angleUnit + ')';
@@ -230,3 +230,40 @@ Blockly.FtcJava['tfodRecognition_estimateAngleToObject'] = function(block) {
   var code = tfodRecognition + '.estimateAngleToObject(' + angleUnit + ')';
   return [code, Blockly.FtcJava.ORDER_FUNCTION_CALL];
 };
+
+// Enums
+
+Blockly.Blocks['tfod_typedEnum_label'] = {
+  init: function() {
+    this.setOutput(true, 'String');
+    this.appendDummyInput()
+        .appendField(createNonEditableField('Label'))
+        .appendField('.')
+        .appendField(createTfodCurrentGameLabelDropdown(), 'LABEL');
+    this.setColour(getPropertyColor);
+    // Assign 'this' to a variable for use in the tooltip closure below.
+    var thisBlock = this;
+    var TOOLTIPS = TFOD_CURRENT_GAME_LABEL_TOOLTIPS;
+    this.setTooltip(function() {
+      var key = thisBlock.getFieldValue('LABEL');
+      for (var i = 0; i < TOOLTIPS.length; i++) {
+        if (TOOLTIPS[i][0] == key) {
+          return TOOLTIPS[i][1];
+        }
+      }
+      return '';
+    });
+  }
+};
+
+Blockly.JavaScript['tfod_typedEnum_label'] = function(block) {
+  var code = '"' + block.getFieldValue('LABEL') + '"';
+  return [code, Blockly.JavaScript.ORDER_ATOMIC];
+};
+
+Blockly.FtcJava['tfod_typedEnum_label'] = function(block) {
+  // Even in Java, a label is actually just a string, not an enum.
+  var code = '"' + block.getFieldValue('LABEL') + '"';
+  return [code, Blockly.FtcJava.ORDER_ATOMIC];
+};
+

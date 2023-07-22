@@ -35,6 +35,7 @@ package com.qualcomm.hardware.lynx.commands.core;
 import com.qualcomm.hardware.lynx.LynxModuleIntf;
 import com.qualcomm.robotcore.hardware.configuration.LynxConstants;
 import com.qualcomm.hardware.lynx.commands.LynxDatagram;
+import com.qualcomm.robotcore.util.TypeConversion;
 
 import java.nio.ByteBuffer;
 
@@ -69,6 +70,11 @@ public class LynxGetAllDIOInputsResponse extends LynxDekaInterfaceResponse
         LynxConstants.validateDigitalIOZ(pin);
         int bit = 1<<pin;
         return (this.bits & bit) != 0;
+        }
+
+    public int getAllPins()
+        {
+        return TypeConversion.unsignedByteToInt(this.bits);
         }
 
     //----------------------------------------------------------------------------------------------

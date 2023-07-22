@@ -98,4 +98,10 @@ public class LynxSetMotorTargetPositionCommand extends LynxDekaInterfaceCommand<
         this.target = buffer.getInt();
         this.tolerance = buffer.getShort();
         }
+
+    @Override
+    public boolean isDangerous()
+        {
+        return true;
+        }
     }

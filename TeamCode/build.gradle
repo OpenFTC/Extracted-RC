@@ -18,6 +18,7 @@ dependencies {
     implementation project(':Hardware')
     implementation project(':RobotCore')
     implementation project(':FtcCommon')
+    implementation project(':Vision')
 
     implementation 'org.firstinspires.ftc:gameAssets-FreightFrenzy:1.0.0'
 }

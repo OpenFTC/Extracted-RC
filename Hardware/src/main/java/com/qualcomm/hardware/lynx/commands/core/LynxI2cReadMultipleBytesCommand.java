@@ -98,4 +98,10 @@ public class LynxI2cReadMultipleBytesCommand extends LynxDekaInterfaceCommand<Ly
         this.i2cAddr7Bit = buffer.get();
         this.cbToRead    = buffer.get();
         }
+
+    @Override
+    public boolean isDangerous()
+        {
+        return false;
+        }
     }

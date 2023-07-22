@@ -17,7 +17,6 @@
 package com.google.blocks.ftcrobotcontroller.runtime;
 
 import android.webkit.JavascriptInterface;
-import com.google.gson.Gson;
 import com.google.blocks.ftcrobotcontroller.hardware.HardwareUtil;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -109,10 +108,10 @@ class MiscAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
-  public double roundDecimal(double number, int precision) {
+  public String formatNumber_withWidth(double number, int width, int precision) {
     try {
-      startBlockExecution(BlockType.FUNCTION, "roundDecimal");
-      return Double.parseDouble(JavaUtil.formatNumber(number, precision));
+      startBlockExecution(BlockType.FUNCTION, "formatNumber");
+      return JavaUtil.formatNumber(number, width, precision);
     } catch (Throwable e) {
       blocksOpMode.handleFatalException(e);
       throw new AssertionError("impossible", e);
@@ -123,14 +122,10 @@ class MiscAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
-  public OpenGLMatrix getUpdatedRobotLocation(
-      float x, float y, float z, float xAngle, float yAngle, float zAngle) {
+  public double roundDecimal(double number, int precision) {
     try {
-      startBlockExecution(BlockType.FUNCTION, "VuforiaTrackingResults", ".getUpdatedRobotLocation");
-      return OpenGLMatrix
-          .translation(x, y, z)
-          .multiplied(Orientation.getRotationMatrix(
-              AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES, xAngle, yAngle, zAngle));
+      startBlockExecution(BlockType.FUNCTION, "roundDecimal");
+      return Double.parseDouble(JavaUtil.formatNumber(number, precision));
     } catch (Throwable e) {
       blocksOpMode.handleFatalException(e);
       throw new AssertionError("impossible", e);

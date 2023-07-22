@@ -69,9 +69,9 @@ public class EditorSettings {
     public final Setting<Boolean> softWrapSetting = new Setting<>("softWrap", Boolean.class, false);
     public final Setting<Integer> spacesToTabSetting = new Setting<>("spacesToTab", Integer.class, 4);
     public final Setting<String> themeSetting = new Setting<>("theme", String.class, "chrome");
-    public final Setting<Boolean> useNewOnBotJavaWorker = new Setting<>("useNewOnBotJavaWorker", Boolean.class, false);
+    public final Setting<Boolean> useNewOnBotJavaWorker = new Setting<>("useNewOnBotJavaWorker", Boolean.class, true);
     public final Setting<String> whitespaceSetting = new Setting<>("whitespace", String.class, "space");
-
+    public final Setting<Integer> settingEpoch = new Setting<>("settingEpoch", Integer.class, 0);
     private final Map<String, Setting<?>> settings;
 
     private EditorSettings() {
@@ -91,6 +91,7 @@ public class EditorSettings {
         settings.put(themeSetting.name, themeSetting);
         settings.put(useNewOnBotJavaWorker.name, useNewOnBotJavaWorker);
         settings.put(whitespaceSetting.name, whitespaceSetting);
+        settings.put(settingEpoch.name, settingEpoch);
         this.settings = Collections.unmodifiableMap(settings);
     }
 
@@ -102,6 +103,20 @@ public class EditorSettings {
         for (Map.Entry<String, Object> settingValueEntry: settingValuesMap.entrySet()) {
             Setting<?> setting = settings.get(settingValueEntry.getKey());
             setting.setWithUnknownType(settingValueEntry.getValue()); // performs type checking & conversion at runtime
+        }
+        autocompletePackagesSetting.set(OnBotJavaWebInterfaceManager.packagesToAutocomplete());
+        upgradeOnBotJavaSettings(null);
+    }
+
+    private void upgradeOnBotJavaSettings(SharedPreferences.Editor editor) {
+        if (settingEpoch.value == 0) {
+            useNewOnBotJavaWorker.set(true);
+            settingEpoch.set(1);
+
+            if (editor != null) {
+                persistValue(editor, useNewOnBotJavaWorker.name);
+                persistValue(editor, settingEpoch.name);
+            }
         }
     }
 
@@ -120,6 +135,9 @@ public class EditorSettings {
                 persistValue(edit, key);
             }
         }
+
+        autocompletePackagesSetting.set(OnBotJavaWebInterfaceManager.packagesToAutocomplete());
+        upgradeOnBotJavaSettings(edit);
         edit.apply();
     }
 

@@ -1,3 +1,0 @@
-    <block type="vuforiaCurrentGame_setActiveCamera">
-      <value name="CAMERA_NAME"><shadow type="navigation_webcamName"></shadow></value>
-    </block>

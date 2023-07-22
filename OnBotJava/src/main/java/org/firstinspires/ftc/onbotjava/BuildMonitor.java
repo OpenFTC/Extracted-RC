@@ -129,7 +129,6 @@ public class BuildMonitor {
                     final OnBotJavaManager.BuildStatus newBuildStatus = OnBotJavaManager.getBuildStatus();
                     synchronized (buildInformationUpdateLock) {
                         if (buildStatus == CurrentBuildStatus.SUCCESSFUL || buildStatus == CurrentBuildStatus.FAILED) {
-                            RobotLog.vv(TAG, "Rejecting the build state transition to " + newBuildStatus + ", as current build state is " + buildStatus);
                             return;
                         }
 

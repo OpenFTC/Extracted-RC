@@ -489,7 +489,7 @@ public abstract class LynxController extends LynxCommExceptionHandler implements
             }
 
         @Override
-        public void noteAttentionRequired()
+        public void setAttentionRequired(boolean attentionRequired)
             {
             // do nothing
             }
@@ -545,6 +545,11 @@ public abstract class LynxController extends LynxCommExceptionHandler implements
         @Override public boolean isNotResponding()
             {
             return false;
+            }
+
+        @Override public void attemptFailSafeAndIgnoreErrors()
+            {
+            // do nothing
             }
         }
     }

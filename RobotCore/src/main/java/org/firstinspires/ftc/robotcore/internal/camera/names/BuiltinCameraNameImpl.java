@@ -35,7 +35,7 @@ package org.firstinspires.ftc.robotcore.internal.camera.names;
 import androidx.annotation.NonNull;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraName;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 
 @SuppressWarnings("WeakerAccess")
 public class BuiltinCameraNameImpl extends CameraNameImplBase implements BuiltinCameraName
@@ -44,7 +44,7 @@ public class BuiltinCameraNameImpl extends CameraNameImplBase implements Builtin
     // State
     //----------------------------------------------------------------------------------------------
 
-    protected final VuforiaLocalizer.CameraDirection cameraDirection;
+    protected final BuiltinCameraDirection cameraDirection;
 
     @Override public String toString()
         {
@@ -55,12 +55,12 @@ public class BuiltinCameraNameImpl extends CameraNameImplBase implements Builtin
     // Construction
     //----------------------------------------------------------------------------------------------
 
-    private BuiltinCameraNameImpl(@NonNull VuforiaLocalizer.CameraDirection cameraDirection)
+    private BuiltinCameraNameImpl(@NonNull BuiltinCameraDirection cameraDirection)
         {
         this.cameraDirection = cameraDirection;
         }
 
-    public static BuiltinCameraName forCameraDirection(@NonNull VuforiaLocalizer.CameraDirection cameraDirection)
+    public static BuiltinCameraName forCameraDirection(@NonNull BuiltinCameraDirection cameraDirection)
         {
         return new BuiltinCameraNameImpl(cameraDirection);
         }
@@ -97,7 +97,7 @@ public class BuiltinCameraNameImpl extends CameraNameImplBase implements Builtin
     // BuiltinCameraName
     //----------------------------------------------------------------------------------------------
 
-    @Override public VuforiaLocalizer.CameraDirection getCameraDirection()
+    @Override public BuiltinCameraDirection getCameraDirection()
         {
         return cameraDirection;
         }

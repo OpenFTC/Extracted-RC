@@ -31,6 +31,7 @@ Blockly.Blocks['comment'] = {
   init: function() {
     this.appendDummyInput()
         .appendField(new Blockly.FieldTextInput(''), 'COMMENT');
+    this.getField('COMMENT').maxDisplayLength = 100;
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.setColour(commentColor);
@@ -81,8 +82,8 @@ Blockly.Blocks['misc_isNull'] = {
 Blockly.JavaScript['misc_isNull'] = function(block) {
   var value = Blockly.JavaScript.valueToCode(
       block, 'VALUE', Blockly.JavaScript.ORDER_NONE);
-  var code = miscIdentifierForJavaScript + '.isNull(' + value + ')';
-  return [code, Blockly.JavaScript.ORDER_FUNCTION_CALL];
+  var code = value + ' == null';
+  return [code, Blockly.JavaScript.ORDER_EQUALITY];
 };
 
 Blockly.FtcJava['misc_isNull'] = function(block) {
@@ -109,8 +110,8 @@ Blockly.Blocks['misc_isNotNull'] = {
 Blockly.JavaScript['misc_isNotNull'] = function(block) {
   var value = Blockly.JavaScript.valueToCode(
       block, 'VALUE', Blockly.JavaScript.ORDER_NONE);
-  var code = miscIdentifierForJavaScript + '.isNotNull(' + value + ')';
-  return [code, Blockly.JavaScript.ORDER_FUNCTION_CALL];
+  var code = value + ' != null';
+  return [code, Blockly.JavaScript.ORDER_EQUALITY];
 };
 
 Blockly.FtcJava['misc_isNotNull'] = function(block) {
@@ -179,7 +180,8 @@ Blockly.Blocks['misc_formatNumber'] = {
         .appendField('precision')
         .setAlign(Blockly.ALIGN_RIGHT);
     this.setColour(functionColor);
-    this.setTooltip('Returns a text value of the given number formatted with the given precision, padded with zeros if necessary.');
+    this.setTooltip('Returns a text value of the given number formatted with the given ' +
+        'precision, padded with zeros if necessary.');
     this.getFtcJavaInputType = function(inputName) {
       switch (inputName) {
         case 'NUMBER':
@@ -209,6 +211,62 @@ Blockly.FtcJava['misc_formatNumber'] = function(block) {
   // Due to issues with floating point precision, we always call the JavaUtil method.
   Blockly.FtcJava.generateImport_('JavaUtil');
   var code = 'JavaUtil.formatNumber(' + number + ', ' + precision + ')';
+  return [code, Blockly.FtcJava.ORDER_FUNCTION_CALL];
+};
+
+Blockly.Blocks['misc_formatNumber_withWidth'] = {
+  init: function() {
+    this.setOutput(true, 'String');
+    this.appendDummyInput()
+        .appendField('call')
+        .appendField(createNonEditableField('formatNumber'));
+    this.appendValueInput('NUMBER').setCheck('Number')
+        .appendField('number')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('WIDTH').setCheck('Number')
+        .appendField('width')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('PRECISION').setCheck('Number')
+        .appendField('precision')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.setColour(functionColor);
+    this.setTooltip('Returns a text value of the given number formatted with the given width ' +
+        'and precision, padded if necessary.');
+    this.getFtcJavaInputType = function(inputName) {
+      switch (inputName) {
+        case 'NUMBER':
+          return 'double';
+        case 'WIDTH':
+        case 'PRECISION':
+          return 'int';
+      }
+      return '';
+    };
+  }
+};
+
+Blockly.JavaScript['misc_formatNumber_withWidth'] = function(block) {
+  var number = Blockly.JavaScript.valueToCode(
+      block, 'NUMBER', Blockly.JavaScript.ORDER_COMMA);
+  var width = Blockly.JavaScript.valueToCode(
+      block, 'WIDTH', Blockly.JavaScript.ORDER_COMMA);
+  var precision = Blockly.JavaScript.valueToCode(
+      block, 'PRECISION', Blockly.JavaScript.ORDER_COMMA);
+  var code = miscIdentifierForJavaScript + '.formatNumber_withWidth(' +
+      number + ', ' + width + ', ' + precision + ')';
+  return [code, Blockly.JavaScript.ORDER_FUNCTION_CALL];
+};
+
+Blockly.FtcJava['misc_formatNumber_withWidth'] = function(block) {
+  var number = Blockly.FtcJava.valueToCode(
+      block, 'NUMBER', Blockly.FtcJava.ORDER_COMMA);
+  var width = Blockly.FtcJava.valueToCode(
+      block, 'WIDTH', Blockly.FtcJava.ORDER_COMMA);
+  var precision = Blockly.FtcJava.valueToCode(
+      block, 'PRECISION', Blockly.FtcJava.ORDER_COMMA);
+  // Due to issues with floating point precision, we always call the JavaUtil method.
+  Blockly.FtcJava.generateImport_('JavaUtil');
+  var code = 'JavaUtil.formatNumber(' + number + ', ' + width + ', ' + precision + ')';
   return [code, Blockly.FtcJava.ORDER_FUNCTION_CALL];
 };
 
@@ -288,6 +346,57 @@ Blockly.FtcJava['misc_addItemToList'] = function(block) {
   var list = Blockly.FtcJava.valueToCode(
       block, 'LIST', Blockly.FtcJava.ORDER_MEMBER);
   return list + '.add(' + item + ');\n';
+};
+
+Blockly.Blocks['misc_typedEnum_TimeUnit'] = {
+  init: function() {
+    var TIME_UNIT_CHOICES = [
+        ['DAYS', 'DAYS'],
+        ['HOURS', 'HOURS'],
+        ['MICROSECONDS', 'MICROSECONDS'],
+        ['MILLISECONDS', 'MILLISECONDS'],
+        ['MINUTES', 'MINUTES'],
+        ['NANOSECONDS', 'NANOSECONDS'],
+        ['SECONDS', 'SECONDS'],
+    ];
+    this.setOutput(true, 'TimeUnit');
+    this.appendDummyInput()
+        .appendField(createNonEditableField('TimeUnit'))
+        .appendField('.')
+        .appendField(new Blockly.FieldDropdown(TIME_UNIT_CHOICES), 'TIME_UNIT');
+    this.setColour(getPropertyColor);
+    // Assign 'this' to a variable for use in the tooltip closure below.
+    var thisBlock = this;
+    var TOOLTIPS = [
+        ['DAYS', 'The TimeUnit value DAYS.'],
+        ['HOURS', 'The TimeUnit value HOURS.'],
+        ['MICROSECONDS', 'The TimeUnit value MICROSECONDS.'],
+        ['MILLISECONDS', 'The TimeUnit value MILLISECONDS.'],
+        ['MINUTES', 'The TimeUnit value MINUTES.'],
+        ['NANOSECONDS', 'The TimeUnit value NANOSECONDS.'],
+        ['SECONDS', 'The TimeUnit value SECONDS.'],
+        ];
+    this.setTooltip(function() {
+      var key = thisBlock.getFieldValue('TIME_UNIT');
+      for (var i = 0; i < TOOLTIPS.length; i++) {
+        if (TOOLTIPS[i][0] == key) {
+          return TOOLTIPS[i][1];
+        }
+      }
+      return '';
+    });
+  }
+};
+
+Blockly.JavaScript['misc_typedEnum_TimeUnit'] = function(block) {
+  var code = '"' + block.getFieldValue('TIME_UNIT') + '"';
+  return [code, Blockly.JavaScript.ORDER_ATOMIC];
+};
+
+Blockly.FtcJava['misc_typedEnum_TimeUnit'] = function(block) {
+  var code = 'TimeUnit.' + block.getFieldValue('TIME_UNIT');
+  Blockly.FtcJava.generateImport_('TimeUnit');
+  return [code, Blockly.FtcJava.ORDER_MEMBER];
 };
 
 //................................................................................

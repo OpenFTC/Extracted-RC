@@ -94,4 +94,10 @@ public class LynxGetMotorChannelModeCommand extends LynxDekaInterfaceCommand<Lyn
         this.motor = buffer.get();
         }
 
+    @Override
+    public boolean isDangerous()
+        {
+        return false;
+        }
+
     }

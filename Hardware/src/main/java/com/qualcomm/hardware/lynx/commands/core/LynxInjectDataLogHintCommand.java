@@ -124,4 +124,10 @@ public class LynxInjectDataLogHintCommand extends LynxDekaInterfaceCommand<LynxA
         this.payload = new byte[cbPayload];
         buffer.get(this.payload);
         }
+
+    @Override
+    public boolean isDangerous()
+        {
+        return false;
+        }
     }

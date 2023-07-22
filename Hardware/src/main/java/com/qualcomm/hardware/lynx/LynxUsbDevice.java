@@ -40,15 +40,20 @@ import com.qualcomm.robotcore.eventloop.SyncdDevice;
 import com.qualcomm.robotcore.exception.RobotCoreException;
 import com.qualcomm.robotcore.hardware.Engagable;
 import com.qualcomm.robotcore.hardware.HardwareDevice;
+import com.qualcomm.robotcore.hardware.LynxModuleDescription;
 import com.qualcomm.robotcore.hardware.LynxModuleMetaList;
 import com.qualcomm.robotcore.hardware.RobotCoreLynxUsbDevice;
 import com.qualcomm.robotcore.hardware.usb.RobotUsbDevice;
 import com.qualcomm.robotcore.hardware.usb.RobotUsbModule;
 import com.qualcomm.robotcore.util.GlobalWarningSource;
 
+import com.qualcomm.robotcore.util.SerialNumber;
 import org.firstinspires.ftc.robotcore.external.Consumer;
 import org.firstinspires.ftc.robotcore.internal.network.RobotCoreCommandList;
 import org.firstinspires.ftc.robotcore.internal.ui.ProgressParameters;
+
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * The working interface to Lynx USB Devices. Separating out the interface like this allows
@@ -56,6 +61,80 @@ import org.firstinspires.ftc.robotcore.internal.ui.ProgressParameters;
  */
 public interface LynxUsbDevice extends RobotUsbModule, GlobalWarningSource, RobotCoreLynxUsbDevice, HardwareDevice, SyncdDevice, Engagable
     {
+    class SystemOperationHandle
+        {
+        protected final LynxUsbDeviceImpl lynxUsb;
+        protected final LynxModule module;
+        protected final LynxModule parentModule;
+        protected volatile boolean closed = false;
+
+        /**
+         * ONLY to be called by {@link LynxUsbDeviceImpl#keepConnectedModuleAliveForSystemOperations(int, int)}
+         */
+        protected SystemOperationHandle(LynxUsbDeviceImpl lynxUsb, LynxModule module, LynxModule parentModule)
+            {
+            this.lynxUsb = lynxUsb;
+            this.module = module;
+            this.parentModule = parentModule;
+
+            synchronized (lynxUsb.sysOpStartStopLock)
+                {
+                // Incrementing these outside of the context of a specific system operation has the effect of keeping
+                // the modules open even if no system operations are in progress (unless the LynxUsbDeviceImpl itself
+                // is closed). The modules will be allowed to close again after close() is called on this handle
+                parentModule.systemOperationCounter++;
+                module.systemOperationCounter++;
+                }
+            }
+
+        /**
+         * The operation will run on a background thread, but this method will not return until the operation has completed.
+         * <p>
+         * If operation is null, this method effectively just verifies that we can communicate with the specified
+         * module, throwing an exception if we cannot.
+         * <p>
+         * If you care about the command getting completed, specify a timeout of at least 120ms or so, since the command
+         * will get resent if necessary after 100ms.
+         */
+        public void performSystemOperation(@Nullable Consumer<LynxModule> operation, int timeout, TimeUnit timeoutUnit)
+                throws RobotCoreException, InterruptedException, TimeoutException
+            {
+            if (closed) { throw new RuntimeException("Attempted to perform system operation on closed handle"); }
+            lynxUsb.internalPerformSysOp(module, parentModule, operation, timeout, timeoutUnit);
+            }
+
+        /**
+         * Allow the module associated with this handle (and its parent) to close if there are no other users of it
+         */
+        public void close()
+            {
+            closed = true;
+            synchronized (lynxUsb.sysOpStartStopLock)
+                {
+                parentModule.systemOperationCounter--;
+                lynxUsb.internalCloseLynxModuleIfUnused(parentModule);
+
+                module.systemOperationCounter--;
+                lynxUsb.internalCloseLynxModuleIfUnused(module);
+                }
+            }
+
+        public SerialNumber getLynxModuleSerialNumber()
+            {
+            return module.getModuleSerialNumber();
+            }
+
+        public boolean wrapsModule(LynxModule module)
+            {
+            return module == this.module;
+            }
+
+        public boolean wrapsSameModule(SystemOperationHandle otherHandle)
+            {
+            return otherHandle.module == this.module;
+            }
+        }
+
     RobotUsbDevice getRobotUsbDevice();
 
     boolean isSystemSynthetic();
@@ -66,16 +145,54 @@ public interface LynxUsbDevice extends RobotUsbModule, GlobalWarningSource, Robo
 
     void changeModuleAddress(LynxModule module, int oldAddress, Runnable runnable);
 
-    LynxModule addConfiguredModule(LynxModule module) throws RobotCoreException, InterruptedException;
-
-    @Nullable LynxModule getConfiguredModule(int moduleAddress);
+    LynxModule getOrAddModule(LynxModuleDescription moduleDescription) throws RobotCoreException, InterruptedException;
 
     /** Should ONLY be called by LynxModule.close() */
     void removeConfiguredModule(LynxModule module);
 
-    void noteMissingModule(LynxModule module, String moduleName);
+    void noteMissingModule(int moduleAddress, String moduleName);
 
-    void performSystemOperationOnConnectedModule(int moduleAddress, boolean isParent, @Nullable Consumer<LynxModule> moduleConsumer)
+    /**
+     * The operation will run on a background thread, but this method will not return until the operation has completed.
+     * <p>
+     * If operation is null, this method effectively just verifies that we can communicate with the parent
+     * module, throwing an exception if we cannot.
+     * <p>
+     * If you care about the command getting completed, specify a timeout of at least 120ms or so, since the command
+     * will get resent if necessary after 100ms.
+     */
+    void performSystemOperationOnParentModule(int parentAddress,
+                                              @Nullable Consumer<LynxModule> operation,
+                                              int timeout,
+                                              TimeUnit timeoutUnit)
+            throws RobotCoreException, InterruptedException, TimeoutException;
+
+    /**
+     * The operation will run on a background thread, but this method will not return until the operation has completed.
+     * <p>
+     * If operation is null, this method effectively just verifies that we can communicate with the specified
+     * module, throwing an exception if we cannot.
+     * <p>
+     * If you care about the command getting completed, specify a timeout of at least 120ms or so, since the command
+     * will get resent if necessary after 100ms.
+     */
+    void performSystemOperationOnConnectedModule(int moduleAddress,
+                                                 int parentAddress,
+                                                 @Nullable Consumer<LynxModule> operation,
+                                                 int timeout,
+                                                 TimeUnit timeoutUnit)
+            throws RobotCoreException, InterruptedException, TimeoutException;
+
+    /**
+     * Open a {@link SystemOperationHandle} that will allow you to keep the LynxModule open for an unbounded length of time.
+     * <p>
+     * You can stop forcing the LynxModule to stay open by calling {@link SystemOperationHandle#close()}.
+     * <p>
+     * You can perform system operations on the module by calling {@link SystemOperationHandle#performSystemOperation(Consumer, int, TimeUnit)}.
+     * <p>
+     * This handle will continue working even if the module's address is changed.
+     */
+    SystemOperationHandle keepConnectedModuleAliveForSystemOperations(int moduleAddress, int parentAddress)
             throws RobotCoreException, InterruptedException;
 
     LynxModuleMetaList discoverModules(boolean checkForImus) throws RobotCoreException, InterruptedException;

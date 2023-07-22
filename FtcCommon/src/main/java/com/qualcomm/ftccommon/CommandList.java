@@ -31,18 +31,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.qualcomm.ftccommon;
 
-import androidx.annotation.NonNull;
-import android.util.Base64;
-
-import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.util.SerialNumber;
 
 import org.firstinspires.ftc.robotcore.internal.collections.SimpleGson;
 import org.firstinspires.ftc.robotcore.internal.network.RobotCoreCommandList;
-import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
-import java.io.File;
 import java.util.ArrayList;
+
+import androidx.annotation.NonNull;
 
 /**
  * List of RobotCore Robocol commands used by the FIRST apps
@@ -146,7 +142,7 @@ public class CommandList extends RobotCoreCommandList {
         }
     public static CmdStopPlayingSounds deserialize(String serialized) { return SimpleGson.getInstance().fromJson(serialized, CmdStopPlayingSounds.class); }
   }
-  
+
   //------------------------------------------------------------------------------------------------
   // Programming and management
   //------------------------------------------------------------------------------------------------
@@ -166,10 +162,12 @@ public class CommandList extends RobotCoreCommandList {
   public static final String CMD_SET_MATCH_NUMBER = "CMD_SET_MATCH_NUMBER";
 
   public static final String CMD_LYNX_ADDRESS_CHANGE = "CMD_LYNX_ADDRESS_CHANGE";
+  public static final String CMD_LYNX_ADDRESS_CHANGE_FINISHED = "CMD_LYNX_ADDRESS_CHANGE_FINISHED";
   public static class LynxAddressChangeRequest {
 
     public static class AddressChange {
       SerialNumber serialNumber;
+      int parentAddress;
       int oldAddress;
       int newAddress;
     }
@@ -186,11 +184,15 @@ public class CommandList extends RobotCoreCommandList {
 
   public static class CmdVisuallyIdentify {
     public static final String Command = "CMD_VISUALLY_IDENTIFY";
-    public final @NonNull SerialNumber serialNumber;
+    public final @NonNull SerialNumber usbSerialNumber;
+    public final int moduleAddress;
+    public final int parentModuleAddress;
     public final boolean shouldIdentify;
 
-    public CmdVisuallyIdentify(@NonNull SerialNumber serialNumber, boolean shouldIdentify) {
-      this.serialNumber = serialNumber;
+    public CmdVisuallyIdentify(@NonNull SerialNumber usbSerialNumber, int moduleAddress, int parentModuleAddress, boolean shouldIdentify) {
+      this.usbSerialNumber = usbSerialNumber;
+      this.moduleAddress = moduleAddress;
+      this.parentModuleAddress = parentModuleAddress;
       this.shouldIdentify = shouldIdentify;
     }
 

@@ -91,7 +91,7 @@ public class FtcConfigurationActivity extends EditActivity {
   @Override public String getTag() { return TAG; }
   public static final RequestCode requestCode = RequestCode.EDIT_FILE;
 
-  protected USBScanManager usbScanManager = null;
+  protected final USBScanManager usbScanManager = USBScanManager.getInstance();
   protected ThreadPool.Singleton scanButtonSingleton = new ThreadPool.Singleton();
   protected final Object robotConfigMapLock = new Object();
   protected int idFeedbackAnchor = R.id.feedbackAnchor;
@@ -184,7 +184,6 @@ public class FtcConfigurationActivity extends EditActivity {
   protected void onDestroy() {
     RobotLog.vv(TAG, "FtcConfigurationActivity.onDestroy()");
     super.onDestroy();
-    stopExecutorService();
   }
 
   //------------------------------------------------------------------------------------------------
@@ -295,9 +294,6 @@ public class FtcConfigurationActivity extends EditActivity {
   }
 
   private void startExecutorService() throws RobotCoreException {
-    this.usbScanManager = new USBScanManager(this, remoteConfigure);
-    this.usbScanManager.startExecutorService();
-
     // We reuse the executor service in the scan manager to limit the user to single
     // clicks of the scan button
     this.scanButtonSingleton.reset();
@@ -306,11 +302,19 @@ public class FtcConfigurationActivity extends EditActivity {
     // Kick off a scan every time we edit a new configuration file, as we want to know,
     // definitively, which of those devices are currently attached and which might be missing.
     this.usbScanManager.startDeviceScanIfNecessary();
-  }
 
-  private void stopExecutorService() {
-    this.usbScanManager.stopExecutorService();
-    this.usbScanManager = null;
+    // Handle the results of the scan
+    this.usbScanManager.getExecutorService().submit(() -> {
+      try {
+        this.usbScanManager.awaitScannedDevices();
+
+        // We might already be displaying the devices: the scan response might come in late.
+        // In which case, they're not correctly showing attachment status. Update so they do.
+        populateListAndWarnDevices();
+      } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+      }
+    });
   }
 
   private boolean carryOver(SerialNumber serialNumber, RobotConfigMap existingControllers) {
@@ -351,7 +355,7 @@ public class FtcConfigurationActivity extends EditActivity {
             for (LynxModuleConfiguration existingModule: ((LynxUsbDeviceConfiguration) existingControllers.get(serialNumber)).getModules()) {
               if (discoveredModule.getModuleAddress() == existingModule.getModuleAddress()) {
                 RobotLog.vv(TAG, "carrying over %s", existingModule.getModuleSerialNumber());
-                existingModule.setIsParent(discoveredModule.isParent()); // Preserve parent state from discovery
+                existingModule.setParentModuleAddress(discoveredModule.getParentModuleAddress()); // Preserve parent state from discovery
                 lynxUsbConfiguration.getModules().remove(discoveredModule);
                 lynxUsbConfiguration.getModules().add(existingModule);
               }
@@ -622,7 +626,15 @@ public class FtcConfigurationActivity extends EditActivity {
     RobotLog.vv(TAG, "onDoneButtonPressed()");
 
     // Generate the XML. If that failed, we will already have complained to the user.
-    final String data = robotConfigFileManager.toXml(getRobotConfigMap());
+    String data;
+    try {
+      data = robotConfigFileManager.toXml(getRobotConfigMap());
+    } catch (DuplicateNameException e) {
+      warnDuplicateNames(e.getMessage());
+      RobotLog.ee(TAG, e.getMessage());
+      return;
+    }
+
     if (data == null){
       return;
     }
@@ -657,11 +669,7 @@ public class FtcConfigurationActivity extends EditActivity {
           robotConfigFileManager.writeToFile(currentCfgFile, remoteConfigure, data);
           robotConfigFileManager.setActiveConfigAndUpdateUI(remoteConfigure, currentCfgFile);
 
-        } catch (DuplicateNameException e) {
-          warnDuplicateNames(e.getMessage());
-          RobotLog.ee(TAG, e.getMessage());
-          return;
-        } catch (RobotCoreException|IOException e) {
+        } catch (RobotCoreException|IOException|RuntimeException e) {
           appUtil.showToast(UILocation.ONLY_LOCAL, e.getMessage());
           RobotLog.ee(TAG, e.getMessage());
           return;
@@ -722,23 +730,6 @@ public class FtcConfigurationActivity extends EditActivity {
   // Remote handling
   //------------------------------------------------------------------------------------------------
 
-  protected CallbackResult handleCommandScanResp(String extra) throws RobotCoreException {
-    if (this.usbScanManager != null) {
-      this.usbScanManager.handleCommandScanResponse(extra);
-      // We might already be displaying the devices: the scan response might come in late.
-      // In which case, they're not correctly showing attachment status. Update so they do.
-      populateListAndWarnDevices();
-    }
-    return CallbackResult.HANDLED_CONTINUE;  // someone else in the chain might want the same data
-  }
-
-  protected CallbackResult handleCommandDiscoverLynxModulesResp(String extra) throws RobotCoreException {
-    if (this.usbScanManager != null) {
-      this.usbScanManager.handleCommandDiscoverLynxModulesResponse(extra);
-    }
-    return CallbackResult.HANDLED;
-  }
-
   protected CallbackResult handleCommandRequestParticularConfigurationResp(String extra) throws RobotCoreException {
     ReadXMLFileHandler readXMLFileHandler = new ReadXMLFileHandler();
     List<ControllerConfiguration> controllerList = readXMLFileHandler.parse(new StringReader(extra));
@@ -754,11 +745,7 @@ public class FtcConfigurationActivity extends EditActivity {
         String name = command.getName();
         String extra = command.getExtra();
 
-        if (name.equals(CommandList.CMD_SCAN_RESP)) {
-          result = handleCommandScanResp(extra);
-        } else if (name.equals(CommandList.CMD_DISCOVER_LYNX_MODULES_RESP)) {
-          result = handleCommandDiscoverLynxModulesResp(extra);
-        } else if (name.equals(RobotCoreCommandList.CMD_REQUEST_PARTICULAR_CONFIGURATION_RESP)) {
+        if (name.equals(RobotCoreCommandList.CMD_REQUEST_PARTICULAR_CONFIGURATION_RESP)) {
           result = handleCommandRequestParticularConfigurationResp(extra);
         }
       } catch (RobotCoreException e) {

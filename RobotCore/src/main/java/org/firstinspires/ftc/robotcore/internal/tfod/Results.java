@@ -34,6 +34,11 @@ public class Results {
   private final long frameTimeNanos;
   private final List<Recognition> recognitions;
 
+  public Results(long frameTimeNanos) {
+    this.frameTimeNanos = frameTimeNanos;
+    recognitions = new ArrayList<>();
+  }
+
   public Results(CameraInformation cameraInformation, long frameTimeNanos, @NonNull List<LabeledObject> labeledObjects) {
     this.frameTimeNanos = frameTimeNanos;
 

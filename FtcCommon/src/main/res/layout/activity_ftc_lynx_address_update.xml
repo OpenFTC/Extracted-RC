@@ -34,30 +34,24 @@
         android:paddingTop="5dp">
 
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:maxWidth="700dp"
             android:paddingBottom="3dp"
             android:paddingTop="3dp"
             android:text="@string/lynx_address_instructions_static"/>
 
-        <TextView
-            android:id="@+id/lynxAddressListInstructions"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="3dp"
-            android:paddingTop="3dp"
-            android:text="@string/lynx_address_instructions_update"/>
-
         <include layout="@layout/red_line"/>
 
         <TextView
-            android:id="@+id/addressListCaption"
+            android:id="@+id/noDevicesNotice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="bottom"
-            android:text="@string/availableModuleListCaption"
-            android:textSize="14sp"
-            android:textStyle="bold"/>
+            android:layout_marginTop="8dp"
+            android:text="@string/lynx_address_no_devices"
+            android:textSize="16sp"
+            android:visibility="gone"
+            />
 
         <!-- FrameLayout allows orange text to overlay the module list, if we need that -->
         <FrameLayout
@@ -70,13 +64,21 @@
                 android:fillViewport="true">
 
                 <LinearLayout
-                    android:id="@+id/moduleList"
+                    android:id="@+id/portalList"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:orientation="vertical">
 
-                    <!-- this is just for design; will be removed & replaced at run time -->
-                    <include layout="@layout/lynx_module_configure_address"/>
+                    <!--
+                    The real layout is only included in the Android Studio preview, as instances of
+                    this layout will be dynamically added as necessary at runtime.
+                    -->
+                    <include
+                        tools:layout="@layout/lynx_portal_configure_addresses"
+                        layout="@layout/empty" />
+                    <include
+                        tools:layout="@layout/lynx_portal_configure_addresses"
+                        layout="@layout/empty" />
 
                 </LinearLayout>
 

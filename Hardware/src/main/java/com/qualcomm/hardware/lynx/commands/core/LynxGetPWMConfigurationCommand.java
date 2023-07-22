@@ -93,4 +93,10 @@ public class LynxGetPWMConfigurationCommand extends LynxDekaInterfaceCommand<Lyn
         ByteBuffer buffer = ByteBuffer.wrap(rgb).order(LynxDatagram.LYNX_ENDIAN);
         this.channel = buffer.get();
         }
+
+    @Override
+    public boolean isDangerous()
+        {
+        return false;
+        }
     }

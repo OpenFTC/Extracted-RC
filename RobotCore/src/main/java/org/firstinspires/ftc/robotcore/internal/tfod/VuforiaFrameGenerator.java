@@ -23,16 +23,15 @@ import com.qualcomm.robotcore.util.RobotLog;
 import com.vuforia.Image;
 import com.vuforia.PIXEL_FORMAT;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CloseableFrame;
 import org.firstinspires.ftc.robotcore.external.tfod.CameraInformation;
 import org.firstinspires.ftc.robotcore.external.tfod.FrameConsumer;
 import org.firstinspires.ftc.robotcore.external.tfod.FrameGenerator;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
@@ -66,17 +65,17 @@ public class VuforiaFrameGenerator implements FrameGenerator, Runnable {
     if (cameraName instanceof BuiltinCameraName) {
       int displayRotation = 90 * AppUtil.getInstance().getRootActivity().getWindowManager().getDefaultDisplay().getRotation();
 
-      CameraDirection cameraDirection = ((BuiltinCameraName) cameraName).getCameraDirection();
+      BuiltinCameraDirection cameraDirection = ((BuiltinCameraName) cameraName).getCameraDirection();
 
       for (int cameraId = 0; cameraId < Camera.getNumberOfCameras(); cameraId++) {
         CameraInfo cameraInfo = new CameraInfo();
         Camera.getCameraInfo(cameraId, cameraInfo);
 
-        if (cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT && cameraDirection == CameraDirection.FRONT) {
+        if (cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT && cameraDirection == BuiltinCameraDirection.FRONT) {
           rotation = - displayRotation - cameraInfo.orientation;
           break;
         }
-        if (cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_BACK && cameraDirection == CameraDirection.BACK) {
+        if (cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_BACK && cameraDirection == BuiltinCameraDirection.BACK) {
           rotation = displayRotation - cameraInfo.orientation;
           break;
         }

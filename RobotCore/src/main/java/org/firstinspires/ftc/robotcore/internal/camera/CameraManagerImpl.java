@@ -38,7 +38,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
-import android.os.Build;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -46,6 +46,8 @@ import com.qualcomm.robotcore.eventloop.SyncdDevice;
 import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.util.SerialNumber;
 import com.qualcomm.robotcore.util.ThreadPool;
+
+import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.internal.usb.VendorProductSerialNumber;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
@@ -59,7 +61,6 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.Camera;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraManager;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.internal.camera.delegating.RefCountedSwitchableCameraImpl;
 import org.firstinspires.ftc.robotcore.internal.camera.delegating.SwitchableCameraName;
 import org.firstinspires.ftc.robotcore.internal.camera.delegating.SwitchableCameraNameImpl;
@@ -185,31 +186,47 @@ public class CameraManagerImpl extends DestructOnFinalize/*no parent*/ implement
                 {
                 tracer.trace("---------------------------------------------- ACTION_USB_DEVICE_DETACHED");
                 UsbDevice usbDevice = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+
+                final List<CameraManagerInternal.UsbAttachmentCallback> callbacksCopy;
+
+                // Michael: we can't hold the mutex while calling the callbacks,
+                // this causes deadlocks!
                 synchronized (callbacks)
                     {
-                    for (UsbAttachmentCallback callback : callbacks)
-                        {
-                        callback.onDetached(usbDevice);
-                        }
+                    callbacksCopy = new ArrayList<>(callbacks);
+                    }
+
+                for (UsbAttachmentCallback callback : callbacksCopy)
+                    {
+                    callback.onDetached(usbDevice);
                     }
                 }
             else if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(action))
                 {
                 tracer.trace("---------------------------------------------- ACTION_USB_DEVICE_ATTACHED");
                 UsbDevice usbDevice = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+
+                final List<CameraManagerInternal.UsbAttachmentCallback> callbacksCopy;
+
+                // Michael: we can't hold the mutex while calling the callbacks,
+                // this causes deadlocks!
                 synchronized (callbacks)
                     {
-                    SerialNumber serialNumber = getRealOrVendorProductSerialNumber(usbDevice);
-                    if (serialNumber != null)
+                    callbacksCopy = new ArrayList<>(callbacks);
+                    }
+
+                SerialNumber serialNumber = getRealOrVendorProductSerialNumber(usbDevice);
+                if (serialNumber != null)
+                    {
+                    MutableReference<Boolean> claimed = new MutableReference<>(false);
+                    for (UsbAttachmentCallback callback : callbacksCopy)
                         {
-                        MutableReference<Boolean> claimed = new MutableReference<>(false);
-                        for (UsbAttachmentCallback callback : callbacks)
-                            {
-                            callback.onAttached(usbDevice, serialNumber, claimed);
-                            }
+                        callback.onAttached(usbDevice, serialNumber, claimed);
                         }
-                    else
-                        tracer.traceError("unable to determine serial number of %s; ignoring", usbDevice.getDeviceName());
+                    }
+                else
+                    {
+                    tracer.traceError("unable to determine serial number of %s; ignoring", usbDevice.getDeviceName());
                     }
                 }
             }
@@ -313,7 +330,7 @@ public class CameraManagerImpl extends DestructOnFinalize/*no parent*/ implement
         return WebcamNameImpl.forSerialNumber(libUsbDevice.getRealOrVendorProductSerialNumber());
         }
 
-    @Override public BuiltinCameraName nameFromCameraDirection(VuforiaLocalizer.CameraDirection cameraDirection)
+    @Override public BuiltinCameraName nameFromCameraDirection(BuiltinCameraDirection cameraDirection)
         {
         return BuiltinCameraNameImpl.forCameraDirection(cameraDirection);
         }
@@ -357,10 +374,10 @@ public class CameraManagerImpl extends DestructOnFinalize/*no parent*/ implement
             switch (info.facing)
                 {
                 case android.hardware.Camera.CameraInfo.CAMERA_FACING_BACK:
-                    result.add(nameFromCameraDirection(VuforiaLocalizer.CameraDirection.BACK));
+                    result.add(nameFromCameraDirection(BuiltinCameraDirection.BACK));
                     break;
                 case android.hardware.Camera.CameraInfo.CAMERA_FACING_FRONT:
-                    result.add(nameFromCameraDirection(VuforiaLocalizer.CameraDirection.FRONT));
+                    result.add(nameFromCameraDirection(BuiltinCameraDirection.FRONT));
                     break;
                 }
             }

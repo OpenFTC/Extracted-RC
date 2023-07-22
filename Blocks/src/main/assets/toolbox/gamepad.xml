@@ -165,28 +165,28 @@
       <field name="IDENTIFIER">gamepad1</field>
     </block>
     <block type="variables_set">
-      <field name="VAR">{rumbleEffectBuilderVariable}</field>
+      <field name="VAR">myRumbleEffectBuilder</field>
       <value name="VALUE">
         <block type="rumbleEffect_createBuilder"></block>
       </value>
     </block>
     <block type="rumbleEffect_addStep">
-      <value name="RUMBLE_EFFECT_BUILDER"><block type="variables_get"><field name="VAR">{rumbleEffectBuilderVariable}</field></block></value>
+      <value name="RUMBLE_EFFECT_BUILDER"><block type="variables_get"><field name="VAR">myRumbleEffectBuilder</field></block></value>
       <value name="RUMBLE_1"><shadow type="math_number"><field name="NUM">1.0</field></shadow></value>
       <value name="RUMBLE_2"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
       <value name="MILLISECONDS"><shadow type="math_number"><field name="NUM">1000</field></shadow></value>
     </block>
     <block type="variables_set">
-      <field name="VAR">{rumbleEffectVariable}</field>
+      <field name="VAR">myRumbleEffect</field>
       <value name="VALUE">
         <block type="rumbleEffect_build">
-          <value name="RUMBLE_EFFECT_BUILDER"><block type="variables_get"><field name="VAR">{rumbleEffectBuilderVariable}</field></block></value>
+          <value name="RUMBLE_EFFECT_BUILDER"><block type="variables_get"><field name="VAR">myRumbleEffectBuilder</field></block></value>
         </block>
       </value>
     </block>
     <block type="gamepad_runRumbleEffect">
       <field name="IDENTIFIER">gamepad1</field>
-      <value name="RUMBLE_EFFECT"><block type="variables_get"><field name="VAR">{rumbleEffectVariable}</field></block></value>
+      <value name="RUMBLE_EFFECT"><block type="variables_get"><field name="VAR">myRumbleEffect</field></block></value>
     </block>
     <block type="gamepad_RUMBLE_DURATION_CONTINUOUS">
     </block>
@@ -200,33 +200,33 @@
       <value name="MILLISECONDS"><shadow type="math_number"><field name="NUM">1000</field></shadow></value>
     </block>
     <block type="variables_set">
-      <field name="VAR">{ledEffectBuilderVariable}</field>
+      <field name="VAR">myLedEffectBuilder</field>
       <value name="VALUE">
         <block type="ledEffect_createBuilder"></block>
       </value>
     </block>
     <block type="ledEffect_addStep">
-      <value name="LED_EFFECT_BUILDER"><block type="variables_get"><field name="VAR">{ledEffectBuilderVariable}</field></block></value>
+      <value name="LED_EFFECT_BUILDER"><block type="variables_get"><field name="VAR">myLedEffectBuilder</field></block></value>
       <value name="RED"><shadow type="math_number"><field name="NUM">1.0</field></shadow></value>
       <value name="GREEN"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
       <value name="BLUE"><shadow type="math_number"><field name="NUM">0.5</field></shadow></value>
       <value name="MILLISECONDS"><shadow type="math_number"><field name="NUM">1000</field></shadow></value>
     </block>
     <block type="ledEffect_setRepeating">
-      <value name="LED_EFFECT_BUILDER"><block type="variables_get"><field name="VAR">{ledEffectBuilderVariable}</field></block></value>
+      <value name="LED_EFFECT_BUILDER"><block type="variables_get"><field name="VAR">myLedEffectBuilder</field></block></value>
       <value name="REPEATING"><shadow type="logic_boolean"><field name="BOOL">TRUE</field></shadow></value>
     </block>
     <block type="variables_set">
-      <field name="VAR">{ledEffectVariable}</field>
+      <field name="VAR">myLedEffect</field>
       <value name="VALUE">
         <block type="ledEffect_build">
-          <value name="LED_EFFECT_BUILDER"><block type="variables_get"><field name="VAR">{ledEffectBuilderVariable}</field></block></value>
+          <value name="LED_EFFECT_BUILDER"><block type="variables_get"><field name="VAR">myLedEffectBuilder</field></block></value>
         </block>
       </value>
     </block>
     <block type="gamepad_runLedEffect">
       <field name="IDENTIFIER">gamepad1</field>
-      <value name="LED_EFFECT"><block type="variables_get"><field name="VAR">{ledEffectVariable}</field></block></value>
+      <value name="LED_EFFECT"><block type="variables_get"><field name="VAR">myLedEffect</field></block></value>
     </block>
     <block type="gamepad_LED_DURATION_CONTINUOUS">
     </block>

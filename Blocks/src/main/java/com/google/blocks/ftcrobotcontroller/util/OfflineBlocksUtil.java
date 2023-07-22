@@ -93,6 +93,7 @@ public class OfflineBlocksUtil {
     assetsToInclude.add("blocks/android_sound_pool.js");
     assetsToInclude.add("blocks/android_text_to_speech.js");
     assetsToInclude.add("blocks/angular_velocity.js");
+    assetsToInclude.add("blocks/april_tag.js");
     assetsToInclude.add("blocks/bno055imu.js");
     assetsToInclude.add("blocks/bno055imu_parameters.js");
     assetsToInclude.add("blocks/clipboard_util.js");
@@ -105,8 +106,10 @@ public class OfflineBlocksUtil {
     assetsToInclude.add("blocks/dc_motor.js");
     assetsToInclude.add("blocks/digital_channel.js");
     assetsToInclude.add("blocks/distance_sensor.js");
-    assetsToInclude.add("blocks/elapsed_time.js");
     assetsToInclude.add("blocks/elapsed_time2.js");
+    assetsToInclude.add("blocks/exposure_control.js");
+    assetsToInclude.add("blocks/focus_control.js");
+    assetsToInclude.add("blocks/gain_control.js");
     assetsToInclude.add("blocks/gamepad.js");
     assetsToInclude.add("blocks/gyro_sensor.js");
     assetsToInclude.add("blocks/hardware_util.js");
@@ -130,6 +133,7 @@ public class OfflineBlocksUtil {
     assetsToInclude.add("blocks/pidf_coefficients.js");
     assetsToInclude.add("blocks/position.js");
     assetsToInclude.add("blocks/project_util.js");
+    assetsToInclude.add("blocks/ptz_control.js");
     assetsToInclude.add("blocks/quaternion.js");
     assetsToInclude.add("blocks/range.js");
     assetsToInclude.add("blocks/rev_blinkin_led_driver.js");
@@ -141,35 +145,41 @@ public class OfflineBlocksUtil {
     assetsToInclude.add("blocks/system.js");
     assetsToInclude.add("blocks/telemetry.js");
     assetsToInclude.add("blocks/temperature.js");
-    assetsToInclude.add("blocks/tfod.js");
-    assetsToInclude.add("blocks/tfod_base.js");
-    assetsToInclude.add("blocks/tfod_current_game.js");
-    assetsToInclude.add("blocks/tfod_custom_model.js");
+    assetsToInclude.add("blocks/tensor_flow.js");
     assetsToInclude.add("blocks/tfod_recognition.js");
-    assetsToInclude.add("blocks/tfod_rover_ruckus.js");
-    assetsToInclude.add("blocks/tfod_sky_stone.js");
     assetsToInclude.add("blocks/toolbox_util.js");
     assetsToInclude.add("blocks/touch_sensor.js");
     assetsToInclude.add("blocks/ultrasonic_sensor.js");
     assetsToInclude.add("blocks/vars.js");
     assetsToInclude.add("blocks/vector_f.js");
     assetsToInclude.add("blocks/velocity.js");
+    assetsToInclude.add("blocks/vision_portal.js");
     assetsToInclude.add("blocks/voltage_sensor.js");
-    assetsToInclude.add("blocks/vuforia.js");
-    assetsToInclude.add("blocks/vuforia_current_game.js");
-    assetsToInclude.add("blocks/vuforia_localizer.js");
-    assetsToInclude.add("blocks/vuforia_localizer_parameters.js");
-    assetsToInclude.add("blocks/vuforia_relic_recovery.js");
-    assetsToInclude.add("blocks/vuforia_rover_ruckus.js");
-    assetsToInclude.add("blocks/vuforia_sky_stone.js");
-    assetsToInclude.add("blocks/vuforia_trackable.js");
-    assetsToInclude.add("blocks/vuforia_trackable_default_listener.js");
-    assetsToInclude.add("blocks/vuforia_trackables.js");
+    assetsToInclude.add("blocks/white_balance_control.js");
     assetsToInclude.add("blocks/yaw_pitch_roll_angles.js");
 
     assetsToInclude.add("FtcOfflineBlocksProjects.html");
     assetsToInclude.add("FtcOfflineBlocks.html");
     assetsToInclude.add("favicon.ico");
+
+    assetsToInclude.add("blocks/obsolete/elapsed_time.js");
+    assetsToInclude.add("blocks/obsolete/obsolete.js");
+    assetsToInclude.add("blocks/obsolete/tfod.js");
+    assetsToInclude.add("blocks/obsolete/tfod_base.js");
+    assetsToInclude.add("blocks/obsolete/tfod_current_game.js");
+    assetsToInclude.add("blocks/obsolete/tfod_custom_model.js");
+    assetsToInclude.add("blocks/obsolete/tfod_rover_ruckus.js");
+    assetsToInclude.add("blocks/obsolete/tfod_sky_stone.js");
+    assetsToInclude.add("blocks/obsolete/vuforia.js");
+    assetsToInclude.add("blocks/obsolete/vuforia_current_game.js");
+    assetsToInclude.add("blocks/obsolete/vuforia_localizer.js");
+    assetsToInclude.add("blocks/obsolete/vuforia_localizer_parameters.js");
+    assetsToInclude.add("blocks/obsolete/vuforia_relic_recovery.js");
+    assetsToInclude.add("blocks/obsolete/vuforia_rover_ruckus.js");
+    assetsToInclude.add("blocks/obsolete/vuforia_sky_stone.js");
+    assetsToInclude.add("blocks/obsolete/vuforia_trackable.js");
+    assetsToInclude.add("blocks/obsolete/vuforia_trackable_default_listener.js");
+    assetsToInclude.add("blocks/obsolete/vuforia_trackables.js");
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     try (ZipOutputStream zos = new ZipOutputStream(baos)) {

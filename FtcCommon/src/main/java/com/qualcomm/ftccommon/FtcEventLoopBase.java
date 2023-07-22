@@ -94,34 +94,30 @@ package com.qualcomm.ftccommon;
 
 import android.app.Activity;
 import android.graphics.Color;
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
 
 import com.qualcomm.ftccommon.configuration.FtcConfigurationActivity;
 import com.qualcomm.ftccommon.configuration.RobotConfigFile;
 import com.qualcomm.ftccommon.configuration.RobotConfigFileManager;
-import com.qualcomm.hardware.lynx.EmbeddedControlHubModule;
-import com.qualcomm.robotcore.hardware.Blinker;
-import com.qualcomm.robotcore.hardware.USBAccessibleLynxModule;
-import com.qualcomm.robotcore.hardware.VisuallyIdentifiableHardwareDevice;
-import com.qualcomm.robotcore.hardware.ScannedDevices;
 import com.qualcomm.ftccommon.configuration.USBScanManager;
 import com.qualcomm.hardware.HardwareFactory;
+import com.qualcomm.hardware.lynx.EmbeddedControlHubModule;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.lynx.LynxUsbDevice;
 import com.qualcomm.robotcore.eventloop.EventLoop;
 import com.qualcomm.robotcore.eventloop.EventLoopManager;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeRegister;
 import com.qualcomm.robotcore.exception.RobotCoreException;
+import com.qualcomm.robotcore.hardware.Blinker;
 import com.qualcomm.robotcore.hardware.DeviceManager;
 import com.qualcomm.robotcore.hardware.LynxModuleMeta;
 import com.qualcomm.robotcore.hardware.LynxModuleMetaList;
-import com.qualcomm.robotcore.hardware.configuration.ConfigurationType;
+import com.qualcomm.robotcore.hardware.ScannedDevices;
+import com.qualcomm.robotcore.hardware.USBAccessibleLynxModule;
+import com.qualcomm.robotcore.hardware.VisuallyIdentifiableHardwareDevice;
+import com.qualcomm.robotcore.hardware.configuration.ConfigurationTypeManager;
 import com.qualcomm.robotcore.hardware.configuration.ControllerConfiguration;
-import com.qualcomm.robotcore.hardware.configuration.DeviceConfiguration;
 import com.qualcomm.robotcore.hardware.configuration.LynxConstants;
 import com.qualcomm.robotcore.hardware.configuration.ReadXMLFileHandler;
-import com.qualcomm.robotcore.hardware.configuration.ConfigurationTypeManager;
 import com.qualcomm.robotcore.hardware.configuration.WriteXMLFileHandler;
 import com.qualcomm.robotcore.robocol.Command;
 import com.qualcomm.robotcore.util.RobotLog;
@@ -143,7 +139,6 @@ import org.firstinspires.ftc.robotcore.internal.network.WifiDirectAgent;
 import org.firstinspires.ftc.robotcore.internal.network.WifiDirectGroupName;
 import org.firstinspires.ftc.robotcore.internal.network.WifiDirectPersistentGroupManager;
 import org.firstinspires.ftc.robotcore.internal.opmode.OnBotJavaBuildLocker;
-import org.firstinspires.ftc.robotcore.internal.opmode.OpModeMeta;
 import org.firstinspires.ftc.robotcore.internal.opmode.RegisteredOpModes;
 import org.firstinspires.ftc.robotcore.internal.system.AppAliveNotifier;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
@@ -151,7 +146,6 @@ import org.firstinspires.ftc.robotcore.internal.system.Assert;
 import org.firstinspires.ftc.robotcore.internal.ui.ProgressParameters;
 import org.firstinspires.ftc.robotcore.internal.ui.UILocation;
 import org.firstinspires.inspection.InspectionState;
-import org.firstinspires.inspection.SurveyData;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.File;
@@ -161,11 +155,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.regex.Pattern;
+
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
 
 /**
  * {@link FtcEventLoopBase} is an abstract base that handles defines core event processing
@@ -188,7 +185,7 @@ public abstract class FtcEventLoopBase implements EventLoop
     protected RobotConfigFileManager robotCfgFileMgr;
     protected FtcEventLoopHandler ftcEventLoopHandler;
     protected boolean runningOnDriverStation = false;
-    protected USBScanManager usbScanManager;
+    protected final USBScanManager usbScanManager = USBScanManager.getInstance();
     protected final OpModeRegister userOpmodeRegister;
 
     protected final RegisteredOpModes registeredOpModes;
@@ -204,32 +201,14 @@ public abstract class FtcEventLoopBase implements EventLoop
         this.activityContext = activityContext;
         this.robotCfgFileMgr = new RobotConfigFileManager(activityContext);
         this.ftcEventLoopHandler = new FtcEventLoopHandler(hardwareFactory, callback, activityContext);
-        this.usbScanManager = null;
         }
 
     //----------------------------------------------------------------------------------------------
     // Scanning
     //----------------------------------------------------------------------------------------------
 
-    protected @NonNull USBScanManager startUsbScanMangerIfNecessary()
-        {
-        // Demand-start our local USB scanner in order to save resources.
-        USBScanManager result = this.usbScanManager;
-        if (result == null)
-            {
-            result = this.usbScanManager = new USBScanManager(this.activityContext, false);
-            result.startExecutorService();
-            }
-        return result;
-        }
-
     @Override public void teardown() throws RobotCoreException, InterruptedException
         {
-        if (this.usbScanManager != null)
-            {
-            this.usbScanManager.stopExecutorService();
-            this.usbScanManager = null;
-            }
         ftcEventLoopHandler.close();
         }
 
@@ -496,7 +475,8 @@ public abstract class FtcEventLoopBase implements EventLoop
             // It's important to parse and re-serialize the configuration file, so that we can apply any needed transformations prior to transmission.
             WriteXMLFileHandler writeXMLFileHandler = new WriteXMLFileHandler();
             ArrayList<ControllerConfiguration> deviceList = (ArrayList<ControllerConfiguration>) parser.parse(file.getXml());
-            String xmlData = writeXMLFileHandler.toXml(deviceList);
+            // This file is already saved, so we should allow duplicates in it rather than failing to load it at all
+            String xmlData = writeXMLFileHandler.toXml(deviceList, true);
             RobotLog.vv(FtcConfigurationActivity.TAG, "FtcEventLoop: handleCommandRequestParticularConfigFile, data: " + xmlData);
             networkConnectionHandler.sendCommand(new Command(RobotCoreCommandList.CMD_REQUEST_PARTICULAR_CONFIGURATION_RESP, xmlData));
             }
@@ -529,9 +509,9 @@ public abstract class FtcEventLoopBase implements EventLoop
             robotCfgFileMgr.writeToFile(cfgFile, false, fileInfoArray[1]);
             robotCfgFileMgr.setActiveConfigAndUpdateUI(false, cfgFile);
             }
-        catch (RobotCoreException | IOException e)
+        catch (RobotCoreException | IOException | RuntimeException e)
             {
-            e.printStackTrace();
+            RobotLog.ee(TAG, e, "Failed to save configuration file");
             }
         }
 
@@ -571,8 +551,6 @@ public abstract class FtcEventLoopBase implements EventLoop
     protected void handleCommandScan(String extra) throws RobotCoreException, InterruptedException {
         RobotLog.vv(FtcConfigurationActivity.TAG, "handling command SCAN");
 
-        final USBScanManager usbScanManager = startUsbScanMangerIfNecessary();
-
         // Start a scan and wait for it to complete, but if a scan is already in progress, then just wait for that one to finish
         final ThreadPool.SingletonResult<ScannedDevices> future = usbScanManager.startDeviceScanIfNecessary();
 
@@ -604,8 +582,6 @@ public abstract class FtcEventLoopBase implements EventLoop
         {
         RobotLog.vv(FtcConfigurationActivity.TAG, "handling command DiscoverLynxModules");
         final SerialNumber serialNumber = SerialNumber.fromString(extra);
-
-        final USBScanManager usbScanManager = startUsbScanMangerIfNecessary();
 
         // Start a scan and wait for it to complete, but if a scan is already in progress, then just wait for that one to finish
         final ThreadPool.SingletonResult<LynxModuleMetaList> future = this.usbScanManager.startLynxModuleEnumerationIfNecessary(serialNumber);
@@ -751,7 +727,7 @@ public abstract class FtcEventLoopBase implements EventLoop
         {
         try
             {
-            return (LynxUsbDevice) startUsbScanMangerIfNecessary().getDeviceManager().createLynxUsbDevice(serialNumber, null);
+            return (LynxUsbDevice) usbScanManager.getDeviceManager().createLynxUsbDevice(serialNumber, null);
             }
         catch (RobotCoreException e)
             {
@@ -773,7 +749,7 @@ public abstract class FtcEventLoopBase implements EventLoop
         // This is important: a module might, for example, be in a state where it previously had a
         // failed firmware update, and all that's running is its bootloader. Such a beast would be
         // unable to respond to a high level scan.
-        USBScanManager scanManager = startUsbScanMangerIfNecessary();
+        USBScanManager scanManager = USBScanManager.getInstance();
         final ThreadPool.SingletonResult<ScannedDevices> future = scanManager.startDeviceScanIfNecessary();
         try {
             ScannedDevices scannedDevices = future.await();
@@ -785,8 +761,7 @@ public abstract class FtcEventLoopBase implements EventLoop
                 if (entry.getValue() == DeviceManager.UsbDeviceType.LYNX_USB_DEVICE)
                     {
                     SerialNumber serialNumber = entry.getKey();
-                    // The Control Hub's embedded module cannot have its address changed
-                    result.add(new USBAccessibleLynxModule(serialNumber, !serialNumber.isEmbedded()));
+                    result.add(new USBAccessibleLynxModule(serialNumber));
                     }
                 }
 
@@ -804,7 +779,7 @@ public abstract class FtcEventLoopBase implements EventLoop
                     }
                 if (!found)
                     {
-                    result.add(new USBAccessibleLynxModule(LynxConstants.SERIAL_NUMBER_EMBEDDED, false));
+                    result.add(new USBAccessibleLynxModule(LynxConstants.SERIAL_NUMBER_EMBEDDED));
                     }
                 }
 
@@ -865,21 +840,18 @@ public abstract class FtcEventLoopBase implements EventLoop
                         if (okToUpdateFirmware && foundParent)
                             {
                             try {
-                                lynxUsbDevice.performSystemOperationOnConnectedModule(usbModule.getModuleAddress(), true, new Consumer<LynxModule>()
+                                lynxUsbDevice.performSystemOperationOnParentModule(usbModule.getModuleAddress(), lynxModule ->
                                     {
-                                    @Override public void accept(LynxModule lynxModule)
+                                    String fw = lynxModule.getNullableFirmwareVersionString();
+                                    if (fw != null)
                                         {
-                                        String fw = lynxModule.getNullableFirmwareVersionString();
-                                        if (fw != null)
-                                            {
-                                            usbModule.setFirmwareVersionString(fw);
-                                            }
-                                        else
-                                            RobotLog.ee(TAG, "getUSBAccessibleLynxDevices(): fw returned null");
+                                        usbModule.setFirmwareVersionString(fw);
                                         }
-                                    });
+                                    else
+                                        RobotLog.ee(TAG, "getUSBAccessibleLynxDevices(): fw returned null");
+                                    }, 250, TimeUnit.MILLISECONDS);
                                 }
-                            catch (RobotCoreException e)
+                            catch (RobotCoreException | TimeoutException e)
                                 {
                                 RobotLog.ee(TAG, e, "exception retrieving fw version; ignoring");
                                 }
@@ -926,29 +898,29 @@ public abstract class FtcEventLoopBase implements EventLoop
                     boolean success = true;
                     try {
                         CommandList.LynxAddressChangeRequest changeRequest = CommandList.LynxAddressChangeRequest.deserialize(commandRequest.getExtra());
-                        USBScanManager scanManager = startUsbScanMangerIfNecessary();
-                        DeviceManager deviceManager = scanManager.getDeviceManager();
+                        DeviceManager deviceManager = usbScanManager.getDeviceManager();
                         for (final CommandList.LynxAddressChangeRequest.AddressChange addressChange : changeRequest.modulesToChange)
                             {
+                            RobotLog.vv(TAG, "lynx module connected to portal %s (parent address %d): change address %d -> %d", addressChange.serialNumber, addressChange.parentAddress, addressChange.oldAddress, addressChange.newAddress);
                             LynxUsbDevice lynxUsbDevice = (LynxUsbDevice)deviceManager.createLynxUsbDevice(addressChange.serialNumber, null);
                             try {
-                                // The isParent parameter is currently passed in as true because the address change activity
-                                // does not allow changing the module number of a child module, even though I think that would be possible.
-                                lynxUsbDevice.performSystemOperationOnConnectedModule(addressChange.oldAddress, true, new Consumer<LynxModule>()
-                                    {
-                                    @Override public void accept(LynxModule lynxModule)
-                                        {
-                                        RobotLog.vv(TAG, "lynx module %s: change address %d -> %d", addressChange.serialNumber, addressChange.oldAddress, addressChange.newAddress);
-                                        lynxModule.setNewModuleAddress(addressChange.newAddress);
-                                        }
-                                    });
+                                lynxUsbDevice.performSystemOperationOnConnectedModule(
+                                        addressChange.oldAddress,
+                                        addressChange.parentAddress,
+                                        lynxModule -> lynxModule.setNewModuleAddress(addressChange.newAddress),
+                                        250,
+                                        TimeUnit.MILLISECONDS);
                                 }
-                            catch (RobotCoreException e)
+                            catch (RobotCoreException | TimeoutException e)
                                 {
                                 RobotLog.ee(TAG, e, "failure during module address change");
                                 AppUtil.getInstance().showToast(UILocation.BOTH, activityContext.getString(R.string.toastLynxAddressChangeFailed, addressChange.serialNumber));
                                 success = false;
-                                throw e;
+                                if (e instanceof RobotCoreException)
+                                    {
+                                    throw (RobotCoreException) e;
+                                    }
+                                throw new RobotCoreException("Failed to change module address", e);
                                 }
                             finally
                                 {
@@ -961,6 +933,7 @@ public abstract class FtcEventLoopBase implements EventLoop
                         }
                     finally
                         {
+                        networkConnectionHandler.sendReply(commandRequest, new Command(CommandList.CMD_LYNX_ADDRESS_CHANGE_FINISHED));
                         if (success) AppUtil.getInstance().showToast(UILocation.BOTH, activityContext.getString(R.string.toastLynxAddressChangeComplete));
                         }
                     }
@@ -1115,21 +1088,8 @@ public abstract class FtcEventLoopBase implements EventLoop
     protected CallbackResult handleCommandVisuallyIdentify(Command command)
         {
         final CommandList.CmdVisuallyIdentify cmdVisuallyIdentify = CommandList.CmdVisuallyIdentify.deserialize(command.getExtra());
-        ThreadPool.getDefaultSerial().execute(new Runnable() { // serial so that 'off' identifies don't re-order
-            @Override public void run() {
-                VisuallyIdentifiableHardwareDevice visuallyIdentifiable = ftcEventLoopHandler.getHardwareDevice(
-                    VisuallyIdentifiableHardwareDevice.class,
-                    cmdVisuallyIdentify.serialNumber,
-                    new Supplier<USBScanManager>() {
-                        @Override public USBScanManager get() {
-                            return startUsbScanMangerIfNecessary();
-                        }
-                    });
-                if (visuallyIdentifiable != null) {
-                    visuallyIdentifiable.visuallyIdentify(cmdVisuallyIdentify.shouldIdentify);
-                    }
-                }
-            });
+        ThreadPool.getDefaultSerial().execute(() -> // serial so that 'off' identifies don't re-order
+                VisualIdentificationManager.getInstance().handleCommandVisuallyIdentify(cmdVisuallyIdentify));
         return CallbackResult.HANDLED;
         }
 

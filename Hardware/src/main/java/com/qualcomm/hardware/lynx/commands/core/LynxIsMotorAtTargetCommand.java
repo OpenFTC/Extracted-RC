@@ -94,4 +94,10 @@ public class LynxIsMotorAtTargetCommand extends LynxDekaInterfaceCommand<LynxIsM
         this.motor = buffer.get();
         }
 
+    @Override
+    public boolean isDangerous()
+        {
+        return false;
+        }
+
     }

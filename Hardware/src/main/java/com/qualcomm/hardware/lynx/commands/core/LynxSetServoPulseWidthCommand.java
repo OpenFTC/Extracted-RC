@@ -94,4 +94,10 @@ public class LynxSetServoPulseWidthCommand extends LynxDekaInterfaceCommand<Lynx
         this.channel = buffer.get();
         this.pulseWidth = buffer.getShort();
         }
+
+    @Override
+    public boolean isDangerous()
+        {
+        return true;
+        }
     }

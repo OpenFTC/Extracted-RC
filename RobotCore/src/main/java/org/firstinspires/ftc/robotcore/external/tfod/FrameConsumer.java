@@ -36,5 +36,5 @@ public interface FrameConsumer {
    * init) contains new data from the camera. It is expected that processFrame be called from the
    * same thread that previously called init.
    */
-  void processFrame();
+  CanvasAnnotator processFrame();
 }

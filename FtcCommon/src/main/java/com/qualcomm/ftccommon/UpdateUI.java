@@ -37,7 +37,6 @@ import androidx.annotation.NonNull;
 import android.view.View;
 import android.widget.TextView;
 
-import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.robot.RobotState;
 import com.qualcomm.robotcore.robot.RobotStatus;
@@ -49,6 +48,8 @@ import com.qualcomm.robotcore.wifi.NetworkConnection;
 import org.firstinspires.ftc.ftccommon.external.RobotStateMonitor;
 import org.firstinspires.ftc.robotcore.internal.network.DeviceNameListener;
 import org.firstinspires.ftc.robotcore.internal.network.DeviceNameManagerFactory;
+import org.firstinspires.ftc.robotcore.internal.opmode.OpModeMeta;
+import org.firstinspires.ftc.robotcore.internal.opmode.RegisteredOpModes;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.robotcore.internal.network.NetworkStatus;
 import org.firstinspires.ftc.robotcore.internal.network.PeerStatus;
@@ -64,6 +65,8 @@ public class UpdateUI {
 
     RobotStateMonitor         stateMonitor              = null;
     DeviceNameManagerCallback deviceNameManagerCallback = new DeviceNameManagerCallback();
+    String                    previousOpModeName = null;
+    OpModeMeta                previousOpModeMeta = null;
 
     public Callback() {
       DeviceNameManagerFactory.getInstance().registerCallback(deviceNameManagerCallback);
@@ -114,13 +117,16 @@ public class UpdateUI {
             }
           }
 
-          String opModeShow;
-          if (opModeName.equals(OpModeManager.DEFAULT_OP_MODE_NAME)) {
-            opModeShow = activity.getString(R.string.defaultOpModeName);
+          OpModeMeta opModeMeta;
+          if (opModeName.equals(previousOpModeName)) {
+            opModeMeta = previousOpModeMeta;
           } else {
-            opModeShow = opModeName;
+            opModeMeta = RegisteredOpModes.getInstance().getOpModeMetadata(opModeName);
+            previousOpModeName = opModeName;
+            previousOpModeMeta = opModeMeta;
           }
-          setText(textOpMode, "Op Mode: " + opModeShow);
+
+          setText(textOpMode, "Op Mode: " + opModeMeta.getDisplayName());
 
           refreshTextErrorMessage();
         }

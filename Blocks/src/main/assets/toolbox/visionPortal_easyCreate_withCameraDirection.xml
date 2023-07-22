@@ -1,0 +1,34 @@
+    <block type="variables_set">
+      <comment pinned="false" h="150" w="325">Create a VisionPortal, with the specified builtin camera direction and AprilTag processor, and assign it to a variable.
+      </comment>
+      <field name="VAR">myVisionPortal</field>
+      <value name="VALUE">
+        <block type="visionPortal_easyCreateWithDefaults_oneProcessor">
+          <value name="CAMERA"><shadow type="navigation_typedEnum_builtinCameraDirection"><field name="CAMERA_DIRECTION">BACK</field></shadow></value>
+          <value name="VISION_PROCESSOR"><block type="variables_get"><field name="VAR">myAprilTagProcessor</field></block></value>
+        </block>
+      </value>
+    </block>
+    <block type="variables_set">
+      <comment pinned="false" h="150" w="325">Create a VisionPortal, with the specified builtin camera direction and TensorFlow Object Detection processor, and assign it to a variable.
+      </comment>
+      <field name="VAR">myVisionPortal</field>
+      <value name="VALUE">
+        <block type="visionPortal_easyCreateWithDefaults_oneProcessor">
+          <value name="CAMERA"><shadow type="navigation_typedEnum_builtinCameraDirection"><field name="CAMERA_DIRECTION">BACK</field></shadow></value>
+          <value name="VISION_PROCESSOR"><block type="variables_get"><field name="VAR">myTfodProcessor</field></block></value>
+        </block>
+      </value>
+    </block>
+    <block type="variables_set">
+      <comment pinned="false" h="150" w="325">Create a VisionPortal, with the specified builtin camera direction, AprilTag processor, and TensorFlow Object Detection processor, and assign it to a variable.
+      </comment>
+      <field name="VAR">myVisionPortal</field>
+      <value name="VALUE">
+        <block type="visionPortal_easyCreateWithDefaults_twoProcessors">
+          <value name="CAMERA"><shadow type="navigation_typedEnum_builtinCameraDirection"><field name="CAMERA_DIRECTION">BACK</field></shadow></value>
+          <value name="VISION_PROCESSOR_1"><block type="variables_get"><field name="VAR">myAprilTagProcessor</field></block></value>
+          <value name="VISION_PROCESSOR_2"><block type="variables_get"><field name="VAR">myTfodProcessor</field></block></value>
+        </block>
+      </value>
+    </block>

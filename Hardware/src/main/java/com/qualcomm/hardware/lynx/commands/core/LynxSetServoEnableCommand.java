@@ -91,4 +91,10 @@ public class LynxSetServoEnableCommand extends LynxDekaInterfaceCommand<LynxAck>
         this.channel = buffer.get();
         this.enable = buffer.get();
         }
+
+    @Override
+    public boolean isDangerous()
+        {
+        return enable != 0;
+        }
     }

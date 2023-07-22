@@ -84,4 +84,10 @@ public class LynxGetModuleLEDColorCommand extends LynxStandardCommand<LynxGetMod
     public void fromPayloadByteArray(byte[] rgb)
         {
         }
+
+    @Override
+    public boolean isDangerous()
+        {
+        return false;
+        }
     }

@@ -49,8 +49,7 @@
                     serverStatusNotOK();
                 } else {
                     var serverStatus = document.getElementById("id_server_status");
-                    var formattedDate = rcInfo.timeServerStarted;
-                    var status = "Server OK (Running since " + formattedDate + ")";
+                    var status = "Server OK";
                     serverStatus.innerHTML = status;
                     removeClass(serverStatus, "text-error");
                     addClass(serverStatus, "text-ok");

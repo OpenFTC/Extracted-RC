@@ -35,6 +35,8 @@ package org.firstinspires.ftc.robotcore.internal.opmode;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import com.qualcomm.robotcore.R;
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
 /**
  * {@link OpModeMeta} provides information about an OpMode.
@@ -45,11 +47,23 @@ public class OpModeMeta
     // Types and constants
     //----------------------------------------------------------------------------------------------
 
-    public enum Flavor { AUTONOMOUS, TELEOP }
+    public enum Flavor { AUTONOMOUS, TELEOP, SYSTEM }
     public enum Source { ANDROID_STUDIO, BLOCKLY, ONBOTJAVA, EXTERNAL_LIBRARY}
 
     // arbitrary, but unlikely to be used by users. Sorts early
     public static final String DefaultGroup = "$$$$$$$";
+
+    //----------------------------------------------------------------------------------------------
+    // Utility methods
+    //----------------------------------------------------------------------------------------------
+    public static boolean nameIsLegalForOpMode(String name, boolean isSystem)
+        {
+        if (name == null) { return false; }
+        if (name.trim().isEmpty()) { return false; }
+
+        boolean namedLikeSystem = name.startsWith("$") && name.endsWith("$");
+        return isSystem == namedLikeSystem;
+        }
 
     //----------------------------------------------------------------------------------------------
     // State
@@ -58,26 +72,68 @@ public class OpModeMeta
     public final @NonNull  Flavor flavor;
     public final @NonNull  String group;
     public final @NonNull  String name;
+    public final @Nullable String systemOpModeBaseDisplayName;
     public final @Nullable String autoTransition;
     public final @Nullable Source source;
 
-    private OpModeMeta(Flavor flavor, String group, String name, String autoTransition, Source source)
+    private OpModeMeta(@NonNull Flavor flavor,
+                       @NonNull String group,
+                       @Nullable String name,
+                       @Nullable String systemOpModeBaseDisplayName,
+                       @Nullable String autoTransition,
+                       @Nullable Source source)
         {
+        boolean isSystem = flavor == Flavor.SYSTEM;
+
+        if (name == null)
+            {
+            throw new RuntimeException("OpModes must have a name specified");
+            }
+        if (!nameIsLegalForOpMode(name, isSystem))
+            {
+            throw new RuntimeException("The name \"" + name + "\" is not legal for this Op Mode");
+            }
+
         this.flavor = flavor;
         this.group = group;
         this.name = name;
         this.autoTransition = autoTransition;
         this.source = source;
+
+        if (flavor == Flavor.SYSTEM)
+            {
+            if (systemOpModeBaseDisplayName == null)
+                {
+                throw new RuntimeException("System Op Modes must specify a separate display name");
+                }
+            this.systemOpModeBaseDisplayName = systemOpModeBaseDisplayName;
+            }
+        else
+            {
+            this.systemOpModeBaseDisplayName = null;
+            }
         }
 
     //----------------------------------------------------------------------------------------------
     // Formatting
     //----------------------------------------------------------------------------------------------
 
+    public String getDisplayName()
+        {
+        if (this.flavor == Flavor.SYSTEM)
+            {
+            return AppUtil.getDefContext().getString(R.string.system_op_mode_display_name, this.systemOpModeBaseDisplayName);
+            }
+        else
+            {
+            return this.name;
+            }
+        }
+
     // Format as name for convenient use in dialogs
     @Override public String toString()
         {
-        return this.name;
+        return getDisplayName();
         }
 
     //----------------------------------------------------------------------------------------------
@@ -107,46 +163,54 @@ public class OpModeMeta
         {
         public @NonNull  Flavor flavor = Flavor.TELEOP;
         public @NonNull  String group = DefaultGroup;
-        public @NonNull  String name = "";
+        public @Nullable String name;
+        public @Nullable String systemOpModeBaseDisplayName = null;
         public @Nullable String autoTransition = null;
         public @Nullable Source source = null;
 
         public Builder (){};
 
-        public Builder(OpModeMeta existing)
+        public Builder(@NonNull OpModeMeta existing)
             {
             this.flavor = existing.flavor;
             this.group = existing.group;
             this.name = existing.name;
+            this.systemOpModeBaseDisplayName = existing.systemOpModeBaseDisplayName;
             this.autoTransition = existing.autoTransition;
             this.source = existing.source;
             }
 
-        public Builder setFlavor(Flavor flavor)
+        public Builder setFlavor(@NonNull Flavor flavor)
             {
             this.flavor = flavor;
             return this;
             }
 
-        public Builder setGroup(String group)
+        public Builder setGroup(@NonNull String group)
             {
             this.group = group;
             return this;
             }
 
-        public Builder setName(String name)
+        public Builder setName(@NonNull String name)
             {
             this.name = name;
             return this;
             }
 
-        public Builder setTransitionTarget(String autoTransition)
+        public Builder setSystemOpModeBaseDisplayName(@Nullable String systemOpModeDisplayName)
+            {
+            this.systemOpModeBaseDisplayName = systemOpModeDisplayName;
+            return this;
+            }
+
+        public Builder setTransitionTarget(@Nullable String autoTransition)
             {
             this.autoTransition = autoTransition;
             return this;
             }
 
-        public Builder setSource(Source source)
+        public Builder setSource(@Nullable Source source)
             {
             this.source = source;
             return this;
@@ -154,7 +218,7 @@ public class OpModeMeta
 
         public OpModeMeta build()
             {
-            return new OpModeMeta(flavor, group, name, autoTransition, source);
+            return new OpModeMeta(flavor, group, name, systemOpModeBaseDisplayName, autoTransition, source);
             }
 
         public static Builder wrap(OpModeMeta existing)

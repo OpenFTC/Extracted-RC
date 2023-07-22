@@ -63,7 +63,7 @@ public class LynxGetAllDIOInputsCommand extends LynxDekaInterfaceCommand<LynxGet
 
     public static Class<? extends LynxInterfaceResponse> getResponseClass()
         {
-        return LynxGetSingleDIOInputResponse.class;
+        return LynxGetAllDIOInputsResponse.class;
         }
 
     @Override
@@ -75,6 +75,12 @@ public class LynxGetAllDIOInputsCommand extends LynxDekaInterfaceCommand<LynxGet
     @Override
     public void fromPayloadByteArray(byte[] rgb)
         {
+        }
+
+    @Override
+    public boolean isDangerous()
+        {
+        return false;
         }
 
     }

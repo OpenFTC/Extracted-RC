@@ -16,11 +16,8 @@
 
 package com.google.blocks.ftcrobotcontroller.hardware;
 
-import static com.google.blocks.ftcrobotcontroller.util.CurrentGame.TFOD_CURRENT_GAME_NAME;
-import static com.google.blocks.ftcrobotcontroller.util.CurrentGame.TFOD_CURRENT_GAME_NAME_NO_SPACES;
-import static com.google.blocks.ftcrobotcontroller.util.CurrentGame.TFOD_CURRENT_GAME_BLOCKS_FIRST_NAME;
-import static com.google.blocks.ftcrobotcontroller.util.CurrentGame.VUFORIA_CURRENT_GAME_NAME;
-import static com.google.blocks.ftcrobotcontroller.util.CurrentGame.VUFORIA_CURRENT_GAME_BLOCKS_FIRST_NAME;
+import static com.google.blocks.ftcrobotcontroller.util.CurrentGame.CURRENT_GAME_NAME;
+import static com.google.blocks.ftcrobotcontroller.util.CurrentGame.CURRENT_GAME_NAME_NO_SPACES;
 import static com.google.blocks.ftcrobotcontroller.util.ProjectsUtil.escapeSingleQuotes;
 import static com.google.blocks.ftcrobotcontroller.util.ToolboxUtil.escapeForXml;
 
@@ -30,6 +27,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorManager;
 
 import com.google.blocks.ftcrobotcontroller.util.AvailableTtsLocalesProvider;
+import com.google.blocks.ftcrobotcontroller.util.CurrentGame;
 import com.google.blocks.ftcrobotcontroller.util.FileUtil;
 import com.google.blocks.ftcrobotcontroller.util.Identifier;
 import com.google.blocks.ftcrobotcontroller.util.ProjectsUtil;
@@ -44,6 +42,7 @@ import com.qualcomm.hardware.rev.RevBlinkinLedDriver.BlinkinPattern;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpModeManagerImpl;
 import com.qualcomm.robotcore.hardware.CompassSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -89,15 +88,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.robotcore.external.navigation.TempUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaCurrentGame;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaRoverRuckus;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaSkyStone;
-import org.firstinspires.ftc.robotcore.external.tfod.TfodCurrentGame;
-import org.firstinspires.ftc.robotcore.external.tfod.TfodRoverRuckus;
-import org.firstinspires.ftc.robotcore.external.tfod.TfodSkyStone;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.internal.opmode.BlocksClassFilter;
-import com.qualcomm.robotcore.eventloop.opmode.OpModeManagerImpl;
 import org.firstinspires.ftc.robotcore.internal.opmode.OpModeMeta;
 import org.firstinspires.ftc.robotcore.internal.opmode.RegisteredOpModes;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
@@ -117,16 +109,13 @@ public class HardwareUtil {
   private static final String COLOR_CATEGORY_NAME = "Color"; // see toolbox/utilities.xml
   private static final String ELAPSED_TIME_CATEGORY_NAME = "ElapsedTime"; // see toolbox/utilities.xml
 
-  public static final String SWITCHABLE_CAMERA_NAME = "Switchable Camera";
-
   public static final String IDENTIFIERS_USED_PREFIX = "// IDENTIFIERS_USED=";
 
   public enum Capability {
     CAMERA("camera"),
     WEBCAM("webcam"),
     SWITCHABLE_CAMERA("switchableCamera"),
-    VUFORIA("vuforia"),
-    TFOD("tfod");
+    VISION("vision");
 
     private final String placeholderType;
 
@@ -230,11 +219,8 @@ public class HardwareUtil {
     jsHardware.append("];\n\n");
 
     jsHardware
-        .append("var tfodCurrentGameName = '").append(escapeSingleQuotes(TFOD_CURRENT_GAME_NAME)).append("';\n")
-        .append("var tfodCurrentGameNameNoSpaces = '").append(escapeSingleQuotes(TFOD_CURRENT_GAME_NAME_NO_SPACES)).append("';\n")
-        .append("var tfodCurrentGameBlocksFirstName = '").append(escapeSingleQuotes(TFOD_CURRENT_GAME_BLOCKS_FIRST_NAME)).append("';\n")
-        .append("var vuforiaCurrentGameName = '").append(escapeSingleQuotes(VUFORIA_CURRENT_GAME_NAME)).append("';\n")
-        .append("var vuforiaCurrentGameBlocksFirstName = '").append(escapeSingleQuotes(VUFORIA_CURRENT_GAME_BLOCKS_FIRST_NAME)).append("';\n")
+        .append("var currentGameName = '").append(escapeSingleQuotes(CURRENT_GAME_NAME)).append("';\n")
+        .append("var currentGameNameNoSpaces = '").append(escapeSingleQuotes(CURRENT_GAME_NAME_NO_SPACES)).append("';\n")
         .append("\n");
 
     jsHardware
@@ -425,115 +411,6 @@ public class HardwareUtil {
         .append("  return createFieldDropdown(CHOICES);\n")
         .append("}\n\n");
 
-    jsHardware
-        .append("var switchableCameraName = '")
-        .append(SWITCHABLE_CAMERA_NAME)
-        .append("';\n");
-
-    // TFOD Rover Ruckus labels
-    StringBuilder createTfodRoverRuckusLabelDropdown = new StringBuilder();
-    StringBuilder tfodRoverRuckusLabelTooltips = new StringBuilder();
-    createTfodRoverRuckusLabelDropdown
-        .append("function createTfodRoverRuckusLabelDropdown() {\n")
-        .append("  var CHOICES = [\n");
-    tfodRoverRuckusLabelTooltips
-        .append("var TFOD_ROVER_RUCKUS_LABEL_TOOLTIPS = [\n");
-    for (String tfodLabel : TfodRoverRuckus.LABELS) {
-      createTfodRoverRuckusLabelDropdown
-          .append("      ['").append(escapeSingleQuotes(makeVisibleNameForDropdownItem(tfodLabel))).append("', '")
-          .append(escapeSingleQuotes(tfodLabel)).append("'],\n");
-      tfodRoverRuckusLabelTooltips
-          .append("  ['").append(escapeSingleQuotes(tfodLabel)).append("', 'The Label value ")
-          .append(escapeSingleQuotes(tfodLabel)).append(".'],\n");
-    }
-    createTfodRoverRuckusLabelDropdown.append("  ];\n")
-        .append("  return createFieldDropdown(CHOICES);\n")
-        .append("}\n\n");
-    tfodRoverRuckusLabelTooltips
-        .append("];\n");
-    jsHardware
-        .append(createTfodRoverRuckusLabelDropdown)
-        .append(tfodRoverRuckusLabelTooltips)
-        .append("\n");
-
-    // Rover Ruckus trackable names
-    StringBuilder createVuforiaRoverRuckusTrackableNameDropdown = new StringBuilder();
-    StringBuilder vuforiaRoverRuckusTrackableNameTooltips = new StringBuilder();
-    createVuforiaRoverRuckusTrackableNameDropdown
-        .append("function createVuforiaRoverRuckusTrackableNameDropdown() {\n")
-        .append("  var CHOICES = [\n");
-    vuforiaRoverRuckusTrackableNameTooltips
-        .append("var VUFORIA_ROVER_RUCKUS_TRACKABLE_NAME_TOOLTIPS = [\n");
-    for (String trackableName : VuforiaRoverRuckus.TRACKABLE_NAMES) {
-      createVuforiaRoverRuckusTrackableNameDropdown
-          .append("      ['").append(escapeSingleQuotes(makeVisibleNameForDropdownItem(trackableName))).append("', '")
-          .append(escapeSingleQuotes(trackableName)).append("'],\n");
-      vuforiaRoverRuckusTrackableNameTooltips
-          .append("  ['").append(escapeSingleQuotes(trackableName)).append("', 'The TrackableName value ")
-          .append(escapeSingleQuotes(trackableName)).append(".'],\n");
-    }
-    createVuforiaRoverRuckusTrackableNameDropdown.append("  ];\n")
-        .append("  return createFieldDropdown(CHOICES);\n")
-        .append("}\n\n");
-    vuforiaRoverRuckusTrackableNameTooltips
-        .append("];\n");
-    jsHardware
-        .append(createVuforiaRoverRuckusTrackableNameDropdown)
-        .append(vuforiaRoverRuckusTrackableNameTooltips)
-        .append("\n");
-
-    // SKYSTONE tfod labels
-    StringBuilder createTfodSkyStoneLabelDropdown = new StringBuilder();
-    StringBuilder tfodSkyStoneLabelTooltips = new StringBuilder();
-    createTfodSkyStoneLabelDropdown
-        .append("function createTfodSkyStoneLabelDropdown() {\n")
-        .append("  var CHOICES = [\n");
-    tfodSkyStoneLabelTooltips
-        .append("var TFOD_SKY_STONE_LABEL_TOOLTIPS = [\n");
-    for (String tfodLabel : TfodSkyStone.LABELS) {
-      createTfodSkyStoneLabelDropdown
-          .append("      ['").append(escapeSingleQuotes(makeVisibleNameForDropdownItem(tfodLabel))).append("', '")
-          .append(escapeSingleQuotes(tfodLabel)).append("'],\n");
-      tfodSkyStoneLabelTooltips
-          .append("  ['").append(escapeSingleQuotes(tfodLabel)).append("', 'The Label value ")
-          .append(escapeSingleQuotes(tfodLabel)).append(".'],\n");
-    }
-    createTfodSkyStoneLabelDropdown.append("  ];\n")
-        .append("  return createFieldDropdown(CHOICES);\n")
-        .append("}\n\n");
-    tfodSkyStoneLabelTooltips
-        .append("];\n");
-    jsHardware
-        .append(createTfodSkyStoneLabelDropdown)
-        .append(tfodSkyStoneLabelTooltips)
-        .append("\n");
-
-    // SKYSTONE trackable names
-    StringBuilder createVuforiaSkyStoneTrackableNameDropdown = new StringBuilder();
-    StringBuilder vuforiaSkyStoneTrackableNameTooltips = new StringBuilder();
-    createVuforiaSkyStoneTrackableNameDropdown
-        .append("function createVuforiaSkyStoneTrackableNameDropdown() {\n")
-        .append("  var CHOICES = [\n");
-    vuforiaSkyStoneTrackableNameTooltips
-        .append("var VUFORIA_SKY_STONE_TRACKABLE_NAME_TOOLTIPS = [\n");
-    for (String trackableName : VuforiaSkyStone.TRACKABLE_NAMES) {
-      createVuforiaSkyStoneTrackableNameDropdown
-          .append("      ['").append(escapeSingleQuotes(makeVisibleNameForDropdownItem(trackableName))).append("', '")
-          .append(escapeSingleQuotes(trackableName)).append("'],\n");
-      vuforiaSkyStoneTrackableNameTooltips
-          .append("  ['").append(escapeSingleQuotes(trackableName)).append("', 'The TrackableName value ")
-          .append(escapeSingleQuotes(trackableName)).append(".'],\n");
-    }
-    createVuforiaSkyStoneTrackableNameDropdown.append("  ];\n")
-        .append("  return createFieldDropdown(CHOICES);\n")
-        .append("}\n\n");
-    vuforiaSkyStoneTrackableNameTooltips
-        .append("];\n");
-    jsHardware
-        .append(createVuforiaSkyStoneTrackableNameDropdown)
-        .append(vuforiaSkyStoneTrackableNameTooltips)
-        .append("\n");
-
     // Current game tfod labels
     StringBuilder createTfodCurrentGameLabelDropdown = new StringBuilder();
     StringBuilder tfodCurrentGameLabelTooltips = new StringBuilder();
@@ -542,7 +419,7 @@ public class HardwareUtil {
         .append("  var CHOICES = [\n");
     tfodCurrentGameLabelTooltips
         .append("var TFOD_CURRENT_GAME_LABEL_TOOLTIPS = [\n");
-    for (String tfodLabel : TfodCurrentGame.LABELS) {
+    for (String tfodLabel : CurrentGame.TFOD_LABELS) {
       createTfodCurrentGameLabelDropdown
           .append("      ['").append(escapeSingleQuotes(makeVisibleNameForDropdownItem(tfodLabel))).append("', '")
           .append(escapeSingleQuotes(tfodLabel)).append("'],\n");
@@ -558,32 +435,6 @@ public class HardwareUtil {
     jsHardware
         .append(createTfodCurrentGameLabelDropdown)
         .append(tfodCurrentGameLabelTooltips)
-        .append("\n");
-
-    // Current game vuforia trackable names
-    StringBuilder createVuforiaCurrentGameTrackableNameDropdown = new StringBuilder();
-    StringBuilder vuforiaCurrentGameTrackableNameTooltips = new StringBuilder();
-    createVuforiaCurrentGameTrackableNameDropdown
-        .append("function createVuforiaCurrentGameTrackableNameDropdown() {\n")
-        .append("  var CHOICES = [\n");
-    vuforiaCurrentGameTrackableNameTooltips
-        .append("var VUFORIA_CURRENT_GAME_TRACKABLE_NAME_TOOLTIPS = [\n");
-    for (String trackableName : VuforiaCurrentGame.TRACKABLE_NAMES) {
-      createVuforiaCurrentGameTrackableNameDropdown
-          .append("      ['").append(escapeSingleQuotes(makeVisibleNameForDropdownItem(trackableName))).append("', '")
-          .append(escapeSingleQuotes(trackableName)).append("'],\n");
-      vuforiaCurrentGameTrackableNameTooltips
-          .append("  ['").append(escapeSingleQuotes(trackableName)).append("', 'The TrackableName value ")
-          .append(escapeSingleQuotes(trackableName)).append(".'],\n");
-    }
-    createVuforiaCurrentGameTrackableNameDropdown.append("  ];\n")
-        .append("  return createFieldDropdown(CHOICES);\n")
-        .append("}\n\n");
-    vuforiaCurrentGameTrackableNameTooltips
-        .append("];\n");
-    jsHardware
-        .append(createVuforiaCurrentGameTrackableNameDropdown)
-        .append(vuforiaCurrentGameTrackableNameTooltips)
         .append("\n");
 
     // Hardware
@@ -627,7 +478,8 @@ public class HardwareUtil {
         .append("  Blockly.JavaScript.addReservedWords('callHardware_boolean');\n")
         .append("  Blockly.JavaScript.addReservedWords('callHardware_String');\n")
         .append("  Blockly.JavaScript.addReservedWords('listLength');\n")
-        .append("  Blockly.JavaScript.addReservedWords('listIsEmpty');\n");
+        .append("  Blockly.JavaScript.addReservedWords('listIsEmpty');\n")
+        .append("  Blockly.JavaScript.addReservedWords('nullOrJson');\n");
     for (HardwareItem hardwareItem : hardwareItemMap.getAllHardwareItems()) {
       jsHardware
           .append("  Blockly.JavaScript.addReservedWords('")
@@ -912,7 +764,8 @@ public class HardwareUtil {
     addExportedStaticMethods(xmlToolbox, additionalReservedWordsForFtcJava, methodLookupStrings);
 
     if (assetManager != null) {
-      addAssetWithPlaceholders(xmlToolbox, assetManager, capabilities, "toolbox/utilities.xml");
+      addAssetWithPlaceholders(xmlToolbox, assetManager, capabilities, hardwareItemMap, "toolbox/utilities.xml");
+
       addAsset(xmlToolbox, assetManager, "toolbox/misc.xml");
     }
 
@@ -1303,16 +1156,11 @@ public class HardwareUtil {
         shadow = (defaultValue == null)
             ? ToolboxUtil.makeTypedEnumShadow("navigation", "tempUnit")
             : ToolboxUtil.makeTypedEnumShadow("navigation", "tempUnit", "TEMP_UNIT", defaultValue);
-      } else if (argType.equals(VuforiaLocalizer.CameraDirection.class.getName())) {
-        String defaultValue = parseEnumDefaultValue(parameterDefaultValues[i], VuforiaLocalizer.CameraDirection.class);
+      } else if (argType.equals(BuiltinCameraDirection.class.getName())) {
+        String defaultValue = parseEnumDefaultValue(parameterDefaultValues[i], BuiltinCameraDirection.class);
         shadow = (defaultValue == null)
-            ? ToolboxUtil.makeTypedEnumShadow("navigation", "cameraDirection")
-            : ToolboxUtil.makeTypedEnumShadow("navigation", "cameraDirection", "CAMERA_DIRECTION", defaultValue);
-      } else if (argType.equals(VuforiaLocalizer.Parameters.CameraMonitorFeedback.class.getName())) {
-        String defaultValue = parseEnumDefaultValue(parameterDefaultValues[i], VuforiaLocalizer.Parameters.CameraMonitorFeedback.class);
-        shadow = (defaultValue == null)
-            ? ToolboxUtil.makeTypedEnumShadow("navigation", "cameraMonitorFeedback")
-            : ToolboxUtil.makeTypedEnumShadow("navigation", "cameraMonitorFeedback", "CAMERA_MONITOR_FEEDBACK", defaultValue);
+            ? ToolboxUtil.makeTypedEnumShadow("navigation", "builtinCameraDirection")
+            : ToolboxUtil.makeTypedEnumShadow("navigation", "builtinCameraDirection", "CAMERA_DIRECTION", defaultValue);
       } else if (argType.equals(RevHubOrientationOnRobot.LogoFacingDirection.class.getName())) {
         String defaultValue = parseEnumDefaultValue(parameterDefaultValues[i], RevHubOrientationOnRobot.LogoFacingDirection.class);
         shadow = (defaultValue == null)
@@ -1472,7 +1320,7 @@ public class HardwareUtil {
       case SWITCHABLE_CAMERA:
         return "The current configuration does not have multiple webcams.";
       default:
-        // No warning for Capability.VUFORIA or Capability.TFOD. The user will see the warning about camera/webcam.
+        // No warning for Capability.VISION. The user will see the warning about camera/webcam.
         return null;
     }
   }
@@ -1490,8 +1338,7 @@ public class HardwareUtil {
     capabilities.put(Capability.CAMERA, camera);
     capabilities.put(Capability.WEBCAM, webcam);
     capabilities.put(Capability.SWITCHABLE_CAMERA, switchableCamera);
-    capabilities.put(Capability.VUFORIA, camera || webcam);
-    capabilities.put(Capability.TFOD, camera || webcam);
+    capabilities.put(Capability.VISION, camera || webcam);
     return capabilities;
   }
 
@@ -1523,16 +1370,15 @@ public class HardwareUtil {
   }
 
   private static void addAssetWithPlaceholders(StringBuilder xmlToolbox, AssetManager assetManager,
-      Map<Capability, Boolean> capabilities, String assetName) throws IOException {
+      Map<Capability, Boolean> capabilities, HardwareItemMap hardwareItemMap, String assetName) throws IOException {
     try (BufferedReader reader =
         new BufferedReader(new InputStreamReader(assetManager.open(assetName)))) {
       String line = null;
       while ((line = reader.readLine()) != null) {
-        line = line.trim()
-            .replace("placeholder_tfod_current_game_name", TFOD_CURRENT_GAME_NAME)
-            .replace("<placeholder_tfod_current_game_labels/>", getTfodCurrentGameLabelBlocks())
-            .replace("placeholder_vuforia_current_game_name", VUFORIA_CURRENT_GAME_NAME)
-            .replace("<placeholder_vuforia_current_game_trackable_names/>", getVuforiaCurrentGameTrackableNameBlocks());
+        line = line.trim();
+
+        line = line.replace("<placeholder_webcam_webcamNames/>", getWebcamBlocks(hardwareItemMap));
+        line = line.replace("<placeholder_vision_tfodCurrentGameLabels/>", getTfodCurrentGameLabelBlocks());
 
         String prefix = "<placeholder_";
         String suffix = "/>";
@@ -1546,13 +1392,13 @@ public class HardwareUtil {
             Boolean allowed = capabilities.get(Capability.fromPlaceholderType(type));
             if (allowed != null) {
               if (allowed) {
-                addAssetWithPlaceholders(xmlToolbox, assetManager, capabilities, childAssetName);
+                addAssetWithPlaceholders(xmlToolbox, assetManager, capabilities, hardwareItemMap, childAssetName);
               } else {
-                RobotLog.w("Skipping " + childAssetName + " because type \"" + type + "\" " +
+                RobotLog.w("Skipping " + childAssetName + " because capability \"" + type + "\" " +
                     "is not supported by this device and/or hardware.");
               }
             } else {
-              RobotLog.e("Error: Skipping " + childAssetName + " because type \"" + type + "\" " +
+              RobotLog.e("Error: Skipping " + childAssetName + " because capability \"" + type + "\" " +
                   "is not recognized.");
             }
           } else {
@@ -1565,10 +1411,23 @@ public class HardwareUtil {
     }
   }
 
+  private static String getWebcamBlocks(HardwareItemMap hardwareItemMap) {
+    StringBuilder webcamBlocks = new StringBuilder();
+    List<HardwareItem> hardwareItemsForWebcam =
+        hardwareItemMap.getHardwareItems(HardwareType.WEBCAM_NAME);
+    for (HardwareItem hardwareItemForWebcam : hardwareItemsForWebcam) {
+      webcamBlocks
+          .append("<block type=\"navigation_webcamName\"><field name=\"WEBCAM_NAME\">")
+          .append(hardwareItemForWebcam.deviceName)
+          .append("</field></block>\n");
+    }
+    return webcamBlocks.toString();
+  }
+
   private static String getTfodCurrentGameLabelBlocks() {
     StringBuilder tfodCurrentGameLabelBlocks = new StringBuilder();
-    if (TfodCurrentGame.LABELS.length <= 3) {
-      for (String tfodLabel : TfodCurrentGame.LABELS) {
+    if (CurrentGame.TFOD_LABELS.length <= 5) {
+      for (String tfodLabel : CurrentGame.TFOD_LABELS) {
         tfodCurrentGameLabelBlocks
             .append("<block type=\"tfod_typedEnum_label\"><field name=\"LABEL\">")
             .append(tfodLabel)
@@ -1580,23 +1439,6 @@ public class HardwareUtil {
     }
     return tfodCurrentGameLabelBlocks.toString();
   }
-
-  private static String getVuforiaCurrentGameTrackableNameBlocks() {
-    StringBuilder vuforiaCurrentGameTrackableNameBlocks = new StringBuilder();
-    if (VuforiaCurrentGame.TRACKABLE_NAMES.length <= 3) {
-      for (String trackableName : VuforiaCurrentGame.TRACKABLE_NAMES) {
-        vuforiaCurrentGameTrackableNameBlocks
-            .append("<block type=\"vuforiaCurrentGame_typedEnum_trackableName\"><field name=\"TRACKABLE_NAME\">")
-            .append(trackableName)
-            .append("</field></block>\n");
-      }
-    } else {
-      vuforiaCurrentGameTrackableNameBlocks
-          .append("<block type=\"vuforiaCurrentGame_typedEnum_trackableName\"></block>\n");
-    }
-    return vuforiaCurrentGameTrackableNameBlocks.toString();
-  }
-
 
   /**
    * Adds the category for Android functionality to the toolbox, iff there is at least one
@@ -2565,6 +2407,8 @@ public class HardwareUtil {
     // Include all the classes that we could import (see generateImport_).
     // android.graphics
     set.add("Color");
+    // android.util
+    set.add("Size");
     // com.qualcomm.ftccommon
     set.add("SoundPlayer");
     // com.qualcomm.hardware.modernrobotics
@@ -2625,9 +2469,25 @@ public class HardwareUtil {
     set.add("ArrayList");
     set.add("Collections");
     set.add("List");
+    // java.util.concurrent
+    set.add("TimeUnit");
+    // org.firstinspires.ftc.vision
+    set.add("VisionPortal");
+    set.add("VisionProcessor");
+    // org.firstinspires.ftc.vision.apriltag
+    set.add("AprilTagDetection");
+    set.add("AprilTagGameDatabase");
+    set.add("AprilTagLibrary");
+    set.add("AprilTagMetadata");
+    set.add("AprilTagPoseFtc");
+    set.add("AprilTagPoseRaw");
+    set.add("AprilTagProcessor");
+    // org.firstinspires.ftc.vision.tfod
+    set.add("TfodProcessor");
     // org.firstinspires.ftc.robotcore.external
     set.add("ClassFactory");
     set.add("JavaUtil");
+    set.add("Telemetry");
     // org.firstinspires.ftc.robotcore.external.android
     set.add("AndroidAccelerometer");
     set.add("AndroidGyroscope");
@@ -2635,7 +2495,16 @@ public class HardwareUtil {
     set.add("AndroidSoundPool");
     set.add("AndroidTextToSpeech");
     // org.firstinspires.ftc.robotcore.external.hardware.camera
+    set.add("BuiltinCameraDirection");
+    set.add("CameraName");
     set.add("WebcamName");
+    // org.firstinspires.ftc.robotcore.external.hardware.camera.controls
+    set.add("CameraControl");
+    set.add("ExposureControl");
+    set.add("FocusControl");
+    set.add("GainControl");
+    set.add("PtzControl");
+    set.add("WhiteBalanceControl");
     // org.firstinspires.ftc.robotcore.external.matrices
     set.add("MatrixF");
     set.add("OpenGLMatrix");
@@ -2657,19 +2526,10 @@ public class HardwareUtil {
     set.add("TempUnit");
     set.add("UnnormalizedAngleUnit");
     set.add("Velocity");
-    set.add("VuforiaBase");
-    set.add("VuforiaLocalizer");
-    set.add("VuforiaRelicRecovery");
-    set.add("VuforiaRoverRuckus");
-    set.add("VuforiaTrackable");
-    set.add("VuforiaTrackableDefaultListener");
-    set.add("VuforiaTrackables");
     // org.firstinspires.ftc.robotcore.internal.system
     set.add("AppUtil");
     // org.firstinspires.ftc.robotcore.external.tfod
     set.add("Recognition");
-    set.add("TfodBase");
-    set.add("TfodRoverRuckus");
     // LinearOpMode members
     set.add("waitForStart");
     set.add("idle");

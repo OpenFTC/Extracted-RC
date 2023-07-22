@@ -162,17 +162,14 @@ public abstract class LynxRespondable<RESPONSE extends LynxMessage> extends Lynx
         if (!this.isAckOrResponseReceived)    // paranoia
             {
             this.isAckOrResponseReceived = true;
-            if (ack.isAttentionRequired())
-                {
-                this.noteAttentionRequired();
-                }
+            this.setAttentionRequired(ack.isAttentionRequired());
             this.ackOrNackReceived.countDown();
             }
         }
 
-    protected void noteAttentionRequired()
+    protected void setAttentionRequired(boolean attentionRequired)
         {
-        this.module.noteAttentionRequired();
+        this.module.setAttentionRequired(attentionRequired);
         }
 
     // Called on the datagram receive thread

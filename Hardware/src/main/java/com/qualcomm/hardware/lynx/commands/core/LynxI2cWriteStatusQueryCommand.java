@@ -99,4 +99,10 @@ public class LynxI2cWriteStatusQueryCommand extends LynxDekaInterfaceCommand<Lyn
         ByteBuffer buffer = ByteBuffer.wrap(rgb).order(LynxDatagram.LYNX_ENDIAN);
         this.i2cBus = buffer.get();
         }
+
+    @Override
+    public boolean isDangerous()
+        {
+        return false;
+        }
     }

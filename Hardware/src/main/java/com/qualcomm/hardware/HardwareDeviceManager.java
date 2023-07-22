@@ -31,23 +31,21 @@
 package com.qualcomm.hardware;
 
 import android.content.Context;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Pair;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.qualcomm.hardware.adafruit.AdafruitI2cColorSensor;
 import com.qualcomm.hardware.lynx.LynxI2cColorRangeSensor;
 import com.qualcomm.hardware.lynx.LynxModule;
-import com.qualcomm.hardware.lynx.LynxUsbDevice;
 import com.qualcomm.hardware.lynx.LynxUsbDeviceImpl;
-import com.qualcomm.hardware.lynx.LynxUsbUtil;
 import com.qualcomm.hardware.lynx.commands.core.LynxFirmwareVersionManager;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cIrSeekerSensorV3;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsTouchSensor;
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsUsbDevice;
 import com.qualcomm.hardware.modernrobotics.comm.ModernRoboticsUsbUtil;
 import com.qualcomm.robotcore.eventloop.SyncdDevice;
 import com.qualcomm.robotcore.exception.RobotCoreException;
@@ -78,13 +76,13 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoControllerEx;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.hardware.TouchSensor;
-import com.qualcomm.robotcore.hardware.configuration.typecontainers.AnalogSensorConfigurationType;
 import com.qualcomm.robotcore.hardware.configuration.DeviceConfiguration;
-import com.qualcomm.robotcore.hardware.configuration.typecontainers.DigitalIoDeviceConfigurationType;
 import com.qualcomm.robotcore.hardware.configuration.LynxConstants;
+import com.qualcomm.robotcore.hardware.configuration.typecontainers.AnalogSensorConfigurationType;
+import com.qualcomm.robotcore.hardware.configuration.typecontainers.DigitalIoDeviceConfigurationType;
+import com.qualcomm.robotcore.hardware.configuration.typecontainers.I2cDeviceConfigurationType;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.ServoConfigurationType;
-import com.qualcomm.robotcore.hardware.configuration.typecontainers.I2cDeviceConfigurationType;
 import com.qualcomm.robotcore.hardware.usb.RobotUsbDevice;
 import com.qualcomm.robotcore.hardware.usb.RobotUsbDeviceImplBase;
 import com.qualcomm.robotcore.hardware.usb.RobotUsbManager;
@@ -103,7 +101,6 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.internal.camera.CameraManagerInternal;
 import org.firstinspires.ftc.robotcore.internal.hardware.UserNameable;
 import org.firstinspires.ftc.robotcore.internal.hardware.usb.ArmableUsbDevice;
-import org.firstinspires.ftc.robotcore.internal.system.Assert;
 import org.firstinspires.ftc.robotcore.internal.usb.VendorProductSerialNumber;
 
 import java.util.HashMap;
@@ -349,24 +346,7 @@ public class HardwareDeviceManager implements DeviceManager {
     HardwareFactory.noteSerialNumberType(context, serialNumber, context.getString(R.string.moduleDisplayNameLynxUsbDevice));
     RobotLog.v("Creating %s", HardwareFactory.getDeviceDisplayName(context, serialNumber));
 
-    ModernRoboticsUsbDevice.OpenRobotUsbDevice openRobotUsbDevice = new ModernRoboticsUsbDevice.OpenRobotUsbDevice() {
-      @Override public RobotUsbDevice open() throws RobotCoreException {
-          RobotUsbDevice dev = null;
-          try {
-            dev = LynxUsbUtil.openUsbDevice(true, usbManager, serialNumber);
-            if (!dev.getUsbIdentifiers().isLynxDevice()) {
-              closeAndThrowOnFailedDeviceTypeCheck(dev, serialNumber);
-            }
-            UsbDeviceType type = getLynxDeviceType(dev); Assert.assertTrue(type == UsbDeviceType.LYNX_USB_DEVICE);
-          } catch (RobotCoreException|RuntimeException e) {
-            if (dev != null) dev.close(); // avoid leakage of open FT_Devices
-            throw e;
-          }
-          return dev;
-        }
-    };
-
-    return LynxUsbDeviceImpl.findOrCreateAndArm(context, serialNumber, manager, openRobotUsbDevice);
+    return LynxUsbDeviceImpl.findOrCreateAndArm(context, serialNumber, manager, usbManager);
   }
 
 
@@ -392,12 +372,6 @@ public class HardwareDeviceManager implements DeviceManager {
   @Override
   public List<HardwareDevice> createCustomServoDeviceInstances(ServoControllerEx controller, int portNumber, ServoConfigurationType servoConfigurationType) {
     return servoConfigurationType.createInstances(controller, portNumber);
-  }
-
-  @Override
-  public RobotCoreLynxModule createLynxModule(RobotCoreLynxUsbDevice lynxUsbDevice, int moduleAddress, boolean isParent, String name) {
-    RobotLog.v("Creating Lynx Module - mod=%d parent=%s", moduleAddress, Boolean.toString(isParent));
-    return new LynxModule((LynxUsbDevice)lynxUsbDevice, moduleAddress, isParent, true);
   }
 
   @Override
@@ -514,16 +488,5 @@ public class HardwareDeviceManager implements DeviceManager {
 
   private RobotUsbDevice.FirmwareVersion getModernRoboticsFirmwareVersion(byte[] modernRoboticsDeviceHeader) {
     return new RobotUsbDevice.FirmwareVersion(modernRoboticsDeviceHeader[0]);
-  }
-
-  private void closeAndThrowOnFailedDeviceTypeCheck(RobotUsbDevice dev, SerialNumber serialNumber) throws RobotCoreException {
-    String msg = String.format("%s is returning garbage data on the USB bus", HardwareFactory.getDeviceDisplayName(context, serialNumber));
-    dev.close();
-    logAndThrow(msg);
-  }
-
-  private void logAndThrow(String errMsg) throws RobotCoreException {
-    System.err.println(errMsg);
-    throw new RobotCoreException(errMsg);
   }
 }

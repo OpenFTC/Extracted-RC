@@ -192,4 +192,10 @@ public class LynxSetModuleLEDPatternCommand extends LynxStandardCommand<LynxAck>
             this.steps.add(step);
             }
         }
+
+    @Override
+    public boolean isDangerous()
+        {
+        return false;
+        }
     }

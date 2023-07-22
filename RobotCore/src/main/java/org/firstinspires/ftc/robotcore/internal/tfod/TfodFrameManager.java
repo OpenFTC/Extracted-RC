@@ -24,25 +24,28 @@ import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.util.Log;
-import android.text.TextUtils;
 import com.google.ftcresearch.tfod.util.ImageUtils;
 import com.google.ftcresearch.tfod.util.Size;
+import com.qualcomm.robotcore.util.RobotLog;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.MappedByteBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
-import java.util.concurrent.CancellationException;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import org.firstinspires.ftc.robotcore.external.function.Consumer;
 import org.firstinspires.ftc.robotcore.external.tfod.CameraInformation;
+import org.firstinspires.ftc.robotcore.external.tfod.CanvasAnnotator;
 import org.firstinspires.ftc.robotcore.external.tfod.FrameConsumer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.robotcore.external.tfod.TfodParameters;
 import org.firstinspires.ftc.robotcore.internal.tfod.LabeledObject.CoordinateSystem;
 
 /**
@@ -52,52 +55,45 @@ import org.firstinspires.ftc.robotcore.internal.tfod.LabeledObject.CoordinateSys
  * @author lizlooney@google.com (Liz Looney)
  */
 abstract class TfodFrameManager {
-
   private static final String TAG = "TfodFrameManager";
 
-  protected static final Paint boxPaint = new Paint(); // Used to draw recognitions without tracker
-  static {
-    boxPaint.setColor(Color.RED);
-    boxPaint.setStyle(Style.STROKE);
-    boxPaint.setStrokeWidth(12.0f);
-  }
-  protected static final BorderedText borderedText = new BorderedText(60);
+  private static final boolean SAVE_BITMAPS = false;
+
+  protected static final int boxColor = Color.RED; // Used to draw recognitions without tracker
 
   // Parameters passed in to the constructor
   private MappedByteBuffer modelData;
-  protected final List<String> labels;
   protected final TfodParameters params;
   protected final CameraInformation cameraInformation;
+  protected volatile float minResultConfidence;
   private final ClippingMargins clippingMargins;
   private final Zoom zoom;
   private final ResultsCallback resultsCallback;
-  private final Consumer<Bitmap> annotatedFrameCallback;
 
   private final MainPipeline mainPipeline;
-
-  private final Object lastResultsFrameTimeNanosLock = new Object();
-  private volatile long lastResultsFrameTimeNanos;
-
   private volatile boolean active;
-  private volatile Results lastResultsPublished;
+
+  private final Object publishedResultsFrameTimeNanosLock = new Object();
+  private volatile long publishedResultsFrameTimeNanos;
+
+  private volatile Results publishedResults;
+  private volatile List<LabeledObject> publishedLabeledObjectsInCameraCoordinates;
 
   protected TfodFrameManager(
       MappedByteBuffer modelData,
-      List<String> labels,
       TfodParameters params,
       CameraInformation cameraInformation,
+      float minResultConfidence,
       ClippingMargins clippingMargins,
       Zoom zoom,
-      ResultsCallback resultsCallback,
-      Consumer<Bitmap> annotatedFrameCallback) {
+      ResultsCallback resultsCallback) {
     this.modelData = modelData;
-    this.labels = labels;
     this.params = params;
     this.cameraInformation = cameraInformation;
+    this.minResultConfidence = minResultConfidence;
     this.clippingMargins = clippingMargins;
     this.zoom = zoom;
     this.resultsCallback = resultsCallback;
-    this.annotatedFrameCallback = annotatedFrameCallback;
 
     mainPipeline = new MainPipeline();
   }
@@ -109,15 +105,15 @@ abstract class TfodFrameManager {
   protected abstract RecognizerPipeline createRecognizerPipeline(MappedByteBuffer modelData, ZoomHelper zoomHelper, Bitmap bitmap);
 
   protected void onResultsFromRecognizerPipeline(
-      long frameTimeNanos, List<LabeledObject> labeledObjects,
+      long frameTimeNanos, List<LabeledObject> labeledObjectsInZoomAreaCoordinates,
       Bitmap bitmapFromRecognizerPipeline) {
     if (!active) {
       return;
     }
-    synchronized (lastResultsFrameTimeNanosLock) {
-      if (lastResultsFrameTimeNanos == 0 ||
-          frameTimeNanos > lastResultsFrameTimeNanos) {
-        lastResultsFrameTimeNanos = frameTimeNanos;
+    synchronized (publishedResultsFrameTimeNanosLock) {
+      if (publishedResultsFrameTimeNanos == 0 ||
+          frameTimeNanos > publishedResultsFrameTimeNanos) {
+        publishedResultsFrameTimeNanos = frameTimeNanos;
       } else {
         // Received out-of-order results.
         // We don't want to process / send this frame anywhere.
@@ -128,37 +124,44 @@ abstract class TfodFrameManager {
     if (mainPipeline.trackerPipeline != null) {
       // Send TFOD recognitions to the tracker pipeline.
       mainPipeline.trackerPipeline.onResultsFromRecognizerPipeline(
-          frameTimeNanos, labeledObjects,
+          frameTimeNanos, labeledObjectsInZoomAreaCoordinates,
           bitmapFromRecognizerPipeline.copy(Bitmap.Config.ARGB_8888, false /* mutable */));
     } else {
       // No tracker. Publish the results now.
-      publishResults(frameTimeNanos, labeledObjects);
+      publishResults(frameTimeNanos, labeledObjectsInZoomAreaCoordinates);
     }
   }
 
   protected void onResultsFromTrackerPipeline(
-      long frameTimeNanos, List<LabeledObject> labeledObjects) {
+      long frameTimeNanos, List<LabeledObject> labeledObjectsInZoomAreaCoordinates) {
     if (!active) {
       return;
     }
 
-    publishResults(frameTimeNanos, labeledObjects);
+    publishResults(frameTimeNanos, labeledObjectsInZoomAreaCoordinates);
   }
 
-  private void publishResults(long frameTimeNanos, List<LabeledObject> labeledObjects) {
+  private void publishResults(long frameTimeNanos, List<LabeledObject> labeledObjectsInZoomAreaCoordinates) {
     // The bounding boxes are in zoom area coordinates.  Map them to camera frame coordinates.
     List<LabeledObject> labeledObjectsInCamaraCoordinates = new ArrayList();
-    for (LabeledObject labeledObject : labeledObjects) {
+    for (LabeledObject labeledObject : labeledObjectsInZoomAreaCoordinates) {
       labeledObjectsInCamaraCoordinates.add(labeledObject.convertToCamera());
     }
     Results results = new Results(cameraInformation, frameTimeNanos,
         labeledObjectsInCamaraCoordinates);
-    lastResultsPublished = results;
+
+    publishedResults = results;
+    publishedLabeledObjectsInCameraCoordinates = labeledObjectsInCamaraCoordinates;
+
     resultsCallback.onResults(results);
   }
 
   void activate() {
     active = true;
+  }
+
+  void setMinResultConfidence(float minResultConfidence) {
+    this.minResultConfidence = minResultConfidence;
   }
 
   void deactivate() {
@@ -177,7 +180,7 @@ abstract class TfodFrameManager {
   }
 
   private class MainPipeline implements FrameConsumer {
-    private Bitmap bitmap;
+    private Bitmap bitmap; // contains the frames we are consuming.
     private Canvas canvas;
     private ClippingMarginsHelper clippingMarginsHelper;
     private ZoomHelper zoomHelper;
@@ -217,9 +220,9 @@ abstract class TfodFrameManager {
       }
 
       synchronized (zoom) {
-        zoomHelper = new ZoomHelper(zoom.magnification, zoom.aspectRatio, width, height);
+        zoomHelper = new ZoomHelper(zoom.magnification, params.modelAspectRatio, width, height);
         srcZoomRect.set(zoomHelper.left(), zoomHelper.top(), zoomHelper.right(), zoomHelper.bottom());
-        destZoomRect.set(0, 0, zoomHelper.right(), zoomHelper.bottom());
+        destZoomRect.set(0, 0, zoomHelper.right() - zoomHelper.left(), zoomHelper.bottom() - zoomHelper.top());
       }
 
       for (int i = 0; i < params.numExecutorThreads; i++) {
@@ -238,9 +241,9 @@ abstract class TfodFrameManager {
     }
 
     @Override
-    public void processFrame() {
+    public CanvasAnnotator processFrame() {
       if (!active) {
-        return;
+        return null;
       }
 
       final long frameTimeNanos = System.nanoTime();
@@ -258,14 +261,17 @@ abstract class TfodFrameManager {
       synchronized (zoom) {
         if (zoomHelper.hasZoomChanged(zoom)) {
           ZoomHelper oldZoomHelper = zoomHelper;
-          zoomHelper = new ZoomHelper(zoom.magnification, zoom.aspectRatio, width, height);
+          zoomHelper = new ZoomHelper(zoom.magnification, params.modelAspectRatio, width, height);
           srcZoomRect.set(zoomHelper.left(), zoomHelper.top(), zoomHelper.right(), zoomHelper.bottom());
-          destZoomRect.set(0, 0, zoomHelper.right(), zoomHelper.bottom());
+          destZoomRect.set(0, 0, zoomHelper.right() - zoomHelper.left(), zoomHelper.bottom() - zoomHelper.top());
         }
       }
 
       clippingMarginsHelper.fillClippingMargins(canvas);
       zoomHelper.blurAroundZoomArea(canvas);
+      if (SAVE_BITMAPS) {
+        saveBitmap(bitmap, "source");
+      }
 
       final Integer i = availableRecognizerIndex.poll();
       if (i != null) {
@@ -284,6 +290,9 @@ abstract class TfodFrameManager {
               // Copy the zoom area onto the recognizerPipeline[i].zoomBitmap.
               Canvas zoomCanvas = new Canvas(recognizerPipeline[i].zoomBitmap);
               zoomCanvas.drawBitmap(bitmap, srcZoomRect, destZoomRect, null);
+              if (SAVE_BITMAPS && i == 0) {
+                saveBitmap(recognizerPipeline[i].zoomBitmap, "recognizer");
+              }
               recognizerPipeline[i].processFrame(frameTimeNanos);
               availableRecognizerIndex.add(i);
             }
@@ -300,32 +309,25 @@ abstract class TfodFrameManager {
         // Copy the zoom area onto the trackerPipeline.zoomBitmap.
         Canvas zoomCanvas = new Canvas(trackerPipeline.zoomBitmap);
         zoomCanvas.drawBitmap(bitmap, srcZoomRect, destZoomRect, null);
+        if (SAVE_BITMAPS) {
+          saveBitmap(trackerPipeline.zoomBitmap, "tracker");
+        }
         trackerPipeline.processFrame(frameTimeNanos);
       }
 
       if (trackerPipeline != null) {
-        canvas.save();
-        canvas.translate(mainPipeline.zoomHelper.left(), mainPipeline.zoomHelper.top());
-        trackerPipeline.draw(canvas);
-        canvas.restore();
-      } else {
-        // Draw the last published results onto the canvas.
-        Results results = lastResultsPublished;
-        if (results != null) {
-          for (Recognition recognition : results.getRecognitions()) {
-            RectF location = ((RecognitionImpl) recognition).getLocation();
-            canvas.drawRect(location, boxPaint);
-
-            final String labelString =
-                !TextUtils.isEmpty(recognition.getLabel())
-                ? String.format("%s %.2f", recognition.getLabel(), recognition.getConfidence())
-                : String.format("%.2f", recognition.getConfidence());
-            borderedText.drawText(canvas, location.left, location.bottom, labelString);
-          }
+        List<LabeledObject> labeledObjectsInZoomAreaCoordinates = trackerPipeline.getLabeledObjectsInZoomAreaCoordinates();
+        List<LabeledObject> labeledObjectsInCamaraCoordinates = new ArrayList<>();
+        for (LabeledObject labeledObject : labeledObjectsInZoomAreaCoordinates) {
+          labeledObjectsInCamaraCoordinates.add(labeledObject.convertToCamera());
         }
+        return new CanvasAnnotatorImpl(clippingMarginsHelper, zoomHelper, labeledObjectsInCamaraCoordinates, true);
+      } else {
+        if (publishedLabeledObjectsInCameraCoordinates != null) {
+          return new CanvasAnnotatorImpl(clippingMarginsHelper, zoomHelper, publishedLabeledObjectsInCameraCoordinates, false);
+        }
+        return new CanvasAnnotatorImpl(clippingMarginsHelper, zoomHelper, new ArrayList<>(), false);
       }
-
-      annotatedFrameCallback.accept(bitmap);
     }
   }
 
@@ -355,21 +357,24 @@ abstract class TfodFrameManager {
     protected RecognizerPipeline(ZoomHelper zoomHelper, Bitmap zoomBitmap) {
       super(zoomHelper, zoomBitmap);
 
-      bitmapForTfod = Bitmap.createBitmap(params.inputSize, params.inputSize, Bitmap.Config.ARGB_8888);
+      bitmapForTfod = Bitmap.createBitmap(params.modelInputSize, params.modelInputSize, Bitmap.Config.ARGB_8888);
       canvasForTfod = new Canvas(bitmapForTfod);
-      rectForTfod = new Rect(0, 0, params.inputSize, params.inputSize);
+      rectForTfod = new Rect(0, 0, params.modelInputSize, params.modelInputSize);
       tfodToZoomAreaMatrix = ImageUtils.transformBetweenImageSizes(
-          new Size(params.inputSize, params.inputSize), new Size(zoomBitmap.getWidth(), zoomBitmap.getHeight()));
+          new Size(params.modelInputSize, params.modelInputSize), new Size(zoomBitmap.getWidth(), zoomBitmap.getHeight()));
     }
 
     void onResized(ZoomHelper zoomHelper, Bitmap zoomBitmap) {
       super.onResized(zoomHelper, zoomBitmap);
       tfodToZoomAreaMatrix = ImageUtils.transformBetweenImageSizes(
-          new Size(params.inputSize, params.inputSize), new Size(zoomBitmap.getWidth(), zoomBitmap.getHeight()));
+          new Size(params.modelInputSize, params.modelInputSize), new Size(zoomBitmap.getWidth(), zoomBitmap.getHeight()));
     }
 
     protected void updateBitmapForTfod() {
       canvasForTfod.drawBitmap(zoomBitmap, null, rectForTfod, null /* paint */);
+      if (SAVE_BITMAPS) {
+        saveBitmap(bitmapForTfod, "tfod");
+      }
     }
   }
 
@@ -411,7 +416,7 @@ abstract class TfodFrameManager {
       // as the bitmap and each dimension should be larger than the input size.
       int smaller = Math.min(zoomAreaSize.width, zoomAreaSize.height);
       int larger = Math.max(zoomAreaSize.width, zoomAreaSize.height);
-      long dim1 = params.inputSize + 1;
+      long dim1 = params.modelInputSize + 1;
       while (dim1 < smaller) {
         if (dim1 * larger % smaller == 0) {
           break;
@@ -428,45 +433,39 @@ abstract class TfodFrameManager {
     protected void processFrame(long frameTimeNanos) {
       // Fill the luminosity array and submit it to the tracker.
       luminosity.bitmapToLuminosity(zoomBitmap, luminosityArrayForTracking);
-      List<LabeledObject> newLabeledObjects =
+      List<LabeledObject> newLabeledObjectsInTrackerCoordinates =
           tracker.onFrame(frameTimeNanos, luminosityArrayForTracking);
-      sendResults(frameTimeNanos, newLabeledObjects);
+      sendResults(frameTimeNanos, newLabeledObjectsInTrackerCoordinates);
     }
 
     private void onResultsFromRecognizerPipeline(
-        long frameTimeNanos, List<LabeledObject> labeledObjectsFromRecognizerPipeline,
+        long frameTimeNanos, List<LabeledObject> labeledObjectsInZoomAreaCoordinates,
         Bitmap bitmapFromRecognizerPipeline) {
-
 
       // Convert the results to the tracker frame coordinates.
       List<LabeledObject> labeledObjectsInTrackerCoordinates =
-          transformLocations(labeledObjectsFromRecognizerPipeline, zoomAreaToTrackerMatrix,
+          transformLocations(labeledObjectsInZoomAreaCoordinates, zoomAreaToTrackerMatrix,
           CoordinateSystem.ZOOM_AREA, CoordinateSystem.TRACKER);
 
       luminosity.bitmapToLuminosity(
           bitmapFromRecognizerPipeline, luminosityArrayFromRecognizerPipeline);
 
-      // Sending the labeled objects and the luminosity array to the tracker.
-      List<LabeledObject> newLabeledObjects = tracker.onResultsFromRecognizer(
+      // Send the labeled objects and the luminosity array to the tracker.
+      List<LabeledObject> newLabeledObjectsInTrackerCoordinates = tracker.onResultsFromRecognizer(
           frameTimeNanos, labeledObjectsInTrackerCoordinates,
           luminosityArrayFromRecognizerPipeline);
 
-
-      sendResults(frameTimeNanos, newLabeledObjects);
+      sendResults(frameTimeNanos, newLabeledObjectsInTrackerCoordinates);
     }
 
     private void sendResults(long frameTimeNanos,
         List<LabeledObject> labeledObjectsInTrackerCoordinates) {
-      // Map the labeledObjects back to zoom area coordinates.
-      List<LabeledObject> labeledObjectsInZoomAreaCoordinates= transformLocations(
+      // Map the labeledObjects from tracker coordinates to zoom area coordinates.
+      List<LabeledObject> labeledObjectsInZoomAreaCoordinates = transformLocations(
           labeledObjectsInTrackerCoordinates, trackerToZoomAreaMatrix,
           CoordinateSystem.TRACKER, CoordinateSystem.ZOOM_AREA);
 
       onResultsFromTrackerPipeline(frameTimeNanos, labeledObjectsInZoomAreaCoordinates);
-    }
-
-    void draw(Canvas canvas) {
-      tracker.draw(canvas, borderedText, trackerToZoomAreaMatrix);
     }
 
     /** Transform all locations in the source list of labeled objects by m, returning a new list of
@@ -488,7 +487,7 @@ abstract class TfodFrameManager {
           output.add(new LabeledObject(labeledObject, newCoordinateSystem,
               newLocation.left, newLocation.top, newLocation.right, newLocation.bottom));
         } else {
-          output.add(new LabeledObject(labeledObject.label, labeledObject.confidence,
+          output.add(new LabeledObject(labeledObject.label, labeledObject.color, labeledObject.confidence,
               zoomHelper, newCoordinateSystem,
               newLocation.left + zoomHelper.left() - labeledObject.zoomHelper.left(),
               newLocation.top + zoomHelper.top() - labeledObject.zoomHelper.top(),
@@ -497,6 +496,45 @@ abstract class TfodFrameManager {
         }
       }
       return output;
+    }
+
+    List<LabeledObject> getLabeledObjectsInZoomAreaCoordinates() {
+      List<LabeledObject> labeledObjectsInTrackerCoordinates = tracker.getLabeledObjects();
+      List<LabeledObject> labeledObjectsInZoomAreaCoordinates = transformLocations(
+          labeledObjectsInTrackerCoordinates, trackerToZoomAreaMatrix,
+          CoordinateSystem.TRACKER, CoordinateSystem.ZOOM_AREA);
+      return labeledObjectsInZoomAreaCoordinates;
+    }
+  }
+
+  private final static Map<String, Long> lastSavedTimes = new HashMap<>();
+  private static Map<String, Integer> lastSavedNumbers = new HashMap<>();
+
+  private static void saveBitmap(Bitmap bitmap, String name) {
+    if (!SAVE_BITMAPS) {
+      return;
+    }
+    long now = System.currentTimeMillis();
+    Long lastTime = lastSavedTimes.get(name);
+    if (lastTime != null/* && now - lastTime < 5000*/) {
+      return;
+    }
+    lastSavedTimes.put(name, now);
+    Integer lastNumber = lastSavedNumbers.get(name);
+    int number = (lastNumber == null) ? 1 : lastNumber + 1;
+    lastSavedNumbers.put(name, number);
+
+    File file = new File("/sdcard/FIRST/" + name + "_" + number + ".jpg");
+    try {
+      FileOutputStream fileOutputStream = new FileOutputStream(file);
+      BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
+      bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bufferedOutputStream);
+      bufferedOutputStream.close();
+      fileOutputStream.close();
+      RobotLog.ii(TAG, "saved bitmap " + file);
+    } catch (IOException e) {
+      RobotLog.ee(TAG, "failed to save bitmap " + file);
+      e.printStackTrace();
     }
   }
 }

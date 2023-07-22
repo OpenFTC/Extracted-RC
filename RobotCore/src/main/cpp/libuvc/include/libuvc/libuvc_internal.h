@@ -304,6 +304,7 @@ struct CameraCompatManager
                     }
                 switch (vidpid)
                     {
+                    case makeVidPid(VENDOR_ID_ARDUCAM, PRODUCT_ID_ARDUCAM_OV9281):
                     case makeVidPid(VENDOR_ID_MICROSOFT, PRODUCT_ID_MICROSOFT_LIFECAM_HD_3000): // takes six seconds
                     case makeVidPid(VENDOR_ID_MICROSOFT, PRODUCT_ID_MICROSOFT_LIFECAM_HD_5000): // takes many seconds
                     case makeVidPid(VENDOR_ID_MICROSOFT, PRODUCT_ID_MICROSOFT_LIFECAM_STUDIO): // takes many seconds

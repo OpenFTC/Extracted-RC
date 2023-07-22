@@ -120,4 +120,10 @@ public class LynxQueryInterfaceCommand extends LynxStandardCommand<LynxQueryInte
         this.setInterfaceName(new String(rgb, Charset.forName("UTF-8")));
         }
 
+    @Override
+    public boolean isDangerous()
+        {
+        return false;
+        }
+
     }

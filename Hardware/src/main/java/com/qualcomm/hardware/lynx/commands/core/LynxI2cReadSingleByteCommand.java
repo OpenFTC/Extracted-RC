@@ -91,4 +91,10 @@ public class LynxI2cReadSingleByteCommand extends LynxDekaInterfaceCommand<LynxA
         this.i2cBus = buffer.get();
         this.i2cAddr7Bit = buffer.get();
         }
+
+    @Override
+    public boolean isDangerous()
+        {
+        return false;
+        }
     }

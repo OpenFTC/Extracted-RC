@@ -1,0 +1,22 @@
+  <block type="visionPortal_setActiveCamera">
+    <comment pinned="false" h="150" w="325">Switch the active camera.
+    </comment>
+    <value name="VISION_PORTAL"><block type="variables_get"><field name="VAR">myVisionPortal</field></block></value>
+    <value name="WEBCAM_NAME"><shadow type="navigation_webcamName"></shadow></value>
+  </block>
+  <block type="logic_compare">
+    <comment pinned="false" h="150" w="325">Get the active camera and compare it to a webcam.
+    </comment>
+    <field name="OP">EQ</field>
+    <value name="A">
+      <block type="visionPortal_getActiveCamera">
+        <value name="VISION_PORTAL"><block type="variables_get"><field name="VAR">myVisionPortal</field></block></value>
+      </block>
+    </value>
+    <value name="B">
+      <block type="navigation_webcamName">
+        <field name="WEBCAM_NAME">Webcam 1</field>
+      </block>
+    </value>
+  </block>
+  <placeholder_webcam_webcamNames/>

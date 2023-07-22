@@ -90,4 +90,10 @@ public class LynxFtdiResetControlCommand extends LynxDekaInterfaceCommand<LynxAc
         ByteBuffer buffer = ByteBuffer.wrap(rgb).order(LynxDatagram.LYNX_ENDIAN);
         this.enabled = buffer.get();
         }
+
+    @Override
+    public boolean isDangerous()
+        {
+        return false;
+        }
     }

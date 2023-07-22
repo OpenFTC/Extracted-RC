@@ -35,7 +35,7 @@ package com.qualcomm.hardware.lynx.commands.core;
 import com.qualcomm.hardware.lynx.LynxModuleIntf;
 import com.qualcomm.hardware.lynx.commands.LynxDatagram;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorController;
+import com.qualcomm.robotcore.hardware.configuration.LynxConstants;
 
 import java.nio.ByteBuffer;
 
@@ -68,13 +68,7 @@ public class LynxGetMotorChannelModeResponse extends LynxDekaInterfaceResponse
 
     public DcMotor.RunMode getMode()
         {
-        switch (this.mode)
-            {
-            case 0: return DcMotor.RunMode.RUN_WITHOUT_ENCODER;
-            case 1: return DcMotor.RunMode.RUN_USING_ENCODER;
-            case 2: return DcMotor.RunMode.RUN_TO_POSITION;
-            }
-        throw new IllegalStateException(String.format("illegal mode byte: 0x%02x", this.mode));
+        return LynxConstants.lynxMotorModeToRunMode(this.mode);
         }
 
     public DcMotor.ZeroPowerBehavior getZeroPowerBehavior()

@@ -94,4 +94,10 @@ public class LynxGetMotorChannelCurrentAlertLevelCommand extends LynxDekaInterfa
         this.motor = buffer.get();
         }
 
+    @Override
+    public boolean isDangerous()
+        {
+        return false;
+        }
+
     }

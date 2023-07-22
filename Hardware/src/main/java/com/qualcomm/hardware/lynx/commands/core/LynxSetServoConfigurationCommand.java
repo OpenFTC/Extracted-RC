@@ -94,4 +94,10 @@ public class LynxSetServoConfigurationCommand extends LynxDekaInterfaceCommand<L
         this.channel = buffer.get();
         this.framePeriod = buffer.getShort();
         }
+
+    @Override
+    public boolean isDangerous()
+        {
+        return false;
+        }
     }

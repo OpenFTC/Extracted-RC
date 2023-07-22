@@ -22,6 +22,7 @@ import android.graphics.Color;
 import android.view.View;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -122,6 +123,16 @@ public class JavaUtil {
     // this it is 1.000.
     number += Math.pow(10, - precision - 1);
     int width = (precision == 0) ? 1 : precision;
+    String format = "%" + width + "." + precision + "f";
+    return String.format(format, number);
+  }
+
+  public static String formatNumber(double number, int width, int precision) {
+    precision = Math.max(0, precision);
+    // Fix for cases like 1.0005 formatted to precision 3. The result should be 1.001, but without
+    // this it is 1.000.
+    number += Math.pow(10, - precision - 1);
+    width = Math.max(1, width);
     String format = "%" + width + "." + precision + "f";
     return String.format(format, number);
   }
@@ -548,5 +559,14 @@ public class JavaUtil {
         }
       });
     }
+  }
+
+  // Utility for the VisionPortal.makeMultiPortalView block
+  public static List<Integer> makeIntegerList(int[] unboxed) {
+    Integer[] boxed = new Integer[unboxed.length];
+    for (int i = 0; i < unboxed.length; i++) {
+      boxed[i] = Integer.valueOf(unboxed[i]);
+    }
+    return Arrays.asList(boxed);
   }
 }

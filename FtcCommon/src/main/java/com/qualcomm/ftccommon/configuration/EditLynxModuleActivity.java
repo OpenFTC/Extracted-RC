@@ -108,7 +108,11 @@ public class EditLynxModuleActivity extends EditActivity
         }
     protected void sendIdentify(boolean shouldIdentify)
         {
-        CommandList.CmdVisuallyIdentify cmdVisuallyIdentify = new CommandList.CmdVisuallyIdentify(lynxModuleConfiguration.getModuleSerialNumber(), shouldIdentify);
+        CommandList.CmdVisuallyIdentify cmdVisuallyIdentify = new CommandList.CmdVisuallyIdentify(
+                lynxModuleConfiguration.getUsbDeviceSerialNumber(),
+                lynxModuleConfiguration.getModuleAddress(),
+                lynxModuleConfiguration.getParentModuleAddress(),
+                shouldIdentify);
         sendOrInject(new Command(cmdVisuallyIdentify.Command, cmdVisuallyIdentify.serialize()));
         }
 

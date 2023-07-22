@@ -127,6 +127,9 @@ public class LynxCommExceptionHandler
             case ABANDONED_WAITING_FOR_RESPONSE:
                 // This is logged elsewhere.
                 break;
+            case CANCELLED_FOR_SAFETY:
+                // This does not need to be logged.
+                break;
             case COMMAND_IMPL_PENDING:
                 RobotLog.ww(getTag(), "%s not implemented by lynx hw; ignoring", nackException.getCommand().getClass().getSimpleName());
                 break;

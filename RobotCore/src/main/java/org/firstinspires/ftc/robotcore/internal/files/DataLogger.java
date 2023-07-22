@@ -60,7 +60,7 @@ public class DataLogger
 
     public static String createFileName(String root)
         {
-        String uniquifier = AppUtil.getInstance().getIso8601DateTimeFormatter().format(LocalDateTime.now());
+        String uniquifier = AppUtil.getInstance().getLocalIso8601DateTimeFormatter().format(LocalDateTime.now());
         return String.format(Locale.US, "%s-%s.txt", root, uniquifier);
         }
 

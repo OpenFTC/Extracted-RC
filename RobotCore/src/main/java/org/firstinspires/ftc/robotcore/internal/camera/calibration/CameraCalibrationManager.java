@@ -471,6 +471,7 @@ public final class CameraCalibrationManager
                     if (sameAspectRatios.length > 0)
                         {
                         result = sameAspectRatios[0].scaledTo(size);
+                        RobotLog.addGlobalWarningMessage("Camera has not been calibrated for this resolution; a calibration for a different resolution of the same aspect ratio has been scaled instead.");
                         }
                     }
                 }

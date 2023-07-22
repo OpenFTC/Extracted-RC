@@ -37,6 +37,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.qualcomm.hardware.HardwareManualControlOpMode;
 import com.qualcomm.hardware.R;
 import com.qualcomm.hardware.bosch.BHI260IMU;
 import com.qualcomm.hardware.bosch.BNO055IMU;
@@ -75,6 +76,7 @@ import com.qualcomm.hardware.lynx.commands.standard.LynxSetModuleLEDColorCommand
 import com.qualcomm.hardware.lynx.commands.standard.LynxSetModuleLEDPatternCommand;
 import com.qualcomm.hardware.lynx.commands.standard.LynxSetNewModuleAddressCommand;
 import com.qualcomm.hardware.lynx.commands.standard.LynxStandardCommand;
+import com.qualcomm.robotcore.eventloop.opmode.OpModeManagerImpl;
 import com.qualcomm.robotcore.exception.RobotCoreException;
 import com.qualcomm.robotcore.hardware.Blinker;
 import com.qualcomm.robotcore.hardware.HardwareDevice;
@@ -142,6 +144,18 @@ public class LynxModule extends LynxCommExceptionHandler implements LynxModuleIn
 
     protected static final int msInitialContact = 500;      // not an exact number; probably can be reduced
     protected static final int msKeepAliveTimeout = 2500;   // per the Lynx spec
+
+    // These are the module status bits that will get re-set every cycle until the condition they indicate goes away
+    // (as opposed to bits that indicate a discrete event and will normally go away after getting the module status with
+    // clearAfterResponse set to true). If in doubt, leave bits out, as any bits listed here will be ignored if they
+    // are repeated in subsequent module statuses.
+    protected static final byte moduleStatusPersistentBits =
+            LynxGetModuleStatusResponse.bitBatteryLow |
+            LynxGetModuleStatusResponse.bitControllerOverTemp |
+            // FailSafe is a weird case, because it's an event when you send a failSafe command, but persistent while
+            // the battery is low. In practice, when a failSafe command is sent, it's done so in a loop, so it's best
+            // treated as a persistent bit.
+            LynxGetModuleStatusResponse.bitFailSafe;
 
     //----------------------------------------------------------------------------------------------
     // Command Meta State
@@ -234,12 +248,14 @@ public class LynxModule extends LynxCommExceptionHandler implements LynxModuleIn
 
     protected LynxUsbDevice         lynxUsbDevice;
     protected List<LynxController>  controllers;
-    protected int                   moduleAddress;
-    protected SerialNumber          moduleSerialNumber;
+    protected final Object          addrAndSerialLock;
+    protected int                   moduleAddress; // Protected by addrAndSerialLock
+    protected SerialNumber          moduleSerialNumber; // Protected by addrAndSerialLock
     protected AtomicInteger         nextMessageNumber;
     protected boolean               isParent;
     protected volatile boolean      isSystemSynthetic;  // If true, then the system made this up. It's available to the user, but is not explicitly in the current configuration file.
     protected volatile boolean      isUserModule;       // If false, then this is for some system-admin purpose
+    protected int                   systemOperationCounter = 0; // For use by LynxUsbDeviceImpl, guarded by LynxUsbDeviceImpl.sysOpStartStopLock
     protected boolean               isEngaged;
     protected final Object          engagementLock = this; // 'this' for historical reasons; optimization might be possible
     protected volatile boolean      isOpen;
@@ -268,9 +284,14 @@ public class LynxModule extends LynxCommExceptionHandler implements LynxModuleIn
     protected boolean                                         isVisuallyIdentifying;
 
     protected ScheduledExecutorService                        executor;
-    protected Future<?>                                       pingFuture;
-    protected Future<?>                                       attentionRequiredFuture;
-    protected final Object                                    futureLock;
+    protected Future<?>                                       pingFuture; // guarded by pingFutureLock
+    protected final Object                                    pingFutureLock;
+
+    protected Future<?>                                       moduleStatusFuture; // guarded by moduleStatusLock
+    protected boolean                                         attentionRequiredPreviously; // guarded by moduleStatusLock
+    protected int                                             previousModuleStatus; // guarded by moduleStatusLock
+    protected final Object                                    moduleStatusLock;
+
     protected boolean                                         ftdiResetWatchdogActive; // our actual current status
     protected boolean                                         ftdiResetWatchdogActiveWhenEngaged; // status when we were last engaged
 
@@ -288,6 +309,7 @@ public class LynxModule extends LynxCommExceptionHandler implements LynxModuleIn
         {
         this.lynxUsbDevice      = lynxUsbDevice;
         this.controllers        = new CopyOnWriteArrayList<LynxController>();
+        this.addrAndSerialLock  = new Object();
         this.moduleAddress      = moduleAddress;
         this.moduleSerialNumber = new LynxModuleSerialNumber(lynxUsbDevice.getSerialNumber(), moduleAddress);
         this.isParent           = isParent;
@@ -316,8 +338,11 @@ public class LynxModule extends LynxCommExceptionHandler implements LynxModuleIn
         this.isVisuallyIdentifying = false;
         this.executor           = null;
         this.pingFuture         = null;
-        this.attentionRequiredFuture = null;
-        this.futureLock         = new Object();
+        this.moduleStatusFuture = null;
+        this.attentionRequiredPreviously = false;
+        this.previousModuleStatus = Integer.MIN_VALUE;
+        this.moduleStatusLock   = new Object();
+        this.pingFutureLock     = new Object();
         this.ftdiResetWatchdogActive = false;
         this.ftdiResetWatchdogActiveWhenEngaged = false;
 
@@ -332,7 +357,7 @@ public class LynxModule extends LynxCommExceptionHandler implements LynxModuleIn
 
     @Override public String toString()
         {
-        return Misc.formatForUser("LynxModule(mod#=%d, serial=%s)", this.moduleAddress, getSerialNumber());
+        return Misc.formatForUser("LynxModule(mod#=%d, serial=%s)", getModuleAddress(), getSerialNumber());
         }
 
     @Override public void close()
@@ -342,14 +367,14 @@ public class LynxModule extends LynxCommExceptionHandler implements LynxModuleIn
             if (this.isOpen)
                 {
                 stopFtdiResetWatchdog(); // This must be done while the module is still open
-                this.isOpen = false;
-                RobotLog.vv(TAG, "close(#%d)", moduleAddress);
+                RobotLog.vv(TAG, "close(#%d)", getModuleAddress());
                 for (LynxController controller: controllers)
                     {
-                    controller.close();
+                    controller.close(); // This must be done while the module is still open
                     }
                 unregisterCallback(this);
-                lynxUsbDevice.removeConfiguredModule(this);
+                lynxUsbDevice.removeConfiguredModule(this); // This should be done before setting isOpen to false
+                this.isOpen = false;
                 stopAttentionRequired();
                 stopPingTimer(true);
                 stopExecutor();
@@ -396,7 +421,10 @@ public class LynxModule extends LynxCommExceptionHandler implements LynxModuleIn
 
     public int getModuleAddress()
         {
-        return this.moduleAddress;
+        synchronized (addrAndSerialLock)
+            {
+            return this.moduleAddress;
+            }
         }
 
     public void setNewModuleAddress(final int newModuleAddress)
@@ -412,8 +440,15 @@ public class LynxModule extends LynxCommExceptionHandler implements LynxModuleIn
                         LynxSetNewModuleAddressCommand command = new LynxSetNewModuleAddressCommand(LynxModule.this, (byte)newModuleAddress);
                         command.acquireNetworkLock();   // make the lock span the updating of our module address variable too
                         try {
+                            int oldAddress = getModuleAddress();
                             command.send();
-                            LynxModule.this.moduleAddress = newModuleAddress;
+
+                            synchronized (addrAndSerialLock)
+                                {
+                                LynxModule.this.moduleAddress = newModuleAddress;
+                                LynxModule.this.moduleSerialNumber = new LynxModuleSerialNumber(getSerialNumber(), newModuleAddress);
+                                }
+                                HardwareManualControlOpMode.getInstance().onLynxModuleAddressChanged(LynxModule.this, oldAddress, newModuleAddress);
                             }
                         finally
                             {
@@ -447,37 +482,46 @@ public class LynxModule extends LynxCommExceptionHandler implements LynxModuleIn
             }
         }
 
-    public void noteAttentionRequired()
+    public void setAttentionRequired(boolean attentionRequired)
         {
         warnIfClosed();
-        if (isUserModule())
+        synchronized (this.moduleStatusLock)
             {
-            synchronized (this.futureLock)
+            boolean getModuleStatus = attentionRequired;
+            if (!attentionRequired && this.attentionRequiredPreviously)
                 {
-                if (this.isOpen)
-                    {
-                    if (this.attentionRequiredFuture != null)
-                        {
-                        this.attentionRequiredFuture.cancel(false);
-                        }
-
-                    // Clear the attention required signal
-                    this.attentionRequiredFuture = this.executor.submit(new Runnable()
-                        {
-                        @Override public void run()
-                            {
-                            if (isOpen)
-                                {
-                                sendGetModuleStatusAndProcessResponse(true);
-                                }
-                            }
-                        });
-                    }
+                // Attention just now stopped being required. On firmware 1.8.2 and prior, this indicates that there
+                // are no longer any errors or warnings being reported. However, future firmware versions may change
+                // this behavior, and only set attentionRequired to true if there are *new* errors or warnings that we
+                // haven't cleared yet. Therefore, we will ask for the Truth, rather than assuming anything based on
+                // this status change.
+                getModuleStatus = true;
                 }
+            this.attentionRequiredPreviously = attentionRequired;
 
-            // Forget any cached data as the attention might have invalidated things
-            forgetLastKnown();
+            if (this.isOpen && getModuleStatus)
+                {
+                if (this.moduleStatusFuture != null)
+                    {
+                    this.moduleStatusFuture.cancel(false);
+                    }
+
+                // Clear the attention required signal
+                this.moduleStatusFuture = this.executor.submit(new Runnable()
+                    {
+                    @Override public void run()
+                        {
+                        if (isOpen)
+                            {
+                            sendGetModuleStatusAndProcessResponse(true);
+                            }
+                        }
+                    });
+                }
             }
+
+        // Forget any cached data as the attention might have invalidated things
+        forgetLastKnown();
         }
 
     protected void noteDatagramReceived()
@@ -486,7 +530,7 @@ public class LynxModule extends LynxCommExceptionHandler implements LynxModuleIn
         if (this.isNotResponding)
             {
             this.isNotResponding = false;
-            RobotLog.vv(TAG, "REV Hub #%d has reconnected", moduleAddress);
+            RobotLog.vv(TAG, "REV Hub #%d has reconnected", getModuleAddress());
             }
         }
 
@@ -512,13 +556,13 @@ public class LynxModule extends LynxCommExceptionHandler implements LynxModuleIn
 
     protected void stopAttentionRequired()
         {
-        synchronized (futureLock)
+        synchronized (moduleStatusLock)
             {
-            if (this.attentionRequiredFuture != null)
+            if (this.moduleStatusFuture != null)
                 {
-                this.attentionRequiredFuture.cancel(true);
-                ThreadPool.awaitFuture(this.attentionRequiredFuture, 250, TimeUnit.MILLISECONDS);
-                this.attentionRequiredFuture = null;
+                this.moduleStatusFuture.cancel(true);
+                ThreadPool.awaitFuture(this.moduleStatusFuture, 250, TimeUnit.MILLISECONDS);
+                this.moduleStatusFuture = null;
                 }
             }
         }
@@ -528,24 +572,60 @@ public class LynxModule extends LynxCommExceptionHandler implements LynxModuleIn
         LynxGetModuleStatusCommand command = new LynxGetModuleStatusCommand(LynxModule.this, clearStatus);
         try {
             LynxGetModuleStatusResponse response = command.sendReceive();
-            // If any bit other than bitFailSafe or bitBatteryLow is present, log the current status.
-            // Fail safe is explicitly entered normally, and the battery low condition is logged less aggressively by LynxModuleWarningManager.
-            if (response.testAnyBits(~(LynxGetModuleStatusResponse.bitFailSafe | LynxGetModuleStatusResponse.bitBatteryLow)))
+
+            synchronized (this.moduleStatusLock)
+                {
+                int currentStatus = response.getStatus();
+                int currentMotorAlerts = response.getMotorAlerts();
+
+                if (currentStatus == this.previousModuleStatus && currentMotorAlerts == 0)
+                    {
+                    // For simplicity, we *always* fully process the status when there are any motor alerts for now.
+                    // We'll want to revisit this behavior if we get reports of motor driver errors causing spam.
+
+                    // If there are no motor alerts, then we only reprocess if the current status is the same as the
+                    // previous status, and no "event" bits (ones not included in moduleStatusPersistentBits) are set.
+                    return;
+                    }
+
+                // Save the bits that we're sure will stick around after clearing the module status, so that we can
+                // detect statuses that don't need to be processed repeatedly.
+                this.previousModuleStatus = currentStatus & moduleStatusPersistentBits;
+                }
+
+            // If any bit other than the following are present, log the current status:
+            // Fail safe: Explicitly entered repeatedly during the default Op Mode
+            // Battery low: Logged by LynxModuleWarningManager
+            // Device reset: Logged by LynxModuleWarningManager
+            if (response.testAnyBits(~(LynxGetModuleStatusResponse.bitFailSafe |
+                                       LynxGetModuleStatusResponse.bitBatteryLow |
+                                       LynxGetModuleStatusResponse.bitDeviceReset)))
                 {
                 RobotLog.vv(TAG, "received status: %s", response.toString());
                 }
+
+            final HardwareManualControlOpMode manualControlOpMode = HardwareManualControlOpMode.getInstance();
+            if (manualControlOpMode != null)
+                {
+                // Notify the Manual Control Op Mode that our status has changed
+                final int statusWord = response.getStatus();
+                final int motorAlerts = response.getMotorAlerts();
+                ThreadPool.getDefault().submit(() -> // Don't block the module's thread
+                        manualControlOpMode.onLynxModuleStatusChanged(this, statusWord, motorAlerts));
+                }
+
             if (response.isKeepAliveTimeout())
                 {
                 // The keep alive timeout made the module forget what we were using. Now that
                 // we're back, re-establish what the user expects to be blinking.
                 resendCurrentPattern();
                 }
-            if (response.isDeviceReset())
+            if (response.isDeviceReset() && isUserModule())
                 {
                 LynxModuleWarningManager.getInstance().reportModuleReset(this);
                 resendCurrentPattern();
                 }
-            if (response.isBatteryLow())
+            if (response.isBatteryLow() && isUserModule())
                 {
                 LynxModuleWarningManager.getInstance().reportModuleLowBattery(this);
                 }
@@ -684,7 +764,10 @@ public class LynxModule extends LynxCommExceptionHandler implements LynxModuleIn
 
     public SerialNumber getModuleSerialNumber()
         {
-        return moduleSerialNumber;
+        synchronized (addrAndSerialLock)
+            {
+            return moduleSerialNumber;
+            }
         }
 
     @Override public SerialNumber getSerialNumber()
@@ -1101,7 +1184,7 @@ public class LynxModule extends LynxCommExceptionHandler implements LynxModuleIn
         synchronized (this.interfacesQueried)
             {
             /** Nothing but discovery is supported on fake modules. See {@link LynxUsbDeviceImpl#discoverModules} */
-            return moduleAddress==0
+            return getModuleAddress()==0
                     ? clazz==LynxDiscoveryCommand.class
                     : supportedCommands.contains(clazz);
             }
@@ -1250,7 +1333,7 @@ public class LynxModule extends LynxCommExceptionHandler implements LynxModuleIn
     protected void startPingTimer()
         {
         warnIfClosed();
-        synchronized (this.futureLock)
+        synchronized (this.pingFutureLock)
             {
             stopPingTimer(false);
             if (this.isOpen)
@@ -1278,7 +1361,7 @@ public class LynxModule extends LynxCommExceptionHandler implements LynxModuleIn
 
     protected void stopPingTimer(boolean wait)
         {
-        synchronized (this.futureLock)
+        synchronized (this.pingFutureLock)
             {
             if (this.pingFuture != null)
                 {
@@ -1597,6 +1680,12 @@ public class LynxModule extends LynxCommExceptionHandler implements LynxModuleIn
         forgetLastKnown();
         }
 
+    @Override public void attemptFailSafeAndIgnoreErrors()
+        {
+        try { failSafe(); }
+        catch (RuntimeException | RobotCoreException | InterruptedException | LynxNackException e) { /* Ignore */ }
+        }
+
     public void enablePhoneCharging(boolean enable) throws RobotCoreException, InterruptedException, LynxNackException
         {
         warnIfClosed();
@@ -1874,6 +1963,16 @@ public class LynxModule extends LynxCommExceptionHandler implements LynxModuleIn
     public void sendCommand(LynxMessage command) throws InterruptedException, LynxUnsupportedCommandException
         {
         warnIfClosed();
+
+            if (command.isDangerous() && OpModeManagerImpl.shouldPreventDangerousHardwareAccess()) {
+                // Dangerous commands are not allowed to be sent at this time. Pretend that we got a special, made-up
+                // NACK for this command.
+                ((LynxRespondable<?>)command).onNackReceived(new LynxNack(this, LynxNack.StandardReasonCode.CANCELLED_FOR_SAFETY));
+
+                // Exit BEFORE the command would be sent (or gets assigned a message number or anything like that)
+                return;
+            }
+
         command.setMessageNumber(getNewMessageNumber());
         int msgnumCur = command.getMessageNumber();
 

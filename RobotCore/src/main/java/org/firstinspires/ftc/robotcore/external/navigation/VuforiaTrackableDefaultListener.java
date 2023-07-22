@@ -35,7 +35,6 @@ package org.firstinspires.ftc.robotcore.external.navigation;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.vuforia.Matrix34F;
 import com.vuforia.TrackableResult;
 import com.vuforia.VuMarkTarget;
 import com.vuforia.VuMarkTargetResult;
@@ -46,8 +45,8 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.Camera;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraManager;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.internal.system.Misc;
-import org.firstinspires.ftc.robotcore.internal.system.Tracer;
 import org.firstinspires.ftc.robotcore.internal.vuforia.VuforiaPoseMatrix;
 
 import java.util.HashMap;
@@ -78,13 +77,13 @@ public class VuforiaTrackableDefaultListener implements VuforiaTrackable.Listene
             this.pose = pose;
             this.cameraName = cameraName;
             }
-        public VuforiaLocalizer.CameraDirection getCameraDirection()
+        public BuiltinCameraDirection getCameraDirection()
             {
             if (cameraName instanceof BuiltinCameraName)
                 {
                 return ((BuiltinCameraName)cameraName).getCameraDirection();
                 }
-            return VuforiaLocalizer.CameraDirection.UNKNOWN;
+            return null;
             }
 
         @Override public String toString()
@@ -214,8 +213,8 @@ public class VuforiaTrackableDefaultListener implements VuforiaTrackable.Listene
         ftcCameraBackFromPhone = phoneFromFtcCameraBack.inverted();
 
         CameraManager cameraManager = ClassFactory.getInstance().getCameraManager();
-        cameraNameFront = cameraManager.nameFromCameraDirection(VuforiaLocalizer.CameraDirection.FRONT);
-        cameraNameBack = cameraManager.nameFromCameraDirection(VuforiaLocalizer.CameraDirection.BACK);
+        cameraNameFront = cameraManager.nameFromCameraDirection(BuiltinCameraDirection.FRONT);
+        cameraNameBack = cameraManager.nameFromCameraDirection(BuiltinCameraDirection.BACK);
         }
 
     //----------------------------------------------------------------------------------------------
@@ -231,7 +230,7 @@ public class VuforiaTrackableDefaultListener implements VuforiaTrackable.Listene
      * @param robotFromPhone  the location of the phone on the robot. Maps phone coordinates to robot coordinates.
      * @param cameraDirection which camera on the phone is in use
      */
-    public void setPhoneInformation(@NonNull OpenGLMatrix robotFromPhone, @NonNull VuforiaLocalizer.CameraDirection cameraDirection)
+    public void setPhoneInformation(@NonNull OpenGLMatrix robotFromPhone, @NonNull BuiltinCameraDirection cameraDirection)
         {
         switch (cameraDirection)
             {
@@ -241,7 +240,6 @@ public class VuforiaTrackableDefaultListener implements VuforiaTrackable.Listene
             case BACK:
                 setCameraLocationOnRobot(cameraNameBack, robotFromPhone.multiplied(phoneFromFtcCameraBack));
                 break;
-            case DEFAULT:
             default:
                 throw Misc.illegalArgumentException("cameraDirection:%s", cameraDirection);
             }
@@ -331,7 +329,7 @@ public class VuforiaTrackableDefaultListener implements VuforiaTrackable.Listene
      * @deprecated This is of little use if a non-builtin camera is in use.
      */
     @Deprecated @SuppressWarnings("DeprecatedIsStillUsed")
-    public @Nullable VuforiaLocalizer.CameraDirection getCameraDirection()
+    public @Nullable BuiltinCameraDirection getCameraDirection()
         {
         synchronized (lock)
             {
@@ -373,7 +371,7 @@ public class VuforiaTrackableDefaultListener implements VuforiaTrackable.Listene
      * @return the location of the robot on the field
      * @see #getUpdatedRobotLocation()
      * @see #getPosePhone()
-     * @see #setPhoneInformation(OpenGLMatrix, VuforiaLocalizer.CameraDirection)
+     * @see #setPhoneInformation(OpenGLMatrix, BuiltinCameraDirection)
      * @see VuforiaTrackable#setLocation(OpenGLMatrix)
      * @see #getRobotLocation()
      */
@@ -420,7 +418,7 @@ public class VuforiaTrackableDefaultListener implements VuforiaTrackable.Listene
      *             correct values, when of interest, are fixed and known.
      */
     @Deprecated @SuppressWarnings("DeprecatedIsStillUsed")
-    public @Nullable OpenGLMatrix getPoseCorrectionMatrix(VuforiaLocalizer.CameraDirection direction)
+    public @Nullable OpenGLMatrix getPoseCorrectionMatrix(BuiltinCameraDirection direction)
         {
         switch (direction)
             {
@@ -433,16 +431,9 @@ public class VuforiaTrackableDefaultListener implements VuforiaTrackable.Listene
     /**
      * A synonym for {@link #getPoseCorrectionMatrix}.
      */
-    protected @Nullable OpenGLMatrix getPhoneFromVuforiaCamera(VuforiaLocalizer.CameraDirection direction)
+    protected @Nullable OpenGLMatrix getPhoneFromVuforiaCamera(BuiltinCameraDirection direction)
         {
         return getPoseCorrectionMatrix(direction);
-        }
-
-    /** @see #getPoseCorrectionMatrix(VuforiaLocalizer.CameraDirection) */
-    @Deprecated @SuppressWarnings("DeprecatedIsStillUsed")
-    public void setPoseCorrectionMatrix(VuforiaLocalizer.CameraDirection direction, @NonNull OpenGLMatrix matrix)
-        {
-        throw new UnsupportedOperationException("this method has no longer has any effect");
         }
 
     /**
@@ -480,7 +471,7 @@ public class VuforiaTrackableDefaultListener implements VuforiaTrackable.Listene
      * result.</p>
      *
      * @return the pose of the trackable, if visible; if not visible, then null is returned.
-     * @see #getPhoneFromVuforiaCamera(VuforiaLocalizer.CameraDirection)
+     * @see #getPhoneFromVuforiaCamera(BuiltinCameraDirection)
      * @see #getVuforiaCameraFromTarget()
      * @see #isVisible()
      * @see #getPose()
@@ -538,7 +529,7 @@ public class VuforiaTrackableDefaultListener implements VuforiaTrackable.Listene
      * used by Vuforia and FTC
      *
      * @return the raw pose of the trackable as reported by Vuforia
-     * @see #getPhoneFromVuforiaCamera(VuforiaLocalizer.CameraDirection)
+     * @see #getPhoneFromVuforiaCamera(BuiltinCameraDirection)
      * @see #getRawPose()
      */
     public @Nullable OpenGLMatrix getVuforiaCameraFromTarget()

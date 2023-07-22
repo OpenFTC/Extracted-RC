@@ -100,6 +100,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 import org.firstinspires.ftc.robotcore.external.stream.CameraStreamServer;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
 import org.firstinspires.ftc.robotcore.internal.camera.delegating.SwitchableCameraName;
 import org.firstinspires.ftc.robotcore.internal.collections.EvictingBlockingQueue;
@@ -952,14 +953,21 @@ public class VuforiaLocalizerImpl implements VuforiaLocalizer
         return this.camCal;
         }
 
+    protected int getVuforiaCameraDirection(BuiltinCameraDirection direction)
+        {
+        if (direction == BuiltinCameraDirection.BACK) return CameraDevice.CAMERA_DIRECTION.CAMERA_DIRECTION_BACK;
+        else if (direction == BuiltinCameraDirection.FRONT) return CameraDevice.CAMERA_DIRECTION.CAMERA_DIRECTION_FRONT;
+        else return -1;
+        }
+
     protected synchronized boolean startCamera()
         {
         boolean success = false;
         throwIfFail(!isCameraRunning, "camera already running");
 
         int cameraIndex = vuforiaWebcam == null
-                ? parameters.cameraDirection.getDirection()
-                : CameraDirection.BACK.getDirection(); // will be ignored by Vuforia if we're using an external camera
+                ? getVuforiaCameraDirection(parameters.cameraDirection)
+                : getVuforiaCameraDirection(BuiltinCameraDirection.BACK); // will be ignored by Vuforia if we're using an external camera
 
         if (CameraDevice.getInstance().init(cameraIndex)) // calls VuforiaWebcamImpl.open (for webcams)
             {

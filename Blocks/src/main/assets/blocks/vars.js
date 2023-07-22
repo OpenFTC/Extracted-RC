@@ -27,6 +27,7 @@ var WarningBits = {
   RELIC_RECOVERY: 1 << 1,
   ROVER_RUCKUS: 1 << 2,
   MISSING_METHOD: 1 << 3,
+  OBSOLETE: 1 << 4,
 };
 var mouseX, mouseY;
 var previousClipboardXml;
@@ -51,6 +52,7 @@ var projectEnabled = true;
 var setPropertyColor = 147;
 var getPropertyColor = 151;
 var functionColor = 289;
+var builderColor = 289;
 var commentColor = 200;
 
 var identifierFieldNames = ['IDENTIFIER', 'IDENTIFIER1', 'IDENTIFIER2'];
@@ -185,6 +187,8 @@ function knownTypeToClassName(type) {
   switch (type) {
     case 'Color':
       return 'android.graphics.' + type;
+    case 'Size':
+      return 'android.util.' + type;
     case 'SoundPlayer':
       return 'com.qualcomm.ftccommon.' + type;
     case 'BNO055IMU':
@@ -283,6 +287,21 @@ function knownTypeToClassName(type) {
     case 'Collections':
     case 'List':
       return 'java.util.' + type;
+    case 'TimeUnit':
+      return 'java.util.concurrent.' + type;
+    case 'VisionPortal':
+    case 'VisionProcessor':
+      return 'org.firstinspires.ftc.vision.' + type;
+    case 'AprilTagDetection':
+    case 'AprilTagGameDatabase':
+    case 'AprilTagLibrary':
+    case 'AprilTagMetadata':
+    case 'AprilTagPoseFtc':
+    case 'AprilTagPoseRaw':
+    case 'AprilTagProcessor':
+      return 'org.firstinspires.ftc.vision.apriltag.' + type;
+    case 'TfodProcessor':
+      return 'org.firstinspires.ftc.vision.tfod.' + type;
     case 'ClassFactory':
     case 'JavaUtil':
     case 'Telemetry':
@@ -294,9 +313,23 @@ function knownTypeToClassName(type) {
     case 'AndroidSoundPool':
     case 'AndroidTextToSpeech':
       return 'org.firstinspires.ftc.robotcore.external.android.' + type;
+    case 'BuiltinCameraDirection':
     case 'CameraName':
     case 'WebcamName':
       return 'org.firstinspires.ftc.robotcore.external.hardware.camera.' + type;
+    case 'ExposureControl':
+    case 'FocusControl':
+    case 'GainControl':
+    case 'PtzControl':
+    case 'WhiteBalanceControl':
+      return 'org.firstinspires.ftc.robotcore.external.hardware.camera.controls.' + type;
+    case 'CameraControl':
+    case 'ExposureControl':
+    case 'FocusControl':
+    case 'GainControl':
+    case 'PtzControl':
+    case 'WhiteBalanceControl':
+      return 'org.firstinspires.ftc.robotcore.external.hardware.camera.controls.' + type;
     case 'MatrixF':
     case 'OpenGLMatrix':
     case 'VectorF':
@@ -318,33 +351,14 @@ function knownTypeToClassName(type) {
     case 'TempUnit':
     case 'UnnormalizedAngleUnit':
     case 'Velocity':
-    case 'VuforiaBase':
-    case 'VuforiaBase.TrackingResults':
-    case 'VuforiaCurrentGame':
-    case 'VuforiaLocalizer':
-    case 'VuforiaLocalizer.CameraDirection':
-    case 'VuforiaLocalizer.Parameters':
-    case 'VuforiaLocalizer.Parameters.CameraMonitorFeedback':
-    case 'VuforiaRelicRecovery':
-    case 'VuforiaRoverRuckus':
-    case 'VuforiaSkyStone':
-    case 'VuforiaTrackable':
-    case 'VuforiaTrackableDefaultListener':
-    case 'VuforiaTrackables':
     case 'YawPitchRollAngles':
       return 'org.firstinspires.ftc.robotcore.external.navigation.' + type;
     case 'AppUtil':
       return 'org.firstinspires.ftc.robotcore.internal.system.' + type;
     case 'Recognition':
-    case 'Tfod':
-    case 'TfodBase':
-    case 'TfodCurrentGame':
-    case 'TfodCustomModel':
-    case 'TfodRoverRuckus':
-    case 'TfodSkyStone':
       return 'org.firstinspires.ftc.robotcore.external.tfod.' + type;
   }
-  return null;
+  return knownTypeToClassNameObsolete(type);
 }
 
 function wrapJavaScriptCode(originalCode, blockLabel) {
@@ -419,3 +433,63 @@ function collectIdentifiersUsed() {
     return id1.localeCompare(id2);
   });
 }
+
+var
+
+TOGGLE_OUTPUT_BOOLEAN_MUTATOR_MIXIN = {
+  hasOutput_: false,
+  MENUITEM_USE_RETURN_VALUE_: 'Use return value',
+  MENUITEM_IGNORE_RETURN_VALUE_: 'Ignore return value',
+
+  getTooltipSuffix: function() {
+    if (this.hasOutput_) {
+      return ' Returns a boolean value indicating success. Right-click and choose "' +
+          this.MENUITEM_IGNORE_RETURN_VALUE_ + '" for no return value.';
+    } else {
+      return ' Right-click and choose "' +
+          this.MENUITEM_USE_RETURN_VALUE_ + '" for a boolean return value indicating success.';
+    }
+  },
+  customContextMenu: function(options) {
+    if (!this.isInFlyout) {
+      var option = {enabled: true};
+      option.text = this.hasOutput_ ? this.MENUITEM_IGNORE_RETURN_VALUE_ : this.MENUITEM_USE_RETURN_VALUE_;
+      var thisBlock = this;
+      option.callback = function() {
+        thisBlock.unplug(true);
+        thisBlock.hasOutput_ = !thisBlock.hasOutput_;
+        thisBlock.updateShape_();
+      };
+      options.push(option);
+    }
+  },
+  mutationToDom: function() {
+    // Create XML to represent whether the block should have an output plug.
+    var hasOutput = this.outputConnection ? true : false;
+    var container = Blockly.utils.xml.createElement('mutation');
+    container.setAttribute('has_output', hasOutput);
+    return container;
+  },
+  domToMutation: function(xmlElement) {
+    // Parse XML to restore the hasOutput_ field and update the shape.
+    const shouldHaveOutput = (xmlElement.getAttribute('has_output') == 'true');
+    if (shouldHaveOutput != this.hasOutput_) {
+      this.hasOutput_ = shouldHaveOutput;
+      this.updateShape_();
+    }
+  },
+  updateShape_: function() {
+    if (this.hasOutput_) {
+      this.setPreviousStatement(false, null);
+      this.setNextStatement(false, null);
+      this.setOutput(true, 'Boolean');
+    } else {
+      this.setOutput(false, 'Boolean');
+      this.setPreviousStatement(true, null);
+      this.setNextStatement(true, null);
+    }
+  }
+};
+
+Blockly.Extensions.registerMutator('toggle_output_boolean',
+   TOGGLE_OUTPUT_BOOLEAN_MUTATOR_MIXIN);

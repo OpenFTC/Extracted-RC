@@ -34,6 +34,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.firstinspires.ftc.robotserver.internal.webserver.websockets.tootallnate;
 
 import com.qualcomm.robotcore.util.RobotLog;
+import com.qualcomm.robotcore.util.ThreadPool;
 
 import org.firstinspires.ftc.robotcore.internal.webserver.websockets.CloseCode;
 import org.firstinspires.ftc.robotcore.internal.webserver.websockets.WebSocketManager;
@@ -74,7 +75,8 @@ public class TooTallWebSocketServer extends WebSocketServer implements FtcWebSoc
     }
 
     @Override public void onMessage(WebSocket conn, String message) {
-        wsMap.get(conn).onMessage(message);
+        // Don't block the decoder thread any longer than we already have
+        ThreadPool.getDefault().submit(() -> wsMap.get(conn).onMessage(message));
     }
 
     @Override public void onError(WebSocket conn, Exception ex) {

@@ -240,4 +240,6 @@ public abstract class LynxMessage
         {
         return false;
         }
+
+    public abstract boolean isDangerous();
     }

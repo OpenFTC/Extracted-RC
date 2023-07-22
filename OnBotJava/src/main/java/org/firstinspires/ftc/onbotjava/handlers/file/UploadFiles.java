@@ -57,13 +57,7 @@ public class UploadFiles extends RobotControllerWebHandlers.FileUpload {
 
     @Override public NanoHTTPD.Response hook(File uploadedFile) {
         if (uploadedFile.getParentFile().equals(OnBotJavaManager.extLibDir)) {
-          if (OnBotJavaManager.ALLOW_EXTERNAL_LIBRARIES) {
-            return ExternalLibraries.getInstance().onUpload(uploadedFile);
-          } else {
-            // For Marshmallow, we don't allow external libraries.
-            uploadedFile.delete();
-            return RobotWebHandlerManager.clientBadRequestError(TAG, "Using external libraries requires Android 7.0 or above.");
-          }
+          return ExternalLibraries.getInstance().onUpload(uploadedFile);
         }
         return StandardResponses.successfulRequest(uploadedFile.getName());
     }

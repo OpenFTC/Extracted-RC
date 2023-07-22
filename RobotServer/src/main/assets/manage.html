@@ -26,13 +26,16 @@
         </div>
     </div>
     <div class="bordered-text-block">
-        <h1 class="header-shared-line">Robot Controller version: </h1><span id="id_rc_version" class="next-to-header"></span>
+        <h1 class="header-shared-line header-reduced-spacing">Robot Controller version: </h1><span id="id_rc_version" class="next-to-header"></span>
+        <div id="id_sdk_version_item">
+            <h1 class="header-shared-line header-reduced-spacing">SDK version: </h1><span id="id_sdk_version" class="next-to-header"></span>
+        </div>
         <div id="id_control_hub_os_version_item">
-            <h1 class="header-shared-line">Control Hub OS version: </h1><span id="id_control_hub_os_version" class="next-to-header"></span>
+            <h1 class="header-shared-line header-reduced-spacing">Control Hub OS version: </h1><span id="id_control_hub_os_version" class="next-to-header"></span>
         </div>
         <div id="id_rev_hubs_item">
-            <h1>REV Hubs:</h1>
-            <div id="id_rev_hubs" class="indented"></div>
+            <h1 class="header-shared-line header-reduced-spacing" style="vertical-align: top;">REV Hubs:</h1>
+            <div id="id_rev_hubs" class="next-to-header" style="display: inline-block; margin-top: 6px;"></div>
         </div>
     </div>
     <div class="bordered-text-block" id="id_network_settings_block">
@@ -753,6 +756,7 @@
                 var uaIsRobotController = rcInfo.ftcUserAgentCategory === "ROBOT_CONTROLLER";
                 hideElement(document.getElementById("id_download_logs"), uaIsRobotController);
                 hideElement(document.getElementById("id_upload_firmware"), uaIsRobotController);
+                hideElement(document.getElementById("id_sdk_version_item"), rcInfo.sdkVersion === rcInfo.rcVersion);
                 hideElement(document.getElementById("id_update_robot_controller_application"), uaIsRobotController || !rcInfo.isREVControlHub);
                 hideElement(document.getElementById("id_control_hub_wifi_warnings"), !rcInfo.isREVControlHub);
                 hideElement(document.getElementById("id_password_group"), !rcInfo.isREVControlHub);
@@ -793,17 +797,30 @@
                 updateChannelList();
 
                 document.getElementById("id_rc_version").textContent = rcInfo.rcVersion;
+                document.getElementById("id_sdk_version").textContent = rcInfo.sdkVersion;
                 document.getElementById("id_control_hub_os_version").textContent = rcInfo.chOsVersion;
 
                 const revHubsListing = document.getElementById("id_rev_hubs");
                 revHubsListing.textContent = "";
 
                 if (rcInfo.revHubNamesAndVersions) {
+                    let firstEntry = true;
                     rcInfo.revHubNamesAndVersions.forEach(function(revHubInfo) {
-                        var entry = document.createElement('p');
-                        entry.innerHTML = `<b>${revHubInfo.name}</b>
-                                           <br><u>Firmware version</u>: ${revHubInfo.firmwareVersion}
-                                           <br><u>IMU</u>: ${revHubInfo.imuType}`;
+                        const entry = document.createElement('div');
+                        entry.className = "panel panel-info";
+                        entry.style.width = "fit-content";
+                        entry.style.display = "inline-block";
+                        entry.style.marginBottom = 0;
+                        if (firstEntry) { firstEntry = false; }
+                        else { entry.style.marginLeft = "20px"; }
+                        entry.innerHTML = `<div class="panel-heading">
+                                               <h3 class="panel-title">${revHubInfo.name}</h3>
+                                           </div>
+                                           <div class="panel-body">
+                                               <b>Firmware version</b>: ${revHubInfo.firmwareVersion}
+                                               <br>
+                                               <b>IMU</b>: ${revHubInfo.imuType}
+                                           </div>`;
                         revHubsListing.appendChild(entry);
                     });
                 }

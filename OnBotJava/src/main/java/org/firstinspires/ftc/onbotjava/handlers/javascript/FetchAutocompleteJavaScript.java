@@ -138,8 +138,11 @@ public class FetchAutocompleteJavaScript implements WebHandler {
         final String currentClassName;
 
         SecurityModifier classModifier = SecurityModifier.fromModifierInt(currentClass.getModifiers());
-        if (classModifier != SecurityModifier.PUBLIC && classModifier != SecurityModifier.PROTECTED)
+        if (!(classModifier == SecurityModifier.PUBLIC ||
+                classModifier == SecurityModifier.PROTECTED ||
+                classModifier == SecurityModifier.PACKAGE_PRIVATE)) {
             return;
+        }
 
         currentClassName = classNameFor(currentClass);
         String packageName = currentClass.getPackage().getName();

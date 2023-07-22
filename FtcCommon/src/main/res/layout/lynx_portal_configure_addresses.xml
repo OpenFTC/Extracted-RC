@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingTop="8dp"
+    tools:context=".FtcLynxModuleAddressUpdateActivity"
+    tools:showIn="@layout/activity_ftc_lynx_address_update">
+
+    <TextView
+        android:id="@+id/portalSerialText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:includeFontPadding="false"
+        android:maxLength="200"
+        android:textSize="20sp"
+        tools:text="SerialNumber"/>
+
+    <!--
+   The real layout is only included in the Android Studio preview, as instances of
+   this layout will be dynamically added as necessary at runtime.
+   -->
+    <include
+        tools:layout="@layout/lynx_module_configure_address"
+        layout="@layout/empty" />
+    <include
+        tools:layout="@layout/lynx_module_configure_address"
+        layout="@layout/empty" />
+</LinearLayout>

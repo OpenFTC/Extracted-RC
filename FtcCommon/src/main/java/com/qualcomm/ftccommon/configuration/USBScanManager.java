@@ -32,9 +32,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package com.qualcomm.ftccommon.configuration;
 
-import android.content.Context;
-import androidx.annotation.NonNull;
-
 import com.qualcomm.ftccommon.CommandList;
 import com.qualcomm.hardware.HardwareDeviceManager;
 import com.qualcomm.robotcore.exception.RobotCoreException;
@@ -49,13 +46,17 @@ import com.qualcomm.robotcore.util.SerialNumber;
 import com.qualcomm.robotcore.util.ThreadPool;
 
 import org.firstinspires.ftc.robotcore.external.function.Supplier;
+import org.firstinspires.ftc.robotcore.internal.network.CallbackResult;
 import org.firstinspires.ftc.robotcore.internal.network.NetworkConnectionHandler;
+import org.firstinspires.ftc.robotcore.internal.network.RecvLoopRunnable;
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeUnit;
+
+import androidx.annotation.NonNull;
 
 /**
  * {@link USBScanManager} is responsible for issuing scans of USB devices. Scanning is
@@ -69,6 +70,15 @@ import java.util.concurrent.TimeUnit;
 public class USBScanManager
     {
     //----------------------------------------------------------------------------------------------
+    // Singleton
+    //----------------------------------------------------------------------------------------------
+    private static final USBScanManager instance = new USBScanManager();
+    public static USBScanManager getInstance()
+        {
+        return instance;
+        }
+
+    //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
@@ -76,16 +86,15 @@ public class USBScanManager
 
     public static final int msWaitDefault = 4000;
 
-    protected Context                               context;
-    protected boolean                               isRemoteConfig;
-    protected ExecutorService                       executorService = null;
-    protected ThreadPool.Singleton<ScannedDevices>  scanningSingleton = new ThreadPool.Singleton<ScannedDevices>();
-    protected DeviceManager                         deviceManager;
-    protected NextLock                              scanResultsSequence;
-    protected final Object                          remoteScannedDevicesLock = new Object();
-    protected ScannedDevices                        remoteScannedDevices;
-    protected NetworkConnectionHandler              networkConnectionHandler = NetworkConnectionHandler.getInstance();
-    protected final Map<String, LynxModuleDiscoveryState> lynxModuleDiscoveryStateMap = new ConcurrentHashMap<String, LynxModuleDiscoveryState>();  // concurrency is paranoia
+    protected final boolean                                 isRemoteConfig;
+    protected final ExecutorService                         executorService = ThreadPool.getDefault();
+    protected final ThreadPool.Singleton<ScannedDevices>    scanningSingleton = new ThreadPool.Singleton<>();
+    protected DeviceManager                                 deviceManager;
+    protected final NextLock                                scanResultsSequence = new NextLock();
+    protected final Object                                  remoteScannedDevicesLock = new Object();
+    protected ScannedDevices                                remoteScannedDevices;
+    protected final NetworkConnectionHandler                networkConnectionHandler = NetworkConnectionHandler.getInstance();
+    protected final Map<String, LynxModuleDiscoveryState>   lynxModuleDiscoveryStateMap = new ConcurrentHashMap<>();  // concurrency is paranoia
 
     protected class LynxModuleDiscoveryState
         {
@@ -99,54 +108,27 @@ public class USBScanManager
             {
             this.serialNumber = serialNumber;
             this.remoteLynxModules = new LynxModuleMetaList(serialNumber);
-            startExecutorService();
-            }
-
-        protected void startExecutorService()
-            {
-            ExecutorService executorService = USBScanManager.this.executorService;
-            if (executorService != null)
-                {
-                this.lynxDiscoverySingleton.reset();
-                this.lynxDiscoverySingleton.setService(executorService);
-                }
+            this.lynxDiscoverySingleton.setService(USBScanManager.this.executorService);
             }
         }
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
-    // TODO(Noah): Convert USBScanManager into singleton, so that ALL requests get multiplexed correctly
-    //             It should be moved to the Hardware module for increased accessiblity
-    public USBScanManager(Context context, boolean isRemoteConfig)
+    private USBScanManager()
         {
-        this.context = context;
-        this.isRemoteConfig = isRemoteConfig;
-        this.scanResultsSequence = new NextLock();
+        this.isRemoteConfig = AppUtil.getInstance().isDriverStation();
 
-        if (!isRemoteConfig)
+        if (isRemoteConfig)
             {
-            deviceManager = new HardwareDeviceManager(context, null);
+            networkConnectionHandler.pushReceiveLoopCallback(new ResultsReceiver());
             }
-        }
+        else
+            {
+            deviceManager = new HardwareDeviceManager(AppUtil.getDefContext(), null);
+            }
 
-    public void startExecutorService()
-        {
-        this.executorService = ThreadPool.newCachedThreadPool("USBScanManager");
-        this.scanningSingleton.reset();
         this.scanningSingleton.setService(this.executorService);
-
-        for (LynxModuleDiscoveryState state : lynxModuleDiscoveryStateMap.values())
-            {
-            state.startExecutorService();
-            }
-        }
-
-    public void stopExecutorService()
-        {
-        this.executorService.shutdownNow();
-        ThreadPool.awaitTerminationOrExitApplication(this.executorService, 5, TimeUnit.SECONDS, "USBScanManager service", "internal error");
-        this.executorService = null;
         }
 
     //----------------------------------------------------------------------------------------------
@@ -344,28 +326,34 @@ public class USBScanManager
         return lynxModules.toSerializationString();
         }
 
-    public void handleCommandScanResponse(String extra) throws RobotCoreException
+    private class ResultsReceiver extends RecvLoopRunnable.DegenerateCallback
         {
-        RobotLog.vv(TAG, "handleCommandScanResponse()...");
-        ScannedDevices scannedDevices = ScannedDevices.fromSerializationString(extra);
-        synchronized (this.remoteScannedDevicesLock)
+        @Override
+        public CallbackResult commandEvent(Command command) throws RobotCoreException
             {
-            this.remoteScannedDevices = scannedDevices;
-            this.scanResultsSequence.advanceNext();
+            switch(command.getName())
+                {
+                case CommandList.CMD_SCAN_RESP:
+                    RobotLog.vv(TAG, "Received USB scan response");
+                    ScannedDevices scannedDevices = ScannedDevices.fromSerializationString(command.getExtra());
+                    synchronized (remoteScannedDevicesLock)
+                        {
+                        remoteScannedDevices = scannedDevices;
+                        scanResultsSequence.advanceNext();
+                        }
+                    return CallbackResult.HANDLED_CONTINUE;
+                case CommandList.CMD_DISCOVER_LYNX_MODULES_RESP:
+                    RobotLog.vv(TAG, "Received lynx module discovery response");
+                    LynxModuleMetaList lynxModules = LynxModuleMetaList.fromSerializationString(command.getExtra());
+                    LynxModuleDiscoveryState discoveryState = getDiscoveryState(lynxModules.serialNumber);
+                    synchronized (discoveryState.remoteLynxDiscoveryLock)
+                        {
+                        discoveryState.remoteLynxModules = lynxModules;
+                        discoveryState.lynxDiscoverySequence.advanceNext();
+                        }
+                    return CallbackResult.HANDLED_CONTINUE;
+                }
+            return CallbackResult.NOT_HANDLED;
             }
-        RobotLog.vv(TAG, "...handleCommandScanResponse()");
-        }
-
-    public void handleCommandDiscoverLynxModulesResponse(String extra) throws RobotCoreException
-        {
-        RobotLog.vv(TAG, "handleCommandDiscoverLynxModulesResponse()...");
-        LynxModuleMetaList lynxModules = LynxModuleMetaList.fromSerializationString(extra);
-        LynxModuleDiscoveryState discoveryState = getDiscoveryState(lynxModules.serialNumber);
-        synchronized (discoveryState.remoteLynxDiscoveryLock)
-            {
-            discoveryState.remoteLynxModules = lynxModules;
-            discoveryState.lynxDiscoverySequence.advanceNext();
-            }
-        RobotLog.vv(TAG, "...handleCommandDiscoverLynxModulesResponse()");
         }
     }

@@ -66,6 +66,12 @@ public class RegisteredOpModes implements OpModeManager
     //----------------------------------------------------------------------------------------------
 
     public static final String TAG = "RegisteredOpModes";
+    public static OpModeMeta DEFAULT_OP_MODE_METADATA = new OpModeMeta.Builder()
+            .setName(DEFAULT_OP_MODE_NAME)
+            .setFlavor(OpModeMeta.Flavor.SYSTEM)
+            .setSystemOpModeBaseDisplayName(AppUtil.getDefContext().getString(R.string.defaultOpModeName))
+            .build();
+
 
     protected static class InstanceHolder
         {
@@ -189,7 +195,7 @@ public class RegisteredOpModes implements OpModeManager
                 opModeInstances.clear();
 
                 // register our default op mode first, that way the user can override it (eh?)
-                register(DEFAULT_OP_MODE_NAME, OpModeManagerImpl.DefaultOpMode.class);
+                register(DEFAULT_OP_MODE_METADATA, OpModeManagerImpl.DefaultOpMode.class);
 
                 // Somewhat arbitrary, but do the annotated ones LAST so we
                 // can get the same 'duplicate name' behavior on reregistration
@@ -353,10 +359,7 @@ public class RegisteredOpModes implements OpModeManager
                 List<OpModeMeta> result = new LinkedList<OpModeMeta>();
                 for (OpModeMetaAndClass opModeMetaAndClassData : opModeClasses.values())
                     {
-                    if (!opModeMetaAndClassData.meta.name.equals(OpModeManager.DEFAULT_OP_MODE_NAME))
-                        {
-                        result.add(opModeMetaAndClassData.meta);
-                        }
+                    result.add(opModeMetaAndClassData.meta);
                     }
                 for (OpModeMetaAndInstance opModeMetaAndInstance : opModeInstances.values())
                     {
@@ -392,6 +395,25 @@ public class RegisteredOpModes implements OpModeManager
                     {
                     return null;
                     }
+                }
+            });
+        }
+
+    @Nullable public OpModeMeta getOpModeMetadata(final String opModeName)
+        {
+        return lockOpModesWhile(() ->
+            {
+            if (opModeInstances.containsKey(opModeName))
+                {
+                return opModeInstances.get(opModeName).meta;
+                }
+            else if (opModeClasses.containsKey(opModeName))
+                {
+                return opModeClasses.get(opModeName).meta;
+                }
+            else
+                {
+                return null;
                 }
             });
         }

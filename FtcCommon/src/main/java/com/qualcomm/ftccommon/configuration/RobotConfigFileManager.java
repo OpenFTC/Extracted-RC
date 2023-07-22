@@ -576,8 +576,7 @@ public class RobotConfigFileManager {
 
     /**
      * Calls the writer to write the current list of devices out to a XML string.
-     * Checks for duplicate names, and will throw an error if any are found. In that case,
-     * a helpful complainToast pops up with the duplicate names, and the file is not saved or written.
+     * Checks for duplicate names, and will throw an error if any are found.
      *
      * @return the XML string. This will be non-null if toXml happened successfully, null otherwise
      */
@@ -586,14 +585,11 @@ public class RobotConfigFileManager {
         deviceList.addAll(deviceControllers.values());
         String output = null;
         try {
-            output = writer.toXml(deviceList, RobotConfigResFilter.robotConfigRootTypeAttribute, RobotConfigFileManager.getRobotConfigTypeAttribute());
+            output = writer.toXml(deviceList, RobotConfigResFilter.robotConfigRootTypeAttribute, RobotConfigFileManager.getRobotConfigTypeAttribute(), false);
         } catch (DuplicateNameException e) {
-            appUtil.showToast(UILocation.BOTH, String.format(context.getString(R.string.toastDuplicateName), e.getMessage()));
-            RobotLog.ee(TAG, "Found " + e.getMessage());
-            output = null;
+            throw e;
         } catch (RuntimeException e) {
-            RobotLog.ee(TAG, e, "exception while writing XML");
-            output = null;
+            RobotLog.ee(TAG, e, "exception while serializing to XML");
         }
         return output;
     }

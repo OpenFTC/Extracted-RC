@@ -35,7 +35,6 @@ package org.firstinspires.ftc.robotcore.external.hardware.camera;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.function.Continuation;
 import org.firstinspires.ftc.robotcore.internal.camera.delegating.SwitchableCameraName;
 import org.firstinspires.ftc.robotcore.internal.system.Deadline;
@@ -68,13 +67,13 @@ public interface CameraManager
     List<WebcamName> getAllWebcams();
 
     /**
-     * Returns a camera name indicating a particular {@link VuforiaLocalizer.CameraDirection}.
+     * Returns a camera name indicating a particular {@link BuiltinCameraDirection}.
      * Using this method, both camera directions and webcam names can be indicated with a
      * uniform name representation.
      *
-     * @return a camera name indicating a particular {@link VuforiaLocalizer.CameraDirection}
+     * @return a camera name indicating a particular {@link BuiltinCameraDirection}
      */
-    CameraName nameFromCameraDirection(VuforiaLocalizer.CameraDirection cameraDirection);
+    CameraName nameFromCameraDirection(BuiltinCameraDirection cameraDirection);
 
     /**
      * Returns a {@link CameraName} which is guaranteed never to represent that of an actual

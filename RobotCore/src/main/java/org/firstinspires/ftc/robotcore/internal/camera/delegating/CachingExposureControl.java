@@ -76,7 +76,7 @@ public class CachingExposureControl implements ExposureControl, DelegatingCamera
     protected boolean isExposureSupported = false;
     protected Map<Mode, Boolean> supportedModes = new HashMap<>();
     protected boolean limitsInitialized = false;
-    protected boolean aePriority = true;
+    protected Boolean aePriority = null;
 
     //----------------------------------------------------------------------------------------------
     // Construction
@@ -195,7 +195,10 @@ public class CachingExposureControl implements ExposureControl, DelegatingCamera
                 delegatedExposureControl.setExposure(nsExposure, TimeUnit.NANOSECONDS);
                 }
             }
-        delegatedExposureControl.setAePriority(aePriority);
+        if (aePriority != null)
+            {
+            delegatedExposureControl.setAePriority(aePriority);
+            }
         }
 
     protected void read()

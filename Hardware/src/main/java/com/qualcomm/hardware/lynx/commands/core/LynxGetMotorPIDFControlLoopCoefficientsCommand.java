@@ -108,4 +108,10 @@ public class LynxGetMotorPIDFControlLoopCoefficientsCommand extends LynxDekaInte
         this.motor = buffer.get();
         this.mode  = buffer.get();
         }
+
+    @Override
+    public boolean isDangerous()
+        {
+        return false;
+        }
     }

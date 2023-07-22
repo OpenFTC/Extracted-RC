@@ -94,4 +94,10 @@ public class LynxSetMotorTargetVelocityCommand extends LynxDekaInterfaceCommand<
         this.motor = buffer.get();
         this.velocity = buffer.getShort();
         }
+
+    @Override
+    public boolean isDangerous()
+        {
+        return velocity != 0;
+        }
     }

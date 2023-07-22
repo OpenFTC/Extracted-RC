@@ -79,4 +79,10 @@ public class LynxPhoneChargeQueryCommand extends LynxDekaInterfaceCommand<LynxPh
         {
         ByteBuffer buffer = ByteBuffer.wrap(rgb).order(LynxDatagram.LYNX_ENDIAN);
         }
+
+    @Override
+    public boolean isDangerous()
+        {
+        return false;
+        }
     }

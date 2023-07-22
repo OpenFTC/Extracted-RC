@@ -16,19 +16,14 @@
 
 package com.google.blocks.ftcrobotcontroller.util;
 
-class OfflineBlocksProject {
-  final String fileName;
-  final String content;
+class OfflineBlocksProject extends BlocksProject {
   final String name;
-  final long dateModifiedMillis;
   final boolean enabled;
 
   OfflineBlocksProject(String fileName, String content, String name,
       long dateModifiedMillis, boolean enabled) {
-    this.fileName = fileName;
-    this.content = content.replace("\n", " ").replaceAll("\\> +\\<", "><");
+    super(fileName, content.replace("\n", " ").replaceAll("\\> +\\<", "><"), dateModifiedMillis);
     this.name = name;
-    this.dateModifiedMillis = dateModifiedMillis;
     this.enabled = enabled;
   }
 

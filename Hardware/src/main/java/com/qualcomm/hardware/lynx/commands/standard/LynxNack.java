@@ -77,9 +77,11 @@ public class LynxNack extends LynxMessage
             PACKET_TYPE_ID_UNKNOWN(255),        // protocol failure; no unknown commands should be sent if discovery was performed properly
 
             // codes bigger than a byte are internal here to the SDK; they must never be transmitted
+            // Do not add additional values here without updating ManualControlDeviceCommandHandler.handleManualControlCommand()
             ABANDONED_WAITING_FOR_RESPONSE(256),
             ABANDONED_WAITING_FOR_ACK(257),
-            UNRECOGNIZED_REASON_CODE(258);
+            UNRECOGNIZED_REASON_CODE(258),
+            CANCELLED_FOR_SAFETY(259);
 
         private int iVal;
         StandardReasonCode(int i) { this.iVal = i; }
@@ -214,5 +216,11 @@ public class LynxNack extends LynxMessage
     public boolean isNack()
         {
         return true;
+        }
+
+    @Override
+    public boolean isDangerous()
+        {
+        return false;
         }
     }

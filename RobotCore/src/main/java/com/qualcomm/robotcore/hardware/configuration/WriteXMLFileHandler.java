@@ -31,7 +31,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.qualcomm.robotcore.hardware.configuration;
 
-import android.content.Context;
 import androidx.annotation.Nullable;
 import android.util.Xml;
 
@@ -63,11 +62,11 @@ public class WriteXMLFileHandler {
     serializer = Xml.newSerializer();
   }
 
-  public String toXml(Collection<ControllerConfiguration> deviceControllerConfigurations) {
-    return toXml(deviceControllerConfigurations, null, null);
+  public String toXml(Collection<ControllerConfiguration> deviceControllerConfigurations, boolean allowDuplicates) {
+    return toXml(deviceControllerConfigurations, null, null, allowDuplicates);
   }
 
-  public String toXml(Collection<ControllerConfiguration> deviceControllerConfigurations, @Nullable String attribute, @Nullable String attributeValue) {
+  public String toXml(Collection<ControllerConfiguration> deviceControllerConfigurations, @Nullable String attribute, @Nullable String attributeValue, boolean allowDuplicateNames) {
     duplicates = new ArrayList<String>();
     names = new HashSet<String>();
 
@@ -91,8 +90,13 @@ public class WriteXMLFileHandler {
       serializer.endTag("", "Robot");
       serializer.ignorableWhitespace("\n");
       serializer.endDocument();
+
+      if (!allowDuplicateNames && !duplicates.isEmpty()) {
+        throw new DuplicateNameException("duplicate names: " + duplicates);
+      }
+
       return writer.toString();
-    } catch (Exception e) {
+    } catch (IOException e) {
       throw new RuntimeException(e);
     }
   }
@@ -235,10 +239,6 @@ public class WriteXMLFileHandler {
   }
 
   public void writeToFile(String data, File folder, String filenameWithExt) throws RobotCoreException, IOException {
-    if (duplicates.size() > 0) {
-      throw new DuplicateNameException("Duplicate names: " + duplicates);
-    }
-
     boolean success = true;
 
     if (!folder.exists()) {
@@ -246,19 +246,8 @@ public class WriteXMLFileHandler {
     }
     if (success) {
       File file = new File(folder, filenameWithExt);
-      FileOutputStream stream = null;
-      try {
-        stream = new FileOutputStream(file);
+      try (FileOutputStream stream = new FileOutputStream(file)) {
         stream.write(data.getBytes());
-      } catch (Exception e) {
-        e.printStackTrace();
-      } finally {
-        try {
-          stream.close();
-        } catch (IOException e) {
-          // Auto-generated catch block
-          e.printStackTrace();
-        }
       }
     } else {
       throw new RobotCoreException("Unable to create directory");

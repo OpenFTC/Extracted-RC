@@ -52,19 +52,12 @@ public final class USBAccessibleLynxModule
     private static final String FW_UNAVAILABLE = "(" + AppUtil.getDefContext().getString(R.string.lynxUnavailableFWVersionString) + ")";
     protected SerialNumber serialNumber = null;
     protected int          moduleAddress = 0;
-    protected boolean      moduleAddressChangeable = true;
     protected String       firmwareVersionString = "";
     protected String       formattedFirmwareVersionString = FW_UNAVAILABLE; // For use by users of the HTTP JSON API
 
     public USBAccessibleLynxModule(SerialNumber serialNumber)
         {
         this.setSerialNumber(serialNumber);
-        }
-
-    public USBAccessibleLynxModule(SerialNumber serialNumber, boolean moduleAddressChangeable)
-        {
-        this.setSerialNumber(serialNumber);
-        this.setModuleAddressChangeable(moduleAddressChangeable);
         }
 
     public SerialNumber getSerialNumber()
@@ -85,16 +78,6 @@ public final class USBAccessibleLynxModule
     public void setModuleAddress(int moduleAddress)
         {
         this.moduleAddress = moduleAddress;
-        }
-
-    public boolean isModuleAddressChangeable()
-        {
-        return moduleAddressChangeable;
-        }
-
-    public void setModuleAddressChangeable(boolean moduleAddressChangeable)
-        {
-        this.moduleAddressChangeable = moduleAddressChangeable;
         }
 
     public String getFirmwareVersionString()

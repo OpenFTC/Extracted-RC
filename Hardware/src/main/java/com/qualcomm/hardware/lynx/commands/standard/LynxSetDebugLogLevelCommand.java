@@ -91,4 +91,10 @@ public class LynxSetDebugLogLevelCommand extends LynxStandardCommand<LynxAck>
         this.debugGroup = LynxModule.DebugGroup.fromInt(rgb[0]);
         this.verbosity = LynxModule.DebugVerbosity.fromInt(rgb[1]);
         }
+
+    @Override
+    public boolean isDangerous()
+        {
+        return false;
+        }
     }

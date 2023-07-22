@@ -44,4 +44,5 @@ public interface RobotCoreLynxModule extends HardwareDevice
     String getFirmwareVersionString();
     String getNullableFirmwareVersionString();
     boolean isParent();
+    void attemptFailSafeAndIgnoreErrors();
     }

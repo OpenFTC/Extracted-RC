@@ -94,4 +94,10 @@ public class LynxGetDIODirectionCommand extends LynxDekaInterfaceCommand<LynxGet
         this.pin = buffer.get();
         }
 
+    @Override
+    public boolean isDangerous()
+        {
+        return false;
+        }
+
     }

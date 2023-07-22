@@ -51,6 +51,8 @@ var WEBSOCKET_CORE = function () {
         webSocket: null, // If this is null, then the WebSocket is CLOSED. If this is not null, it may be CONNECTING, OPEN, or CLOSING.
         connectionListeners: new Set(),
         disconnectionListeners: new Set(),
+        commandKeyCounter: 0, // Global key generator for commands. Will be incremented each time a new command needs a key.
+        activeCommandsMap: new Map(), // All commands in this map are currently active, and have not completed or errored
         namespaceMap: new Map(), // All namespaces in this map are subscribed to by at least one instance of WebSocketManager
         logMessages: false, // Log all incoming and outgoing messages by running WEBSOCKET_CORE.enableLogging('messages') from the parent console (not an iframe)
         logDebug: false // Enable debug logging by running WEBSOCKET_CORE.enableLogging('debug') from the parent console (not an iframe)
@@ -71,6 +73,17 @@ var WEBSOCKET_CORE = function () {
         this.payload = payload ? payload : "";
     }
 
+    function CommandResponse(key, response, error) {
+        this.commandKey = key;
+        this.responsePayload = response;
+        this.error = error;
+    }
+
+    function logDebug(logMessage) {
+        if (globalState.logDebug) {
+            console.log(logMessage);
+        }
+    }
 
     //----------------------------------------------------------------------------------------------
     // WebSocketManager constructor
@@ -102,7 +115,7 @@ var WEBSOCKET_CORE = function () {
          * or the message is addressed to the system namespace.
          *
          * params:
-         *      message: an instance of WebSocketMessage to be sent
+         *      message: An instance of WebSocketMessage to be sent
          */
         this.sendMessage = function (message) {
             if (!localNamespaceMap.has(message.namespace)) {
@@ -117,6 +130,50 @@ var WEBSOCKET_CORE = function () {
         };
 
         /**
+         * Send a command and await a response.
+         *
+         * params:
+         *      namespace:  The namespace to send a command to
+         *      type:       The command's type
+         *      params:     A single object containing the command's parameters
+         *
+         * returns:
+         *      an object parsed from the response's response field
+         *
+         * throws:
+         *      an error if the response's error field is present.
+         */
+        this.sendCommand = function(namespace, type, params) {
+            let key = globalState.commandKeyCounter++;
+            let commandPayload;
+            if (params == undefined) {
+                commandPayload = "";
+            } else {
+                commandPayload = JSON.stringify(params);
+            }
+            let payload = {
+                commandKey: key,
+                commandPayload: commandPayload
+            }
+            return new Promise((resolve, reject) => {
+                globalState.activeCommandsMap.set(key, (result) => {
+                    globalState.activeCommandsMap.delete(key);
+                    if (result.responsePayload && result.responsePayload !== "null") {
+                        resolve(JSON.parse(result.responsePayload));
+                    } else if (result.error) {
+                        let errorFields = JSON.parse(result.error);
+                        let error = new Error();
+                        Object.assign(error, errorFields);
+                        reject(error);
+                    }
+                });
+                let message = new WebSocketMessage(namespace, type, JSON.stringify(payload));
+                internalSendMessage(message);
+            });
+        }
+
+
+        /**
          * Register a connection listener and a disconnection listener.
          *
          * The connection listener will be called (with no parameters) to inform you that the
@@ -128,7 +185,7 @@ var WEBSOCKET_CORE = function () {
          * first place, so assume that you're disconnected until the connection listener has been
          * called.
          *
-         * The listeners will be unregistered automatically when the iframe is unloaded or the
+         * The listeners will be de-registered automatically when the iframe is unloaded or the
          * finish() method is called.
          *
          * Be careful with what you call from the connection listener. If you're sending messages, be
@@ -179,7 +236,7 @@ var WEBSOCKET_CORE = function () {
          * Register a handler for all messages received from a particular namespace.
          *
          *
-         * The handler will be unregistered automatically when the iframe is unloaded or the
+         * The handler will be de-registered automatically when the iframe is unloaded or the
          * finish() method is called.
          *
          * This method is idempotent.
@@ -200,7 +257,7 @@ var WEBSOCKET_CORE = function () {
         /**
          * Register a handler for all messages from a specific namespace with a specific type.
          *
-         * The handler will be unregistered automatically when the iframe is unloaded or the
+         * The handler will be de-registered automatically when the iframe is unloaded or the
          * finish() method is called.
          *
          * This method is idempotent.
@@ -264,10 +321,8 @@ var WEBSOCKET_CORE = function () {
             connectionListenersToDispose = new Set();
             disconnectionListenersToDispose = new Set();
 
-            if (globalState.logDebug) {
-                console.log("globalState:");
-                console.log(globalState);
-            }
+            logDebug("webSocketManager.finish() called. globalState:");
+            logDebug(globalState);
         }
     }
 
@@ -288,13 +343,23 @@ var WEBSOCKET_CORE = function () {
     }
 
     function enableLogging(val) {
-        if (val === 'messages') globalState.logMessages = true;
-        else if (val === 'debug') globalState.logDebug = true;
+        if (val === 'messages') {
+            globalState.logMessages = true;
+            return "WebSocket message logging enabled";
+        } else if (val === 'debug') {
+            globalState.logDebug = true;
+            return "WebSocket debug logging enabled";
+        }
     }
 
     function disableLogging(val) {
-        if (val === 'messages') globalState.logMessages = false;
-        else if (val === 'debug') globalState.logDebug = false;
+        if (val === 'messages') {
+            globalState.logMessages = false;
+            return "WebSocket message logging disabled";
+        } else if (val === 'debug') {
+            globalState.logDebug = false;
+            return "WebSocket debug logging disabled";
+        }
     }
 
     function onFramePingSuccess() {
@@ -362,26 +427,14 @@ var WEBSOCKET_CORE = function () {
         globalState.webSocket.onmessage = function (messageEvent) {
             var json = messageEvent.data;
             var rawMessage = JSON.parse(json);
-            var message = new WebSocketMessage(rawMessage.namespace, rawMessage.type, rawMessage.payload);
 
-            if (globalState.logMessages) {
-                console.log("Received message:");
-                console.log(message);
-            }
-
-            if (message.namespace === SYSTEM_NAMESPACE) {
-                handleSystemMessage(message);
-            } else if (globalState.namespaceMap.has(message.namespace)) {
-                let namespaceObject = globalState.namespaceMap.get(message.namespace);
-                namespaceObject.handlers.forEach( function (handler) {
-                    handler(message);
-                });
-
-                if (namespaceObject.typeHandlersMap.has(message.type)) {
-                    namespaceObject.typeHandlersMap.get(message.type).forEach( function (handler){
-                        handler(message);
-                    });
-                }
+            // We can receive either a message or a command response.
+            if (rawMessage.commandKey === undefined) {
+                var message = new WebSocketMessage(rawMessage.namespace, rawMessage.type, rawMessage.payload);
+                handleMessage(message);
+            } else {
+                let command = new CommandResponse(rawMessage.commandKey, rawMessage.response, rawMessage.error);
+                handleCommandResponse(command);
             }
         };
 
@@ -390,6 +443,39 @@ var WEBSOCKET_CORE = function () {
         globalState.webSocket.onerror = function (errorEvent) {
             console.error("Websocket error:", errorEvent);
         };
+    }
+
+    function handleMessage(message) {
+        if (globalState.logMessages) {
+            console.log("Received message:");
+            console.log(message);
+        }
+
+        if (message.namespace === SYSTEM_NAMESPACE) {
+            handleSystemMessage(message);
+        } else if (globalState.namespaceMap.has(message.namespace)) {
+            let namespaceObject = globalState.namespaceMap.get(message.namespace);
+            namespaceObject.handlers.forEach( function (handler) {
+                handler(message);
+            });
+
+            if (namespaceObject.typeHandlersMap.has(message.type)) {
+                namespaceObject.typeHandlersMap.get(message.type).forEach( function (handler){
+                    handler(message);
+                });
+            }
+        }
+    }
+
+    function handleCommandResponse(commandResponse) {
+        if (globalState.logMessages) {
+            console.log("Received command response: ");
+            console.log(commandResponse);
+        }
+        let key = commandResponse.commandKey;
+        let callback = globalState.activeCommandsMap.get(key);
+
+        callback(commandResponse);
     }
 
     function handleSystemMessage(message) {

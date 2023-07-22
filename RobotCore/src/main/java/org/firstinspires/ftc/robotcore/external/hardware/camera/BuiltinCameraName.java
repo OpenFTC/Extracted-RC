@@ -31,14 +31,12 @@ TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */package org.firstinspires.ftc.robotcore.external.hardware.camera;
 
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-
 public interface BuiltinCameraName extends CameraName
     {
     /**
-     * Returns the {@link VuforiaLocalizer.CameraDirection} indicating which builtin camera is referenced.
+     * Returns the {@link BuiltinCameraDirection} indicating which builtin camera is referenced.
      *
-     * @return the @link VuforiaLocalizer.CameraDirection} associated with this name, if any.
+     * @return the @link BuiltinCameraDirection} associated with this name, if any.
      */
-    VuforiaLocalizer.CameraDirection getCameraDirection();
+    BuiltinCameraDirection getCameraDirection();
     }

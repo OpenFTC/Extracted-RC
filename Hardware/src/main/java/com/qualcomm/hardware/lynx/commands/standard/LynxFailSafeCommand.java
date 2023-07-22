@@ -73,4 +73,10 @@ public class LynxFailSafeCommand extends LynxStandardCommand<LynxAck>
     public void fromPayloadByteArray(byte[] rgb)
         {
         }
+
+    @Override
+    public boolean isDangerous()
+        {
+        return false;
+        }
     }

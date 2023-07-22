@@ -126,4 +126,10 @@ public class LynxSetMotorPIDControlLoopCoefficientsCommand extends LynxDekaInter
         this.i     = buffer.getInt();
         this.d     = buffer.getInt();
         }
+
+    @Override
+    public boolean isDangerous()
+        {
+        return false;
+        }
     }

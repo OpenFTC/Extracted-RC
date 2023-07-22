@@ -83,13 +83,16 @@ public abstract class WebSocketNamespaceHandler {
      *
      * @param message The received message
      * @param webSocket The WebSocket connected to the client that sent the message
+     * @return {@code true} if the message was handled
      */
     @CallSuper
-    public void onMessage(FtcWebSocketMessage message, FtcWebSocket webSocket) {
+    public boolean onMessage(FtcWebSocketMessage message, FtcWebSocket webSocket) {
        WebSocketMessageTypeHandler handler = messageTypeHandlerMap.get(message.getType());
        if (handler != null) {
            handler.handleMessage(message, webSocket);
+           return true;
        }
+       return false;
     }
 
     /**

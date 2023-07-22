@@ -93,4 +93,10 @@ public class LynxGetServoEnableCommand extends LynxDekaInterfaceCommand<LynxGetS
         ByteBuffer buffer = ByteBuffer.wrap(rgb).order(LynxDatagram.LYNX_ENDIAN);
         this.channel = buffer.get();
         }
+
+    @Override
+    public boolean isDangerous()
+        {
+        return false;
+        }
     }

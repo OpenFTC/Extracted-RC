@@ -57,6 +57,7 @@ import org.firstinspires.ftc.robotcore.internal.network.StartResult;
 import org.firstinspires.ftc.robotcore.internal.network.WifiDirectAgent;
 
 import java.util.List;
+import java.util.Locale;
 
 /**
  * {@link InspectionState} contains the inspection state of either a RC or a DS
@@ -120,12 +121,12 @@ public class InspectionState
     public boolean robotControllerInstalled;
     @SerializedName("dsIn")
     public boolean driverStationInstalled;
-    @SerializedName("aV")
-    public String appVersionString;
     @SerializedName("aVmj")
-    public int majorAppVersion;
+    public int majorSdkVersion;
     @SerializedName("aVmn")
-    public int minorAppVersion;
+    public int minorSdkVersion;
+    @SerializedName("aVpt")
+    public int pointSdkVersion;
     @SerializedName("bldTs")
     public String appBuildTime;
     @QrExclude
@@ -170,9 +171,9 @@ public class InspectionState
         this.wifiEnabled = WifiUtil.isWifiEnabled();
         this.batteryFraction = getLocalBatteryFraction();
 
-        this.appVersionString = getPackageVersionString(AppUtil.getInstance().getApplicationId());
-        this.majorAppVersion = BuildConfig.SDK_MAJOR_VERSION;
-        this.minorAppVersion = BuildConfig.SDK_MINOR_VERSION;
+        this.majorSdkVersion = BuildConfig.SDK_MAJOR_VERSION;
+        this.minorSdkVersion = BuildConfig.SDK_MINOR_VERSION;
+        this.pointSdkVersion = BuildConfig.SDK_POINT_VERSION;
         this.appBuildTime = BuildConfig.SDK_BUILD_TIME;
         this.driverStationInstalled = !getPackageVersionString(driverStationPackage).equals(NO_VERSION);
         this.robotControllerInstalled = !getPackageVersionString(robotControllerPackage).equals(NO_VERSION);

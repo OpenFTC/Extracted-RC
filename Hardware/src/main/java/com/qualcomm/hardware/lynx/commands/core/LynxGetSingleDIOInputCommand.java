@@ -94,4 +94,10 @@ public class LynxGetSingleDIOInputCommand extends LynxDekaInterfaceCommand<LynxG
         this.pin = buffer.get();
         }
 
+    @Override
+    public boolean isDangerous()
+        {
+        return false;
+        }
+
     }

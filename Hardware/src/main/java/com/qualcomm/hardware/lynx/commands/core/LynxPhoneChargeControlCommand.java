@@ -93,4 +93,10 @@ public class LynxPhoneChargeControlCommand extends LynxDekaInterfaceCommand<Lynx
         ByteBuffer buffer = ByteBuffer.wrap(rgb).order(LynxDatagram.LYNX_ENDIAN);
         this.chargeEnabled = buffer.get();
         }
+
+    @Override
+    public boolean isDangerous()
+        {
+        return false;
+        }
     }

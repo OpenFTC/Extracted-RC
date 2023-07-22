@@ -61,6 +61,7 @@ import com.qualcomm.robotcore.util.WeakReferenceSet;
 
 import org.firstinspires.ftc.robotcore.internal.network.NetworkConnectionHandler;
 import org.firstinspires.ftc.robotcore.internal.network.RobotCoreCommandList;
+import org.firstinspires.ftc.robotcore.internal.opmode.OpModeMeta;
 import org.firstinspires.ftc.robotcore.internal.opmode.OpModeServices;
 import org.firstinspires.ftc.robotcore.internal.opmode.RegisteredOpModes;
 import org.firstinspires.ftc.robotcore.internal.opmode.TelemetryImpl;
@@ -89,17 +90,23 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
   //------------------------------------------------------------------------------------------------
 
   class OpModeStateTransition {
-    String      queuedOpModeName     = null;
-    Boolean     opModeSwapNeeded     = null;
-    Boolean     callToInitNeeded     = null;
-    Boolean     gamepadResetNeeded   = null;
-    Boolean     telemetryClearNeeded = null;
-    Boolean     callToStartNeeded    = null;
+    OpModeMeta  queuedOpModeMetadata              = null;
+    Boolean     opModeSwapNeeded                  = null;
+    Boolean     callToInitNeeded                  = null;
+    Boolean     gamepadResetNeeded                = null;
+    Boolean     telemetryClearNeeded              = null;
+    Boolean     callToStartNeeded                 = null;
+    Boolean onlyTransitionIfDefaultOpModeIsRunning = null;
 
     void apply() {
-      if (queuedOpModeName != null)     OpModeManagerImpl.this.queuedOpModeName = queuedOpModeName;
+      if (onlyTransitionIfDefaultOpModeIsRunning != null) {
+        if (onlyTransitionIfDefaultOpModeIsRunning && !getActiveOpModeName().equals(DEFAULT_OP_MODE_NAME)) {
+          return;
+        }
+      }
 
       // We never clear state here; that's done in runActiveOpMode()
+      if (queuedOpModeMetadata != null) OpModeManagerImpl.this.queuedOpModeMetadata = queuedOpModeMetadata;
       if (opModeSwapNeeded != null)     OpModeManagerImpl.this.opModeSwapNeeded     = opModeSwapNeeded;
       if (callToInitNeeded != null)     OpModeManagerImpl.this.callToInitNeeded     = callToInitNeeded;
       if (gamepadResetNeeded != null)   OpModeManagerImpl.this.gamepadResetNeeded   = gamepadResetNeeded;
@@ -109,14 +116,26 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
 
     OpModeStateTransition copy() {
       OpModeStateTransition result = new OpModeStateTransition();
-      result.queuedOpModeName = this.queuedOpModeName;
+      result.queuedOpModeMetadata = this.queuedOpModeMetadata;
       result.opModeSwapNeeded = this.opModeSwapNeeded;
       result.callToInitNeeded = this.callToInitNeeded;
       result.gamepadResetNeeded = this.gamepadResetNeeded;
       result.telemetryClearNeeded = this.telemetryClearNeeded;
       result.callToStartNeeded = this.callToStartNeeded;
+      result.onlyTransitionIfDefaultOpModeIsRunning = this.onlyTransitionIfDefaultOpModeIsRunning;
       return result;
     }
+  }
+
+  //-----------------------------------------------------------------------------------------------
+  // Static state and methods
+  //-----------------------------------------------------------------------------------------------
+
+  protected static int              matchNumber                     = 0;
+  protected static volatile boolean preventDangerousHardwareAccess  = false;
+
+  public static boolean shouldPreventDangerousHardwareAccess() {
+    return preventDangerousHardwareAccess;
   }
 
   //------------------------------------------------------------------------------------------------
@@ -129,15 +148,15 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
 
   protected enum OpModeState { INIT, LOOPING }
 
-  protected static int            matchNumber          = 0;
   protected Context               context;
   protected String                activeOpModeName     = DEFAULT_OP_MODE_NAME;
   protected @Nullable OpModeInternal activeOpMode      = null;
-  protected String                queuedOpModeName     = DEFAULT_OP_MODE_NAME;
+  protected OpModeMeta            queuedOpModeMetadata = RegisteredOpModes.DEFAULT_OP_MODE_METADATA;
   protected HardwareMap           hardwareMap          = null;
   protected EventLoopManager      eventLoopManager     = null;
   protected final WeakReferenceSet<OpModeManagerNotifier.Notifications> listeners = new WeakReferenceSet<OpModeManagerNotifier.Notifications>();
   protected OpModeStuckCodeMonitor stuckMonitor        = null;
+  protected boolean               peerWasConnected     = NetworkConnectionHandler.getInstance().isPeerConnected();
 
   protected OpModeState           opModeState          = OpModeState.INIT;
   protected boolean               opModeSwapNeeded     = false;
@@ -158,7 +177,7 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
     this.hardwareMap = hardwareMap;
 
     // switch to the default op mode
-    initActiveOpMode(DEFAULT_OP_MODE_NAME);
+    initOpMode(DEFAULT_OP_MODE_NAME);
 
     this.context = activity;
     synchronized (mapActivityToOpModeManager) {
@@ -188,7 +207,7 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
   //------------------------------------------------------------------------------------------------
 
   @Override
-  public OpMode registerListener(OpModeManagerNotifier.Notifications listener) {
+  public @Nullable OpMode registerListener(OpModeManagerNotifier.Notifications listener) {
     synchronized (this.listeners) {
       this.listeners.add(listener);
       return (OpMode) this.activeOpMode;
@@ -241,16 +260,16 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
     return (OpMode) activeOpMode;
   }
 
-  protected void doMatchLoggingWork(String opModeName) {
-    if (!opModeName.equals(DEFAULT_OP_MODE_NAME)) {
+  protected void doMatchLoggingWork(String opModeName, boolean isSystemOpMode) {
+    if (isSystemOpMode) {
+      RobotLog.stopMatchLogging();
+    } else {
       try {
         RobotLog.startMatchLogging(context, opModeName, matchNumber);
       } catch (RobotCoreException e) {
         RobotLog.ee(TAG, "Could not start match logging");
         e.printStackTrace();
       }
-    } else {
-      RobotLog.stopMatchLogging();
     }
   }
 
@@ -258,19 +277,36 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
     OpModeManagerImpl.matchNumber = matchNumber;
   }
 
-  // called on DS receive thread
-  // initActiveOpMode(DEFAULT_OP_MODE_NAME) is called from event loop thread, FtcRobotControllerService thread
-  public void initActiveOpMode(String name) {
+  public void initOpMode(String opModeName) {
+    initOpMode(opModeName, false);
+  }
+
+  // May be called from any thread
+  public void initOpMode(String opModeName, boolean onlyInitIfDefaultIsRunning) {
+    boolean isDefaultOpMode = opModeName.equals(DEFAULT_OP_MODE_NAME);
+    preventDangerousHardwareAccess = isDefaultOpMode;
+
+    // This may get called before the Op Modes have been registered, so let's special-case the
+    // default Op Mode, since that one MUST work
+    OpModeMeta meta;
+    if (isDefaultOpMode) { meta = RegisteredOpModes.DEFAULT_OP_MODE_METADATA; }
+    else { meta = RegisteredOpModes.getInstance().getOpModeMetadata(opModeName); }
+
+    if (meta == null) {
+      RobotLog.ee(TAG, "initOpMode(): Was unable to find metadata for Op Mode %s", opModeName);
+      return;
+    }
+
+    boolean isSystem = meta.flavor == OpModeMeta.Flavor.SYSTEM;
 
     OpModeStateTransition newState = new OpModeStateTransition();
-    newState.queuedOpModeName = name;
+    newState.queuedOpModeMetadata = meta;
     newState.opModeSwapNeeded = true;
     newState.callToInitNeeded = true;
     newState.gamepadResetNeeded = true;
-    newState.telemetryClearNeeded = !name.equals(DEFAULT_OP_MODE_NAME);  // no semantic need to clear if we're just stopping
-    newState.callToStartNeeded = false;
-
-    doMatchLoggingWork(name);
+    newState.telemetryClearNeeded = !isDefaultOpMode;  // no semantic need to clear if we're just stopping
+    newState.callToStartNeeded = isSystem; // System Op Modes should auto-transition to Run mode
+    newState.onlyTransitionIfDefaultOpModeIsRunning = onlyInitIfDefaultIsRunning;
 
     // We *insist* on becoming the new state
     nextOpModeState.set(newState);
@@ -299,7 +335,7 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
   public void stopActiveOpMode() {
     callActiveOpModeStop();
     RobotLog.stopMatchLogging();
-    initActiveOpMode(DEFAULT_OP_MODE_NAME);
+    initOpMode(DEFAULT_OP_MODE_NAME);
   }
 
   // called on the event loop thread
@@ -378,10 +414,14 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
       activeOpMode.hardwareMap = hardwareMap;
       activeOpMode.internalOpModeServices = this;
 
+      boolean initializingDefaultOpMode = activeOpMode instanceof DefaultOpMode;
+
+      preventDangerousHardwareAccess = initializingDefaultOpMode;
+
       // The point about resetting the hardware is to have it in the same state
       // every time for the *user's* code so that they can simplify their initialization
       // logic. There's no point in bothering / spending the time for the default opmode.
-      if (!activeOpModeName.equals(DEFAULT_OP_MODE_NAME)) {
+      if (!initializingDefaultOpMode) {
         resetHardwareForOpMode();
       }
 
@@ -401,6 +441,21 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
 
     else if (opModeState == OpModeState.INIT || opModeState == OpModeState.LOOPING) {
       checkOnActiveOpMode();
+
+      // If the Driver Station just now connected, make sure it knows the status of the current Op Mode
+      boolean peerIsConnected = NetworkConnectionHandler.getInstance().isPeerConnected();
+      if (peerIsConnected && !peerWasConnected) {
+        String command;
+        if (opModeState == OpModeState.INIT) {
+          command = RobotCoreCommandList.CMD_NOTIFY_INIT_OP_MODE;
+        } else {
+          // opModeState must be LOOPING
+          command = RobotCoreCommandList.CMD_NOTIFY_RUN_OP_MODE;
+        }
+        NetworkConnectionHandler.getInstance().sendCommand(new Command(command, activeOpModeName));
+      }
+
+      peerWasConnected = peerIsConnected;
     }
   }
 
@@ -425,11 +480,13 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
 
   /** @return {@code true} if the Op Mode swap succeeded */
   private boolean performOpModeSwap() {
-    RobotLog.i("Attempting to switch to op mode " + queuedOpModeName);
+    String newOpModeName = queuedOpModeMetadata.name;
+    RobotLog.i("Attempting to switch to op mode " + newOpModeName);
 
-    OpMode opMode = RegisteredOpModes.getInstance().getOpMode(queuedOpModeName);
+    OpMode opMode = RegisteredOpModes.getInstance().getOpMode(newOpModeName);
     if (opMode != null) {
-      setActiveOpMode(opMode, queuedOpModeName);
+      setActiveOpMode(opMode, newOpModeName);
+      doMatchLoggingWork(newOpModeName, queuedOpModeMetadata.flavor == OpModeMeta.Flavor.SYSTEM);
       return true;
     } else {
       return false;
@@ -437,12 +494,19 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
   }
 
   private void failedToSwapOpMode() {
-    RobotLog.ee(TAG, "Unable to start op mode " + queuedOpModeName);
-    initActiveOpMode(DEFAULT_OP_MODE_NAME);
+    RobotLog.ee(TAG, "Unable to start op mode " + queuedOpModeMetadata.name);
+    initOpMode(DEFAULT_OP_MODE_NAME);
   }
 
   protected void callActiveOpModeStop() {
     if (activeOpMode == null) { return; }
+    preventDangerousHardwareAccess = true;
+
+    // Attempt to put all REV Hubs in a safe state
+    for (RobotCoreLynxModule lynxModule : this.hardwareMap.getAll(RobotCoreLynxModule.class)) {
+      lynxModule.attemptFailSafeAndIgnoreErrors();
+    }
+
     try {
       detectStuck(OpModeInternal.MS_BEFORE_FORCE_STOP_AFTER_STOP_REQUESTED, "stop()", new Runnable() {
         @Override public void run() {
@@ -706,9 +770,9 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
          *
          * (We also now use ForceStopException to support {@link OpMode#terminateOpModeNow()})
          */
-      initActiveOpMode(DEFAULT_OP_MODE_NAME);
+      initOpMode(DEFAULT_OP_MODE_NAME);
     } catch (Exception e) {
-      initActiveOpMode(DEFAULT_OP_MODE_NAME);
+      initOpMode(DEFAULT_OP_MODE_NAME);
       handleUserCodeException(e);
     }
 
@@ -727,9 +791,9 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
        *
        * (We also now use ForceStopException to support {@link OpMode#terminateOpModeNow()})
        */
-      initActiveOpMode(DEFAULT_OP_MODE_NAME);
+      initOpMode(DEFAULT_OP_MODE_NAME);
     } catch (Exception e) {
-      initActiveOpMode(DEFAULT_OP_MODE_NAME);
+      initOpMode(DEFAULT_OP_MODE_NAME);
       handleUserCodeException(e);
     }
 

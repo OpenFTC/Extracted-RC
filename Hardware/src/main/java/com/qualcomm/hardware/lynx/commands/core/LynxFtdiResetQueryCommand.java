@@ -77,4 +77,10 @@ public class LynxFtdiResetQueryCommand extends LynxDekaInterfaceCommand<LynxFtdi
         {
         ByteBuffer buffer = ByteBuffer.wrap(rgb).order(LynxDatagram.LYNX_ENDIAN);
         }
+
+    @Override
+    public boolean isDangerous()
+        {
+        return false;
+        }
     }

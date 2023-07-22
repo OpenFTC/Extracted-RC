@@ -34,15 +34,12 @@ class ZoomHelper {
   }
 
   private final double magnification;
-  private final double aspectRatio;
   private final Rect zoomArea;
 
-  ZoomHelper(double magnification, double aspectRatio, int frameWidth, int frameHeight) {
-    Zoom.validateArguments(magnification, aspectRatio);
+  ZoomHelper(double magnification, double modelAspectRatio, int frameWidth, int frameHeight) {
+    Zoom.validateArguments(magnification);
     this.magnification = magnification;
-    this.aspectRatio = aspectRatio;
-
-    zoomArea = Zoom.getZoomArea(magnification, aspectRatio, frameWidth, frameHeight);
+    zoomArea = Zoom.getZoomArea(magnification, modelAspectRatio, frameWidth, frameHeight);
   }
 
   int left() {
@@ -70,8 +67,7 @@ class ZoomHelper {
   }
 
   boolean hasZoomChanged(Zoom zoom) {
-    return !areEqual(magnification, zoom.magnification) ||
-        !areEqual(aspectRatio, zoom.aspectRatio);
+    return !areEqual(magnification, zoom.magnification);
   }
 
   static boolean areEqual(double a, double b) {
@@ -87,6 +83,17 @@ class ZoomHelper {
     canvas.restore();
   }
 
+  void blurAroundZoomArea(Canvas canvas, int onscreenWidth, int onscreenHeight, float scaleBmpPxToCanvasPx) {
+    float left = zoomArea.left * scaleBmpPxToCanvasPx;
+    float top = zoomArea.top * scaleBmpPxToCanvasPx;
+    float right = zoomArea.right * scaleBmpPxToCanvasPx;
+    float bottom = zoomArea.bottom * scaleBmpPxToCanvasPx;
+    canvas.drawRect(0, 0, onscreenWidth, top, paint); // above the zoom area (from 0 to onscreenWidth)
+    canvas.drawRect(0, bottom, onscreenWidth, onscreenHeight, paint); // below the zoom area (from 0 to onscreenWidth)
+    canvas.drawRect(0, top, left, bottom, paint); // left of the zoom area (from top to bottom)
+    canvas.drawRect(right, top, onscreenWidth, bottom, paint); // right of the zoom area (from top to bottom)
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -94,12 +101,11 @@ class ZoomHelper {
 
     ZoomHelper other = (ZoomHelper) o;
     return areEqual(magnification, other.magnification) &&
-        areEqual(aspectRatio, other.aspectRatio) &&
         zoomArea.equals(other.zoomArea);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(magnification, aspectRatio, zoomArea);
+    return Objects.hash(magnification, zoomArea);
   }
 }

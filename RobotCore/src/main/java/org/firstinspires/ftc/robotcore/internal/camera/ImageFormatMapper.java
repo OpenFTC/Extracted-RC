@@ -88,7 +88,7 @@ public class ImageFormatMapper
         {
         new Format("YUY2",      ImageFormat.YUY2,        UvcFrameFormat.YUY2,    PIXEL_FORMAT.UNKNOWN_FORMAT,   FrameFormat.YUYV,    UUID.fromString("32595559-0000-0010-8000-00AA00389B71"), "YUY2"),
         new Format("H264",      ImageFormat.UNKNOWN,     UvcFrameFormat.UNKNOWN, PIXEL_FORMAT.UNKNOWN_FORMAT,   FrameFormat.UNKNOWN, UUID.fromString("34363248-0000-0010-8000-00AA00389B71"), "H264"),
-        new Format("MJPG",      ImageFormat.UNKNOWN,     UvcFrameFormat.UNKNOWN, PIXEL_FORMAT.UNKNOWN_FORMAT,   FrameFormat.UNKNOWN, UUID.fromString("47504A4D-0000-0000-0000-000000000000"), "MJPG"),    // seen in the wild
+        new Format("MJPG",      ImageFormat.JPEG,        UvcFrameFormat.MJPEG, PIXEL_FORMAT.UNKNOWN_FORMAT,     FrameFormat.UNKNOWN, UUID.fromString("47504A4D-0000-0000-0000-000000000000"), "MJPG"),    // seen in the wild
         new Format("RGB565",    PixelFormat.RGB_565,     UvcFrameFormat.UNKNOWN, PIXEL_FORMAT.RGB565,           FrameFormat.UNKNOWN, UUID.fromString("e436eb7b-524f-11ce-9f53-0020af0ba770"), null),
         new Format("RGB888",    PixelFormat.RGB_888,     UvcFrameFormat.RGB,     PIXEL_FORMAT.RGB888,           FrameFormat.UNKNOWN, UUID.fromString("e436eb7d-524f-11ce-9f53-0020af0ba770"), null),
         new Format("RGB8888",   PixelFormat.RGBA_8888,   UvcFrameFormat.UNKNOWN, PIXEL_FORMAT.RGBA8888,         FrameFormat.UNKNOWN, UUID.fromString("e436eb7e-524f-11ce-9f53-0020af0ba770"), null),

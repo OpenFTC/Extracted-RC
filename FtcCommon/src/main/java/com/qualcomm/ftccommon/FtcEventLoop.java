@@ -67,6 +67,7 @@ import android.hardware.usb.UsbDevice;
 import com.qualcomm.ftccommon.configuration.RobotConfigFile;
 import com.qualcomm.ftccommon.configuration.RobotConfigFileManager;
 import com.qualcomm.ftccommon.configuration.RobotConfigMap;
+import com.qualcomm.ftccommon.configuration.USBScanManager;
 import com.qualcomm.hardware.HardwareFactory;
 import com.qualcomm.hardware.bosch.BHI260IMU;
 import com.qualcomm.hardware.lynx.LynxI2cDeviceSynch;
@@ -93,6 +94,7 @@ import com.qualcomm.robotcore.robocol.TelemetryMessage;
 import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.util.SerialNumber;
 
+import org.firstinspires.ftc.ftccommon.internal.manualcontrol.ManualControlOpMode;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.internal.camera.CameraManagerInternal;
 import org.firstinspires.ftc.robotcore.internal.ftdi.FtDevice;
@@ -114,6 +116,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -198,23 +201,36 @@ public class FtcEventLoop extends FtcEventLoopBase {
     sendActiveConfig();
     ConfigurationTypeManager.getInstance().sendUserDeviceTypes();
     sendOpModeList();
+    ManualControlOpMode.setEventLoopManager(eventLoopManager);
 
     ftcEventLoopHandler.init(eventLoopManager);
 
     LynxUsbDevice temporaryEmbeddedLynxUsb = null;
-    try {
+    try { // Block that uses temporaryEmbeddedLynxUsb, which will be closed in the associated finally block
       if (LynxConstants.isRevControlHub()) {
-        temporaryEmbeddedLynxUsb = ensureEmbeddedControlHubModuleIsSetUp();
+        // Block that attempts to access the Control Hub's embedded module. If communication with
+        // such is failing, we want to catch the exception locally. That error condition is not bad
+        // enough to warrant not running the event loop (and thereby triggering the Control Hub OS watchdog).
+        try {
+          temporaryEmbeddedLynxUsb = ensureEmbeddedControlHubModuleIsSetUp();
 
-        if (appJustLaunched) {
-          // Flash the BHI260 IMU firmware if necessary
-          temporaryEmbeddedLynxUsb.performSystemOperationOnConnectedModule(LynxConstants.CH_EMBEDDED_MODULE_ADDRESS, true, module -> {
-            if (module.getImuType() == LynxModuleImuType.BHI260) {
-              LynxI2cDeviceSynch tempImuI2cClient = LynxFirmwareVersionManager.createLynxI2cDeviceSynch(AppUtil.getDefContext(), module, 0);
-              try { BHI260IMU.flashFirmwareIfNecessary(tempImuI2cClient); }
-              finally { tempImuI2cClient.close(); }
+          if (appJustLaunched) {
+            final int chAddress = LynxConstants.CH_EMBEDDED_MODULE_ADDRESS;
+            try {
+              // Flash the BHI260 IMU firmware if necessary
+              temporaryEmbeddedLynxUsb.performSystemOperationOnParentModule(chAddress, module -> {
+                if (module.getImuType() == LynxModuleImuType.BHI260) {
+                  LynxI2cDeviceSynch tempImuI2cClient = LynxFirmwareVersionManager.createLynxI2cDeviceSynch(AppUtil.getDefContext(), module, 0);
+                  try { BHI260IMU.flashFirmwareIfNecessary(tempImuI2cClient); }
+                  finally { tempImuI2cClient.close(); }
+                }
+              }, 60, TimeUnit.SECONDS);
+            } catch (TimeoutException e) {
+              RobotLog.ee(TAG, e, "Timeout expired while flashing BHI260AP IMU firmware");
             }
-          });
+          }
+        } catch (RobotCoreException e) {
+          RobotLog.ee(TAG, e, "Error communicating with internal Control Hub LynxModule");
         }
       }
 
@@ -283,10 +299,12 @@ public class FtcEventLoop extends FtcEventLoopBase {
   public void teardown() throws RobotCoreException, InterruptedException {
     RobotLog.ii(TAG, "======= TEARDOWN =======");
 
-    super.teardown();
-
+    // Stopping the active Op Mode will send failsafe commands to all REV Hubs. Do this
+    // BEFORE calling super.teardown(), as that will close the REV Hubs.
     opModeManager.stopActiveOpMode();
     opModeManager.teardown();
+
+    super.teardown();
 
     RobotLog.ii(TAG, "======= TEARDOWN COMPLETE =======");
   }
@@ -353,14 +371,14 @@ public class FtcEventLoop extends FtcEventLoopBase {
 
   protected void handleCommandInitOpMode(String extra) {
     String newOpMode = ftcEventLoopHandler.getOpMode(extra);
-    opModeManager.initActiveOpMode(newOpMode);
+    opModeManager.initOpMode(newOpMode);
   }
 
   protected void handleCommandRunOpMode(String extra) {
     // Make sure we're in the opmode that the DS thinks we are
     String newOpMode = ftcEventLoopHandler.getOpMode(extra);
     if (!opModeManager.getActiveOpModeName().equals(newOpMode)) {
-      opModeManager.initActiveOpMode(newOpMode);
+      opModeManager.initOpMode(newOpMode);
     }
     opModeManager.startActiveOpMode();
   }
@@ -520,14 +538,14 @@ public class FtcEventLoop extends FtcEventLoopBase {
    */
   private LynxUsbDevice ensureEmbeddedControlHubModuleIsSetUp() throws RobotCoreException, InterruptedException {
     RobotLog.vv(TAG, "Ensuring that the embedded Control Hub module is set up correctly");
-    LynxUsbDevice embeddedLynxUsb = (LynxUsbDevice) startUsbScanMangerIfNecessary().getDeviceManager().createLynxUsbDevice(SerialNumber.createEmbedded(), null);
+    LynxUsbDevice embeddedLynxUsb = (LynxUsbDevice) USBScanManager.getInstance().getDeviceManager().createLynxUsbDevice(SerialNumber.createEmbedded(), null);
     boolean justChangedControlHubAddress = embeddedLynxUsb.setupControlHubEmbeddedModule();
     if (justChangedControlHubAddress) {
       updateEditableConfigFilesWithNewControlHubAddress();
 
       // Since we just changed the embedded module's address, we need to power-cycle and re-initialize our communications with it
       embeddedLynxUsb.close();
-      embeddedLynxUsb = (LynxUsbDevice) startUsbScanMangerIfNecessary().getDeviceManager().createLynxUsbDevice(SerialNumber.createEmbedded(), null);
+      embeddedLynxUsb = (LynxUsbDevice) USBScanManager.getInstance().getDeviceManager().createLynxUsbDevice(SerialNumber.createEmbedded(), null);
     }
     return embeddedLynxUsb;
   }
@@ -535,7 +553,7 @@ public class FtcEventLoop extends FtcEventLoopBase {
   private void updateEditableConfigFilesWithNewControlHubAddress() throws RobotCoreException {
     // Save the new embedded address to all editable config files. This primarily helps with backwards-compatibility.
     RobotLog.vv(TAG, "We just auto-changed the Control Hub's address. Now auto-updating configuration files.");
-    ReadXMLFileHandler xmlReader = new ReadXMLFileHandler(startUsbScanMangerIfNecessary().getDeviceManager());
+    ReadXMLFileHandler xmlReader = new ReadXMLFileHandler(USBScanManager.getInstance().getDeviceManager());
     RobotConfigFileManager configFileManager = new RobotConfigFileManager();
     for (RobotConfigFile configFile : configFileManager.getXMLFiles()) {
       if (!configFile.isReadOnly()) {
@@ -546,7 +564,7 @@ public class FtcEventLoop extends FtcEventLoopBase {
           RobotConfigMap deserializedConfig = new RobotConfigMap(xmlReader.parse(configFile.getXml()));
           String reserializedConfig = configFileManager.toXml(deserializedConfig);
           configFileManager.writeToFile(configFile, false, reserializedConfig);
-        } catch (IOException | XmlPullParserException e) {
+        } catch (IOException | XmlPullParserException | RuntimeException e) {
           RobotLog.ee(TAG, e, String.format(Locale.ENGLISH, "Failed to auto-update config file %s after automatically changing embedded Control Hub module address. This is OK.", configFile.getName()));
           // It's not the end of the world if this fails, as the Control Hub's address will be read as 173 regardless of what the XML says.
         }

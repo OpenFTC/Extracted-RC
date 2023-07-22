@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2017 Robert Atkinson
+Copyright (c) 2017-2023 Robert Atkinson, REV Robotics
 
 All rights reserved.
 
@@ -35,40 +35,41 @@ package com.qualcomm.ftccommon;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.qualcomm.ftccommon.configuration.EditActivity;
+import com.qualcomm.ftccommon.configuration.USBScanManager;
 import com.qualcomm.robotcore.exception.RobotCoreException;
-import com.qualcomm.robotcore.hardware.USBAccessibleLynxModule;
+import com.qualcomm.robotcore.hardware.DeviceManager;
+import com.qualcomm.robotcore.hardware.LynxModuleMeta;
+import com.qualcomm.robotcore.hardware.LynxModuleMetaList;
+import com.qualcomm.robotcore.hardware.ScannedDevices;
 import com.qualcomm.robotcore.hardware.configuration.LynxConstants;
 import com.qualcomm.robotcore.robocol.Command;
 import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.util.SerialNumber;
+import com.qualcomm.robotcore.util.ThreadPool;
 
-import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
-import org.firstinspires.ftc.robotcore.internal.system.Assert;
-import org.firstinspires.ftc.robotcore.internal.ui.UILocation;
 import org.firstinspires.ftc.robotcore.internal.network.CallbackResult;
 import org.firstinspires.ftc.robotcore.internal.network.NetworkConnectionHandler;
 import org.firstinspires.ftc.robotcore.internal.network.RecvLoopRunnable;
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
+import org.firstinspires.ftc.robotcore.internal.system.Assert;
+import org.firstinspires.ftc.robotcore.internal.ui.UILocation;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * {@link FtcLynxModuleAddressUpdateActivity} provides a means by which users can update
@@ -84,14 +85,12 @@ public class FtcLynxModuleAddressUpdateActivity extends EditActivity
     public static final String TAG = "FtcLynxModuleAddressUpdateActivity";
     @Override public String getTag() { return TAG; }
 
-    protected NetworkConnectionHandler              networkConnectionHandler = NetworkConnectionHandler.getInstance();
-    protected RecvLoopRunnable.RecvLoopCallback     recvLoopCallback         = new ReceiveLoopCallback();
+    protected final NetworkConnectionHandler            networkConnectionHandler = NetworkConnectionHandler.getInstance();
 
-    protected int                                   msResponseWait           = 10000;   // finding addresses can be slow
-    protected BlockingQueue<CommandList.USBAccessibleLynxModulesResp> availableLynxModules = new ArrayBlockingQueue<CommandList.USBAccessibleLynxModulesResp>(1);
+    protected final int                                 msResponseWait           = 10000;   // finding addresses can be slow
 
-    protected List<USBAccessibleLynxModule>         currentModules              = new ArrayList<USBAccessibleLynxModule>();
-    protected DisplayedModuleList                   displayedModuleList         = new DisplayedModuleList();
+    protected List<PortalInfo>                          portals                  = new ArrayList<>();
+    protected final DisplayedPortalList                 displayedPortalList      = new DisplayedPortalList();
 
     //----------------------------------------------------------------------------------------------
     // Life Cycle
@@ -103,284 +102,285 @@ public class FtcLynxModuleAddressUpdateActivity extends EditActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ftc_lynx_address_update);
 
-        networkConnectionHandler.pushReceiveLoopCallback(recvLoopCallback);
+        final Button applyButton = findViewById(R.id.applyButton);
+        applyButton.setVisibility(View.VISIBLE);
         }
 
     @Override
     protected void onStart()
         {
         super.onStart();
-
-        AppUtil.getInstance().showWaitCursor(getString(R.string.dialogMessagePleaseWait),
-            new Runnable()
-                {
-                @Override public void run()
-                    {
-                    // this can take a long time, so we run it here in the background
-                    currentModules = getUSBAccessibleLynxModules();
-                    Iterator<USBAccessibleLynxModule> moduleIterator = currentModules.iterator();
-                    while (moduleIterator.hasNext())
-                        {
-                        // Don't show the Control Hub module at all if the Robot Controller has
-                        // marked it as unchangeable. We want to pretend that the Control Hub
-                        // doesn't have an address at all.
-
-                        // If the RC has marked it as changeable, it must be running a version older
-                        // than 6.0, in which case the Control Hub address is still changeable, and
-                        // it should be shown here.
-                        USBAccessibleLynxModule module = moduleIterator.next();
-                        if (!module.isModuleAddressChangeable() && module.getSerialNumber().isEmbedded())
-                            {
-                            moduleIterator.remove();
-                            }
-                        }
-                    }
-                },
-            new Runnable()
-                {
-                @Override public void run()
-                    {
-                    displayedModuleList.initialize(currentModules);
-
-                    TextView instructions = (TextView) findViewById(R.id.lynxAddressListInstructions);
-                    if (currentModules.isEmpty())
-                        {
-                        instructions.setText(getString(R.string.lynx_address_instructions_no_devices));
-                        }
-                    else
-                        {
-                        instructions.setText(getString(R.string.lynx_address_instructions_update));
-                        }
-                    }
-            });
+        loadExpansionHubs();
         }
 
     @Override protected void onDestroy()
         {
         super.onDestroy();
-        networkConnectionHandler.removeReceiveLoopCallback(recvLoopCallback);
         }
 
     //----------------------------------------------------------------------------------------------
     // Change management
     //----------------------------------------------------------------------------------------------
 
-    protected class DisplayedModuleList
+    protected void loadExpansionHubs()
         {
-        protected int                  lastModuleAddressChoice = LynxConstants.MAX_UNRESERVED_MODULE_ADDRESS;
-        protected AddressConfiguration currentAddressConfiguration = new AddressConfiguration();
-        protected ViewGroup            moduleList;
-
-        public void initialize(List<USBAccessibleLynxModule> modules)
+        final Runnable displayHubsOnUiThread = () ->
             {
-            moduleList = (ViewGroup) findViewById(R.id.moduleList);
-            moduleList.removeAllViews();
+            displayedPortalList.initialize(portals);
 
-            // Keep addresses of things that can't be changed out of the action
-            // Note that addresses always includes the 0 for 'no change'
-            List<Integer> addresses = new ArrayList<>();
-            for (int i = 0; i <= lastModuleAddressChoice; i++)
+            TextView noDevicesNotice = findViewById(R.id.noDevicesNotice);
+            if (portals.isEmpty())
                 {
-                addresses.add(i);
+                noDevicesNotice.setVisibility(View.VISIBLE);
                 }
-            for (USBAccessibleLynxModule module : modules)
+            else
                 {
-                if (!module.isModuleAddressChangeable())
+                noDevicesNotice.setVisibility(View.GONE);
+                }
+            };
+
+        AppUtil.getInstance().showWaitCursor(
+                getString(R.string.dialogMessagePleaseWait),
+                () -> portals = getPortalsInfo(),
+                displayHubsOnUiThread);
+        }
+
+    protected static class PortalInfo
+        {
+        public final SerialNumber serialNumber;
+        public final int parentAddress;
+        public final List<Integer> childAddresses;
+
+        public PortalInfo(SerialNumber serialNumber, int parentAddress, List<Integer> childAddresses)
+            {
+            this.serialNumber = serialNumber;
+            this.parentAddress = parentAddress;
+            this.childAddresses = childAddresses;
+            }
+        }
+
+
+    protected class DisplayedPortalList
+        {
+        protected ViewGroup portalList;
+        protected final List<DisplayedPortal> displayedPortals = new ArrayList<>();
+
+        public void initialize(List<PortalInfo> portals)
+            {
+            portalList = findViewById(R.id.portalList);
+            portalList.removeAllViews();
+
+            displayedPortals.clear();
+
+            for (PortalInfo portal : portals)
+                {
+                this.add(portal);
+                }
+            }
+
+        public boolean isDirty()
+            {
+            for (final DisplayedPortal displayedPortal : displayedPortals)
+                {
+                if (displayedPortal.isDirty())
                     {
-                    addresses.remove(Integer.valueOf(module.getModuleAddress()));
+                    return true;
+                    }
+                }
+            return false;
+            }
+
+        protected void add(PortalInfo portal)
+            {
+            ViewGroup portalView = (ViewGroup) LayoutInflater.from(context).inflate(R.layout.lynx_portal_configure_addresses, null);
+            portalList.addView(portalView);
+
+            DisplayedPortal displayedPortal = new DisplayedPortal(portalView);
+            displayedPortal.initialize(portal);
+            displayedPortals.add(displayedPortal);
+            }
+        }
+
+    protected class DisplayedPortal
+        {
+        protected final Map<Integer, Integer> originalToNewAddressMap = new HashMap<>();
+        protected final ViewGroup portalView;
+        protected static final int lastModuleAddressChoice = LynxConstants.MAX_UNRESERVED_MODULE_ADDRESS;
+        protected final List<DisplayedModule> displayedModules = new ArrayList<>();
+        protected SerialNumber serialNumber;
+        protected int originalParentAddress;
+
+        protected DisplayedPortal(ViewGroup portalView)
+            {
+            this.portalView = portalView;
+            }
+
+        public void initialize(PortalInfo portalInfo)
+            {
+            this.serialNumber = portalInfo.serialNumber;
+            this.originalParentAddress = portalInfo.parentAddress;
+            TextView portalNameView = portalView.findViewById(R.id.portalSerialText);
+
+            if (serialNumber.isEmbedded())
+                {
+                portalNameView.setText(getString(R.string.lynx_address_control_hub_portal));
+                }
+            else
+                {
+                portalNameView.setText(getString(R.string.lynx_address_format_expansion_hub_portal_serial, serialNumber));
+                // Only add the parent for USB-connected Expansion Hub Portals
+                this.add(originalParentAddress);
+                }
+
+            for (int childAddress : portalInfo.childAddresses)
+                {
+                this.add(childAddress);
+                }
+            updateAvailableAddresses();
+            }
+
+        public void changeAddress(int originalAddress, int newAddress)
+            {
+            RobotLog.vv(TAG, "Selected address change on portal %s from %d to %d", serialNumber, originalAddress, newAddress);
+            originalToNewAddressMap.put(originalAddress, newAddress);
+            updateAvailableAddresses();
+            }
+
+        public boolean isDirty()
+            {
+            for (Map.Entry<Integer, Integer> moduleEntry : originalToNewAddressMap.entrySet())
+                {
+                final int originalAddress = moduleEntry.getKey();
+                final int newAddress = moduleEntry.getValue();
+                if (originalAddress != newAddress)
+                    {
+                    return true;
+                    }
+                }
+            return false;
+            }
+
+        protected void updateAvailableAddresses()
+            {
+            List<AddressAndDisplayName> availableAddresses = new ArrayList<>(lastModuleAddressChoice);
+            for (int potentialAddress = 0; potentialAddress <= lastModuleAddressChoice; potentialAddress++)
+                {
+                // Make sure that none of the modules connected via this portal have their new address set to this number
+                // Address 0 (no change) is always available in the list
+                if (potentialAddress == 0 || !originalToNewAddressMap.containsValue(potentialAddress))
+                    {
+                    availableAddresses.add(new AddressAndDisplayName(potentialAddress));
                     }
                 }
 
-            // Keep addresses of things that can't be changed out of the action
-            for (USBAccessibleLynxModule module : modules)
+            for (DisplayedModule displayedModule: displayedModules)
                 {
-                Assert.assertTrue(module.getModuleAddress() != 0);  // these should be pruned by sender (if any)
-
-                // We always need a free module address. Make sure we leave one available
-                if (size() + 1 >= addresses.size()-1) break;
-
-                this.add(module, addresses);
-                }
-
-            currentAddressConfiguration = new AddressConfiguration(modules);
-            }
-
-        protected int size()
-            {
-            return moduleList.getChildCount();
-            }
-
-        protected void add(USBAccessibleLynxModule module, List<Integer> addresses)
-            {
-            View child = LayoutInflater.from(context).inflate(R.layout.lynx_module_configure_address, null);
-            moduleList.addView(child);
-
-            DisplayedModule displayedModule = new DisplayedModule(child);
-            displayedModule.initialize(module, addresses);
-            }
-
-        protected DisplayedModule from(SerialNumber serialNumber)
-            {
-            ViewGroup parent = (ViewGroup) findViewById(R.id.moduleList);
-            for (int i = 0; i < parent.getChildCount(); i++)
-                {
-                DisplayedModule displayedModule = new DisplayedModule(parent.getChildAt(i));
-                if (displayedModule.getSerialNumber().equals(serialNumber))
-                    {
-                    return displayedModule;
-                    }
-                }
-            return null;
-            }
-
-        public void changeAddress(SerialNumber serialNumber, int newAddress)
-            {
-            RobotLog.vv(TAG, "changeAddress(%s) from:%d to:%d", serialNumber, currentAddressConfiguration.getCurrentAddress(serialNumber), newAddress);
-            if (currentAddressConfiguration.getCurrentAddress(serialNumber) != newAddress)
-                {
-                // If the new address is already in use within the configuration, then we need to
-                // change that use to something else
-                SerialNumber existing = currentAddressConfiguration.findByCurrentAddress(newAddress);
-                currentAddressConfiguration.putCurrentAddress(serialNumber, newAddress);
-                if (existing != null)
-                    {
-                    int newAddressForExisting = findUnusedAddress();
-                    RobotLog.vv(TAG, "conflict with %s: that goes to %d", existing, newAddressForExisting );
-                    Assert.assertTrue(newAddressForExisting != 0);
-                    currentAddressConfiguration.putCurrentAddress(existing, newAddressForExisting);
-                    from(existing).setNewAddress(newAddressForExisting);
-                    }
+                displayedModule.setAvailableAddresses(availableAddresses);
                 }
             }
 
-        protected int findUnusedAddress()
+        protected void add(int moduleAddress)
             {
-            for (int i = 1; i <= lastModuleAddressChoice; i++)
-                {
-                if (!currentAddressConfiguration.containsCurrentAddress(i))
-                    {
-                    return i;
-                    }
-                }
-            return 0;
+            originalToNewAddressMap.put(moduleAddress, moduleAddress);
+
+            View moduleView = LayoutInflater.from(context).inflate(R.layout.lynx_module_configure_address, null);
+            portalView.addView(moduleView);
+
+            DisplayedModule displayedModule = new DisplayedModule(moduleView, this, moduleAddress);
+            displayedModule.initialize();
+            displayedModules.add(displayedModule);
             }
         }
 
     protected class DisplayedModule
         {
-        View view;
-        Spinner spinner;
+        protected final int originalAddress;
+        protected final ArrayAdapter<AddressAndDisplayName> availableAddressesAdapter;
+        protected final DisplayedPortal portal;
+        protected final View view;
+        protected final Spinner spinner;
 
-        public DisplayedModule(View view)
+        public DisplayedModule(View view, DisplayedPortal portal, int originalAddress)
             {
+            Assert.assertTrue(originalAddress != 0);
+            this.originalAddress = originalAddress;
+            this.portal = portal;
             this.view = view;
-            this.spinner = (Spinner) view.findViewById(R.id.spinnerChooseAddress);
+            this.availableAddressesAdapter = new ArrayAdapter<>(
+                    FtcLynxModuleAddressUpdateActivity.this,
+                    android.R.layout.simple_spinner_item);
+            this.availableAddressesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            this.spinner = view.findViewById(R.id.spinnerChooseAddress);
+            this.spinner.setAdapter(availableAddressesAdapter);
             }
 
-        public SerialNumber getSerialNumber()
+        public void initialize()
             {
-            TextView serial = (TextView) view.findViewById(R.id.moduleSerialText);
-            return (SerialNumber)serial.getTag();
-            }
+            final TextView addressView = view.findViewById(R.id.moduleAddressText);
+            addressView.setText(getString(R.string.lynx_address_format_module_address, originalAddress));
 
-        public void initialize(USBAccessibleLynxModule module, List<Integer> addresses)
-            {
-            TextView serial = (TextView) view.findViewById(R.id.moduleSerialText);
-            serial.setText(module.getSerialNumber().toString());
-            serial.setTag(module.getSerialNumber()); // so we can find it later
-
-            final TextView address = (TextView) view.findViewById(R.id.moduleAddressText);
-            address.setText(getString(R.string.lynx_address_format_module_address, module.getModuleAddress()));
-
-            boolean changeable = module.isModuleAddressChangeable();
-            spinner.setEnabled(changeable);
-            initializeSpinnerList(spinner, addresses, changeable);
             spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
                 {
                 @Override public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id)
                     {
-                    AddressAndDisplayName item = (AddressAndDisplayName)adapterView.getItemAtPosition(position);
+                    AddressAndDisplayName item = (AddressAndDisplayName) adapterView.getItemAtPosition(position);
                     int newAddress = item.address;
-                    if (newAddress == getStartingAddress())
+                    if (newAddress == originalAddress)
                         {
                         selectNoChange();
                         }
                     else if (newAddress == 0)
                         {
-                        newAddress = getStartingAddress();
+                        newAddress = originalAddress;
                         }
-                    displayedModuleList.changeAddress(getSerialNumber(), newAddress);
+                    portal.changeAddress(originalAddress, newAddress);
                     }
+
                 @Override public void onNothingSelected(AdapterView<?> adapterView)
                     {
                     }
                 });
             }
 
-        public void setNewAddress(int newAddress)
+        public void setAvailableAddresses(List<AddressAndDisplayName> availableAddresses)
             {
-            RobotLog.vv(TAG, "setNewAddress(%s)=%d", getSerialNumber(), newAddress);
-            if (newAddress == getStartingAddress())
+            int selectedAddress = portal.originalToNewAddressMap.get(originalAddress);
+            final AddressAndDisplayName currentlySelectedAddressAndName = new AddressAndDisplayName(selectedAddress);
+            availableAddressesAdapter.clear();
+            availableAddressesAdapter.addAll(availableAddresses);
+            // The currently-selected ("new") address also needs to be available
+            availableAddressesAdapter.add(currentlySelectedAddressAndName);
+            availableAddressesAdapter.sort(Comparator.comparingInt(o -> o.address));
+
+            // We just changed which addresses are available, which may have changed the position of
+            // our selected address
+            if (selectedAddress == originalAddress)
                 {
-                selectNoChange();
+                // Select "<No change>"
+                spinner.setSelection(0);
                 }
             else
                 {
-                for (int i = 0; i < spinner.getAdapter().getCount(); i++)
-                    {
-                    if (getItem(i).address == newAddress)
-                        {
-                        spinner.setSelection(i);
-                        return;
-                        }
-                    }
+                spinner.setSelection(availableAddressesAdapter.getPosition(currentlySelectedAddressAndName));
                 }
             }
 
         protected void selectNoChange()
             {
-            RobotLog.vv(TAG, "selectNoChange(%s)", getSerialNumber());
             spinner.setSelection(0);
-            }
-
-        protected AddressAndDisplayName getItem(int position)
-            {
-            return (AddressAndDisplayName) spinner.getAdapter().getItem(position);
-            }
-
-        public int getCurrentAddress()
-            {
-            return displayedModuleList.currentAddressConfiguration.getCurrentAddress(getSerialNumber());
-            }
-
-        public int getStartingAddress()
-            {
-            return displayedModuleList.currentAddressConfiguration.getStartingAddress(getSerialNumber());
-            }
-
-        protected void initializeSpinnerList(Spinner spinner, List<Integer> addresses, boolean changeable)
-            {
-            AddressAndDisplayName[] pairs = new AddressAndDisplayName[addresses.size()];
-            for (int i = 0; i < addresses.size(); i++)
-                {
-                pairs[i] = new AddressAndDisplayName(addresses.get(i), changeable);
-                }
-            Arrays.sort(pairs);
-            ArrayAdapter<AddressAndDisplayName> newAdapter = new ArrayAdapter<AddressAndDisplayName>(FtcLynxModuleAddressUpdateActivity.this, R.layout.lynx_module_configure_address_spin_item, pairs);
-            spinner.setAdapter(newAdapter);
             }
         }
 
-    protected class AddressAndDisplayName implements Comparable<AddressAndDisplayName>
+    protected class AddressAndDisplayName
         {
         public final String displayName;
-        public final int    address;
+        public final int address;
 
-        public AddressAndDisplayName(int address, boolean changeable)
+        public AddressAndDisplayName(int address)
             {
             this.address = address;
-            this.displayName = address==0
-                    ? getString(changeable ? R.string.lynx_address_format_no_change : R.string.lynx_address_format_not_changeable)
+            this.displayName = address == 0
+                    ? getString(R.string.lynx_address_format_no_change)
                     : getString(R.string.lynx_address_format_new_module_address, address);
             }
 
@@ -388,25 +388,8 @@ public class FtcLynxModuleAddressUpdateActivity extends EditActivity
             {
             return this.displayName;
             }
-
-        @Override public int compareTo(@NonNull AddressAndDisplayName another)
-            {
-            return this.address - another.address;
-            }
         }
 
-    protected boolean isDirty()
-        {
-        for (USBAccessibleLynxModule module : currentModules)
-            {
-            DisplayedModule displayedModule = displayedModuleList.from(module.getSerialNumber());
-            if (displayedModule.getStartingAddress() != displayedModule.getCurrentAddress())
-                {
-                return true;
-                }
-            }
-        return false;
-        }
 
     //----------------------------------------------------------------------------------------------
     // Updating
@@ -420,37 +403,57 @@ public class FtcLynxModuleAddressUpdateActivity extends EditActivity
             }
         };
 
+    public void onApplyButtonPressed(View view)
+        {
+        RobotLog.vv(TAG, "onApplyButtonPressed()");
+
+        final Runnable waitForChangeToFinish = () ->
+            {
+            final CountDownLatch changesAppliedLatch = new CountDownLatch(1);
+            networkConnectionHandler.pushReceiveLoopCallback(new RecvLoopRunnable.DegenerateCallback()
+                {
+                @Override
+                public CallbackResult commandEvent(Command command) throws RobotCoreException
+                    {
+                    if (command.getName().equals(CommandList.CMD_LYNX_ADDRESS_CHANGE_FINISHED))
+                        {
+                        changesAppliedLatch.countDown();
+                        return CallbackResult.HANDLED;
+                        }
+                    return super.commandEvent(command);
+                    }
+                });
+            try
+                {
+                changesAppliedLatch.await();
+                }
+            catch (InterruptedException e)
+                {
+                Thread.currentThread().interrupt();
+                }
+            };
+
+        final boolean changesBeingApplied = beginApplyingChanges();
+
+        if (changesBeingApplied)
+            {
+            // Display a wait cursor until the changes have been applied, and then refresh the list
+            AppUtil.getInstance().showWaitCursor(
+                    getString(R.string.dialogMessagePleaseWait),
+                    waitForChangeToFinish,
+                    this::loadExpansionHubs);
+            }
+        else
+            {
+            // No changes are being applied, so it's safe to refresh the list immediately
+            loadExpansionHubs();
+            }
+        }
+
     public void onDoneButtonPressed(View view)
         {
         RobotLog.vv(TAG, "onDoneButtonPressed()");
-        ArrayList<CommandList.LynxAddressChangeRequest.AddressChange> modulesToChange = new ArrayList<CommandList.LynxAddressChangeRequest.AddressChange>();
-        for (USBAccessibleLynxModule module : currentModules)
-            {
-            DisplayedModule displayedModule = displayedModuleList.from(module.getSerialNumber());
-            if (displayedModule.getStartingAddress() != displayedModule.getCurrentAddress())
-                {
-                CommandList.LynxAddressChangeRequest.AddressChange addressChange = new CommandList.LynxAddressChangeRequest.AddressChange();
-                addressChange.serialNumber = displayedModule.getSerialNumber();
-                addressChange.oldAddress = displayedModule.getStartingAddress();
-                addressChange.newAddress = displayedModule.getCurrentAddress();
-                modulesToChange.add(addressChange);
-                }
-            }
-
-        if (currentModules.size() > 0)
-            {
-            if (modulesToChange.size() > 0)
-                {
-                CommandList.LynxAddressChangeRequest request = new CommandList.LynxAddressChangeRequest();
-                request.modulesToChange = modulesToChange;
-                sendOrInject(new Command(CommandList.CMD_LYNX_ADDRESS_CHANGE, request.serialize()));
-                }
-            else
-                {
-                AppUtil.getInstance().showToast(UILocation.BOTH, getString(R.string.toastLynxAddressChangeNothingToDo));
-                }
-            }
-
+        beginApplyingChanges();
         finishOk();
         }
 
@@ -466,9 +469,57 @@ public class FtcLynxModuleAddressUpdateActivity extends EditActivity
         doBackOrCancel();
         }
 
+    protected boolean beginApplyingChanges()
+        {
+        ArrayList<CommandList.LynxAddressChangeRequest.AddressChange> modulesToChange = new ArrayList<>();
+        for (DisplayedPortal displayedPortal : displayedPortalList.displayedPortals)
+            {
+            int portalParentAddress = displayedPortal.originalParentAddress;
+            for (Map.Entry<Integer, Integer> moduleAddressesEntry : displayedPortal.originalToNewAddressMap.entrySet())
+                {
+                final int originalAddress = moduleAddressesEntry.getKey();
+                final int newAddress = moduleAddressesEntry.getValue();
+                if (originalAddress != newAddress)
+                    {
+                    Assert.assertTrue(originalAddress != 0);
+                    Assert.assertTrue(newAddress != 0);
+                    CommandList.LynxAddressChangeRequest.AddressChange addressChange = new CommandList.LynxAddressChangeRequest.AddressChange();
+                    addressChange.serialNumber = displayedPortal.serialNumber;
+                    addressChange.parentAddress = portalParentAddress;
+                    addressChange.oldAddress = originalAddress;
+                    addressChange.newAddress = newAddress;
+                    modulesToChange.add(addressChange);
+
+                    // If we just added an address change for the parent module, future address
+                    // changes need to use the updated parent module address.
+                    if (originalAddress == portalParentAddress)
+                        {
+                        portalParentAddress = newAddress;
+                        }
+                    }
+                }
+            }
+
+        if (displayedPortalList.displayedPortals.size() > 0)
+            {
+            if (modulesToChange.size() > 0)
+                {
+                CommandList.LynxAddressChangeRequest request = new CommandList.LynxAddressChangeRequest();
+                request.modulesToChange = modulesToChange;
+                sendOrInject(new Command(CommandList.CMD_LYNX_ADDRESS_CHANGE, request.serialize()));
+                return true;
+                }
+            else
+                {
+                AppUtil.getInstance().showToast(UILocation.BOTH, getString(R.string.toastLynxAddressChangeNothingToDo));
+                }
+            }
+        return false;
+        }
+
     protected void doBackOrCancel()
         {
-        if (this.isDirty())
+        if (displayedPortalList.isDirty())
             {
             DialogInterface.OnClickListener exitWithoutSavingButtonListener = new DialogInterface.OnClickListener()
                 {
@@ -489,112 +540,71 @@ public class FtcLynxModuleAddressUpdateActivity extends EditActivity
             }
         }
 
-    protected class AddressConfiguration
-        {
-        protected Map<SerialNumber, Integer> starting = new ConcurrentHashMap<SerialNumber,Integer>();
-        protected Map<SerialNumber, Integer> current  = new ConcurrentHashMap<SerialNumber,Integer>();
-
-        public AddressConfiguration()
-            {
-            }
-
-        public AddressConfiguration(List<USBAccessibleLynxModule> modules)
-            {
-            for (USBAccessibleLynxModule module : modules)
-                {
-                starting.put(module.getSerialNumber(), module.getModuleAddress());
-                current.put(module.getSerialNumber(), module.getModuleAddress());
-                }
-            }
-
-        public int getStartingAddress(SerialNumber serialNumber)
-            {
-            return starting.get(serialNumber);
-            }
-
-        public boolean containsCurrentAddress(int address)
-            {
-            return current.values().contains(address);
-            }
-
-        public void putCurrentAddress(SerialNumber serialNumber, int address)
-            {
-            current.put(serialNumber, address);
-            }
-
-        public int getCurrentAddress(SerialNumber serialNumber)
-            {
-            return current.get(serialNumber);
-            }
-
-        public @Nullable SerialNumber findByCurrentAddress(int address)
-            {
-            for (Map.Entry<SerialNumber,Integer> pair : current.entrySet())
-                {
-                if (pair.getValue().equals(address))
-                    {
-                    return pair.getKey();
-                    }
-                }
-            return null;
-            }
-        }
-
     //----------------------------------------------------------------------------------------------
     // Networking
     //----------------------------------------------------------------------------------------------
 
-    protected class ReceiveLoopCallback extends RecvLoopRunnable.DegenerateCallback
+    protected List<PortalInfo> getPortalsInfo()
         {
-        @Override public CallbackResult commandEvent(Command command) throws RobotCoreException
+        final USBScanManager usbScanManager = USBScanManager.getInstance();
+        final List<PortalInfo> result = new ArrayList<>();
+        try
             {
-            switch (command.getName())
+            ScannedDevices usbDevices = usbScanManager.startDeviceScanIfNecessary().await(msResponseWait);
+            if (usbDevices != null)
                 {
-                case CommandList.CMD_GET_USB_ACCESSIBLE_LYNX_MODULES_RESP:
-                    CommandList.USBAccessibleLynxModulesResp serialNumbers = CommandList.USBAccessibleLynxModulesResp.deserialize(command.getExtra());
-                    availableLynxModules.offer(serialNumbers);
-                    return CallbackResult.HANDLED_CONTINUE; // Allow processing by RevHubsAvailableForUpdate WebHandler
+                final Map<SerialNumber, ThreadPool.SingletonResult<LynxModuleMetaList>> discoveryResults = new HashMap<>();
+
+                // Start module discovery on each Lynx USB device (portal), without waiting for the results to come in
+                for (Map.Entry<SerialNumber, DeviceManager.UsbDeviceType> serialAndDeviceType : usbDevices.entrySet())
+                    {
+                    final SerialNumber serialNumber = serialAndDeviceType.getKey();
+                    final DeviceManager.UsbDeviceType usbDeviceType = serialAndDeviceType.getValue();
+
+                    if (usbDeviceType == DeviceManager.UsbDeviceType.LYNX_USB_DEVICE)
+                        {
+                        discoveryResults.put(serialNumber, usbScanManager.startLynxModuleEnumerationIfNecessary(serialNumber));
+                        }
+                    }
+
+                // Wait for the discovery results to come in
+                for (Map.Entry<SerialNumber, ThreadPool.SingletonResult<LynxModuleMetaList>> discoveryResult : discoveryResults.entrySet())
+                    {
+                    final SerialNumber serialNumber = discoveryResult.getKey();
+                    final LynxModuleMetaList discoveredHubs = discoveryResult.getValue().await(msResponseWait);
+                    if (discoveredHubs != null)
+                        {
+                        int parentAddress = 0;
+                        final List<Integer> childAddresses = new ArrayList<>();
+                        for (LynxModuleMeta moduleMeta : discoveredHubs)
+                            {
+                            final int address = moduleMeta.getModuleAddress();
+                            if (moduleMeta.isParent())
+                                {
+                                parentAddress = address;
+                                }
+                            else
+                                {
+                                childAddresses.add(address);
+                                }
+                            }
+
+                        // Add any portals with connected Expansion Hubs
+                        // For Control Hubs, this means that children modules must be found
+                        if (childAddresses.size() > 0 || (parentAddress != 0 && !serialNumber.isEmbedded()))
+                            {
+                            result.add(new PortalInfo(serialNumber, parentAddress, childAddresses));
+                            }
+                        }
+                    }
                 }
-            return super.commandEvent(command);
             }
-        }
-
-    protected List<USBAccessibleLynxModule> getUSBAccessibleLynxModules()
-        {
-        CommandList.USBAccessibleLynxModulesRequest request = new CommandList.USBAccessibleLynxModulesRequest();
-        CommandList.USBAccessibleLynxModulesResp result = new CommandList.USBAccessibleLynxModulesResp();
-
-        // Send the command
-        availableLynxModules.clear();
-        request.forFirmwareUpdate = true;
-        sendOrInject(new Command(CommandList.CMD_GET_USB_ACCESSIBLE_LYNX_MODULES, request.serialize()));
-
-        // Wait, but only a while, for  the result
-        result = awaitResponse(availableLynxModules, result);
-
-        RobotLog.vv(TAG, "found %d lynx modules", result.modules.size());
-        return result.modules;
-        }
-
-    protected <T> T awaitResponse(BlockingQueue<T> queue, T defaultResponse)
-        {
-        return awaitResponse(queue, defaultResponse, msResponseWait, TimeUnit.MILLISECONDS);
-        }
-
-    protected <T> T awaitResponse(BlockingQueue<T> queue, T defaultResponse, long time, TimeUnit timeUnit)
-        {
-        try {
-        T cur = queue.poll(time, timeUnit);
-        if (cur != null)
-            {
-            return cur;
-            }
-        }
         catch (InterruptedException e)
             {
             Thread.currentThread().interrupt();
             }
-        return defaultResponse;
-        }
 
+        RobotLog.vv(TAG, "found %d REV Hub Portals", result.size());
+        return result;
+        }
     }

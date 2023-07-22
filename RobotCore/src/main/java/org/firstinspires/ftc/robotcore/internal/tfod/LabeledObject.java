@@ -17,6 +17,7 @@
 package org.firstinspires.ftc.robotcore.internal.tfod;
 
 import android.graphics.RectF;
+import android.text.TextUtils;
 import androidx.annotation.NonNull;
 import org.firstinspires.ftc.robotcore.internal.system.Misc;
 
@@ -24,14 +25,12 @@ import org.firstinspires.ftc.robotcore.internal.system.Misc;
 /**
  * Represents an object with a label, confidence, and location (left, top, right, bottom).
  *
- * The label and confidence are immutable. However the location fields may be changed in order to
- * map between various coordinate systems.
- *
  * @author lizlooney@google.com (Liz Looney)
  */
 class LabeledObject {
 
   final @NonNull String label;
+  final int color;
   final float confidence;
   final ZoomHelper zoomHelper;
   final CoordinateSystem coordinateSystem;
@@ -46,10 +45,11 @@ class LabeledObject {
     CAMERA,
   }
 
-  LabeledObject(@NonNull String label, float confidence,
+  LabeledObject(@NonNull String label, int color, float confidence,
       ZoomHelper zoomHelper, CoordinateSystem coordinateSystem,
       float left, float top, float right, float bottom) {
     this.label = label;
+    this.color = color;
     this.confidence = confidence;
     this.zoomHelper = zoomHelper;
     this.coordinateSystem = coordinateSystem;
@@ -61,7 +61,11 @@ class LabeledObject {
 
   LabeledObject(@NonNull LabeledObject other,
       CoordinateSystem coordinateSystem, float left, float top, float right, float bottom) {
-    this(other.label, other.confidence, other.zoomHelper, coordinateSystem, left, top, right, bottom);
+    this(other.label, other.color, other.confidence, other.zoomHelper, coordinateSystem, left, top, right, bottom);
+  }
+
+  LabeledObject(@NonNull LabeledObject other, int color) {
+    this(other.label, color, other.confidence, other.zoomHelper, other.coordinateSystem, other.left, other.top, other.right, other.bottom);
   }
 
   RectF getLocation() {
@@ -76,6 +80,17 @@ class LabeledObject {
     return bottom - top;
   }
 
+  RectF getScaledLocation(float scaleBmpPxToCanvasPx) {
+    return new RectF(left * scaleBmpPxToCanvasPx, top * scaleBmpPxToCanvasPx,
+        right * scaleBmpPxToCanvasPx, bottom * scaleBmpPxToCanvasPx);
+  }
+
+  String getText() {
+    return !TextUtils.isEmpty(label)
+        ? String.format("%s %.2f", label, confidence)
+        : String.format("%.2f", confidence);
+  }
+
   void checkCoordinateSystem(CoordinateSystem expected) {
     if (coordinateSystem != expected) {
       throw new RuntimeException("Expected coordinateSystem to be " + expected + " but it was " + coordinateSystem);
@@ -86,7 +101,7 @@ class LabeledObject {
     checkCoordinateSystem(CoordinateSystem.ZOOM_AREA);
     int dx = zoomHelper.left();
     int dy = zoomHelper.top();
-    return new LabeledObject(label, confidence, zoomHelper, CoordinateSystem.CAMERA,
+    return new LabeledObject(label, color, confidence, zoomHelper, CoordinateSystem.CAMERA,
         left + dx, top + dy, right + dx, bottom + dy);
   }
 

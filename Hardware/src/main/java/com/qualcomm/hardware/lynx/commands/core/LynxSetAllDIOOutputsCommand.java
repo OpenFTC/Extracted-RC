@@ -85,4 +85,12 @@ public class LynxSetAllDIOOutputsCommand extends LynxDekaInterfaceCommand<LynxAc
         ByteBuffer buffer = ByteBuffer.wrap(rgb).order(LynxDatagram.LYNX_ENDIAN);
         this.values = buffer.get();
         }
+
+    @Override
+    public boolean isDangerous()
+        {
+        // All other digital channel commands are marked as non-dangerous,
+        // so we should be consistent and mark this one the same way.
+        return false;
+        }
     }

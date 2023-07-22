@@ -35,11 +35,12 @@ package org.firstinspires.ftc.robotcore.internal.opmode;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.qualcomm.robotcore.eventloop.opmode.AnnotatedOpModeManager;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeRegistrar;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.exception.DuplicateNameException;
@@ -49,7 +50,6 @@ import com.qualcomm.robotcore.util.RobotLog;
 import org.firstinspires.ftc.robotcore.external.Predicate;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -146,50 +146,23 @@ public class AnnotatedOpModeClassFilter implements ClassFilter
                     {
                     source = OpModeMeta.Source.ANDROID_STUDIO;
                     }
-                try
-                    {
-                    this.registeredOpModes.register(
-                            OpModeMeta.Builder.wrap(opModeMetaAndClass.meta)
+
+                registerOpMode(OpModeMeta.Builder.wrap(opModeMetaAndClass.meta)
                                 .setName(name)
                                 .setSource(source)
                                 .build(),
-                            opModeMetaAndClass.clazz);
-                    }
-                catch (DuplicateNameException e)
-                    {
-                    name = resolveDuplicateName(opModeMetaAndClass);
-                    this.registeredOpModes.register(
-                            OpModeMeta.Builder.wrap(opModeMetaAndClass.meta)
-                                .setName(name)
-                                .setSource(source)
-                                .build(),
-                            opModeMetaAndClass.clazz);
-                    }
+                        opModeMetaAndClass.clazz);
                 }
             for (OpModeMetaAndClass opModeMetaAndClass : knownOpModes)
                 {
                 if (!newOpModes.contains(opModeMetaAndClass))
                     {
                     String name = getOpModeName(opModeMetaAndClass);
-                    try
-                        {
-                        this.registeredOpModes.register(
-                                OpModeMeta.Builder.wrap(opModeMetaAndClass.meta)
+                    registerOpMode(OpModeMeta.Builder.wrap(opModeMetaAndClass.meta)
                                     .setName(name)
                                     .setSource(OpModeMeta.Source.ANDROID_STUDIO)
                                     .build(),
-                                opModeMetaAndClass.clazz);
-                        }
-                    catch (DuplicateNameException e)
-                        {
-                        name = resolveDuplicateName(opModeMetaAndClass);
-                        this.registeredOpModes.register(
-                                OpModeMeta.Builder.wrap(opModeMetaAndClass.meta)
-                                    .setName(name)
-                                    .setSource(OpModeMeta.Source.ANDROID_STUDIO)
-                                    .build(),
-                                opModeMetaAndClass.clazz);
-                        }
+                            opModeMetaAndClass.clazz);
                     }
                 }
             }
@@ -222,11 +195,10 @@ public class AnnotatedOpModeClassFilter implements ClassFilter
             for (OpModeMetaAndClass opModeMetaAndClass : newOpModes)
                 {
                 String name = getOpModeName(opModeMetaAndClass);
-                this.registeredOpModes.register(
-                        OpModeMeta.Builder.wrap(opModeMetaAndClass.meta)
-                            .setName(name)
-                            .setSource(OpModeMeta.Source.ONBOTJAVA)
-                            .build(),
+                registerOpMode(OpModeMeta.Builder.wrap(opModeMetaAndClass.meta)
+                                .setName(name)
+                                .setSource(OpModeMeta.Source.ONBOTJAVA)
+                                .build(),
                         opModeMetaAndClass.clazz);
                 }
             }
@@ -259,11 +231,10 @@ public class AnnotatedOpModeClassFilter implements ClassFilter
             for (OpModeMetaAndClass opModeMetaAndClass : newOpModes)
                 {
                 String name = getOpModeName(opModeMetaAndClass);
-                this.registeredOpModes.register(
-                        OpModeMeta.Builder.wrap(opModeMetaAndClass.meta)
-                            .setName(name)
-                            .setSource(OpModeMeta.Source.EXTERNAL_LIBRARY)
-                            .build(),
+                registerOpMode(OpModeMeta.Builder.wrap(opModeMetaAndClass.meta)
+                                .setName(name)
+                                .setSource(OpModeMeta.Source.EXTERNAL_LIBRARY)
+                                .build(),
                         opModeMetaAndClass.clazz);
                 }
             }
@@ -273,6 +244,22 @@ public class AnnotatedOpModeClassFilter implements ClassFilter
             }
         }
 
+    private void registerOpMode(OpModeMeta meta, Class<OpMode> clazz)
+        {
+        try
+            {
+            this.registeredOpModes.register(meta, clazz);
+            }
+        catch (DuplicateNameException e)
+            {
+            String name = resolveDuplicateName(new OpModeMetaAndClass(meta, clazz));
+            this.registeredOpModes.register(
+                    OpModeMeta.Builder.wrap(meta)
+                            .setName(name)
+                            .build(),
+                    clazz);
+            }
+        }
 
     void reportOpModeConfigurationError(String format, Object... args)
         {
@@ -283,7 +270,7 @@ public class AnnotatedOpModeClassFilter implements ClassFilter
         RobotLog.setGlobalErrorMsg(message);
         }
 
-    boolean checkOpModeClassConstraints(Class clazz, String opModeName)
+    boolean checkOpModeClassConstraints(Class clazz)
         {
         // If the class doesn't extend OpMode, that's an error, we'll ignore the class
         if (!isOpMode(clazz))
@@ -300,12 +287,17 @@ public class AnnotatedOpModeClassFilter implements ClassFilter
             return false;
             }
 
+        return true;
+        }
+
+    boolean checkUserOpModeName(@NonNull Class<?> clazz, @Nullable String opModeName)
+        {
         // Some opmode names aren't allowed to be used
         if (opModeName == null)
             {
-            opModeName = getOpModeName((Class<OpMode>)clazz);
+            opModeName = getOpModeName(clazz);
             }
-        if (!isLegalOpModeName(opModeName))
+        if (!OpModeMeta.nameIsLegalForOpMode(opModeName, false))
             {
             reportOpModeConfigurationError("\"%s\" is not a legal OpMode name", opModeName);
             return false;
@@ -353,7 +345,10 @@ public class AnnotatedOpModeClassFilter implements ClassFilter
             }
 
         // There's some things we need to check about the actual class
-        if (!checkOpModeClassConstraints(clazz, null))
+        if (!checkOpModeClassConstraints(clazz))
+            return;
+
+        if (!checkUserOpModeName(clazz, null))
             return;
 
         // If the class has been annotated as @Disabled, then ignore it
@@ -536,7 +531,7 @@ public class AnnotatedOpModeClassFilter implements ClassFilter
         {
         public void register(Class clazz)
             {
-            if (checkOpModeClassConstraints(clazz, null))
+            if (checkOpModeClassConstraints(clazz) && checkUserOpModeName(clazz, null))
                 {
                 addAnnotatedOpMode((Class<OpMode>)clazz);
                 }
@@ -544,7 +539,7 @@ public class AnnotatedOpModeClassFilter implements ClassFilter
 
         public void register(String name, Class clazz)
             {
-            if (checkOpModeClassConstraints(clazz, name))
+            if (checkOpModeClassConstraints(clazz) && checkUserOpModeName(clazz, name))
                 {
                 addUserNamedOpMode((Class<OpMode>)clazz, new OpModeMeta.Builder().setName(name).build());
                 }
@@ -552,7 +547,8 @@ public class AnnotatedOpModeClassFilter implements ClassFilter
 
         public void register(OpModeMeta meta, Class clazz)
             {
-            if (checkOpModeClassConstraints(clazz, meta.name))
+            // We do not need to check the name, because the OpModeMeta builder handles that.
+            if (checkOpModeClassConstraints(clazz))
                 {
                 addUserNamedOpMode((Class<OpMode>)clazz, meta);
                 }
@@ -560,14 +556,16 @@ public class AnnotatedOpModeClassFilter implements ClassFilter
 
         public void register(String name, OpMode opModeInstance)
             {
-            // We just go ahead and register this, as there's nothing else to do.
-            registeredOpModes.register(name, opModeInstance);
-            RobotLog.dd(TAG, String.format("registered instance {%s} as {%s}", opModeInstance.toString(), name));
+            if (checkUserOpModeName(opModeInstance.getClass(), name))
+                {
+                registeredOpModes.register(name, opModeInstance);
+                RobotLog.dd(TAG, String.format("registered instance {%s} as {%s}", opModeInstance.toString(), name));
+                }
             }
 
         public void register(OpModeMeta meta, OpMode opModeInstance)
             {
-            // We just go ahead and register this, as there's nothing else to do.
+            // We do not need to check the name, because the OpModeMeta builder handles that.
             registeredOpModes.register(meta, opModeInstance);
             RobotLog.dd(TAG, String.format("registered instance {%s} as {%s}", opModeInstance.toString(), meta.name));
             }
@@ -602,8 +600,15 @@ public class AnnotatedOpModeClassFilter implements ClassFilter
 
     private boolean addOpModeWithGroupName(Class<OpMode> clazz, OpModeMeta.Flavor flavor, String groupName, String autoTransition)
         {
-        OpModeMetaAndClass meta = new OpModeMetaAndClass(new OpModeMeta.Builder().setFlavor(flavor).setGroup(groupName).setTransitionTarget(autoTransition).build(), clazz);
-        if (groupName.equals(""))
+        String name = getOpModeName(clazz);
+
+        OpModeMetaAndClass meta = new OpModeMetaAndClass(new OpModeMeta.Builder()
+                .setFlavor(flavor)
+                .setName(name)
+                .setGroup(groupName)
+                .setTransitionTarget(autoTransition)
+                .build(), clazz);
+        if (groupName.isEmpty())
             return addToOpModeGroup(defaultOpModeGroupName, meta);
         else
             return addToOpModeGroup(groupName, meta);
@@ -652,8 +657,8 @@ public class AnnotatedOpModeClassFilter implements ClassFilter
         return getOpModeName(opModeMetaAndClassData.clazz);
         }
 
-    /** Returns the name we are to use for this class in the driver station display */
-    private String getOpModeName(Class<OpMode> clazz)
+    /** Returns the name we are to use to identify this class */
+    private String getOpModeName(Class<?> clazz)
         {
         String name;
 
@@ -670,17 +675,6 @@ public class AnnotatedOpModeClassFilter implements ClassFilter
             name = clazz.getSimpleName();
 
         return name;
-        }
-
-    private boolean isLegalOpModeName(String name)
-        {
-        if (name == null)
-            return false;
-        if ((name.equals(OpModeManager.DEFAULT_OP_MODE_NAME)) ||
-            (name.trim().equals("")))
-            return false;
-        else
-            return true;
         }
 
     private boolean isOpMode(Class clazz)

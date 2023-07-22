@@ -35,6 +35,7 @@ package com.qualcomm.hardware.lynx.commands.core;
 import com.qualcomm.hardware.lynx.LynxModuleIntf;
 import com.qualcomm.robotcore.hardware.configuration.LynxConstants;
 import com.qualcomm.hardware.lynx.commands.LynxDatagram;
+import com.qualcomm.robotcore.util.TypeConversion;
 
 import java.nio.ByteBuffer;
 
@@ -95,6 +96,15 @@ public class LynxGetBulkInputDataResponse extends LynxDekaInterfaceResponse
         return (this.digitalInputs&bit) != 0;
         }
 
+    /**
+     *
+     * @return a bitfield of all digital inputs.
+     */
+    public int getAllDigitalInputs()
+        {
+        return TypeConversion.unsignedByteToInt(this.digitalInputs);
+        }
+
     public int getEncoder(int motorZ)
         {
         LynxConstants.validateMotorZ(motorZ);
@@ -106,6 +116,11 @@ public class LynxGetBulkInputDataResponse extends LynxDekaInterfaceResponse
         {
         LynxConstants.validateMotorZ(motorZ);
         return this.velocities[motorZ];
+        }
+
+    public int getMotorStatus()
+        {
+        return TypeConversion.unsignedByteToInt(this.motorStatus);
         }
 
     public boolean isAtTarget(int motorZ)

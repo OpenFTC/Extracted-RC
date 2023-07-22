@@ -55,4 +55,15 @@ class ClippingMarginsHelper {
     canvas.drawPaint(paint);
     canvas.restore();
   }
+
+  void fillClippingMargins(Canvas canvas, int onscreenWidth, int onscreenHeight, float scaleBmpPxToCanvasPx) {
+    float left = this.left * scaleBmpPxToCanvasPx;
+    float top = this.top * scaleBmpPxToCanvasPx;
+    float right = this.right * scaleBmpPxToCanvasPx;
+    float bottom = this.bottom * scaleBmpPxToCanvasPx;
+    canvas.drawRect(0, 0, onscreenWidth, top, paint); // top
+    canvas.drawRect(0, onscreenHeight - bottom, onscreenWidth, onscreenHeight, paint); // bottom
+    canvas.drawRect(0, top, left, onscreenHeight - bottom, paint); // left (not overlapping top or bottom)
+    canvas.drawRect(onscreenWidth - right, top, onscreenWidth, onscreenHeight - bottom, paint); // right (not overlapping top or bottom)
+  }
 }

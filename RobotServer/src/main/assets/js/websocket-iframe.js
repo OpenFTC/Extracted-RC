@@ -81,3 +81,5 @@ window.addEventListener('unload', function (event) {
     WEBSOCKET_LIB.webSocketManager.finish();
 });
 
+window.WEBSOCKET_LIB = WEBSOCKET_LIB;
+

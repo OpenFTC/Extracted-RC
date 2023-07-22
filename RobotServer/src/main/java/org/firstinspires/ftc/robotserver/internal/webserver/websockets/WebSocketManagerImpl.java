@@ -35,15 +35,19 @@ package org.firstinspires.ftc.robotserver.internal.webserver.websockets;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.google.gson.JsonSyntaxException;
 import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.util.Util;
 
 import org.firstinspires.ftc.robotcore.internal.collections.SimpleGson;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
+import org.firstinspires.ftc.robotcore.internal.webserver.websockets.CommandNotImplementedException;
 import org.firstinspires.ftc.robotcore.internal.webserver.websockets.FtcWebSocket;
 import org.firstinspires.ftc.robotcore.internal.webserver.websockets.FtcWebSocketMessage;
+import org.firstinspires.ftc.robotcore.internal.webserver.websockets.WebSocketCommandResponse;
 import org.firstinspires.ftc.robotcore.internal.webserver.websockets.WebSocketManager;
 import org.firstinspires.ftc.robotcore.internal.webserver.websockets.WebSocketNamespaceHandler;
+import org.firstinspires.ftc.robotserver.internal.webserver.websockets.command.WebSocketCommand;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -108,6 +112,14 @@ public final class WebSocketManagerImpl implements WebSocketManager {
         return numberOfConnections;
     }
 
+    @Override public boolean webSocketIsSubscribedToNamespace(@NonNull String namespace, @NonNull FtcWebSocket webSocket) {
+        final Set<FtcWebSocket> subscribersSet = namespaceSubscribersMap.get(namespace);
+        if (subscribersSet == null) {
+            throw new IllegalStateException("Namespace " + namespace + " is not registered");
+        }
+        return subscribersSet.contains(webSocket);
+    }
+
     //----------------------------------------------------------------------------------------------
     // FtcWebSocket Interfacing Methods
     //----------------------------------------------------------------------------------------------
@@ -122,7 +134,10 @@ public final class WebSocketManagerImpl implements WebSocketManager {
     }
 
     void onWebSocketMessage(FtcWebSocketMessage message, FtcWebSocketImpl webSocket) {
-        if (message.getNamespace().equals(SYSTEM_NAMESPACE)) {
+        String namespace = message.getNamespace();
+        String type = message.getType();
+
+        if (namespace.equals(SYSTEM_NAMESPACE)) {
             handleSystemNamespace(message, webSocket);
             return;
         }
@@ -131,8 +146,31 @@ public final class WebSocketManagerImpl implements WebSocketManager {
             RobotLog.ww(TAG, "Received message to unregistered namespace %s", message.getNamespace());
             return;
         }
-        //noinspection ConstantConditions
-        namespaceHandlerMap.get(message.getNamespace()).onMessage(message, webSocket);
+
+        boolean handled = namespaceHandlerMap.get(message.getNamespace()).onMessage(message, webSocket);
+        if (!handled) {
+            RobotLog.ww(TAG, "Received unsupported message with type %s to namespace %s", message.getType(), message.getNamespace());
+
+            // If this was a command, make sure we send back an error response, or else it will wait
+            // forever to receive one.
+            try {
+                WebSocketCommand command = SimpleGson.getInstance().fromJson(message.getPayload(), WebSocketCommand.class);
+
+                //noinspection StatementWithEmptyBody
+                if (command.commandKey != null) {
+                    // This was a command, send back an appropriate response.
+                    CommandNotImplementedException notImplementedException = new CommandNotImplementedException(namespace, type);
+                    WebSocketCommandResponse commandResponse = WebSocketCommandResponse.createError(
+                            command.commandKey,
+                            notImplementedException);
+                    webSocket.sendCommandResponse(commandResponse);
+                } else {
+                    // This was not a command
+                }
+            } catch(JsonSyntaxException e) {
+                // Clearly this was not a command.
+            }
+        }
     }
 
     void onWebSocketConnected(FtcWebSocket webSocket) {
@@ -217,16 +255,6 @@ public final class WebSocketManagerImpl implements WebSocketManager {
     private static final class BroadcastOnlyNamespaceHandler extends WebSocketNamespaceHandler {
         private BroadcastOnlyNamespaceHandler(String namespace) {
             super(namespace);
-        }
-
-        @Override public void onMessage(FtcWebSocketMessage message, FtcWebSocket webSocket) {
-            super.onMessage(message, webSocket);
-            RobotLog.ww(getTag(), "Message received on broadcast-only namespace " + getNamespace() + ":");
-            RobotLog.ww(getTag(), message.toString());
-        }
-
-        private String getTag() {
-            return "BroadcastOnlyNamespace-" + getNamespace();
         }
     }
 

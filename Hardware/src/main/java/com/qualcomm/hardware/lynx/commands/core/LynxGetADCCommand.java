@@ -134,4 +134,10 @@ public class LynxGetADCCommand extends LynxDekaInterfaceCommand<LynxGetADCRespon
         this.mode = buffer.get();
         }
 
+    @Override
+    public boolean isDangerous()
+        {
+        return false;
+        }
+
     }

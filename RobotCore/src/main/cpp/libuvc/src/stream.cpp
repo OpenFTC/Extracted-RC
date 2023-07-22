@@ -1309,8 +1309,9 @@ void uvc_user_callback_main(uvc_stream_handle *strmh)
 
         /* Don't deliver ill-sized frames to users. As we seem to have fixed transfer order delivery
          * problems, this hardly ever occurs, if ever, but it's a small thing to do and it keeps the
-         * user's world so much more clean. */
-        if (pFrameCall && pFrameCall->cbData==pFrameCall->cbExpected)
+         * user's world so much more clean. We do not, however, check the expected payload length
+         * for MJPEG frames because those do not have a constant payload size :monkey: */
+        if (pFrameCall && (pFrameCall->cbData==pFrameCall->cbExpected || pFrameCall->frameFormat == UVC_FRAME_FORMAT_MJPEG))
             {
             /* We've observed that the very first frame we get from the camera has bad data.
              * We don't *exactly* know why, but we work around it just the same. */

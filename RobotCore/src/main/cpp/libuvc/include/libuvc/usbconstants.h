@@ -215,6 +215,7 @@ enum UsbConstants
 
     //----------------------------------------------------------------------------------------------
 
+    VENDOR_ID_ARDUCAM = 0xC45,
     VENDOR_ID_AUSDOM = 3034,
     VENDOR_ID_MICROSOFT = 0x045E,
     VENDOR_ID_LOGITECH = 0x046D,
@@ -294,6 +295,8 @@ enum UsbConstants
     PRODUCT_ID_MICROSOFT_LIFECAM_STUDIO = 1906,
 
     PRODUCT_ID_AUSDOM_AW615 = 22704,
-    };
+
+    PRODUCT_ID_ARDUCAM_OV9281 = 0x6366,
+};
 
 #endif //FTC_APP_USBCONSTANTS_H

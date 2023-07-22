@@ -1,0 +1,1127 @@
+<xml xmlns="https://developers.google.com/blockly/xml">
+<variables>
+<variable id="Q*iA|9#K!{XA^=I9_17j">oldLeftBumper</variable>
+<variable id="l)/,LjA`jR!1Nc@Z:`l!">myAprilTagDetections</variable>
+<variable type="AprilTagProcessor.Builder" id="NYqOu)Ei(Q{C!f;y!a^O">myAprilTagProcessorBuilder</variable>
+<variable id="s?w(#5R5EX{f*aL$a3yX">oldRightBumper</variable>
+<variable id="?.?jAjDXaP~!^(jq/Ls_">myAprilTagProcessor</variable>
+<variable id="vP~n9zf$lW%hYD/C.j_-">myAprilTagDetection</variable>
+<variable id="Xk!_{IPng0#/P|7dx?3N">myVisionPortal</variable>
+<variable id="c`]!=7;YrY~6u71AMNH^">newLeftBumper</variable>
+<variable id="|RX@0yH!W}g7-GDnzqn[">newRightBumper</variable>
+<variable type="VisionPortal.Builder" id="wx@xgbnS_]b0DQL.08Qg">myVisionPortalBuilder</variable>
+</variables>
+<block type="procedures_defnoreturn" id="WtpyD@tEu+EoY=P9iY,D" deletable="false" x="0" y="0">
+<field name="NAME">runOpMode</field>
+<comment pinned="false" h="45" w="532">This function is executed when this Op Mode is selected from the Driver Station.</comment>
+<statement name="STACK">
+<block type="comment" id="vG1;7$#*;crH,9)V$Lbq">
+<field name="COMMENT">This 2023-2024 OpMode illustrates the basics of AprilTag recognition and pose estimation, using </field>
+<next>
+<block type="comment" id="9x+Pw7NIMObh.ppqpbxk">
+<field name="COMMENT">two webcams.</field>
+<next>
+<block type="procedures_callnoreturn" id="f5VC4xOrYYZrGzpFY}@G">
+<mutation name="initAprilTag"/>
+<comment pinned="false" h="60" w="270">Initialize AprilTag before waitForStart.</comment>
+<next>
+<block type="procedures_callnoreturn" id="f[ENXjhC|mU!?Fv*Ccvv">
+<mutation name="initCameraSwitching"/>
+<next>
+<block type="comment" id="/TX8,^RvHuP6X%R,Py^^">
+<field name="COMMENT">Wait for the match to begin.</field>
+<next>
+<block type="telemetry_addTextData_All" id="Y/b(p3p_Ls7l_.)bQt%8">
+<value name="KEY">
+<shadow type="text" id="]K/@Q[7z:EBSoy.ggFCo">
+<field name="TEXT">DS preview on/off</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id="eV-62@bA|1V9{)n7lim2">
+<field name="TEXT">3 dots, Camera Stream</field>
+</shadow>
+</value>
+<next>
+<block type="telemetry_addTextData_All" id="/Zm[n8^)(`(S}Ab9j!;|">
+<value name="KEY">
+<shadow type="text" id="E)4aB(Zb2,Da/0v0AiN=">
+<field name="TEXT">&gt;</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id="^u5_oh+s(.Vs1Kk;$yw9">
+<field name="TEXT">Touch Play to start OpMode</field>
+</shadow>
+</value>
+<next>
+<block type="telemetry_update" id="CcM7+$syN,5p}u1NCi8q">
+<next>
+<block type="linearOpMode_waitForStart" id=":`$wN_ci`O;o6P0~.(+g">
+<next>
+<block type="controls_if" id="}Q?5mbxSO8Di;i!__6[y">
+<value name="IF0">
+<block type="linearOpMode_opModeIsActive" id=")o%YFX/#9kvv^sgXr4~5"/>
+</value>
+<statement name="DO0">
+<block type="comment" id="(rU-p_T_/B|vExcs}liL">
+<field name="COMMENT">Put run blocks here.</field>
+<next>
+<block type="controls_whileUntil" id="^0Kagy/e+Ea{rbZPv2G6">
+<field name="MODE">WHILE</field>
+<value name="BOOL">
+<block type="linearOpMode_opModeIsActive" id="e)cr{!2VIET83s,JWC.="/>
+</value>
+<statement name="DO">
+<block type="comment" id="Jh/;L$n@JuX8AQJDFCul">
+<field name="COMMENT">Put loop blocks here.</field>
+<next>
+<block type="procedures_callnoreturn" id="swL_C4aIFFhlo?=HA@I0">
+<mutation name="telemetryCameraSwitching"/>
+<next>
+<block type="procedures_callnoreturn" id="L1~6q-w9m`2ahlT|b!@A">
+<mutation name="telemetryAprilTag"/>
+<next>
+<block type="telemetry_update" id="exvivmft-pX$n!1,8Ea$">
+<comment pinned="false" h="55" w="295">Push telemetry to the Driver Station.</comment>
+<next>
+<block type="controls_if" id="!7_WSukNml?WxUrVW=}Y">
+<mutation elseif="1"/>
+<value name="IF0">
+<block type="gamepad_getProperty_Boolean" id="nHP+eLQXZnMf$GP.l+2:">
+<field name="IDENTIFIER">gamepad1</field>
+<field name="PROP">DpadDown</field>
+<data>{"IDENTIFIER":"gamepad1"}</data>
+</block>
+</value>
+<statement name="DO0">
+<block type="visionPortal_stopStreaming" id="WxT@T#Ky#v5b~U}F-piA">
+<comment pinned="false" h="150" w="325">Temporarily stop the streaming session. This can save CPU resources, with the ability to resume quickly when needed.</comment>
+<value name="VISION_PORTAL">
+<block type="variables_get" id="+oda$..:Xa3Va0rMe{;L">
+<field name="VAR" id="Xk!_{IPng0#/P|7dx?3N">myVisionPortal</field>
+</block>
+</value>
+</block>
+</statement>
+<value name="IF1">
+<block type="gamepad_getProperty_Boolean" id="4p5t*;5@A|8*!R_$E^Fw">
+<field name="IDENTIFIER">gamepad1</field>
+<field name="PROP">DpadUp</field>
+<data>{"IDENTIFIER":"gamepad1"}</data>
+</block>
+</value>
+<statement name="DO1">
+<block type="visionPortal_resumeStreaming" id="TRp3/F9RhWFZnU3l.]ei">
+<comment pinned="false" h="150" w="325">Resume the streaming session if previously stopped.</comment>
+<value name="VISION_PORTAL">
+<block type="variables_get" id="{Bzk]pC5=f5AS/,gp5T{">
+<field name="VAR" id="Xk!_{IPng0#/P|7dx?3N">myVisionPortal</field>
+</block>
+</value>
+</block>
+</statement>
+<next>
+<block type="procedures_callnoreturn" id="~5Bz^wVWT+1$rwa1ftK_">
+<mutation name="doCameraSwitching"/>
+<next>
+<block type="linearOpMode_sleep_Number" id="jjoCwI:;J87CrtGs%}K7">
+<comment pinned="false" h="46" w="191">Share the CPU.</comment>
+<value name="MILLISECONDS">
+<shadow type="math_number" id="w~.7$M*lJeh#@I/xsbHy">
+<field name="NUM">20</field>
+</shadow>
+</value>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+<block type="procedures_defnoreturn" id=":Un!nS!LS%^tq]:g4^?Z" x="0" y="877">
+<field name="NAME">initAprilTag</field>
+<comment pinned="false" h="80" w="160">Initialize AprilTag Detection.</comment>
+<statement name="STACK">
+<block type="comment" id="Z#tr,B$;l$RV0)j4q0n.">
+<field name="COMMENT">First, create an AprilTagProcessor.Builder.</field>
+<next>
+<block type="aprilTagProcessorBuilder_create_assign" id="]gR@^J/H_v)OY6f[`3z5">
+<field name="APRIL_TAG_PROCESSOR_BUILDER" id="NYqOu)Ei(Q{C!f;y!a^O" variabletype="AprilTagProcessor.Builder">myAprilTagProcessorBuilder</field>
+<next>
+<block type="comment" id="-dkxGvL2:a(h8n8Mok-i">
+<field name="COMMENT">Create an AprilTagProcessor by calling build.</field>
+<next>
+<block type="variables_set" id="$.wt,WCD1s5fSqROQT*(">
+<field name="VAR" id="?.?jAjDXaP~!^(jq/Ls_">myAprilTagProcessor</field>
+<value name="VALUE">
+<block type="aprilTagProcessorBuilder_build" id="3Vk~@]VGDELD;GHGgEgn">
+<field name="APRIL_TAG_PROCESSOR_BUILDER" id="NYqOu)Ei(Q{C!f;y!a^O" variabletype="AprilTagProcessor.Builder">myAprilTagProcessorBuilder</field>
+</block>
+</value>
+<next>
+<block type="comment" id="w{nzs#L5ZbP.GKW2S`x_">
+<field name="COMMENT">Next, create a VisionPortal.Builder and set attributes related to the camera.</field>
+<next>
+<block type="visionPortalBuilder_create_assign" id="s1^/ZS*LG[dC%CsYcl=%">
+<field name="VISION_PORTAL_BUILDER" id="wx@xgbnS_]b0DQL.08Qg" variabletype="VisionPortal.Builder">myVisionPortalBuilder</field>
+<next>
+<block type="visionPortalBuilder_setCamera" id="]++,Tt{XB5YE7b5#|MmU">
+<field name="VISION_PORTAL_BUILDER" id="wx@xgbnS_]b0DQL.08Qg" variabletype="VisionPortal.Builder">myVisionPortalBuilder</field>
+<value name="CAMERA">
+<block type="navigation_switchableCamera_forAllWebcams" id="#v-~ByHAh?opx=(;FZf."/>
+</value>
+<next>
+<block type="comment" id="-QJd~|I/HUP84GR.F=0N">
+<field name="COMMENT">Add myAprilTagProcessor to the VisionPortal.Builder.</field>
+<next>
+<block type="visionPortalBuilder_addProcessor" id="`A$k?7nl@kd=7y*v@/+-">
+<field name="VISION_PORTAL_BUILDER" id="wx@xgbnS_]b0DQL.08Qg" variabletype="VisionPortal.Builder">myVisionPortalBuilder</field>
+<value name="VISION_PROCESSOR">
+<block type="variables_get" id="HoXmAtlB7{ai0YF!ZyTl">
+<field name="VAR" id="?.?jAjDXaP~!^(jq/Ls_">myAprilTagProcessor</field>
+</block>
+</value>
+<next>
+<block type="comment" id="6Q2EYFS^A(u/rVLX*nI}">
+<field name="COMMENT">Create a VisionPortal by calling build.</field>
+<next>
+<block type="variables_set" id="UggZXj@UuhBf97)(oA;m">
+<field name="VAR" id="Xk!_{IPng0#/P|7dx?3N">myVisionPortal</field>
+<value name="VALUE">
+<block type="visionPortalBuilder_build" id="OBOV:tKH!^AaYsI{A$~x">
+<field name="VISION_PORTAL_BUILDER" id="wx@xgbnS_]b0DQL.08Qg" variabletype="VisionPortal.Builder">myVisionPortalBuilder</field>
+</block>
+</value>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+<block type="procedures_defnoreturn" id="M[(J8p`1(d0qpSvpnBUG" x="0" y="1251">
+<field name="NAME">initCameraSwitching</field>
+<comment pinned="false" h="80" w="160">Describe this function...</comment>
+<statement name="STACK">
+<block type="variables_set" id="bzQCOK=n~4H%SFBwd[iE">
+<field name="VAR" id="Q*iA|9#K!{XA^=I9_17j">oldLeftBumper</field>
+<value name="VALUE">
+<block type="logic_boolean" id="(EX%WizCX4ZI|`/JgDnN">
+<field name="BOOL">FALSE</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id="i.4ApVoBGwjX}!G|m}9,">
+<field name="VAR" id="s?w(#5R5EX{f*aL$a3yX">oldRightBumper</field>
+<value name="VALUE">
+<block type="logic_boolean" id="l9V6[uXfe93}Z8x6y[rE">
+<field name="BOOL">FALSE</field>
+</block>
+</value>
+</block>
+</next>
+</block>
+</statement>
+</block>
+<block type="procedures_defnoreturn" id="k#V^}7P|YB,m,kKNnalb" x="0" y="1369">
+<field name="NAME">telemetryCameraSwitching</field>
+<comment pinned="false" h="80" w="160">Describe this function...</comment>
+<statement name="STACK">
+<block type="controls_if" id="0A?_RV[e2U-Im!uPTNl7">
+<mutation else="1"/>
+<value name="IF0">
+<block type="logic_compare" id="_gWny~t!@PLo^FjwD_a}">
+<field name="OP">EQ</field>
+<comment pinned="false" h="150" w="325">Get the active camera and compare it to the webcam named Webcam 1.</comment>
+<value name="A">
+<block type="visionPortal_getActiveCamera" id="-8LxZwZh0BesAX!sQSYr">
+<value name="VISION_PORTAL">
+<block type="variables_get" id="%ey-Yb-SX,Ui.S*ZdQX-">
+<field name="VAR" id="Xk!_{IPng0#/P|7dx?3N">myVisionPortal</field>
+</block>
+</value>
+</block>
+</value>
+<value name="B">
+<block type="navigation_webcamName" id="B){Q9vpPtoB1j?3+(+T}">
+<field name="WEBCAM_NAME">Webcam 1</field>
+</block>
+</value>
+</block>
+</value>
+<statement name="DO0">
+<block type="telemetry_addTextData_All" id="CE.Iq.72}ax3o^(@Pdx}">
+<value name="KEY">
+<shadow type="text" id="wN{(Y%u;g}KnAPlUPaVM">
+<field name="TEXT">activeCamera</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id="tCc?k@iS@BbK{F_pw3]5">
+<field name="TEXT">Webcam 1</field>
+</shadow>
+</value>
+<next>
+<block type="telemetry_addLine" id="wA4qAir~[Gsnb4Y$~Q%W">
+<value name="TEXT">
+<shadow type="text" id="2UaCpD_Rh*T25_.h3h.C">
+<field name="TEXT">Press RightBumper to switch to Webcam 2</field>
+</shadow>
+</value>
+</block>
+</next>
+</block>
+</statement>
+<statement name="ELSE">
+<block type="telemetry_addTextData_All" id=")V3wAkev=8OLu3DkyfSu">
+<value name="KEY">
+<shadow type="text" id="hYjZ.6FI1iJ]GT7e{=+`">
+<field name="TEXT">activeCamera</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id="$OE}yaw_5o2f*zzLh@i[">
+<field name="TEXT">Webcam 2</field>
+</shadow>
+</value>
+<next>
+<block type="telemetry_addLine" id=")=wv5Cj#nYLLtP*@T`eY">
+<value name="TEXT">
+<shadow type="text" id="j(zgrBW(V=.1`+3792sO">
+<field name="TEXT">Press LeftBumper to switch to Webcam 1</field>
+</shadow>
+</value>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</statement>
+</block>
+<block type="procedures_defnoreturn" id="Eg%7GTPuhcoA]FCw9:]O" x="0" y="1780">
+<field name="NAME">telemetryAprilTag</field>
+<comment pinned="false" h="80" w="160">Display info (using telemetry) for a recognized AprilTag.</comment>
+<statement name="STACK">
+<block type="variables_set" id="c8~R@@~J_)0dhTTP,GP@">
+<field name="VAR" id="l)/,LjA`jR!1Nc@Z:`l!">myAprilTagDetections</field>
+<comment pinned="false" h="80" w="160">Get a list of AprilTag detections.</comment>
+<value name="VALUE">
+<block type="aprilTagProcessor_getDetections" id="^Sth`xX=n79Q8`P*Z#qt">
+<value name="APRIL_TAG_PROCESSOR">
+<block type="variables_get" id="Icn).;@XjTI7SR.j$UY#">
+<field name="VAR" id="?.?jAjDXaP~!^(jq/Ls_">myAprilTagProcessor</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_addTextData_All" id="3m5}jTks8BeMJ]|.h*Kp">
+<value name="KEY">
+<shadow type="text" id="MNA3Pe{~9.uc1dSMmO=j">
+<field name="TEXT"># AprilTags Detected</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id="DRWu-r*O-0eJ4pG2n$_l">
+<field name="TEXT"/>
+</shadow>
+<block type="lists_length" id="q{bEB[P*p2XiVOMj*ku#">
+<value name="VALUE">
+<block type="variables_get" id="/5v#48C2W5M+l:4)g!zX">
+<field name="VAR" id="l)/,LjA`jR!1Nc@Z:`l!">myAprilTagDetections</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="controls_forEach" id="|@Y$y8D~],V(MRQ+Cyv{">
+<field name="VAR" id="vP~n9zf$lW%hYD/C.j_-">myAprilTagDetection</field>
+<comment pinned="false" h="81" w="199">Iterate through list and call a function to display info for each recognized AprilTag.</comment>
+<value name="LIST">
+<block type="variables_get" id="W,d1s!eFWeDT0X}~eq,n">
+<field name="VAR" id="l)/,LjA`jR!1Nc@Z:`l!">myAprilTagDetections</field>
+</block>
+</value>
+<statement name="DO">
+<block type="comment" id="U@Dkpel-LMa.00jJsqA-">
+<field name="COMMENT">Display info about the detection.</field>
+<next>
+<block type="telemetry_addLine" id="qrKb?#/HMYJo.RhU8rW:">
+<value name="TEXT">
+<shadow type="text" id="3^Lv-r.jG6}7LV;(yIh.">
+<field name="TEXT"/>
+</shadow>
+</value>
+<next>
+<block type="controls_if" id="1KHSCf_sX!Qd~BKfG}QD">
+<mutation else="1"/>
+<value name="IF0">
+<block type="aprilTagDetection_getProperty_IsNotNull" id=":^$lP:Ut!p3Z)E+vy^]D">
+<field name="PROP">metadata</field>
+<value name="APRIL_TAG_DETECTION">
+<block type="variables_get" id="9Lq*6VTlT$7uDRiB|mYe">
+<field name="VAR" id="vP~n9zf$lW%hYD/C.j_-">myAprilTagDetection</field>
+</block>
+</value>
+</block>
+</value>
+<statement name="DO0">
+<block type="telemetry_addLine" id="awB~K!HjEb=h6tM,%vLN">
+<value name="TEXT">
+<shadow type="text" id="?hM/$PX}4MN:|W`joKgn">
+<field name="TEXT"/>
+</shadow>
+<block type="text_join" id="0C_x2#T#t7yl!%45k{$?">
+<mutation items="4"/>
+<value name="ADD0">
+<block type="text" id="buEo7p[-2T4:49=`uwK1">
+<field name="TEXT">==== (ID </field>
+</block>
+</value>
+<value name="ADD1">
+<block type="aprilTagDetection_getProperty_Number" id="lifbVBMNn+.1j?y6v54X">
+<field name="PROP">id</field>
+<value name="APRIL_TAG_DETECTION">
+<block type="variables_get" id="w(63KWmGiZ83+qITBep;">
+<field name="VAR" id="vP~n9zf$lW%hYD/C.j_-">myAprilTagDetection</field>
+</block>
+</value>
+</block>
+</value>
+<value name="ADD2">
+<block type="text" id="=n-]].djPxb,OFyxcOQF">
+<field name="TEXT">) </field>
+</block>
+</value>
+<value name="ADD3">
+<block type="aprilTagDetection_getProperty_String" id="=AvXMAjUic3u3lbFtEt4">
+<field name="PROP">metadata.name</field>
+<value name="APRIL_TAG_DETECTION">
+<block type="variables_get" id="zKHYs.Y87Qrl9%G~Oq^V">
+<field name="VAR" id="vP~n9zf$lW%hYD/C.j_-">myAprilTagDetection</field>
+</block>
+</value>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_addLine" id=";grqK`+-g7;g50c=|L0l">
+<value name="TEXT">
+<shadow type="text" id="!y]i-sUsabeyV/)u=6D5">
+<field name="TEXT"/>
+</shadow>
+<block type="text_join" id="4TtGi;Z(gbFaks}Eap^9">
+<mutation items="7"/>
+<value name="ADD0">
+<block type="text" id="+]Cns+.i=%b0bFaT6;NI">
+<field name="TEXT">XYZ </field>
+</block>
+</value>
+<value name="ADD1">
+<block type="misc_formatNumber_withWidth" id="df*#gw3iYx$kvL$9{Y?m">
+<value name="NUMBER">
+<shadow type="math_number" id="g`p?z|x@JeU%MJ4.tSFQ">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="aprilTagDetection_getProperty_Number" id="jUN`u.6t[:O8`9Ncql]!">
+<field name="PROP">ftcPose.x</field>
+<value name="APRIL_TAG_DETECTION">
+<block type="variables_get" id="mb(6}~t}KLoi4`XT~d:H">
+<field name="VAR" id="vP~n9zf$lW%hYD/C.j_-">myAprilTagDetection</field>
+</block>
+</value>
+</block>
+</value>
+<value name="WIDTH">
+<shadow type="math_number" id="k*}!VVn#l8HSq7E2i?#R">
+<field name="NUM">6</field>
+</shadow>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="mh4H+`GE$Em,(iS4ZjPR">
+<field name="NUM">1</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="ADD2">
+<block type="text" id="y34}1aACqw@S]sESt=A#">
+<field name="TEXT"> </field>
+</block>
+</value>
+<value name="ADD3">
+<block type="misc_formatNumber_withWidth" id="4Oj?ZaC$d#_1X}?b[T.|">
+<value name="NUMBER">
+<shadow type="math_number" id="2cGf/q9c-ZnJ}LB6C1i$">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="aprilTagDetection_getProperty_Number" id="^ZxENE!MDi;z:vW0d@XL">
+<field name="PROP">ftcPose.y</field>
+<value name="APRIL_TAG_DETECTION">
+<block type="variables_get" id="bYyr?K,sa#Z.])=_ot.X">
+<field name="VAR" id="vP~n9zf$lW%hYD/C.j_-">myAprilTagDetection</field>
+</block>
+</value>
+</block>
+</value>
+<value name="WIDTH">
+<shadow type="math_number" id="BQJxM*kkA=P:cx1$gjDj">
+<field name="NUM">6</field>
+</shadow>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="$REh~]PUb9LYTO;OfzqZ">
+<field name="NUM">1</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="ADD4">
+<block type="text" id="D7A3=:fGOVPSdci(UQtX">
+<field name="TEXT"> </field>
+</block>
+</value>
+<value name="ADD5">
+<block type="misc_formatNumber_withWidth" id="FCZL%yFs6[0x{rm0ps54">
+<value name="NUMBER">
+<shadow type="math_number" id="|j[Xf6X[,{Y~6k#Ow9ay">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="aprilTagDetection_getProperty_Number" id="@o/Xx/]f-CWGv|Tr)2Nk">
+<field name="PROP">ftcPose.z</field>
+<value name="APRIL_TAG_DETECTION">
+<block type="variables_get" id="[9!-4|yF{X2|/{iSu:SC">
+<field name="VAR" id="vP~n9zf$lW%hYD/C.j_-">myAprilTagDetection</field>
+</block>
+</value>
+</block>
+</value>
+<value name="WIDTH">
+<shadow type="math_number" id="ga,Viu`_|ozkv#5q3*@0">
+<field name="NUM">6</field>
+</shadow>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="(E3-dHVlUbl(~6A~LN[p">
+<field name="NUM">1</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="ADD6">
+<block type="text" id=")9nfo^3]N$S,m~5}*3*=">
+<field name="TEXT">  (inch)</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_addLine" id="6W%[*9{;}.5Jl{VBB=*t">
+<value name="TEXT">
+<shadow type="text" id=";t?`r+|~SzTLUUHO=;M9">
+<field name="TEXT"/>
+</shadow>
+<block type="text_join" id="$$x)e|XJcO*g[Y8~M2/Q">
+<mutation items="7"/>
+<value name="ADD0">
+<block type="text" id="CNSpY2iH=tR#]P,pi4u.">
+<field name="TEXT">PRY </field>
+</block>
+</value>
+<value name="ADD1">
+<block type="misc_formatNumber_withWidth" id="sht8%%Nn`h2}jwZ`-{x)">
+<value name="NUMBER">
+<shadow type="math_number" id="?pMQrP+klggGPQ})NZWJ">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="aprilTagDetection_getProperty_Number" id="Iy|1o|tQ9/Xq~XhaEN$_">
+<field name="PROP">ftcPose.pitch</field>
+<value name="APRIL_TAG_DETECTION">
+<block type="variables_get" id="rVJim4c8+/ys[,t:o!0a">
+<field name="VAR" id="vP~n9zf$lW%hYD/C.j_-">myAprilTagDetection</field>
+</block>
+</value>
+</block>
+</value>
+<value name="WIDTH">
+<shadow type="math_number" id="mHP*I^3G3|9rAiui`;?f">
+<field name="NUM">6</field>
+</shadow>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="VxWPF,FgQz,lDodmj[WR">
+<field name="NUM">1</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="ADD2">
+<block type="text" id="]dbZO?6z_PP)Na=ij|hW">
+<field name="TEXT"> </field>
+</block>
+</value>
+<value name="ADD3">
+<block type="misc_formatNumber_withWidth" id="!i;Ow5b5|tm]^:f=af8O">
+<value name="NUMBER">
+<shadow type="math_number" id="xsH[9W8/eLks@vlm]1*g">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="aprilTagDetection_getProperty_Number" id="ShLjZCVXxN!~/4l*tkIW">
+<field name="PROP">ftcPose.roll</field>
+<value name="APRIL_TAG_DETECTION">
+<block type="variables_get" id="OCoPF8gE#WFKctf6vd6f">
+<field name="VAR" id="vP~n9zf$lW%hYD/C.j_-">myAprilTagDetection</field>
+</block>
+</value>
+</block>
+</value>
+<value name="WIDTH">
+<shadow type="math_number" id="DyJDDqNjyT?RD%Og91T/">
+<field name="NUM">6</field>
+</shadow>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="M?Svc5)[b)Apn186A8Em">
+<field name="NUM">1</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="ADD4">
+<block type="text" id="7-XP1=zX3p(TS(}va$9`">
+<field name="TEXT"> </field>
+</block>
+</value>
+<value name="ADD5">
+<block type="misc_formatNumber_withWidth" id=":tQhsy?3wU|KpZT;GEux">
+<value name="NUMBER">
+<shadow type="math_number" id="v%b/#{Uh]xNL*jCpZAlp">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="aprilTagDetection_getProperty_Number" id="rr^=wlJCB2_afebAXJ}Z">
+<field name="PROP">ftcPose.yaw</field>
+<value name="APRIL_TAG_DETECTION">
+<block type="variables_get" id="vBZ8!}wPWKb}V3-g]Wle">
+<field name="VAR" id="vP~n9zf$lW%hYD/C.j_-">myAprilTagDetection</field>
+</block>
+</value>
+</block>
+</value>
+<value name="WIDTH">
+<shadow type="math_number" id="mu5y,^`sp#UgVsrfnkbc">
+<field name="NUM">6</field>
+</shadow>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="1a@0e%XGstoBjtg)K@p]">
+<field name="NUM">1</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="ADD6">
+<block type="text" id="I*Wn1Gf}j+e`]CP5J0Cp">
+<field name="TEXT">  (deg)</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_addLine" id="p~aY/Ief^l:6#%yF5mBb">
+<value name="TEXT">
+<shadow type="text" id="[:Q^{:f(MSqR]$h@YO_G">
+<field name="TEXT">text</field>
+</shadow>
+<block type="text_join" id="7AAW16ak[E;pRyJ50_pV">
+<mutation items="7"/>
+<value name="ADD0">
+<block type="text" id="_D88fgJh36dZBe#kxQkh">
+<field name="TEXT">RBE </field>
+</block>
+</value>
+<value name="ADD1">
+<block type="misc_formatNumber_withWidth" id="o=,mI,_W=C-(irqk:S^/">
+<value name="NUMBER">
+<shadow type="math_number" id="67$:0vchTm|ZAu?yf9Zs">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="aprilTagDetection_getProperty_Number" id="V_e8w[RX[YJ6%2RfwTK4">
+<field name="PROP">ftcPose.range</field>
+<value name="APRIL_TAG_DETECTION">
+<block type="variables_get" id="5U:C0C|9gsGJwjwric-u">
+<field name="VAR" id="vP~n9zf$lW%hYD/C.j_-">myAprilTagDetection</field>
+</block>
+</value>
+</block>
+</value>
+<value name="WIDTH">
+<shadow type="math_number" id="E}T84I!akJTmE1gb#KTc">
+<field name="NUM">6</field>
+</shadow>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="UKUfpg-DJ~rM||Pp1;?~">
+<field name="NUM">1</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="ADD2">
+<block type="text" id="/)!A!j+m`c^.RSzJfnW8">
+<field name="TEXT"> </field>
+</block>
+</value>
+<value name="ADD3">
+<block type="misc_formatNumber_withWidth" id="v,Ilg5bR5*;(#^l3B@-0">
+<value name="NUMBER">
+<shadow type="math_number" id="%)S}?+}8]#C5YOJMTtIz">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="aprilTagDetection_getProperty_Number" id="}bh%9Kz6)u_zYo7,L]Iq">
+<field name="PROP">ftcPose.bearing</field>
+<value name="APRIL_TAG_DETECTION">
+<block type="variables_get" id="B6P^H@vWo+vyX@sYn_ik">
+<field name="VAR" id="vP~n9zf$lW%hYD/C.j_-">myAprilTagDetection</field>
+</block>
+</value>
+</block>
+</value>
+<value name="WIDTH">
+<shadow type="math_number" id="5ti##om.fc`N4y~4C#;|">
+<field name="NUM">6</field>
+</shadow>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="22o;=,7*otM:5h`-4L|A">
+<field name="NUM">1</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="ADD4">
+<block type="text" id="Q|e}m1um|X;(#X^F`wb(">
+<field name="TEXT"> </field>
+</block>
+</value>
+<value name="ADD5">
+<block type="misc_formatNumber_withWidth" id="x-{*.Ghd4zinz}U9X3?V">
+<value name="NUMBER">
+<shadow type="math_number" id=".MdJRQ6rUBU)RFzD8T%o">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="aprilTagDetection_getProperty_Number" id="D(K1+O}E+Y7i_ek8}A?z">
+<field name="PROP">ftcPose.elevation</field>
+<value name="APRIL_TAG_DETECTION">
+<block type="variables_get" id="sv;lYz!5q^E[A|N14(.X">
+<field name="VAR" id="vP~n9zf$lW%hYD/C.j_-">myAprilTagDetection</field>
+</block>
+</value>
+</block>
+</value>
+<value name="WIDTH">
+<shadow type="math_number" id="GU73O^@;SXL))%*l[8Me">
+<field name="NUM">6</field>
+</shadow>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="4Nv)-M9MfCY%aAn:1SEF">
+<field name="NUM">1</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="ADD6">
+<block type="text" id="x`,kpt}.uw,YSWON!D^j">
+<field name="TEXT">  (inch, deg, deg)</field>
+</block>
+</value>
+</block>
+</value>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+<statement name="ELSE">
+<block type="telemetry_addLine" id=".k7)ZU|.JU[vLM%.9oWH">
+<value name="TEXT">
+<shadow type="text" id="hqwM9[:8R6P;nJWo`z$@">
+<field name="TEXT"/>
+</shadow>
+<block type="text_join" id="Q$XL59m.y(HLLD=Lb6bM">
+<mutation items="3"/>
+<value name="ADD0">
+<block type="text" id="GO{s|1|cjZX5wm!s}6^U">
+<field name="TEXT">==== (ID </field>
+</block>
+</value>
+<value name="ADD1">
+<block type="aprilTagDetection_getProperty_Number" id="YbKMT]1!N/1orH}f.`^%">
+<field name="PROP">id</field>
+<value name="APRIL_TAG_DETECTION">
+<block type="variables_get" id="*DZMa]u.xVDWo54-+9Xp">
+<field name="VAR" id="vP~n9zf$lW%hYD/C.j_-">myAprilTagDetection</field>
+</block>
+</value>
+</block>
+</value>
+<value name="ADD2">
+<block type="text" id="Ej2sUV*ZReT^:zwt~{Ar">
+<field name="TEXT">) Unknown</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_addLine" id="*wewMc^H[$Rs0;EK}Ow]">
+<value name="TEXT">
+<shadow type="text" id="2oq;P##KvH:(,WjrIe3!">
+<field name="TEXT"/>
+</shadow>
+<block type="text_join" id="DS^4mx0$o}XW[*EAx9g+">
+<mutation items="5"/>
+<value name="ADD0">
+<block type="text" id="~aS!V+hMdY{-*4G3Ow%3">
+<field name="TEXT">Center </field>
+</block>
+</value>
+<value name="ADD1">
+<block type="misc_formatNumber_withWidth" id="NWWJ-BvdUXyMBZ|RD`m}">
+<value name="NUMBER">
+<shadow type="math_number" id="WWZ1rIy[E-^rf4i5ES.w">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="aprilTagDetection_getProperty_Number" id="Kns6PW?m}A;SO?@NVb#)">
+<field name="PROP">center.x</field>
+<value name="APRIL_TAG_DETECTION">
+<block type="variables_get" id="Ar)`$(G]w1~mg?c!0{v;">
+<field name="VAR" id="vP~n9zf$lW%hYD/C.j_-">myAprilTagDetection</field>
+</block>
+</value>
+</block>
+</value>
+<value name="WIDTH">
+<shadow type="math_number" id="ZZ080[{./+Y}t=(P1DCR">
+<field name="NUM">6</field>
+</shadow>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="sPPkrRLvHyLpl?+E}RhL">
+<field name="NUM">0</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="ADD2">
+<block type="text" id="M[jW(z}Tg(pfF5o6v96v">
+<field name="TEXT"/>
+</block>
+</value>
+<value name="ADD3">
+<block type="misc_formatNumber_withWidth" id="IGswFrO!Q%aCF}3x,SPE">
+<value name="NUMBER">
+<shadow type="math_number" id="iQ6P;:;Igrei}.mq2:.{">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="aprilTagDetection_getProperty_Number" id="P2eT2TYX6nNBSYz7e^E)">
+<field name="PROP">center.y</field>
+<value name="APRIL_TAG_DETECTION">
+<block type="variables_get" id="ZmOVtYIkx|@b66VSAfd]">
+<field name="VAR" id="vP~n9zf$lW%hYD/C.j_-">myAprilTagDetection</field>
+</block>
+</value>
+</block>
+</value>
+<value name="WIDTH">
+<shadow type="math_number" id="MQkYmiA}ms4pA[Ifr2gb">
+<field name="NUM">6</field>
+</shadow>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="*L=(!sY,[nz~xV=Ke@]u">
+<field name="NUM">0</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="ADD4">
+<block type="text" id="lH92feGire@JDBfwGTlN">
+<field name="TEXT"> (pixels)</field>
+</block>
+</value>
+</block>
+</value>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+<next>
+<block type="telemetry_addLine" id="3N{F`jhy%rx/{Xex;5zu">
+<value name="TEXT">
+<shadow type="text" id="ds{Hr}!u1tUZ{*]D~==j">
+<field name="TEXT"/>
+</shadow>
+</value>
+<next>
+<block type="telemetry_addLine" id="[:W.s1Ok!]MP)3.3IU{#">
+<value name="TEXT">
+<shadow type="text" id="Pzz,~#oj]g6(p8-kE+HJ">
+<field name="TEXT">key:</field>
+</shadow>
+</value>
+<next>
+<block type="telemetry_addLine" id="(z3|~vT*DZX[fOyQ2%S[">
+<value name="TEXT">
+<shadow type="text" id="M=~-,X%t3PZW:?]x+FCV">
+<field name="TEXT">XYZ = X (Right), Y (Forward), Z (Up) dist.</field>
+</shadow>
+</value>
+<next>
+<block type="telemetry_addLine" id="M,AbdMv6W{1dFQc)zQt~">
+<value name="TEXT">
+<shadow type="text" id="`KTr5c!E2VUU.9*_77qL">
+<field name="TEXT">PRY = Pitch, Roll &amp; Yaw (XYZ Rotation)</field>
+</shadow>
+</value>
+<next>
+<block type="telemetry_addLine" id="uuC6(PL0R.pO7.AFo]db">
+<value name="TEXT">
+<shadow type="text" id="^GlP*DEB!=^Mvq=zsRKv">
+<field name="TEXT">RBE = Range, Bearing &amp; Elevation</field>
+</shadow>
+</value>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+<block type="procedures_defnoreturn" id="v!.6#E@yOowcb_?QX@0r" x="0" y="4628">
+<field name="NAME">doCameraSwitching</field>
+<comment pinned="false" h="80" w="160">Describe this function...</comment>
+<statement name="STACK">
+<block type="controls_if" id="mS|5x-H6KeM-$RS(jDzS">
+<value name="IF0">
+<block type="logic_compare" id="Q?UNll)PjDR*S?xJpY==">
+<field name="OP">EQ</field>
+<value name="A">
+<block type="visionPortal_getCameraState" id="-#I/w;GgN-0{Y`@sD(6E">
+<comment pinned="false" h="150" w="325">Returns the state of the camera.</comment>
+<value name="VISION_PORTAL">
+<block type="variables_get" id="a}c{6=SfxKy_)o.9:(yX">
+<field name="VAR" id="Xk!_{IPng0#/P|7dx?3N">myVisionPortal</field>
+</block>
+</value>
+</block>
+</value>
+<value name="B">
+<block type="visionPortal_typedEnum_cameraState" id="-gC)dddx[C`j7$R.EQ`k">
+<field name="CAMERA_STATE">STREAMING</field>
+</block>
+</value>
+</block>
+</value>
+<statement name="DO0">
+<block type="comment" id="6mk(El]32-y1-jzuwFO0">
+<field name="COMMENT">If the left bumper is pressed, use Webcam 1.</field>
+<next>
+<block type="comment" id="Dve|/b9H1:VQT6P!?X[N">
+<field name="COMMENT">If the right bumper is pressed, use Webcam 2.</field>
+<next>
+<block type="variables_set" id="5k+@^!yNTrVnQ0-~AWrM">
+<field name="VAR" id="c`]!=7;YrY~6u71AMNH^">newLeftBumper</field>
+<value name="VALUE">
+<block type="gamepad_getProperty_Boolean" id="Yr@pdmOdt,xVn.J[7HwA">
+<field name="IDENTIFIER">gamepad1</field>
+<field name="PROP">LeftBumper</field>
+<data>{"IDENTIFIER":"gamepad1"}</data>
+</block>
+</value>
+<next>
+<block type="variables_set" id="_-}X6L8luI#~`W/G_Hoh">
+<field name="VAR" id="|RX@0yH!W}g7-GDnzqn[">newRightBumper</field>
+<value name="VALUE">
+<block type="gamepad_getProperty_Boolean" id="UVf;Ck3*aoBEcJkeh-w2">
+<field name="IDENTIFIER">gamepad1</field>
+<field name="PROP">RightBumper</field>
+<data>{"IDENTIFIER":"gamepad1"}</data>
+</block>
+</value>
+<next>
+<block type="controls_if" id="$_8C4pOsTI#|9D?p5oW5">
+<mutation elseif="1"/>
+<value name="IF0">
+<block type="logic_operation" id="j2|*GuK(X^4GJZ6[Z6We">
+<field name="OP">AND</field>
+<value name="A">
+<block type="variables_get" id="~mI/RyC|pn(BmmUVn(HL">
+<field name="VAR" id="c`]!=7;YrY~6u71AMNH^">newLeftBumper</field>
+</block>
+</value>
+<value name="B">
+<block type="logic_negate" id="5KB*En(fnJx$?j)gH!-w">
+<value name="BOOL">
+<block type="variables_get" id="cM7Uqmg=XIH:hVHp)vi:">
+<field name="VAR" id="Q*iA|9#K!{XA^=I9_17j">oldLeftBumper</field>
+</block>
+</value>
+</block>
+</value>
+</block>
+</value>
+<statement name="DO0">
+<block type="visionPortal_setActiveCamera" id="#1@sJwg+a*i@xL!V5SXm">
+<value name="VISION_PORTAL">
+<block type="variables_get" id="4Tm1pU=Cl_bgEeM0iv7e">
+<field name="VAR" id="Xk!_{IPng0#/P|7dx?3N">myVisionPortal</field>
+</block>
+</value>
+<value name="WEBCAM_NAME">
+<shadow type="navigation_webcamName" id="UJ|DN`0*9/F.}fuvR:9;">
+<field name="WEBCAM_NAME">Webcam 1</field>
+</shadow>
+</value>
+</block>
+</statement>
+<value name="IF1">
+<block type="logic_operation" id="!@]@t.;QYd2=Tc@hwMQf">
+<field name="OP">AND</field>
+<value name="A">
+<block type="variables_get" id="%{ffvu%^CidJezK~dXoW">
+<field name="VAR" id="|RX@0yH!W}g7-GDnzqn[">newRightBumper</field>
+</block>
+</value>
+<value name="B">
+<block type="logic_negate" id="kHgf|U*n(NB0,PMdk%X9">
+<value name="BOOL">
+<block type="variables_get" id="hMV$)[[fAuA{Wdx-=?E9">
+<field name="VAR" id="s?w(#5R5EX{f*aL$a3yX">oldRightBumper</field>
+</block>
+</value>
+</block>
+</value>
+</block>
+</value>
+<statement name="DO1">
+<block type="visionPortal_setActiveCamera" id="9;t_vmH]m?K);yt;+la=">
+<value name="VISION_PORTAL">
+<block type="variables_get" id="clcd:4Qykx=!_w1:LThV">
+<field name="VAR" id="Xk!_{IPng0#/P|7dx?3N">myVisionPortal</field>
+</block>
+</value>
+<value name="WEBCAM_NAME">
+<shadow type="navigation_webcamName" id="wda_#kUBY-t6g~M6O#5?">
+<field name="WEBCAM_NAME">Webcam 2</field>
+</shadow>
+</value>
+</block>
+</statement>
+<next>
+<block type="variables_set" id="dh^}cRz}$i5!/6[8fHA1">
+<field name="VAR" id="Q*iA|9#K!{XA^=I9_17j">oldLeftBumper</field>
+<value name="VALUE">
+<block type="variables_get" id="`1_-O4C$?4o?bbBu}G:.">
+<field name="VAR" id="c`]!=7;YrY~6u71AMNH^">newLeftBumper</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id="iRss^l,@_(N!0|L;Q{5G">
+<field name="VAR" id="s?w(#5R5EX{f*aL$a3yX">oldRightBumper</field>
+<value name="VALUE">
+<block type="variables_get" id="PAy4W+_GMTnnzE,lP7gE">
+<field name="VAR" id="|RX@0yH!W}g7-GDnzqn[">newRightBumper</field>
+</block>
+</value>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</statement>
+</block>
+</xml>
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<Extra>
+<OpModeMeta flavor="TELEOP" group="" autoTransition="" />
+<Enabled value="true" />
+</Extra>

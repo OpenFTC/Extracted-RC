@@ -114,7 +114,7 @@ public class LynxDiscoveryCommand extends LynxStandardCommand<LynxAck /*actually
         }
 
     @Override
-    protected void noteAttentionRequired()
+    protected void setAttentionRequired(boolean attentionRequired)
         {
         // nothing to do (in fact, discovery commands aren't even ack'd any more)
         }
@@ -157,4 +157,9 @@ public class LynxDiscoveryCommand extends LynxStandardCommand<LynxAck /*actually
         {
         }
 
+    @Override
+    public boolean isDangerous()
+        {
+        return false;
+        }
     }

@@ -103,4 +103,10 @@ public class LynxI2cWriteMultipleBytesCommand extends LynxDekaInterfaceCommand<L
         this.payload = new byte[cbPayload];
         buffer.get(this.payload);
         }
+
+    @Override
+    public boolean isDangerous()
+        {
+        return false;
+        }
     }

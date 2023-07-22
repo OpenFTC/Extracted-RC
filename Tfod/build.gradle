@@ -48,5 +48,6 @@ android {
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    api 'org.tensorflow:tensorflow-lite-task-vision:0.2.0'
+    api 'org.tensorflow:tensorflow-lite-task-vision:0.4.3'
+    runtimeOnly'org.tensorflow:tensorflow-lite:2.12.0'
 }

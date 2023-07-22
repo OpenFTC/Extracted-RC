@@ -18,6 +18,7 @@ package com.google.blocks.ftcrobotcontroller;
 
 import com.google.blocks.ftcrobotcontroller.util.ClipboardUtil;
 import com.google.blocks.ftcrobotcontroller.hardware.HardwareUtil;
+import com.google.blocks.ftcrobotcontroller.util.BlocksArchive;
 import com.google.blocks.ftcrobotcontroller.util.OfflineBlocksUtil;
 import com.google.blocks.ftcrobotcontroller.util.ProjectsUtil;
 import com.google.blocks.ftcrobotcontroller.util.FileManager;
@@ -65,6 +66,7 @@ public class ProgrammingWebHandlers implements ProgrammingMode {
   private static final String URI_FILE_MANAGER_JS = "/file_manager_js";
   private static final String URI_GET_CONFIGURATION_NAME = "/get_config_name";
   private static final String URI_FETCH_OFFLINE_BLOCKS_EDITOR = "/offline_blocks_editor";
+  private static final String URI_FETCH_BLOCKS_ARCHIVE = "/archive_blocks";
   private static final String URI_LIST_PROJECTS = "/list";
   private static final String URI_LIST_SAMPLES = "/samples";
   private static final String URI_FETCH_BLK = "/fetch_blk";
@@ -119,6 +121,7 @@ public class ProgrammingWebHandlers implements ProgrammingMode {
       js.append("var URI_FILE_MANAGER_JS = '").append(URI_FILE_MANAGER_JS).append("';\n");
       js.append("var URI_GET_CONFIGURATION_NAME = '").append(URI_GET_CONFIGURATION_NAME).append("';\n");
       js.append("var URI_FETCH_OFFLINE_BLOCKS_EDITOR = '").append(URI_FETCH_OFFLINE_BLOCKS_EDITOR).append("';\n");
+      js.append("var URI_FETCH_BLOCKS_ARCHIVE = '").append(URI_FETCH_BLOCKS_ARCHIVE).append("';\n");
       js.append("var URI_LIST_PROJECTS = '").append(URI_LIST_PROJECTS).append("';\n");
       js.append("var URI_LIST_SAMPLES = '").append(URI_LIST_SAMPLES).append("';\n");
       js.append("var URI_FETCH_BLK = '").append(URI_FETCH_BLK).append("';\n");
@@ -240,6 +243,22 @@ public class ProgrammingWebHandlers implements ProgrammingMode {
     private Response fetchOfflineBlocksEditor(NanoHTTPD.IHTTPSession session) throws IOException {
       return NoCachingWebHandler.setNoCache(session,
           newChunkedResponse(Response.Status.OK, "application/zip", OfflineBlocksUtil.fetchOfflineBlocksEditor()));
+    }
+  }
+
+  /**
+   * Fetches a new archive of all the blocks opmodes.
+   */
+  private static class FetchBlocksArchive implements WebHandler {
+
+    @Override
+    public Response getResponse(NanoHTTPD.IHTTPSession session) throws IOException, NanoHTTPD.ResponseException {
+      return fetchBlocksArchive(session);
+    }
+
+    private Response fetchBlocksArchive(NanoHTTPD.IHTTPSession session) throws IOException {
+      return NoCachingWebHandler.setNoCache(session,
+          newChunkedResponse(Response.Status.OK, "application/zip", BlocksArchive.fetchBlocksArchive()));
     }
   }
 
@@ -751,6 +770,7 @@ public class ProgrammingWebHandlers implements ProgrammingMode {
     manager.register(URI_FILE_MANAGER_JS,  decorateWithLogging(decorateWithParms(new FileManagerJS())));
     manager.register(URI_GET_CONFIGURATION_NAME, decorateWithLogging(decorateWithParms(new GetConfigurationName())));
     manager.register(URI_FETCH_OFFLINE_BLOCKS_EDITOR, decorateWithLogging(new FetchOfflineBlocksEditor()));
+    manager.register(URI_FETCH_BLOCKS_ARCHIVE, decorateWithLogging(new FetchBlocksArchive()));
     manager.register(URI_LIST_PROJECTS,    decorateWithLogging(new ListProjects()));
     manager.register(URI_LIST_SAMPLES,     decorateWithLogging(new ListSamples()));
     manager.register(URI_FETCH_BLK,        decorateWithLogging(decorateWithParms(new FetchBlockFile())));

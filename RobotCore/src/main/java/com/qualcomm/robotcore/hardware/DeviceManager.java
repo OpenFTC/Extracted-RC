@@ -150,15 +150,6 @@ public interface DeviceManager {
   RobotCoreLynxUsbDevice createLynxUsbDevice(SerialNumber serialNumber, @Nullable String name) throws RobotCoreException, InterruptedException;
 
   /**
-   * Creates an instance of a LynxModule
-   * @param lynxUsbDevice
-   * @param moduleAddress
-   * @return
-   */
-  RobotCoreLynxModule createLynxModule(RobotCoreLynxUsbDevice lynxUsbDevice, int moduleAddress, boolean isParent, String name);
-
-
-  /**
    * Creates a {@link WebcamName} from the indicated serialized contents
    */
   @Nullable WebcamName createWebcamName(SerialNumber serialNumber, String name) throws RobotCoreException, InterruptedException;

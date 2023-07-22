@@ -124,19 +124,41 @@ public final class OnBotJavaFileSystemUtils {
         return StandardResponses.successfulJsonRequest(builder.toString());
     }
 
+    public static File tempFolder(String filePath) throws IOException {
+        File tempFolder = File.createTempFile("onbotjava", EXT_TEMP_FILE, AppUtil.getDefContext().getCacheDir());
+        if (!tempFolder.delete()) {
+            throw new IOException("Could not delete temp file: " + tempFolder.getAbsolutePath());
+        }
+        if (!tempFolder.mkdirs()) {
+            throw new IOException("Could not create temp folder: " + tempFolder.getAbsolutePath());
+        }
+        return tempFolder;
+    }
+
     @NonNull
     private static NanoHTTPD.Response getFolderAsZip(String filePath) {
         final File sourceFolder = new File(filePath);
-        final File tempFolder;
+        final File tempFolder, outputZipFile;
         try {
-            tempFolder = File.createTempFile("onbotjava", EXT_TEMP_FILE, AppUtil.getDefContext().getCacheDir());
-        } catch (IOException e) {
-            RobotLog.ee(TAG, e, "Cannot create temp file for zip");
+            tempFolder = tempFolder(filePath);
+            outputZipFile = new File(tempFolder, filePath.substring(filePath.lastIndexOf(PATH_SEPARATOR) + 1) + EXT_ZIP_FILE);
+            createZipFileFrom(sourceFolder, outputZipFile);
+        } catch (Exception e) {
             return StandardResponses.serverError();
         }
-        tempFolder.delete();
-        tempFolder.mkdirs();
-        final File outputZipFile = new File(tempFolder, filePath.substring(filePath.lastIndexOf(PATH_SEPARATOR) + 1) +  EXT_ZIP_FILE);
+
+        // These files should be deleted when the controller's cache is cleared or on exit of the Java VM
+        // todo: find a way of clearing these files that doesn't harm NanoHTTPD
+        outputZipFile.deleteOnExit();
+        tempFolder.deleteOnExit();
+        try {
+            return newChunkedResponse(NanoHTTPD.Response.Status.OK, MimeTypesUtil.getMimeType(EXT_ZIP_FILE), new FileInputStream(outputZipFile));
+        } catch (FileNotFoundException e) {
+            return StandardResponses.serverError();
+        }
+    }
+
+    public static void createZipFileFrom(File sourceFolder, File outputZipFile) throws IOException {
         try (FileOutputStream destOutput = new FileOutputStream(outputZipFile)) {
             try (final ZipOutputStream zipOutputStream = new ZipOutputStream(destOutput)) {
                 zipOutputStream.setMethod(ZipOutputStream.DEFLATED);
@@ -154,7 +176,7 @@ public final class OnBotJavaFileSystemUtils {
                             ZipEntry entry = new ZipEntry(entryName);
                             zipOutputStream.putNextEntry(entry);
                             if (!file.isDirectory()) {
-                                try (FileInputStream inputStream =  new FileInputStream(file)) {
+                                try (FileInputStream inputStream = new FileInputStream(file)) {
                                     AppUtil.getInstance().copyStream(inputStream, zipOutputStream);
                                 }
                             }
@@ -169,17 +191,7 @@ public final class OnBotJavaFileSystemUtils {
             }
         } catch (IOException ex) {
             RobotLog.ee(TAG, ex, "Cannot create zip file");
-            return StandardResponses.serverError();
-        }
-
-        // These files should be deleted when the controller's cache is cleared or on exit of the Java VM
-        // todo: find a way of clearing these files that doesn't harm NanoHTTPD
-        outputZipFile.deleteOnExit();
-        tempFolder.deleteOnExit();
-        try {
-            return newChunkedResponse(NanoHTTPD.Response.Status.OK, MimeTypesUtil.getMimeType( EXT_ZIP_FILE), new FileInputStream(outputZipFile));
-        } catch (FileNotFoundException e) {
-            return StandardResponses.serverError();
+            throw ex;
         }
     }
 

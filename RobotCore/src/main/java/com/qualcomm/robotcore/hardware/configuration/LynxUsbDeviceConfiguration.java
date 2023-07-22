@@ -154,7 +154,7 @@ public class LynxUsbDeviceConfiguration extends ControllerConfiguration<LynxModu
                 // an address of 173 in the real world, regardless of what the configuration says.
                 moduleConfiguration.setModuleAddress(LynxConstants.CH_EMBEDDED_MODULE_ADDRESS);
                 }
-            moduleConfiguration.setIsParent(moduleConfiguration.getModuleAddress() == parentModuleAddress);
+            moduleConfiguration.setParentModuleAddress(parentModuleAddress);
             getModules().add(moduleConfiguration);
             }
         }

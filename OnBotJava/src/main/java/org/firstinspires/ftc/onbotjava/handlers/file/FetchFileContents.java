@@ -42,10 +42,13 @@ import org.firstinspires.ftc.robotcore.internal.webserver.WebHandler;
 
 import fi.iki.elonen.NanoHTTPD;
 
+import java.io.InputStream;
+import java.io.SequenceInputStream;
+
 @RegisterWebHandler(uri = OnBotJavaProgrammingMode.URI_FILE_GET)
 public class FetchFileContents implements WebHandler {
     @Override
     public NanoHTTPD.Response getResponse(NanoHTTPD.IHTTPSession session) {
-        return OnBotJavaFileSystemUtils.getFile(session.getParameters());
+         return OnBotJavaFileSystemUtils.getFile(session.getParameters());
     }
 }

@@ -34,6 +34,7 @@ package org.firstinspires.ftc.onbotjava;
 
 import android.content.res.AssetManager;
 import android.os.Build;
+
 import androidx.annotation.Nullable;
 
 import com.android.tools.r8.CompilationFailedException;
@@ -52,8 +53,6 @@ import dk.sgjesse.r8api.OrderedClassFileResourceProvider;
 
 import org.firstinspires.ftc.robotcore.external.Supplier;
 import org.firstinspires.ftc.robotcore.external.ThrowingCallable;
-import org.firstinspires.ftc.robotcore.internal.android.dx.command.DxConsole;
-import org.firstinspires.ftc.robotcore.internal.android.dx.command.Main;
 import org.firstinspires.ftc.robotcore.internal.files.FileModifyObserver;
 import org.firstinspires.ftc.robotcore.internal.opmode.OnBotJavaBuildLocker;
 import org.firstinspires.ftc.robotcore.internal.opmode.OnBotJavaHelper;
@@ -145,9 +144,10 @@ public class OnBotJavaManager implements Closeable
      * appropriate reverse-domain subdirs for .java, as usual) */
     public static final File srcDir                 = new File(javaRoot, "/src/");
 
+    /** The directory into which source code is backed up on builds **/
+    public static final File srcBackupDir           = new File(javaRoot, "/srcBackups");
+
     // Support for external libraries (uploaded .jar and .aar files)
-    public static final boolean USE_D8 = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
-    public static final boolean ALLOW_EXTERNAL_LIBRARIES = USE_D8;
     public static final String EXTERNAL_LIBRARIES = "/ExternalLibraries";
     public static final File extLibDir            = new File(AppUtil.FIRST_FOLDER, EXTERNAL_LIBRARIES);
 
@@ -211,6 +211,7 @@ public class OnBotJavaManager implements Closeable
         {
         ensureDirs(libDir);
         ensureDirs(srcDir);
+        ensureDirs(srcBackupDir);
         ensureDirs(extLibDir);
         ensureDirs(controlDir);
         ensureDirs(statusDir);
@@ -349,6 +350,7 @@ public class OnBotJavaManager implements Closeable
                             ReadWriteFile.writeFile(currentOnBotJavaDirFile, onBotJavaDirDirectory.getAbsolutePath()); // abspath contains jarsOutputDir dependence to here
                             consolidateClassFilesToJar(onBotJavaDirDirectory);
                             dexifyJarFiles(onBotJavaDirDirectory);
+                            OnBotJavaBackupManager.archiveSourceForBuild();
                             buildStatus = BuildStatus.SUCCESSFUL;
                             writeBuildStatusFile(OnBotJavaHelper.buildSuccessfulFile, "last successful build finished");
                             RobotLog.vv(TAG, "onBotJava build finished successfully");
@@ -588,65 +590,41 @@ public class OnBotJavaManager implements Closeable
         tmpDir.mkdir();
         File tmpZipFile = new File(tmpDir, "out.zip");
         try {
-            if (USE_D8)
+            RobotLog.vv(TAG, "using d8");
+            D8Command.Builder d8CommandBuilder = D8Command.builder(new D8DiagnosticsHandler())
+                .setProgramConsumer(new AndroidDexIndexedConsumer(tmpZipFile));
+            // For the classpath, first add the ftcClassPathLibs, then the external libraries, then
+            // finally the platformClassPathLibs.
+            OrderedClassFileResourceProvider classpathResourceProvider = new OrderedClassFileResourceProvider();
+            for (String filename : ftcClassPathLibs)
                 {
-                RobotLog.vv(TAG, "using d8");
-                D8Command.Builder d8CommandBuilder = D8Command.builder(new D8DiagnosticsHandler())
-                    .setProgramConsumer(new AndroidDexIndexedConsumer(tmpZipFile));
-                // For the classpath, first add the ftcClassPathLibs, then the external libraries, then
-                // finally the platformClassPathLibs.
-                OrderedClassFileResourceProvider classpathResourceProvider = new OrderedClassFileResourceProvider();
-                for (String filename : ftcClassPathLibs)
-                    {
-                    File file = new File(OnBotJavaManager.libDir, filename);
-                    classpathResourceProvider.addClassFileResourceProvider(
-                        new ArchiveClassFileResourceProvider(file));
-                    }
-                for (File file : ExternalLibraries.getInstance().getClasspathFiles())
-                    {
-                    classpathResourceProvider.addClassFileResourceProvider(
-                        new ArchiveClassFileResourceProvider(file));
-                    }
-                for (String filename : platformClassPathLibs)
-                    {
-                    File file = new File(OnBotJavaManager.libDir, filename);
-                    classpathResourceProvider.addClassFileResourceProvider(
-                        new ArchiveClassFileResourceProvider(file));
-                    }
-                if (!classpathResourceProvider.isEmpty())
-                    {
-                    d8CommandBuilder.addClasspathResourceProvider(classpathResourceProvider);
-                    }
-                // Add the input files.
-                for (File inputFile : inputFiles)
-                    {
-                    d8CommandBuilder.addProgramResourceProvider(
-                        new ArchiveProgramResourceProvider(inputFile));
-                    }
-                D8.run(d8CommandBuilder.build());
-                classpathResourceProvider.close();
+                File file = new File(OnBotJavaManager.libDir, filename);
+                classpathResourceProvider.addClassFileResourceProvider(
+                    new ArchiveClassFileResourceProvider(file));
                 }
-            else
+            for (File file : ExternalLibraries.getInstance().getClasspathFiles())
                 {
-                // For Marshmallow we use dex.
-                // TODO: Once we no longer allow Marshmallow devices, we can remove this code and
-                // lib/RobotCore/src/main/java/org/firstinspires/ftc/robotcore/internal/android/dex,
-                // lib/RobotCore/src/main/java/org/firstinspires/ftc/robotcore/internal/android/dx,
-                // lib/RobotCore/src/main/java/org/firstinspires/ftc/robotcore/internal/android/multidex.
-                RobotLog.vv(TAG, "using dx");
-                List<String> args = new ArrayList<String>();
-                args.add("--dex");
-                args.add("--no-files");     // no classes is ok
-                args.add("--output=" + tmpZipFile.getAbsolutePath());
-                for (File inputFile : inputFiles)
-                    {
-                    args.add(inputFile.getAbsolutePath());
-                    }
-                //
-                DxConsole.out = diagnosticListener.getPrintStream();
-                DxConsole.err = diagnosticListener.getPrintStream();
-                Main.main(args.toArray(new String[args.size()]));
+                classpathResourceProvider.addClassFileResourceProvider(
+                    new ArchiveClassFileResourceProvider(file));
                 }
+            for (String filename : platformClassPathLibs)
+                {
+                File file = new File(OnBotJavaManager.libDir, filename);
+                classpathResourceProvider.addClassFileResourceProvider(
+                    new ArchiveClassFileResourceProvider(file));
+                }
+            if (!classpathResourceProvider.isEmpty())
+                {
+                d8CommandBuilder.addClasspathResourceProvider(classpathResourceProvider);
+                }
+            // Add the input files.
+            for (File inputFile : inputFiles)
+                {
+                d8CommandBuilder.addProgramResourceProvider(
+                    new ArchiveProgramResourceProvider(inputFile));
+                }
+            D8.run(d8CommandBuilder.build());
+            classpathResourceProvider.close();
 
             // Unpack the output zip to get the .dex files.
             unpackZipFile(tmpZipFile, tmpDir);

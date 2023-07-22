@@ -6,6 +6,17 @@ public interface WebSocketManager {
     String SYSTEM_NAMESPACE = "system";
 
     /**
+     * Version of the WebSocket core implementation.
+     * This value should be incremented any time a
+     * breaking change is made to the core functionality
+     * of our websockets (commands and messages). Clients
+     * will read this value from rcInfo.json to determine
+     * if they are compatible with WebSocket commands and
+     * messages.
+     */
+    int WEBSOCKET_API_VERSION = 1;
+
+    /**
      * Register a namespace handler. All received messages with a namespace matching
      * handler.getNamespace() will be forwarded to the handler.
      *
@@ -33,4 +44,14 @@ public interface WebSocketManager {
      * @throws IllegalStateException if the namespace has not been registered
      */
     int broadcastToNamespace(@NonNull String namespace, @NonNull FtcWebSocketMessage message);
+
+    /**
+     * Determine if a particular WebSocket is subscribed to a given namespace
+     *
+     * @param namespace The namespace to check
+     * @param webSocket The WebSocket to check
+     * @return {@code true} if the WebSocket is subscribed to the namespace
+     * @throws IllegalStateException if the namespace has not been registered
+     */
+    boolean webSocketIsSubscribedToNamespace(@NonNull String namespace, @NonNull FtcWebSocket webSocket);
 }

@@ -62,15 +62,15 @@ public class LynxGetModuleLEDColorResponse extends LynxStandardResponse
     // Accessors
     //----------------------------------------------------------------------------------------------
 
-    int getRed()
+    public int getRed()
         {
         return TypeConversion.unsignedByteToInt(this.red);
         }
-    int getGreen()
+    public int getGreen()
         {
         return TypeConversion.unsignedByteToInt(this.green);
         }
-    int getBlue()
+    public int getBlue()
         {
         return TypeConversion.unsignedByteToInt(this.blue);
         }

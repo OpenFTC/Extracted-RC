@@ -69,11 +69,16 @@ public class UvcDevice extends NativeObject<UvcContext>
     public static boolean TRACE = true;
     protected Tracer tracer = Tracer.create(TAG, TRACE);
 
-    protected       LibUsbDevice        libUsbDevice;
+    protected       LibUsbDevice        libUsbDevice; // logically 'final', but cleared in dtor
     protected final UsbDevice           usbDevice;
     protected       UsbDeviceConnection usbDeviceConnection;
     protected       WebcamName          webcamName;
     protected       UsbInterfaceManager usbInterfaceManager = new UsbInterfaceMangerImpl();
+
+    /** If a thread holds this lock, then (ideally) NO OTHER LOCKs may be taken until it is released.
+    * More pragmatically, locks at wholly lower semantic layers of the system, ones that cannot *possibly*
+    * cause re-entry into this UvcDevice may be taken, but be very, very careful in doing so. */
+    protected final Object              leafLock = new Object();
 
     //----------------------------------------------------------------------------------------------
     // Construction
@@ -158,7 +163,7 @@ public class UvcDevice extends NativeObject<UvcContext>
 
     @NonNull public WebcamName getWebcamName()
         {
-        synchronized (lock)
+        synchronized (leafLock)
             {
             cacheWebcamName();
             return webcamName;
@@ -167,7 +172,7 @@ public class UvcDevice extends NativeObject<UvcContext>
 
     public void cacheWebcamName()
         {
-        synchronized (lock)
+        synchronized (leafLock)
             {
             if (webcamName==null)
                 {
@@ -179,7 +184,7 @@ public class UvcDevice extends NativeObject<UvcContext>
     protected WebcamName internalGetWebcamName() // throws nothing
         {
         try {
-            synchronized (lock)
+            synchronized (leafLock)
                 {
                 if (usbDevice != null)
                     {

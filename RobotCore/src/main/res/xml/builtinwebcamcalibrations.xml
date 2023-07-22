@@ -140,6 +140,54 @@
 
     </Camera>
 
+    <!-- Duplicate of: Logitech HD Pro Webcam C920, Calibrated by Robert Atkinson, 2018.05.30 using 3DF Zephyr -->
+    <!-- Required because Logitech has "another" C920 camera with a different PID  0x08E5 vs 0x082D -->
+    <Camera vid="Logitech" pid="0x08E5">
+
+        <Calibration
+            size="640 480"
+            focalLength="622.001f, 622.001f"
+            principalPoint="319.803f, 241.251f"
+            distortionCoefficients="0.1208, -0.261599, 0, 0, 0.10308, 0, 0, 0"
+            />
+
+        <Calibration
+            size="800 600"
+            focalLength="775.79f, 775.79f"
+            principalPoint="400.898f, 300.79f"
+            distortionCoefficients="0.112507, -0.272067, 0, 0, 0.15775, 0, 0, 0"
+            />
+
+        <Calibration
+            size="640 360"
+            focalLength="463.566f, 463.566f"
+            principalPoint="316.402f, 176.412f"
+            distortionCoefficients="0.111626 , -0.255626, 0, 0, 0.107992, 0, 0, 0"
+            />
+
+        <Calibration
+            size="1920, 1080"
+            focalLength="1385.92f , 1385.92f"
+            principalPoint="951.982f , 534.084f"
+            distortionCoefficients="0.117627, -0.248549, 0, 0, 0.107441, 0, 0, 0"
+            />
+
+        <Calibration
+            size="800, 448"
+            focalLength="578.272f , 578.272f"
+            principalPoint="402.145f , 221.506f"
+            distortionCoefficients="0.12175, -0.251652 , 0, 0, 0.112142, 0, 0, 0"
+            />
+
+        <Calibration
+            size="864, 480"
+            focalLength="626.909f , 626.909f"
+            principalPoint="426.007f , 236.834f"
+            distortionCoefficients="0.120988, -0.253336 , 0, 0, 0.102445, 0, 0, 0"
+            />
+
+    </Camera>
+
     <!-- ======================================================================================= -->
 
     <!-- Logitech HD Webcam C270, Calibrated by Noah Andrews, 2019.03.13 using 3DF Zephyr -->

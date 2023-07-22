@@ -94,4 +94,10 @@ public class LynxSetPWMConfigurationCommand extends LynxDekaInterfaceCommand<Lyn
         this.channel = buffer.get();
         this.framePeriod = buffer.getShort();
         }
+
+    @Override
+    public boolean isDangerous()
+        {
+        return false;
+        }
     }

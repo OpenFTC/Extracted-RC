@@ -20,7 +20,9 @@ import android.content.pm.PackageManager;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.qualcomm.robotcore.BuildConfig;
 import com.qualcomm.robotcore.hardware.configuration.LynxConstants;
+import com.qualcomm.robotcore.util.Device;
 import com.qualcomm.robotcore.util.IncludedFirmwareFileInfo;
 import com.qualcomm.robotcore.util.RobotLog;
 
@@ -32,6 +34,7 @@ import org.firstinspires.ftc.robotcore.internal.network.ApChannelManagerFactory;
 import org.firstinspires.ftc.robotcore.internal.network.DeviceNameManagerFactory;
 import org.firstinspires.ftc.robotcore.internal.network.WifiUtil;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
+import org.firstinspires.ftc.robotcore.internal.webserver.websockets.WebSocketManager;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -56,8 +59,9 @@ public class RobotControllerWebInfo {
           .create();
 
   private static final String cachedChOsVersion = LynxConstants.getControlHubOsVersion();
-  private static String cachedRcVersion;
+  private static final String cachedSdkVersion = AppUtil.getSdkVersionString();
 
+  private static String cachedRcVersion;
   static {
     try {
       cachedRcVersion = AppUtil.getDefContext().getPackageManager().getPackageInfo(AppUtil.getDefContext().getPackageName(), 0).versionName;
@@ -73,15 +77,16 @@ public class RobotControllerWebInfo {
   private final String passphrase;
   private final String serverUrl;
   private final boolean serverIsAlive;
-  private final long timeServerStartedMillis;
-  private final String timeServerStarted;
   private final boolean isREVControlHub;
   private final boolean supports5GhzAp;
   private final boolean appUpdateRequiresReboot;
   private final boolean supportsOtaUpdate;
   private final Set<ApChannel> availableChannels;
   private final ApChannel currentChannel;
+  private final int webSocketApiVersion;
+  private final String sdkVersion = cachedSdkVersion;
   private final String rcVersion = cachedRcVersion;
+  private final String serialNumber;
   private final String chOsVersion = cachedChOsVersion;
   private final List<LynxModuleInfo> revHubNamesAndVersions;
   private final String includedFirmwareFileVersion;
@@ -89,13 +94,12 @@ public class RobotControllerWebInfo {
 
   public RobotControllerWebInfo(
       String networkName, String passphrase, String serverUrl,
-      boolean serverIsAlive, long timeServerStartedMillis) {
+      boolean serverIsAlive) {
     this.deviceName = DeviceNameManagerFactory.getInstance().getDeviceName();
     this.networkName = (networkName == null) ? this.deviceName : networkName;
     this.passphrase = passphrase;
     this.serverUrl = serverUrl;
     this.serverIsAlive = serverIsAlive;
-    this.timeServerStartedMillis = timeServerStartedMillis;
     this.isREVControlHub = LynxConstants.isRevControlHub();
     this.ftcUserAgentCategory = FtcUserAgentCategory.OTHER;
     this.supports5GhzAp = WifiUtil.is5GHzAvailable();
@@ -103,11 +107,10 @@ public class RobotControllerWebInfo {
     this.supportsOtaUpdate = AndroidBoard.getInstance().hasControlHubUpdater();        // The Control Hub Updater enables the RC app to start OTA updates
     this.availableChannels = ApChannelManagerFactory.getInstance().getSupportedChannels();
     this.currentChannel = ApChannelManagerFactory.getInstance().getCurrentChannel();
+    this.webSocketApiVersion = WebSocketManager.WEBSOCKET_API_VERSION;
     this.revHubNamesAndVersions = CachedLynxModulesInfo.getLynxModulesInfo();
     this.includedFirmwareFileVersion = IncludedFirmwareFileInfo.HUMAN_READABLE_FW_VERSION;
-
-    SimpleDateFormat formatter = new SimpleDateFormat("MMM dd, h:mm aa", Locale.getDefault());
-    this.timeServerStarted = formatter.format(new Date(timeServerStartedMillis));
+    this.serialNumber = Device.getSerialNumberOrUnknown();
   }
 
   public String getDeviceName() {
@@ -130,14 +133,6 @@ public class RobotControllerWebInfo {
     return serverIsAlive;
   }
 
-  public long getTimeServerStartedMillis() {
-    return timeServerStartedMillis;
-  }
-
-  public String getTimeServerStarted() {
-    return timeServerStarted;
-  }
-
   public FtcUserAgentCategory getFtcUserAgentCategory() {
     return ftcUserAgentCategory;
   }
@@ -156,6 +151,10 @@ public class RobotControllerWebInfo {
 
   public boolean isOtaUpdateSupported() {
     return supportsOtaUpdate;
+  }
+
+  public int getWebSocketApiVersion() {
+    return webSocketApiVersion;
   }
 
   // todo: fix realign the types of the input

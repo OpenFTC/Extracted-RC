@@ -59,7 +59,7 @@ ace.define('ace/mode/java_worker',["require","exports","module","ace/lib/oop","a
         var antlr4, javaAntlr;
         var TerminalNode, TerminalNodeImpl, ClassDeclarationContext, PackageDeclarationContext, QualifiedNameContext, TypeTypeContext, TypeListContext, FormalParameterContext, FormalParameterListContext;
         try {
-            javaAntlr = require('java/java.js');
+            javaAntlr = require('java/js/java/java.js');
             antlr4 = javaAntlr.antlr4;
             TerminalNode = antlr4.tree.Tree.TerminalNode;
             TerminalNodeImpl = antlr4.tree.Tree.TerminalNodeImpl;

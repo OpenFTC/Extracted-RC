@@ -20,28 +20,30 @@ import android.graphics.Rect;
 
 class Zoom {
   double magnification;
-  double aspectRatio;
 
-  Zoom(double magnification, double aspectRatio) {
-    validateArguments(magnification, aspectRatio);
+  Zoom(double magnification) {
+    validateArguments(magnification);
     this.magnification = magnification;
-    this.aspectRatio = aspectRatio;
   }
 
-  static void validateArguments(double magnification, double aspectRatio) {
+  void setMagnification(double magnification) {
+    Zoom.validateArguments(magnification);
+    synchronized (this) {
+      this.magnification = magnification;
+    }
+  }
+
+  static void validateArguments(double magnification) {
     if (magnification < 0.9999) {
       throw new IllegalArgumentException("magnification must be greater than or equal to 1.0");
     }
-    if (aspectRatio <= 0.0001) {
-      throw new IllegalArgumentException("aspectRatio must be greater than 0");
-    }
   }
 
-  static Rect getZoomArea(double magnification, double aspectRatio, int frameWidth, int frameHeight) {
+  static Rect getZoomArea(double magnification, double modelAspectRatio, int frameWidth, int frameHeight) {
     // TODO(lizlooney): Figure out what to do if the rectangle ends up wider or taller than the
     // frame. I think that might happen if the frame is rotated.
     double centerWidth = frameWidth / magnification;
-    double centerHeight = centerWidth / aspectRatio;
+    double centerHeight = centerWidth / modelAspectRatio;
     double left = (frameWidth - centerWidth) / 2;
     double top = (frameHeight - centerHeight) / 2;
     return new Rect(

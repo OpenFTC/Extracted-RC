@@ -66,4 +66,10 @@ public abstract class LynxResponse<RESPONSE extends LynxMessage> extends LynxRes
         {
         return true;
         }
+
+    @Override
+    public boolean isDangerous()
+        {
+        return false;
+        }
     }

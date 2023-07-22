@@ -54,7 +54,7 @@ public class LynxModuleConfiguration extends ControllerConfiguration<DeviceConfi
     {
     public static final String TAG = "LynxModuleConfiguration";
 
-    private boolean                   isParent       = false;
+    private int parentModuleAddress;
     private List<DeviceConfiguration>  motors         = new LinkedList<>();
     private List<DeviceConfiguration>  servos         = new LinkedList<>();
     private List<DeviceConfiguration> pwmOutputs     = new LinkedList<>();
@@ -108,15 +108,30 @@ public class LynxModuleConfiguration extends ControllerConfiguration<DeviceConfi
         }
 
     /**
-     * A USB-connected Controller Module is considered a "Parent" and an EIA485-connected Controller Module is a "Child".
+     * Set the address of the parent module that this module is connected through.
+     * <p>
+     * If this module *is* this parent module, indicate that by providing this module's own address.
      */
-    public void setIsParent(boolean isParent)
+    public void setParentModuleAddress(int parentModuleAddress)
         {
-        this.isParent = isParent;
+        this.parentModuleAddress = parentModuleAddress;
         }
+
+    /**
+     * If this module is a parent, this will return its own address
+     */
+    public int getParentModuleAddress()
+        {
+        return this.parentModuleAddress;
+        }
+
+    /**
+     * A Control Hub or a USB-connected Expansion Hub is considered a "Parent",
+     * and an RS485-connected Expansion Hub is a "Child".
+     */
     public boolean isParent()
         {
-        return this.isParent;
+        return getParentModuleAddress() == getModuleAddress();
         }
 
     public void setUsbDeviceSerialNumber(@NonNull SerialNumber usbDeviceSerialNumber)

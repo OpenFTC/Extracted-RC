@@ -102,4 +102,10 @@ public class LynxGetModuleStatusCommand extends LynxStandardCommand<LynxGetModul
         {
         this.clearStatusAfterResponse = rgb[0] != 0;
         }
+
+    @Override
+    public boolean isDangerous()
+        {
+        return false;
+        }
     }

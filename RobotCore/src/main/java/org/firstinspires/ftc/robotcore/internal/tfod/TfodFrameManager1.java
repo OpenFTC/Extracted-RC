@@ -17,7 +17,6 @@
 package org.firstinspires.ftc.robotcore.internal.tfod;
 
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.RectF;
 import android.util.Log;
 import java.nio.ByteBuffer;
@@ -30,8 +29,9 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.firstinspires.ftc.robotcore.external.function.Consumer;
 import org.firstinspires.ftc.robotcore.external.tfod.CameraInformation;
+import org.firstinspires.ftc.robotcore.external.tfod.TfodParameters;
 import org.firstinspires.ftc.robotcore.internal.tfod.LabeledObject.CoordinateSystem;
-import org.tensorflow.lite.Interpreter;
+import org.tensorflow.lite.InterpreterApi;
 
 /**
  * Subclass of TfodFrameManager that uses {@link Interpreter} to support TensorFlow 1 object
@@ -45,11 +45,10 @@ class TfodFrameManager1 extends TfodFrameManager {
   private static final float IMAGE_MEAN = 128.0f;
   private static final float IMAGE_STD = 128.0f;
 
-  TfodFrameManager1(MappedByteBuffer modelData, List<String> labels, TfodParameters params,
-      CameraInformation cameraInformation, ClippingMargins clippingMargins, Zoom zoom,
-      ResultsCallback resultsCallback, Consumer<Bitmap> annotatedFrameCallback) {
-    super(modelData, labels, params, cameraInformation, clippingMargins, zoom, resultsCallback,
-        annotatedFrameCallback);
+  TfodFrameManager1(MappedByteBuffer modelData, TfodParameters params,
+      CameraInformation cameraInformation, float minResultConfidence,
+      ClippingMargins clippingMargins, Zoom zoom, ResultsCallback resultsCallback) {
+    super(modelData, params, cameraInformation, minResultConfidence, clippingMargins, zoom, resultsCallback);
   }
 
   @Override
@@ -58,7 +57,7 @@ class TfodFrameManager1 extends TfodFrameManager {
   }
 
   private class RecognizerPipeline1 extends RecognizerPipeline {
-    private final Interpreter interpreter;
+    private final InterpreterApi interpreter;
     private final int[] argb8888Array;
     private final ByteBuffer imgData;
     private final float[][][] outputLocations;
@@ -69,22 +68,24 @@ class TfodFrameManager1 extends TfodFrameManager {
     private RecognizerPipeline1(MappedByteBuffer modelData, ZoomHelper zoomHelper, Bitmap zoomBitmap) {
       super(zoomHelper, zoomBitmap);
 
-      interpreter = new Interpreter(modelData, params.numInterpreterThreads);
+      InterpreterApi.Options options = new InterpreterApi.Options()
+          .setNumThreads(params.numDetectorThreads);
+      interpreter = InterpreterApi.create(modelData, options);
 
-      argb8888Array = new int[4 * params.inputSize * params.inputSize];
+      argb8888Array = new int[4 * params.modelInputSize * params.modelInputSize];
 
       // Allocate the ByteBuffer to be passed as the input to the network
       int numBytesPerChannel = params.isModelQuantized ? 1 /* Quantized */ : 4 /* Floating Point */;
       // capacity = (Width) * (Height) * (Channels) * (Bytes Per Channel)
-      int capacity = params.inputSize * params.inputSize * 3 * numBytesPerChannel;
+      int capacity = params.modelInputSize * params.modelInputSize * 3 * numBytesPerChannel;
       imgData = ByteBuffer.allocateDirect(capacity);
       imgData.order(ByteOrder.nativeOrder());
       imgData.rewind();
 
       // Create the output arrays for the interpreter.
-      outputLocations = new float[1][params.maxNumDetections][4];
-      outputClasses = new float[1][params.maxNumDetections];
-      outputScores = new float[1][params.maxNumDetections];
+      outputLocations = new float[1][params.maxNumRecognitions][4];
+      outputClasses = new float[1][params.maxNumRecognitions];
+      outputScores = new float[1][params.maxNumRecognitions];
       numDetections = new float[1];
     }
 
@@ -92,13 +93,13 @@ class TfodFrameManager1 extends TfodFrameManager {
     protected void processFrame(long frameTimeNanos) {
       updateBitmapForTfod();
 
-      bitmapForTfod.getPixels(argb8888Array, 0, params.inputSize, 0, 0, params.inputSize, params.inputSize);
+      bitmapForTfod.getPixels(argb8888Array, 0, params.modelInputSize, 0, 0, params.modelInputSize, params.modelInputSize);
 
       // Copy the data into the ByteBuffer
       ByteBuffer imgData = this.imgData.duplicate();
-      for (int i = 0; i < params.inputSize; ++i) {
-        for (int j = 0; j < params.inputSize; ++j) {
-          int pixelValue = argb8888Array[i * params.inputSize + j];
+      for (int i = 0; i < params.modelInputSize; ++i) {
+        for (int j = 0; j < params.modelInputSize; ++j) {
+          int pixelValue = argb8888Array[i * params.modelInputSize + j];
           if (params.isModelQuantized) { // Quantized model
             // Copy as-is
             imgData.put((byte) ((pixelValue >> 16) & 0xFF));
@@ -130,10 +131,10 @@ class TfodFrameManager1 extends TfodFrameManager {
     private List<LabeledObject> postProcessDetections(
         float[][] outputLocations, float[] outputClasses, float[] outputScores) {
       List<LabeledObject> labeledObjects = new ArrayList<>();
-      for (int i = 0; i < params.maxNumDetections; i++) {
-        // The network will always generate MAX_NUM_DETECTIONS results.
+      for (int i = 0; i < params.maxNumRecognitions; i++) {
+        // The network will always generate maxNumRecognitions results.
         final float detectionScore = outputScores[i];
-        if (detectionScore < params.minResultConfidence) {
+        if (detectionScore < minResultConfidence) {
           continue;
         }
 
@@ -142,7 +143,7 @@ class TfodFrameManager1 extends TfodFrameManager {
 
         // We've observed that the detections can some times be out of bounds (potentially when the
         // network isn't confident enough in any positive results) so this keeps the labels in bounds.
-        if (detectedClass < 0 || detectedClass >= labels.size()) {
+        if (detectedClass < 0 || detectedClass >= params.modelLabels.size()) {
           Log.w("RecognizerPipeline1.postProcessDetections",
               "got a detection with an invalid class: " + detectedClass);
           continue;
@@ -151,15 +152,15 @@ class TfodFrameManager1 extends TfodFrameManager {
         // Note(lizlooney): the model gives [top, left, bottom, right], while RectF expects
         // [left, top, right, bottom].
         RectF detectionBox = new RectF(
-            outputLocations[i][1] * params.inputSize,
-            outputLocations[i][0] * params.inputSize,
-            outputLocations[i][3] * params.inputSize,
-            outputLocations[i][2] * params.inputSize);
+            outputLocations[i][1] * params.modelInputSize,
+            outputLocations[i][0] * params.modelInputSize,
+            outputLocations[i][3] * params.modelInputSize,
+            outputLocations[i][2] * params.modelInputSize);
         // Convert the box to zoom area coordinates.
         tfodToZoomAreaMatrix.mapRect(detectionBox);
 
         LabeledObject labeledObject = new LabeledObject(
-            labels.get(detectedClass), detectionScore,
+            params.modelLabels.get(detectedClass), boxColor, detectionScore,
             zoomHelper, CoordinateSystem.ZOOM_AREA,
             detectionBox.left, detectionBox.top, detectionBox.right, detectionBox.bottom);
         labeledObjects.add(labeledObject);

@@ -87,4 +87,10 @@ public class LynxSetNewModuleAddressCommand extends LynxStandardCommand<LynxAck>
         {
         this.moduleAddress = rgb[0];
         }
+
+    @Override
+    public boolean isDangerous()
+        {
+        return false;
+        }
     }

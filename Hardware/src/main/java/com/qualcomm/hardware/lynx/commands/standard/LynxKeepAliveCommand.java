@@ -70,12 +70,14 @@ public class LynxKeepAliveCommand extends LynxStandardCommand<LynxAck>
         return getStandardCommandNumber();
         }
 
-    protected void noteAttentionRequired()
+    protected void setAttentionRequired(boolean attentionRequired)
         {
-        if (!this.initialPing)
+        if (this.initialPing)
             {
-            super.noteAttentionRequired();
+            // Pretend that attention is not required at first
+            super.setAttentionRequired(false);
             }
+        super.setAttentionRequired(attentionRequired);
         }
 
     @Override
@@ -95,5 +97,11 @@ public class LynxKeepAliveCommand extends LynxStandardCommand<LynxAck>
         // It's our experience that keep alives (maybe just the initial one) can sometimes
         // take a little longer. Don't really know why.
         return 500;
+        }
+
+    @Override
+    public boolean isDangerous()
+        {
+        return false;
         }
     }

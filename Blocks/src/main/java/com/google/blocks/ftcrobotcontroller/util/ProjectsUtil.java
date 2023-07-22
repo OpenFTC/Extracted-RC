@@ -121,16 +121,7 @@ public class ProjectsUtil {
 
     return ProjectsLockManager.lockProjectsWhile(new Supplier<String>() {
       @Override public String get() {
-        File[] files = BLOCK_OPMODES_DIR.listFiles(new FilenameFilter() {
-          @Override
-          public boolean accept(File dir, String filename) {
-            if (filename.endsWith(BLOCKS_BLK_EXT)) {
-              String projectName = filename.substring(0, filename.length() - BLOCKS_BLK_EXT.length());
-              return isValidProjectName(projectName);
-            }
-            return false;
-          }
-        });
+        File[] files = BLOCK_OPMODES_DIR.listFiles(new BlocksProjectFilenameFilter());
         if (files != null) {
           StringBuilder jsonProjects = new StringBuilder();
           jsonProjects.append("[");
@@ -179,16 +170,7 @@ public class ProjectsUtil {
 
     ProjectsLockManager.lockProjectsWhile(new ThrowingCallable<Void, IOException>() {
       @Override public Void call() throws IOException {
-        File[] files = BLOCK_OPMODES_DIR.listFiles(new FilenameFilter() {
-          @Override
-          public boolean accept(File dir, String filename) {
-            if (filename.endsWith(BLOCKS_BLK_EXT)) {
-              String projectName = filename.substring(0, filename.length() - BLOCKS_BLK_EXT.length());
-              return isValidProjectName(projectName);
-            }
-            return false;
-          }
-        });
+        File[] files = BLOCK_OPMODES_DIR.listFiles(new BlocksProjectFilenameFilter());
         if (files != null) {
           for (File file : files) {
             String filename = file.getName();
@@ -203,6 +185,30 @@ public class ProjectsUtil {
             String extraXml = blkFileContent.substring(iXmlEndTag + XML_END_TAG.length());
             offlineBlocksProjects.add(new OfflineBlocksProject(filename, blkFileContent,
                 projectName, file.lastModified(), isProjectEnabled(projectName, extraXml)));
+          }
+        }
+        return null;
+      }
+    });
+  }
+
+  /**
+   * Collects information about the existing blocks projects.
+   */
+  public static void fetchProjects(
+      final List<BlocksProject> blocksProjects) throws IOException {
+    AppUtil.getInstance().ensureDirectoryExists(BLOCK_OPMODES_DIR, false);
+    ReadWriteFile.ensureAllChangesAreCommitted(BLOCK_OPMODES_DIR);
+
+    ProjectsLockManager.lockProjectsWhile(new ThrowingCallable<Void, IOException>() {
+      @Override public Void call() throws IOException {
+        File[] files = BLOCK_OPMODES_DIR.listFiles(new BlocksProjectFilenameFilter());
+        if (files != null) {
+          for (File file : files) {
+            String filename = file.getName();
+            String projectName = filename.substring(0, filename.length() - BLOCKS_BLK_EXT.length());
+            String blkFileContent = fetchBlkFileContent(projectName);
+            blocksProjects.add(new BlocksProject(filename, blkFileContent, file.lastModified()));
           }
         }
         return null;
@@ -278,27 +284,29 @@ public class ProjectsUtil {
    */
   private static Set<Capability> getRequestedCapabilities(String sampleName, String blkFileContent) {
     Set<Capability> requestedCapabilities = new LinkedHashSet<>();
+
     // The order here is important. If any of these capabilities is not supported by the robot
     // configuration, we will show the warning associated with the first missing capability.
-    if (blkFileContent.contains("<block type=\"tfod")) {
-      requestedCapabilities.add(Capability.TFOD);
-    }
-    if (blkFileContent.contains("<block type=\"vuforia")) {
-      requestedCapabilities.add(Capability.VUFORIA);
-    }
-    if (blkFileContent.contains("<block type=\"navigation_switchableCamera")) {
+
+    if (blkFileContent.contains("navigation_switchableCamera_forAllWebcams")) {
       requestedCapabilities.add(Capability.SWITCHABLE_CAMERA);
     }
-    // ConceptTensorFlowObjectDetectionCustomModel includes _initialize_withWebcam and
-    // _initialize_withCameraDirection blocks. We don't show the warning for missing webcam.
-    if (!sampleName.equals("ConceptTensorFlowObjectDetectionCustomModel")) {
-      if (blkFileContent.contains("_initialize_withWebcam")) {
+
+    if (blkFileContent.contains("navigation_webcamName")) {
+      // ConceptAprilTag, ConceptTensorFlowObjectDetection, and
+      // ConceptTensorFlowObjectDetectionCustomModel include both _withWebcam and
+      // _withCameraDirection blocks. We don't show the warning for missing webcam.
+      if (!sampleName.equals("ConceptAprilTag") &&
+          !sampleName.equals("ConceptTensorFlowObjectDetection") &&
+          !sampleName.equals("ConceptTensorFlowObjectDetectionCustomModel")) {
         requestedCapabilities.add(Capability.WEBCAM);
       }
     }
-    if (blkFileContent.contains("_initialize_withCameraDirection")) {
+
+    if (blkFileContent.contains("navigation_typedEnum_builtinCameraDirection")) {
       requestedCapabilities.add(Capability.CAMERA);
     }
+
     return requestedCapabilities;
   }
 
@@ -1141,5 +1149,16 @@ public class ProjectsUtil {
 
   private static String removeNewLines(String text) {
     return text.replace("\n", "");
+  }
+
+  static class BlocksProjectFilenameFilter implements FilenameFilter {
+    @Override
+    public boolean accept(File dir, String filename) {
+      if (filename.endsWith(BLOCKS_BLK_EXT)) {
+        String projectName = filename.substring(0, filename.length() - BLOCKS_BLK_EXT.length());
+        return isValidProjectName(projectName);
+      }
+      return false;
+    }
   }
 }

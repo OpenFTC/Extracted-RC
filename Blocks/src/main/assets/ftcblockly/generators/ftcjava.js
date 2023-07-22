@@ -1150,69 +1150,6 @@ Blockly.FtcJava.importDeclareAssign_ = function(block, identifierFieldName, java
       rvalue = 'new ' + javaType + '()';
       needsToBeClosed = true;
       break;
-    case 'Tfod':
-      // tfodIdentifierForFtcJava is defined dynamically in
-      // HardwareUtil.fetchJavaScriptForHardware().
-      identifierForFtcJava = identifier = tfodIdentifierForFtcJava;
-      rvalue = 'new ' + javaType + '()';
-      needsToBeClosed = true;
-      break;
-    case 'TfodCurrentGame':
-      // tfodCurrentGameIdentifierForFtcJava is defined dynamically in
-      // HardwareUtil.fetchJavaScriptForHardware().
-      identifierForFtcJava = identifier = tfodCurrentGameIdentifierForFtcJava;
-      rvalue = 'new ' + javaType + '()';
-      needsToBeClosed = true;
-      break;
-    case 'TfodCustomModel':
-      // tfodCustomModelIdentifierForFtcJava is defined dynamically in
-      // HardwareUtil.fetchJavaScriptForHardware().
-      identifierForFtcJava = identifier = tfodCustomModelIdentifierForFtcJava;
-      rvalue = 'new ' + javaType + '()';
-      needsToBeClosed = true;
-      break;
-    case 'TfodRoverRuckus':
-      // tfodRoverRuckusIdentifierForFtcJava is defined dynamically in
-      // HardwareUtil.fetchJavaScriptForHardware().
-      identifierForFtcJava = identifier = tfodRoverRuckusIdentifierForFtcJava;
-      rvalue = 'new ' + javaType + '()';
-      needsToBeClosed = true;
-      break;
-    case 'TfodSkyStone':
-      // tfodSkyStoneIdentifierForFtcJava is defined dynamically in
-      // HardwareUtil.fetchJavaScriptForHardware().
-      identifierForFtcJava = identifier = tfodSkyStoneIdentifierForFtcJava;
-      rvalue = 'new ' + javaType + '()';
-      needsToBeClosed = true;
-      break;
-    case 'VuforiaCurrentGame':
-      // vuforiaCurrentGameIdentifierForFtcJava is defined dynamically in
-      // HardwareUtil.fetchJavaScriptForHardware().
-      identifierForFtcJava = identifier = vuforiaCurrentGameIdentifierForFtcJava;
-      rvalue = 'new ' + javaType + '()';
-      needsToBeClosed = true;
-      break;
-    case 'VuforiaRelicRecovery':
-      // vuforiaRelicRecoveryIdentifierForFtcJava is defined dynamically in
-      // HardwareUtil.fetchJavaScriptForHardware().
-      identifierForFtcJava = identifier = vuforiaRelicRecoveryIdentifierForFtcJava;
-      rvalue = 'new ' + javaType + '()';
-      needsToBeClosed = true;
-      break;
-    case 'VuforiaRoverRuckus':
-      // vuforiaRoverRuckusIdentifierForFtcJava is defined dynamically in
-      // HardwareUtil.fetchJavaScriptForHardware().
-      identifierForFtcJava = identifier = vuforiaRoverRuckusIdentifierForFtcJava;
-      rvalue = 'new ' + javaType + '()';
-      needsToBeClosed = true;
-      break;
-    case 'VuforiaSkyStone':
-      // vuforiaSkyStoneIdentifierForFtcJava is defined dynamically in
-      // HardwareUtil.fetchJavaScriptForHardware().
-      identifierForFtcJava = identifier = vuforiaSkyStoneIdentifierForFtcJava;
-      rvalue = 'new ' + javaType + '()';
-      needsToBeClosed = true;
-      break;
     default:
       if (!identifierFieldName) {
         throw 'Unexpected situation (identifierFieldName is \'' + identifierFieldName + '\').';

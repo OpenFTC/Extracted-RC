@@ -21,7 +21,6 @@
  */
 
 // The following are generated dynamically in HardwareUtil.fetchJavaScriptForHardware():
-// switchableCameraName
 // The following are defined in vars.js:
 // navigationIdentifierForJavaScript
 // getPropertyColor
@@ -352,24 +351,24 @@ Blockly.JavaScript['navigation_typedEnum_axesReference'] =
 Blockly.FtcJava['navigation_typedEnum_axesReference'] =
     Blockly.FtcJava['navigation_enum_axesReference'];
 
-// CameraDirection
-Blockly.Blocks['navigation_enum_cameraDirection'] = {
+// BuiltinCameraDirection
+Blockly.Blocks['navigation_typedEnum_builtinCameraDirection'] = {
   init: function() {
     var CAMERA_DIRECTION_CHOICES = [
         ['BACK', 'BACK'],
         ['FRONT', 'FRONT'],
     ];
-    this.setOutput(true, 'VuforiaLocalizer.CameraDirection');
+    this.setOutput(true, 'BuiltinCameraDirection');
     this.appendDummyInput()
-        .appendField(createNonEditableField('CameraDirection'))
+        .appendField(createNonEditableField('BuiltinCameraDirection'))
         .appendField('.')
         .appendField(new Blockly.FieldDropdown(CAMERA_DIRECTION_CHOICES), 'CAMERA_DIRECTION');
     this.setColour(getPropertyColor);
     // Assign 'this' to a variable for use in the tooltip closure below.
     var thisBlock = this;
     var TOOLTIPS = [
-        ['BACK', 'The CameraDirection value BACK.'],
-        ['FRONT', 'The CameraDirection value FRONT.'],
+        ['BACK', 'The BuiltinCameraDirection value BACK.'],
+        ['FRONT', 'The BuiltinCameraDirection value FRONT.'],
     ];
     this.setTooltip(function() {
       var key = thisBlock.getFieldValue('CAMERA_DIRECTION');
@@ -383,25 +382,17 @@ Blockly.Blocks['navigation_enum_cameraDirection'] = {
   }
 };
 
-Blockly.JavaScript['navigation_enum_cameraDirection'] = function(block) {
-  var code = '"' + block.getFieldValue('CAMERA_DIRECTION') + '"';
-  return [code, Blockly.JavaScript.ORDER_ATOMIC];
+Blockly.JavaScript['navigation_typedEnum_builtinCameraDirection'] = function(block) {
+  var builtinCameraDirection = '"' + block.getFieldValue('CAMERA_DIRECTION') + '"';
+  var code = navigationIdentifierForJavaScript + '.getBuiltinCameraDirection(' + builtinCameraDirection + ')';
+  return [code, Blockly.JavaScript.ORDER_FUNCTION_CALL];
 };
 
-Blockly.FtcJava['navigation_enum_cameraDirection'] = function(block) {
-  var code = 'VuforiaLocalizer.CameraDirection.' + block.getFieldValue('CAMERA_DIRECTION');
-  Blockly.FtcJava.generateImport_('VuforiaLocalizer');
+Blockly.FtcJava['navigation_typedEnum_builtinCameraDirection'] = function(block) {
+  var code = 'BuiltinCameraDirection.' + block.getFieldValue('CAMERA_DIRECTION');
+  Blockly.FtcJava.generateImport_('BuiltinCameraDirection');
   return [code, Blockly.FtcJava.ORDER_MEMBER];
 };
-
-Blockly.Blocks['navigation_typedEnum_cameraDirection'] =
-    Blockly.Blocks['navigation_enum_cameraDirection'];
-
-Blockly.JavaScript['navigation_typedEnum_cameraDirection'] =
-    Blockly.JavaScript['navigation_enum_cameraDirection'];
-
-Blockly.FtcJava['navigation_typedEnum_cameraDirection'] =
-    Blockly.FtcJava['navigation_enum_cameraDirection'];
 
 // WebcamName
 Blockly.Blocks['navigation_webcamName'] = {
@@ -416,101 +407,38 @@ Blockly.Blocks['navigation_webcamName'] = {
 };
 
 Blockly.JavaScript['navigation_webcamName'] = function(block) {
-  // For javascript, we generate the device name of the webcam as a string.
-  var code = '"' + block.getFieldValue('WEBCAM_NAME') + '"';
-  return [code, Blockly.JavaScript.ORDER_ATOMIC];
+  var webcamName = '"' + block.getFieldValue('WEBCAM_NAME') + '"';
+  var code = navigationIdentifierForJavaScript + '.getWebcamName(' + webcamName + ')';
+  return [code, Blockly.JavaScript.ORDER_FUNCTION_CALL];
 };
 
 Blockly.FtcJava['navigation_webcamName'] = function(block) {
-  // For java, we generate code to retrieve the WebcamName from the hardwareMap.
   var code = 'hardwareMap.get(WebcamName.class, "' + block.getFieldValue('WEBCAM_NAME') + '")';
   Blockly.FtcJava.generateImport_('WebcamName');
   return [code, Blockly.FtcJava.ORDER_FUNCTION_CALL];
 };
 
-Blockly.Blocks['navigation_switchableCamera'] = {
+Blockly.Blocks['navigation_switchableCamera_forAllWebcams'] = {
   init: function() {
-    this.setOutput(true, 'SwitchableCamera');
+    this.setOutput(true, 'SwitchableCameraName');
     this.appendDummyInput()
-        .appendField(createNonEditableField('SwitchableCamera'))
-    this.setColour(getPropertyColor);
-    this.setTooltip('A virtual camera comprised of all configured webcams.');
+        .appendField('call')
+        .appendField(createNonEditableField('createSwitchableCameraNameForAllWebcams'));
+    this.setColour(functionColor);
+    this.setTooltip('Creates a virtual camera comprised of all configured webcams.');
   }
 };
 
-Blockly.JavaScript['navigation_switchableCamera'] = function(block) {
-  // For javascript, we generate the special name of the switchable camera as a string.
-  var code = '"' + switchableCameraName + '"';
-  return [code, Blockly.JavaScript.ORDER_ATOMIC];
+Blockly.JavaScript['navigation_switchableCamera_forAllWebcams'] = function(block) {
+  var code = navigationIdentifierForJavaScript + '.createSwitchableCameraNameForAllWebcams()'
+  return [code, Blockly.JavaScript.ORDER_FUNCTION_CALL];
 };
 
-Blockly.FtcJava['navigation_switchableCamera'] = function(block) {
-  // For java, we generate code to get a switchable camera.
-  var code = 'VuforiaBase.getSwitchableCamera(hardwareMap)';
-  Blockly.FtcJava.generateImport_('VuforiaBase');
+Blockly.FtcJava['navigation_switchableCamera_forAllWebcams'] = function(block) {
+  var code = 'ClassFactory.createSwitchableCameraNameForAllWebcams(hardwareMap)';
+  Blockly.FtcJava.generateImport_('ClassFactory');
   return [code, Blockly.FtcJava.ORDER_FUNCTION_CALL];
 };
-
-// CameraMonitorFeedback
-Blockly.Blocks['navigation_enum_cameraMonitorFeedback'] = {
-  init: function() {
-    var CAMERA_MONITOR_FEEDBACK_CHOICES = [
-        ['DEFAULT', 'DEFAULT'],
-        ['NONE', 'NONE'],
-        ['AXES', 'AXES'],
-        ['TEAPOT', 'TEAPOT'],
-        ['BUILDINGS', 'BUILDINGS'],
-    ];
-    this.setOutput(true, 'VuforiaLocalizer.Parameters.CameraMonitorFeedback');
-    this.appendDummyInput()
-        .appendField(createNonEditableField('CameraMonitorFeedback'))
-        .appendField('.')
-        .appendField(new Blockly.FieldDropdown(CAMERA_MONITOR_FEEDBACK_CHOICES), 'CAMERA_MONITOR_FEEDBACK');
-    this.setColour(getPropertyColor);
-    // Assign 'this' to a variable for use in the tooltip closure below.
-    var thisBlock = this;
-    var TOOLTIPS = [
-        ['DEFAULT', 'The CameraMonitorFeedback value DEFAULT.'],
-        ['NONE', 'The CameraMonitorFeedback value NONE.'],
-        ['AXES', 'The CameraMonitorFeedback value AXES.'],
-        ['TEAPOT', 'The CameraMonitorFeedback value TEAPOT.'],
-        ['BUILDINGS', 'The CameraMonitorFeedback value BUILDINGS.'],
-    ];
-    this.setTooltip(function() {
-      var key = thisBlock.getFieldValue('CAMERA_MONITOR_FEEDBACK');
-      for (var i = 0; i < TOOLTIPS.length; i++) {
-        if (TOOLTIPS[i][0] == key) {
-          return TOOLTIPS[i][1];
-        }
-      }
-      return '';
-    });
-  }
-};
-
-Blockly.JavaScript['navigation_enum_cameraMonitorFeedback'] = function(block) {
-  var code = '"' + block.getFieldValue('CAMERA_MONITOR_FEEDBACK') + '"';
-  return [code, Blockly.JavaScript.ORDER_ATOMIC];
-};
-
-Blockly.FtcJava['navigation_enum_cameraMonitorFeedback'] = function(block) {
-  var cameraMonitorFeedback = block.getFieldValue('CAMERA_MONITOR_FEEDBACK');
-  if (cameraMonitorFeedback == 'DEFAULT') {
-    return ['null', Blockly.FtcJava.ORDER_ATOMIC];
-  }
-  var code = 'VuforiaLocalizer.Parameters.CameraMonitorFeedback.' + cameraMonitorFeedback;
-  Blockly.FtcJava.generateImport_('VuforiaLocalizer');
-  return [code, Blockly.FtcJava.ORDER_MEMBER];
-};
-
-Blockly.Blocks['navigation_typedEnum_cameraMonitorFeedback'] =
-    Blockly.Blocks['navigation_enum_cameraMonitorFeedback'];
-
-Blockly.JavaScript['navigation_typedEnum_cameraMonitorFeedback'] =
-    Blockly.JavaScript['navigation_enum_cameraMonitorFeedback'];
-
-Blockly.FtcJava['navigation_typedEnum_cameraMonitorFeedback'] =
-    Blockly.FtcJava['navigation_enum_cameraMonitorFeedback'];
 
 // DistanceUnit
 Blockly.Blocks['navigation_enum_distanceUnit'] = {

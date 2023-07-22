@@ -32,10 +32,15 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.robotcore.external;
 
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraManager;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.FrameGenerator;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+import org.firstinspires.ftc.robotcore.external.tfod.TfodParameters;
+import java.util.List;
 
 /**
  * {@link ClassFactory} provides a means by which various objects in the SDK may be logically
@@ -80,7 +85,7 @@ public abstract class ClassFactory
      *
      * @see TFObjectDetector
      */
-    public abstract TFObjectDetector createTFObjectDetector(TFObjectDetector.Parameters parameters,
+    public abstract TFObjectDetector createTFObjectDetector(TfodParameters parameters,
         VuforiaLocalizer vuforiaLocalizer);
 
     /**
@@ -94,7 +99,7 @@ public abstract class ClassFactory
      *
      * @see TFObjectDetector
      */
-    public abstract TFObjectDetector createTFObjectDetector(TFObjectDetector.Parameters parameters,
+    public abstract TFObjectDetector createTFObjectDetector(TfodParameters parameters,
         FrameGenerator frameGenerator);
 
     /**
@@ -103,6 +108,17 @@ public abstract class ClassFactory
      * @see CameraManager
      */
     public abstract CameraManager getCameraManager();
+
+    /**
+     * Returns a name of a virtual camera comprised of all the webcams configured in the given
+     * hardware map.
+     */
+    public static CameraName createSwitchableCameraNameForAllWebcams(HardwareMap hardwareMap)
+        {
+        List<WebcamName> list = hardwareMap.getAll(WebcamName.class);
+        CameraName[] allWebcams = list.toArray(new CameraName[list.size()]);
+        return getInstance().getCameraManager().nameForSwitchableCamera(allWebcams);
+        }
 
     //----------------------------------------------------------------------------------------------
     // Internal

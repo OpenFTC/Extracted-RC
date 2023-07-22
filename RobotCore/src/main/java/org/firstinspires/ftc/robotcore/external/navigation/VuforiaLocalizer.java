@@ -43,7 +43,6 @@ import androidx.annotation.XmlRes;
 import android.view.ViewGroup;
 
 import com.qualcomm.robotcore.R;
-import com.vuforia.CameraDevice;
 import com.vuforia.Frame;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
@@ -52,6 +51,7 @@ import org.firstinspires.ftc.robotcore.external.function.Continuation;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.Camera;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
 import org.firstinspires.ftc.robotcore.external.stream.CameraStreamSource;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
 
 import java.io.File;
@@ -215,64 +215,6 @@ public interface VuforiaLocalizer extends CameraStreamSource
         }
 
     /**
-     * {@link CameraDirection} enumerates the identities of the builtin phone cameras that Vuforia can use.
-     * @see Parameters#cameraName
-     * @see Parameters#cameraDirection
-     */
-    enum CameraDirection
-        {
-        //------------------------------------------------------------------------------------------
-        // Values
-        //------------------------------------------------------------------------------------------
-
-        BACK(CameraDevice.CAMERA_DIRECTION.CAMERA_DIRECTION_BACK),
-        FRONT(CameraDevice.CAMERA_DIRECTION.CAMERA_DIRECTION_FRONT),
-
-        /** Using {@link #BACK} or {@link #FRONT} is a better choice than {@link #DEFAULT} */
-        DEFAULT(CameraDevice.CAMERA_DIRECTION.CAMERA_DIRECTION_DEFAULT),
-
-        /** A direction whose particulars are not actually known */
-        UNKNOWN(-1);
-
-        //------------------------------------------------------------------------------------------
-        // State
-        //------------------------------------------------------------------------------------------
-
-        protected final int direction;
-
-        public int getDirection()
-            {
-            if (this==UNKNOWN)
-                {
-                throw new IllegalArgumentException("%s has no actual 'direction' value");
-                }
-            return direction;
-            }
-
-        //------------------------------------------------------------------------------------------
-        // Construction
-        //------------------------------------------------------------------------------------------
-
-        CameraDirection(int direction)
-            {
-            this.direction = direction;
-            }
-
-        /** Converts a string to the corresponding camera direction. Returns UNKNOWN on failure. */
-        public static @NonNull CameraDirection from(String string)
-            {
-            for(CameraDirection direction : values())
-                {
-                if (direction.toString().equals(string))
-                    {
-                    return direction;
-                    }
-                }
-            return UNKNOWN;
-            }
-        };
-
-    /**
      * {@link Parameters} provides configuration information for instantiating the Vuforia localizer
      */
     class Parameters
@@ -324,7 +266,7 @@ public interface VuforiaLocalizer extends CameraStreamSource
          * @see #camera
          * @see #cameraName
          */
-        public CameraDirection cameraDirection = CameraDirection.BACK;
+        public BuiltinCameraDirection cameraDirection = BuiltinCameraDirection.BACK;
 
         /**
          * Indicates whether to use Vuforia's extended tracking mode. Extended tracking

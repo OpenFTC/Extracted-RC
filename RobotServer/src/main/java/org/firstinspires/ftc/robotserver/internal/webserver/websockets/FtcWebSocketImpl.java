@@ -37,7 +37,9 @@ import androidx.annotation.NonNull;
 import com.google.gson.JsonSyntaxException;
 import com.qualcomm.robotcore.util.RobotLog;
 
+import org.firstinspires.ftc.robotcore.internal.collections.SimpleGson;
 import org.firstinspires.ftc.robotcore.internal.webserver.websockets.CloseCode;
+import org.firstinspires.ftc.robotcore.internal.webserver.websockets.WebSocketCommandResponse;
 import org.firstinspires.ftc.robotcore.internal.webserver.websockets.FtcWebSocket;
 import org.firstinspires.ftc.robotcore.internal.webserver.websockets.FtcWebSocketMessage;
 import org.firstinspires.ftc.robotcore.internal.webserver.websockets.WebSocketManager;
@@ -83,6 +85,11 @@ public final class FtcWebSocketImpl implements FtcWebSocket {
             throw new IllegalArgumentException("System namespace messages cannot be sent using this method.");
         }
         internalSend(message);
+    }
+
+    @Override public void sendCommandResponse(WebSocketCommandResponse response) {
+        String payload = SimpleGson.getInstance().toJson(response, WebSocketCommandResponse.class);
+        rawWebSocket.send(payload);
     }
 
     @Override public InetAddress getRemoteIpAddress() {
