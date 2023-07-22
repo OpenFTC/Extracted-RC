@@ -71,8 +71,11 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
@@ -301,8 +304,30 @@ public final class ConfigurationTypeManager implements ClassFilter
     public void deserializeUserDeviceTypes(String serialization) // Used on the DS
         {
         clearAllUserTypes();
-        //
-        ConfigurationType[] newTypes = gson.fromJson(serialization, ConfigurationType[].class);
+
+        ConfigurationType[] newTypesArray = gson.fromJson(serialization, ConfigurationType[].class);
+
+        // RCs prior to 8.1.1 send a duplicate entry for the RevRobotics40HDHexMotor XML tag, that
+        // we need to de-duplicate, or else the add() method will end up throwing an exception.
+        // Later releases of the RC remove the duplicate entry before sending.
+        // GSON deserializes the duplicate entries as separate instances, so we can't de-duplicate
+        // using a HashSet (unless an appropriate .equals() implementation is added in the future,
+        // which we may or may not want to do).
+        boolean alreadySawHdHex40Entry = false;
+        List<ConfigurationType> newTypes = new ArrayList<>(Arrays.asList(newTypesArray));
+        Iterator<ConfigurationType> newTypesIterator = newTypes.iterator();
+        while (newTypesIterator.hasNext())
+            {
+            if (NEW_HD_HEX_MOTOR_40_TAG.equals(newTypesIterator.next().getXmlTag()))
+                {
+                if (alreadySawHdHex40Entry)
+                    {
+                    newTypesIterator.remove();
+                    }
+                alreadySawHdHex40Entry = true;
+                }
+            }
+
         for (ConfigurationType deviceType : newTypes)
             {
             // Ignore built-in types from the RC. We'll use our own instead.
@@ -343,7 +368,14 @@ public final class ConfigurationTypeManager implements ClassFilter
 
     private String serializeUserDeviceTypes()
         {
-        return gson.toJson(mapTagToConfigurationType.values());
+        Collection<ConfigurationType> configTypes = mapTagToConfigurationType.values();
+
+        // Filter out duplicate entry for the REV HD Hex 40 motor by converting to a Set.
+        // The duplicate entry is there because of the temporary workaround to keep the legacy
+        // "RevRoboticsHDHexMotor" XML tag working.
+        configTypes = new HashSet<>(configTypes);
+
+        return gson.toJson(configTypes);
         }
 
 

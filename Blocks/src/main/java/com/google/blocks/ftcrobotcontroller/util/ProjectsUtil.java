@@ -23,9 +23,10 @@ import static org.firstinspires.ftc.robotcore.internal.system.AppUtil.BLOCKS_JS_
 import static org.firstinspires.ftc.robotcore.internal.system.AppUtil.BLOCK_OPMODES_DIR;
 
 import android.content.res.AssetManager;
-import androidx.annotation.Nullable;
 import android.text.Html;
 import android.util.Xml;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import com.google.blocks.ftcrobotcontroller.IOExceptionWithUserVisibleMessage;
 import com.google.blocks.ftcrobotcontroller.hardware.HardwareItem;
@@ -53,13 +54,14 @@ import java.io.StringWriter;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -96,12 +98,15 @@ public class ProjectsUtil {
 
   private static final OpModeMeta.Flavor DEFAULT_FLAVOR = OpModeMeta.Flavor.TELEOP;
 
-  private static final Map<HardwareType, SortedSet<String>> sampleDeviceNamesMap = new HashMap<>();
-  private static final Object sampleDeviceNamesMapLock = new Object();
   private static final Pattern identifierFieldPattern = Pattern.compile(
       "<field name=\"(IDENTIFIER|IDENTIFIER1|IDENTIFIER2|WEBCAM_NAME)\">(.*)</field>");
   private static final Pattern deviceNameWithSuffix = Pattern.compile(
       "(.*)(As.*)");
+  private static final String[] specialDeviceNames = {
+    // These must be all lower case.
+    "left",
+    "right",
+  };
 
   // Prevent instantiation of utility class.
   private ProjectsUtil() {
@@ -591,15 +596,15 @@ public class ProjectsUtil {
    */
   private static String replaceDeviceNamesInSample(String blkContent,
       HardwareItemMap hardwareItemMap) throws IOException {
-    synchronized (sampleDeviceNamesMapLock) {
-      if (sampleDeviceNamesMap.isEmpty()) {
-        fillSampleDeviceNamesMap();
-      }
-    }
+    Map<HardwareType, Set<String>> sampleDeviceNamesMap = getSampleDeviceNamesMap(blkContent);
 
-    for (Map.Entry<HardwareType, SortedSet<String>> entry : sampleDeviceNamesMap.entrySet()) {
+    for (Map.Entry<HardwareType, Set<String>> entry : sampleDeviceNamesMap.entrySet()) {
       HardwareType hardwareType = entry.getKey();
-      SortedSet<String> sampleDeviceNames = entry.getValue();
+      Set<String> sampleDeviceNames = entry.getValue();
+      if (sampleDeviceNames.isEmpty()) {
+        continue;
+      }
+
       if (hardwareItemMap.contains(hardwareType)) {
         // Get the list of HardwareItems of this hardware type from the HardwareItemMap.
         List<HardwareItem> items = hardwareItemMap.getHardwareItems(hardwareType);
@@ -613,106 +618,142 @@ public class ProjectsUtil {
           actualDeviceNames.add(item.deviceName);
         }
 
-        // Special code for  left and right.
-        String leftDeviceName = null;
-        String rightDeviceName = null;
-        for (HardwareItem item : items) {
-          String lower = item.deviceName.toLowerCase(Locale.ENGLISH);
-          if (leftDeviceName == null && lower.contains("left")) {
-            leftDeviceName = item.deviceName;
-          }
-          if (rightDeviceName == null && lower.contains("right")) {
-            rightDeviceName = item.deviceName;
-          }
-        }
-
-        // Now go through the the sample device names and replace it in the sample.
-        for (String sampleDeviceName : sampleDeviceNames) {
-          if (actualDeviceNames.isEmpty()) {
-            // The sample will have device names that weren't replaced because there aren't enough
-            // hardware items of this type.
-            break;
-          }
-
-          if (actualDeviceNames.contains(sampleDeviceName)) {
-            // No need to replace this one, since there is a hardware device that matches the name
-            // from the sample.
-            actualDeviceNames.remove(sampleDeviceName);
-            continue;
-          }
-
-          String actualDeviceName;
-          String lower = sampleDeviceName;
-          if (lower.contains("left")) {
-            actualDeviceName = leftDeviceName;
-            actualDeviceNames.remove(leftDeviceName);
-          } else if (lower.contains("right")) {
-            actualDeviceName = rightDeviceName;
-            actualDeviceNames.remove(rightDeviceName);
-          } else {
-            actualDeviceName = actualDeviceNames.remove(0);
-          }
-          blkContent = replaceDeviceNameInBlocks(hardwareType, blkContent,
-              sampleDeviceName, actualDeviceName);
+        // Figure out which sample device names to replace with which actual device names.
+        Map<String, String> replacements = figureOutReplacements(sampleDeviceNames, actualDeviceNames);
+        for (Map.Entry<String, String> replacementEntry : replacements.entrySet()) {
+          String from = replacementEntry.getKey();
+          String to = replacementEntry.getValue();
+          blkContent = replaceDeviceNameInBlocks(hardwareType, blkContent, from, to);
         }
       }
     }
     return blkContent;
   }
 
-  private static void fillSampleDeviceNamesMap() throws IOException {
-    synchronized (sampleDeviceNamesMapLock) {
-      AssetManager assetManager = AppUtil.getDefContext().getAssets();
-      List<String> sampleFileNames = Arrays.asList(assetManager.list(BLOCKS_SAMPLES_PATH));
-      Collections.sort(sampleFileNames);
-      if (sampleFileNames != null) {
-        String delimiter = "";
-        for (String filename : sampleFileNames) {
-          if (filename.endsWith(BLOCKS_BLK_EXT)) {
-            String sampleName = filename.substring(0, filename.length() - BLOCKS_BLK_EXT.length());
-            if (!sampleName.equals(DEFAULT_BLOCKS_SAMPLE_NAME)) {
-              String blkFileContent = readSample(sampleName);
-              for (String line : blkFileContent.split("\n")) {
-                Matcher matcher1 = identifierFieldPattern.matcher(line);
-                if (matcher1.find()) {
-                  String fieldName = matcher1.group(1);
-                  String fieldValue = matcher1.group(2);
-                  if (fieldValue.equals("gamepad1") || fieldValue.equals("gamepad2")) {
-                    continue;
-                  }
+  private static Map<HardwareType, Set<String>> getSampleDeviceNamesMap(String blkFileContent) {
+    // This method can't be tested because HardwareType depends on BuiltInConfigurationType, which
+    // depends on AppUtil, which calls android.os.Environment.getExternalStorageDirectory. I can't
+    // figure out how to mock that. So, instead I have getSampleDeviceNamesMappedBySuffix, which
+    // can be tested.
+    Map<String, Set<String>> mapBySuffix = getSampleDeviceNamesMappedBySuffix(blkFileContent);
 
-                  String deviceName;
-                  HardwareType hardwareType;
-                  if (fieldName.equals("WEBCAM_NAME")) {
-                    deviceName = fieldValue;
-                    hardwareType = HardwareType.WEBCAM_NAME;
-                  } else {
-                    Matcher matcher2 = deviceNameWithSuffix.matcher(fieldValue);
-                    if (matcher2.find()) {
-                      deviceName = matcher2.group(1);
-                      String suffix = matcher2.group(2);
-                      hardwareType = HardwareType.fromIdentifierSuffixForJavaScript(suffix);
-                      if (hardwareType == null) {
-                        continue;
-                      }
-                    } else {
-                      continue;
-                    }
-                  }
+    Map<HardwareType, Set<String>> sampleDeviceNamesMap = new HashMap<>();
+    for (Map.Entry<String, Set<String>> entry : mapBySuffix.entrySet()) {
+      String suffix = entry.getKey();
+      HardwareType hardwareType = (suffix == "WEBCAM_NAME")
+          ? HardwareType.WEBCAM_NAME
+          : HardwareType.fromIdentifierSuffixForJavaScript(suffix);
+      if (hardwareType == null) {
+        continue;
+      }
+      sampleDeviceNamesMap.put(hardwareType, entry.getValue());
+    }
+    return sampleDeviceNamesMap;
+  }
 
-                  SortedSet<String> deviceNames = sampleDeviceNamesMap.get(hardwareType);
-                  if (deviceNames == null) {
-                    deviceNames = new TreeSet<>();
-                    sampleDeviceNamesMap.put(hardwareType, deviceNames);
-                  }
-                  deviceNames.add(deviceName);
-                }
-              }
-            }
+  @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+  static Map<String, Set<String>> getSampleDeviceNamesMappedBySuffix(String blkFileContent) {
+    Map<String, Set<String>> mapBySuffix = new HashMap<>();
+    for (String line : blkFileContent.split("\n")) {
+      Matcher matcher1 = identifierFieldPattern.matcher(line);
+      if (matcher1.find()) {
+        String fieldName = matcher1.group(1);
+        String fieldValue = matcher1.group(2);
+        if (fieldValue.equals("gamepad1") || fieldValue.equals("gamepad2")) {
+          continue;
+        }
+
+        String deviceName;
+        String suffix;
+        if (fieldName.equals("WEBCAM_NAME")) {
+          deviceName = fieldValue;
+          suffix = "WEBCAM_NAME";
+        } else {
+          Matcher matcher2 = deviceNameWithSuffix.matcher(fieldValue);
+          if (matcher2.find()) {
+            deviceName = matcher2.group(1);
+            suffix = matcher2.group(2);
+          } else {
+            continue;
           }
+        }
+
+        Set<String> deviceNames = mapBySuffix.get(suffix);
+        if (deviceNames == null) {
+          deviceNames = new HashSet<>();
+          mapBySuffix.put(suffix, deviceNames);
+        }
+        deviceNames.add(deviceName);
+      }
+    }
+    return mapBySuffix;
+  }
+
+  @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+  static Map<String, String> figureOutReplacements(Collection<String> sampleDeviceNamesArg, Collection<String> actualDeviceNamesArg) {
+    Map<String, String> replacements = new HashMap<>();
+
+    List<String> sampleDeviceNames = new ArrayList<>(sampleDeviceNamesArg);
+    List<String> actualDeviceNames = new ArrayList<>(actualDeviceNamesArg);
+
+    Collections.sort(sampleDeviceNames);
+    Collections.sort(actualDeviceNames);
+
+    // First, look for any sample device names that are the same (ignoring case) as actual device
+    // names.
+    for (Iterator<String> itSample = sampleDeviceNames.iterator(); itSample.hasNext();) {
+      String sampleDeviceName = itSample.next();
+
+      for (Iterator<String> itActual = actualDeviceNames.iterator(); itActual.hasNext();) {
+        String actualDeviceName = itActual.next();
+
+        if (sampleDeviceName.equalsIgnoreCase(actualDeviceName)) {
+          itSample.remove();
+          itActual.remove();
+          if (!sampleDeviceName.equals(actualDeviceName)) {
+            // If the names aren't exactly equal, add them to the replacements map.
+            replacements.put(sampleDeviceName, actualDeviceName);
+          }
+          break;
         }
       }
     }
+
+    // Second, handle special device names like left and right.
+    for (String specialDeviceName : specialDeviceNames) {
+      // Look for a sample device name that contains (ignoring case) the special device name.
+      for (Iterator<String> itSample = sampleDeviceNames.iterator(); itSample.hasNext();) {
+        String sampleDeviceName = itSample.next();
+        if (sampleDeviceName.toLowerCase(Locale.ENGLISH).contains(specialDeviceName)) {
+          // Look for an actual device name that contains (ignoring case) the special device name.
+          for (Iterator<String> itActual = actualDeviceNames.iterator(); itActual.hasNext();) {
+            String actualDeviceName = itActual.next();
+            if (actualDeviceName.toLowerCase(Locale.ENGLISH).contains(specialDeviceName)) {
+              itSample.remove();
+              itActual.remove();
+              replacements.put(sampleDeviceName, actualDeviceName);
+              break;
+            }
+          }
+          break;
+        }
+      }
+    }
+
+    // Finally go through any remaining sample device names.
+    while (!sampleDeviceNames.isEmpty()) {
+      if (actualDeviceNames.isEmpty()) {
+        // The sample will have device names that weren't replaced because there aren't enough
+        // hardware items of this type.
+        break;
+      }
+
+      String sampleDeviceName = sampleDeviceNames.remove(0);
+      String actualDeviceName = actualDeviceNames.remove(0);
+      replacements.put(sampleDeviceName, actualDeviceName);
+    }
+
+    return replacements;
   }
 
   /**

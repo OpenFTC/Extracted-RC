@@ -199,8 +199,7 @@ public enum HardwareType {
       "createTouchSensorDropdown", "touchSensor", "AsTouchSensor", "_TouchSensor",
       ToolboxFolder.SENSORS, "TouchSensor", ToolboxIcon.TOUCH_SENSOR,
       TouchSensor.class,
-      BuiltInConfigurationType.TOUCH_SENSOR.getXmlTag(),
-      ConfigurationTypeManager.getXmlTag(ModernRoboticsTouchSensor.class), // Only represents the analog mode of the MR Touch Sensor
+      ConfigurationTypeManager.getXmlTag(ModernRoboticsTouchSensor.class),
       ConfigurationTypeManager.getXmlTag(RevTouchSensor.class)),
   ULTRASONIC_SENSOR( // see ultrasonic_sensor.js
       "createUltrasonicSensorDropdown", "ultrasonicSensor", "AsUltrasonicSensor", "_UltrasonicSensor",

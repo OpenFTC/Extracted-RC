@@ -79,7 +79,7 @@ abstract class OpModeInternal {
      * driver station. This data is automatically transmitted to the driver station on a regular,
      * periodic basis.
      */
-    public final Telemetry telemetry = new TelemetryImpl((OpMode) this);
+    public Telemetry telemetry = new TelemetryImpl((OpMode) this);
 
     /**
      * Mapping of configured device names to Java objects that can be used to access them

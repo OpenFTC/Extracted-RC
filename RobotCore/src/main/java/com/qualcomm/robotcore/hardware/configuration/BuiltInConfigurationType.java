@@ -90,7 +90,6 @@ public enum BuiltInConfigurationType implements ConfigurationType
         IR_SEEKER("IrSeeker", null),
         LIGHT_SENSOR("LightSensor", null),
         ACCELEROMETER("Accelerometer", null),
-        TOUCH_SENSOR("TouchSensor", DeviceFlavor.DIGITAL_IO),   // either a MR touch sensor on a digital port or an NXT touch sensor
         PULSE_WIDTH_DEVICE("PulseWidthDevice", null),
         IR_SEEKER_V3("IrSeekerV3", DeviceFlavor.I2C),
         ULTRASONIC_SENSOR("UltrasonicSensor", null),
@@ -200,7 +199,6 @@ public enum BuiltInConfigurationType implements ConfigurationType
             case LYNX_MODULE:               return context.getString(R.string.configTypeLynxModule);
             case NOTHING:                   return context.getString(R.string.configTypeNothing);
             case WEBCAM:                    return context.getString(R.string.configTypeWebcam);
-            case TOUCH_SENSOR:              return context.getString(R.string.configTypeMRTouchSensor);
             case GYRO:                      return context.getString(R.string.configTypeMRGyro);
             case COLOR_SENSOR:              return context.getString(R.string.configTypeMRColorSensor);
             case UNKNOWN:

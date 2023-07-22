@@ -267,9 +267,7 @@ public class HardwareFactory {
   private void mapDigitalDevice(HardwareMap map, DeviceManager deviceMgr, DigitalChannelController digitalChannelController, DeviceConfiguration devConf) {
     if (!devConf.isEnabled()) return;
 
-    if (devConf.getConfigurationType() == BuiltInConfigurationType.TOUCH_SENSOR) {
-      addUserDeviceToMap(map, devConf, deviceMgr.createMRDigitalTouchSensor(digitalChannelController, devConf.getPort(), devConf.getName()));
-    } else if (devConf.getConfigurationType().isDeviceFlavor(ConfigurationType.DeviceFlavor.DIGITAL_IO)) {
+    if (devConf.getConfigurationType().isDeviceFlavor(ConfigurationType.DeviceFlavor.DIGITAL_IO)) {
       DigitalIoDeviceConfigurationType digitalDeviceType = (DigitalIoDeviceConfigurationType) devConf.getConfigurationType();
       List<HardwareDevice> digitalDeviceInstances = deviceMgr.createDigitalDeviceInstances(digitalChannelController, devConf.getPort(), digitalDeviceType);
       addUserDevicesToMap(map, devConf, digitalDeviceInstances);
