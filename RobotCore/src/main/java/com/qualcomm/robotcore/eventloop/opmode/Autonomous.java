@@ -39,7 +39,7 @@ import java.lang.annotation.*;
  * shown on an FTC Driver Station.  Put an {@link Autonomous} annotation on
  * your autonomous OpModes that you want to show up in the driver station display.
  *
- * If you want to temporarily disable an opmode, then set then also add
+ * If you want to temporarily disable an OpMode, then set then also add
  * a {@link Disabled} annotation to it.
  *
  * @see TeleOp

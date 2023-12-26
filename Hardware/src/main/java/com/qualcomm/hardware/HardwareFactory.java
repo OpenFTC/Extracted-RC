@@ -80,7 +80,7 @@ import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.util.SerialNumber;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import com.qualcomm.hardware.lynx.EmbeddedControlHubModule;
+import com.qualcomm.robotcore.hardware.EmbeddedControlHubModule;
 import org.xmlpull.v1.XmlPullParser;
 
 import java.util.ArrayList;

@@ -36,7 +36,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraManager;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.FrameGenerator;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.robotcore.external.tfod.TfodParameters;
@@ -61,32 +60,6 @@ public abstract class ClassFactory
     //----------------------------------------------------------------------------------------------
     // Accessing
     //----------------------------------------------------------------------------------------------
-
-    /**
-     * {@link #createVuforia(VuforiaLocalizer.Parameters) createVuforia} returns
-     * an instance of the Vuforia localizer engine configured with the indicated set of parameters.
-     *
-     * @param parameters the parameters used to configure the instance of the engine
-     * @return an instance of the Vuforia robot localization engine.
-     *
-     * @see VuforiaLocalizer
-     * @see org.firstinspires.ftc.robotcore.external.navigation.Orientation
-     * @see <a href="http://www.vuforia.com/">vuforia.com</a>
-     */
-    public abstract VuforiaLocalizer createVuforia(VuforiaLocalizer.Parameters parameters);
-
-    /**
-     * createTFObjectDetector returns
-     * an instance of the TensorFlow object detector engine configured with the indicated set of parameters.
-     *
-     * @param parameters the parameters used to configure the instance of the engine
-     * @param vuforiaLocalizer the VuforiaLocalizer that will be used to obtain camera frames
-     * @return an instance of the TensorFlow object detector engine.
-     *
-     * @see TFObjectDetector
-     */
-    public abstract TFObjectDetector createTFObjectDetector(TfodParameters parameters,
-        VuforiaLocalizer vuforiaLocalizer);
 
     /**
      * createTFObjectDetector returns an instance of the TensorFlow object detector engine
@@ -123,13 +96,6 @@ public abstract class ClassFactory
     //----------------------------------------------------------------------------------------------
     // Internal
     //----------------------------------------------------------------------------------------------
-
-    /** @deprecated Use {@link #createVuforia(VuforiaLocalizer.Parameters)} instead */
-    @Deprecated
-    public static VuforiaLocalizer createVuforiaLocalizer(VuforiaLocalizer.Parameters parameters)
-        {
-        return getInstance().createVuforia(parameters);
-        }
 
     protected static class InstanceHolder
         {

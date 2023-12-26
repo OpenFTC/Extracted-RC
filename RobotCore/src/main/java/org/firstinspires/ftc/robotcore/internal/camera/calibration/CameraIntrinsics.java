@@ -42,9 +42,6 @@ import java.util.Arrays;
  * Provides basic information regarding some characteristics which are built-in to / intrinsic
  * to a particular camera model.
  *
- * Note that this information is passed to native code. This class is a Java manifestation of
- * of Vuforia::ExternalProvider::CameraIntrinsics found in ExternalProvider.h.
- *
  * https://docs.opencv.org/2.4/doc/tutorials/calib3d/camera_calibration/camera_calibration.html
  * https://docs.opencv.org/3.0-beta/doc/tutorials/calib3d/camera_calibration/camera_calibration.html
  * https://www.mathworks.com/help/vision/camera-calibration.html

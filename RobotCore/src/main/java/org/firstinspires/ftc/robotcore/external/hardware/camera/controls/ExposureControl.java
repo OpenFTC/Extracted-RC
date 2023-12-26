@@ -49,13 +49,36 @@ public interface ExposureControl extends CameraControl
         ContinuousAuto,     // continuous auto exposure
         Manual,
         ShutterPriority,
-        AperturePriority,   // Not in Vuforia
+        AperturePriority;
+
+        public static Mode fromId(int id)
+            {
+            if (id >= 0 && id < values().length)
+                {
+                return values()[id];
+                }
+            return Unknown;
+            }
         }
 
+    /**
+     * Get the current exposure mode of the camera
+     * @return the current exposure mode of the camera
+     */
     Mode getMode();
 
+    /**
+     * Set the exposure mode of the camera
+     * @param mode the mode to enter
+     * @return whether the operation was successful
+     */
     boolean setMode(Mode mode);
 
+    /**
+     * Check whether the camera supports a given exposure mode
+     * @param mode the mode in question
+     * @return whether the mode in question is supported
+     */
     boolean isModeSupported(Mode mode);
 
     //----------------------------------------------------------------------------------------------
@@ -64,22 +87,56 @@ public interface ExposureControl extends CameraControl
 
     long unknownExposure = 0;
 
-    /** unknownExposure is returned if exposure unavailable */
+    /**
+     * Get the shortest exposure time supported by the camera
+     * @param resultUnit time units of your choosing
+     * @return the shortest supported exposure time, or 0 if unavailable
+     */
     long getMinExposure(TimeUnit resultUnit);
 
-    /** unknownExposure is returned if exposure unavailable */
+    /**
+     * Get the longest exposure time supported by the camera
+     * @param resultUnit time units of your choosing
+     * @return the longest supported exposure time, or 0 if unavailable
+     */
     long getMaxExposure(TimeUnit resultUnit);
 
-    /** unknownExposure is returned if exposure unavailable */
+    /**
+     * Get the camera's current exposure time
+     * @param resultUnit time units of your choosing
+     * @return the camera's current exposure time, or 0 if unavailable
+     */
     long getExposure(TimeUnit resultUnit);
 
     /** unknownExposure is returned if exposure unavailable */
+    @Deprecated
     long getCachedExposure(final TimeUnit resultUnit, MutableReference<Boolean> refreshed, final long permittedStaleness, final TimeUnit permittedStalenessUnit);
 
+    /**
+     * Set the camera's exposure time. Only works if you're in manual mode.
+     * @param duration exposure time
+     * @param durationUnit time units of your choice
+     * @return whether the operation succeeded
+     */
     boolean setExposure(long duration, TimeUnit durationUnit);
 
+    /**
+     * Check whether your camera supports control over exposure
+     * @return whether your camera supports control over exposure
+     */
     boolean isExposureSupported();
 
+    /**
+     * Check whether AE priority is enabled
+     * @return whether AE priority is enabled
+     */
     boolean getAePriority();
+
+    /**
+     * Chooses whether the camera may vary the frame rate for exposure control reasons.
+     * A priority value of false means the camera may not vary its frame rate. A value of true means the frame rate is variable
+     * This setting has no effect outside of the auto and shutter_priority auto-exposure modes.
+     * @return whether the operation was successful
+     */
     boolean setAePriority(boolean priority);
     }

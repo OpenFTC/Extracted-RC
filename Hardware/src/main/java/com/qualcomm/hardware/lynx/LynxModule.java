@@ -79,6 +79,7 @@ import com.qualcomm.hardware.lynx.commands.standard.LynxStandardCommand;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeManagerImpl;
 import com.qualcomm.robotcore.exception.RobotCoreException;
 import com.qualcomm.robotcore.hardware.Blinker;
+import com.qualcomm.robotcore.hardware.EmbeddedControlHubModule;
 import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.HardwareDeviceHealth;
 import com.qualcomm.robotcore.hardware.LynxModuleImuType;
@@ -448,7 +449,11 @@ public class LynxModule extends LynxCommExceptionHandler implements LynxModuleIn
                                 LynxModule.this.moduleAddress = newModuleAddress;
                                 LynxModule.this.moduleSerialNumber = new LynxModuleSerialNumber(getSerialNumber(), newModuleAddress);
                                 }
-                                HardwareManualControlOpMode.getInstance().onLynxModuleAddressChanged(LynxModule.this, oldAddress, newModuleAddress);
+                            HardwareManualControlOpMode manualControlOpMode = HardwareManualControlOpMode.getInstance();
+                            if (manualControlOpMode != null)
+                                {
+                                manualControlOpMode.onLynxModuleAddressChanged(LynxModule.this, oldAddress, newModuleAddress);
+                                }
                             }
                         finally
                             {
@@ -520,8 +525,11 @@ public class LynxModule extends LynxCommExceptionHandler implements LynxModuleIn
                 }
             }
 
-        // Forget any cached data as the attention might have invalidated things
-        forgetLastKnown();
+        if (attentionRequired)
+            {
+            // Forget any cached data as the attention might have invalidated things
+            forgetLastKnown();
+            }
         }
 
     protected void noteDatagramReceived()
@@ -594,7 +602,7 @@ public class LynxModule extends LynxCommExceptionHandler implements LynxModuleIn
                 }
 
             // If any bit other than the following are present, log the current status:
-            // Fail safe: Explicitly entered repeatedly during the default Op Mode
+            // Fail safe: Explicitly entered repeatedly during the default OpMode
             // Battery low: Logged by LynxModuleWarningManager
             // Device reset: Logged by LynxModuleWarningManager
             if (response.testAnyBits(~(LynxGetModuleStatusResponse.bitFailSafe |
@@ -607,7 +615,7 @@ public class LynxModule extends LynxCommExceptionHandler implements LynxModuleIn
             final HardwareManualControlOpMode manualControlOpMode = HardwareManualControlOpMode.getInstance();
             if (manualControlOpMode != null)
                 {
-                // Notify the Manual Control Op Mode that our status has changed
+                // Notify the Manual Control OpMode that our status has changed
                 final int statusWord = response.getStatus();
                 final int motorAlerts = response.getMotorAlerts();
                 ThreadPool.getDefault().submit(() -> // Don't block the module's thread

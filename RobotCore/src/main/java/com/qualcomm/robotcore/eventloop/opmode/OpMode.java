@@ -39,19 +39,21 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Base class for user defined operation modes (op modes).
+ * Base class for user-defined iterative operation modes (OpModes).
  * <p>
- * The op mode name should be unique. It will be the name displayed on the driver station. If
- * multiple op modes have the same name, only one will be available.
+ * The OpMode name should be unique. It will be the name displayed on the driver station. If
+ * multiple OpModes have the same name, only one will be available.
  */
 public abstract class OpMode extends OpModeInternal {
   /**
-   * number of seconds this op mode has been running, this is
-   * updated before every call to loop.
+   * The number of seconds this OpMode has been running. This is
+   * updated before every call to loop().
+   * <p>
+   * OpModes that extend {@link LinearOpMode} should call {@link #getRuntime()} instead.
    */
   public volatile double time = 0.0;
   // time is volatile because LinearOpMode updates this on the main event loop thread instead of
-  // the Op Mode thread
+  // the OpMode thread
 
   // internal time tracking
   private volatile long startTime = 0; // in nanoseconds
@@ -68,48 +70,55 @@ public abstract class OpMode extends OpModeInternal {
   }
 
   /**
-   * User defined init method
+   * User-defined init method
    * <p>
-   * This method will be called once when the INIT button is pressed.
+   * This method will be called once, when the INIT button is pressed.
    */
   abstract public void init();
 
   /**
-   * User defined init_loop method
+   * User-defined init_loop method
    * <p>
-   * This method will be called repeatedly when the INIT button is pressed.
-   * This method is optional. By default this method takes no action.
+   * This method will be called repeatedly during the period between when
+   * the init button is pressed and when the play button is pressed (or the
+   * OpMode is stopped).
+   * <p>
+   * This method is optional. By default, this method takes no action.
    */
   public void init_loop() {};
 
   /**
-   * User defined start method.
+   * User-defined start method
    * <p>
-   * This method will be called once when the PLAY button is first pressed.
-   * This method is optional. By default this method takes not action.
+   * This method will be called once, when the play button is pressed.
+   * <p>
+   * This method is optional. By default, this method takes no action.
+   * <p>
    * Example usage: Starting another thread.
-   *
    */
   public void start() {};
 
   /**
-   * User defined loop method
+   * User-defined loop method
    * <p>
-   * This method will be called repeatedly in a loop while this op mode is running
+   * This method will be called repeatedly during the period between when
+   * the play button is pressed and when the OpMode is stopped.
    */
   abstract public void loop();
 
   /**
-   * User defined stop method
+   * User-defined stop method
    * <p>
-   * This method will be called when this op mode is first disabled.
+   * This method will be called once, when this OpMode is stopped.
    * <p>
-   * The stop method is optional. By default this method takes no action.
+   * Your ability to control hardware from this method will be limited.
+   * <p>
+   * This method is optional. By default, this method takes no action.
    */
   public void stop() {};
 
   /**
-   * Immediately stops execution of the calling OpMode; and transitions to the STOP state.
+   * Immediately stops execution of the calling OpMode and transitions to the STOP state.
    * No further code in the OpMode will execute once this has been called.
    */
   public final void terminateOpModeNow() {
@@ -117,10 +126,11 @@ public abstract class OpMode extends OpModeInternal {
   }
 
   /**
-   * Get the number of seconds this op mode has been running
+   * Gets the number of seconds this OpMode has been running.
    * <p>
    * This method has sub-millisecond accuracy.
-   * @return number of seconds this op mode has been running
+   *
+   * @return number of seconds this OpMode has been running
    */
   public double getRuntime() {
     final double NANOSECONDS_PER_SECOND = TimeUnit.SECONDS.toNanos(1);
@@ -128,7 +138,7 @@ public abstract class OpMode extends OpModeInternal {
   }
 
   /**
-   * Reset the runtime to zero.
+   * Resets the runtime to zero.
    */
   public void resetRuntime() {
     startTime = System.nanoTime();
@@ -155,20 +165,20 @@ public abstract class OpMode extends OpModeInternal {
   // Safety Management
   //----------------------------------------------------------------------------------------------
 
-  /** Op Modes no longer have a time limit for init() */
+  /** OpModes no longer have a time limit for init() */
   @Deprecated public int msStuckDetectInit     = 5000;
-  /** Op Modes no longer have a time limit for init_loop()  */
+  /** OpModes no longer have a time limit for init_loop()  */
   @Deprecated public int msStuckDetectInitLoop = 5000;
-  /** Op Modes no longer have a time limit for start()  */
+  /** OpModes no longer have a time limit for start()  */
   @Deprecated public int msStuckDetectStart    = 5000;
-  /** Op Modes no longer have a time limit for loop() */
+  /** OpModes no longer have a time limit for loop() */
   @Deprecated public int msStuckDetectLoop     = 5000;
 
   //----------------------------------------------------------------------------------------------
   // OpModeInternal hooks
   //----------------------------------------------------------------------------------------------
 
-  // Package-private, called on the OpModeThread when the Op Mode is initialized
+  // Package-private, called on the OpModeThread when the OpMode is initialized
   // Doesn't actually throw InterruptedException, but the LinearOpMode version does
   @Override
   void internalRunOpMode() throws InterruptedException {

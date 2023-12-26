@@ -35,7 +35,7 @@ package com.qualcomm.robotcore.eventloop.opmode;
 import org.firstinspires.ftc.robotcore.internal.opmode.OpModeMeta;
 
 /**
- * OpModeManager instances are used to register opmodes for use.
+ * OpModeManager instances are used to register OpModes for use.
  * @see AnnotatedOpModeManager
  * @see OpModeRegistrar
  */
@@ -72,14 +72,14 @@ public interface OpModeManager
      * Register an *instance* of a class for display on the driver station and availability
      * for game play. You won't likely use this method very often.
      *
-     * @param name              metadata regarding the opmode, including the name to show on the driver station menu
+     * @param name              metadata regarding the OpMode, including the name to show on the driver station menu
      * @param opModeInstance    the object instance to use for that menu item
      */
     void register(OpModeMeta name, OpMode opModeInstance);
 
     /**
-     * DEFAULT_OP_MODE_NAME is the (non-localized) name of the default opmode, the one that
-     * automatically runs whenever no user opmode is running.
+     * DEFAULT_OP_MODE_NAME is the (non-localized) name of the default OpMode, the one that
+     * automatically runs whenever no user OpMode is running.
      */
     String DEFAULT_OP_MODE_NAME = "$Stop$Robot$";
     }

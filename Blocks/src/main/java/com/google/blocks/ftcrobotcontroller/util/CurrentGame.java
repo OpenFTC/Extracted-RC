@@ -28,9 +28,9 @@ public class CurrentGame {
   // Also, the following other files should be updated:
   // * lib/RobotCore/src/main/java/org/firstinspires/ftc/robotcore/external/tfod/TfodParameters.java
 
-  public static final String CURRENT_GAME_NAME = "POWERPLAY";
+  public static final String CURRENT_GAME_NAME = "CENTERSTAGE";
 
-  public static final String CURRENT_GAME_NAME_NO_SPACES = "POWERPLAY";
+  public static final String CURRENT_GAME_NAME_NO_SPACES = "CENTERSTAGE";
 
   public static final String TFOD_MODEL_ASSET = TfodParameters.CurrentGame.MODEL_ASSET;
   public static final String[] TFOD_LABELS = TfodParameters.CurrentGame.LABELS;

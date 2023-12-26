@@ -95,7 +95,7 @@ public class LynxSetMotorChannelEnableCommand extends LynxDekaInterfaceCommand<L
     public boolean isDangerous()
         {
         // The motor gets enabled during startup, so this needs to be marked as not dangerous.
-        // This is safe because we send a failsafe command as soon as the Op Mode is told to stop,
+        // This is safe because we send a failsafe command as soon as the OpMode is told to stop,
         // and this command by itself cannot cause a motor to move (you have to also set the power).
         return false;
         }

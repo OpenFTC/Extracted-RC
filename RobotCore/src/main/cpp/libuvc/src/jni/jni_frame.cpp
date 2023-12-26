@@ -39,7 +39,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <libuvc.h>
 #include <libuvc/libuvc_internal.h>
 #include <ftc.h>
-#include <Vuforia/ExternalProvider.h>
 
 #undef TAG
 static LPCSTR TAG = "UvcFrame";
@@ -62,26 +61,6 @@ Java_org_firstinspires_ftc_robotcore_internal_camera_libuvc_nativeobject_UvcFram
     addField(captureTime);
     addField(sourceClockReference);
     addField(pContext);
-    #undef addField
-    OFFSET_MAP_END()
-    }
-
-JNIEXPORT jintArray JNICALL
-Java_org_firstinspires_ftc_robotcore_internal_camera_libuvc_nativeobject_VuforiaExternalProviderCameraFrame_nativeGetFieldOffsets(JNIEnv *env, jclass type, jint cFieldExpected)
-    {
-    OFFSET_MAP_START(10, Vuforia::ExternalProvider::CameraFrame)
-
-    #define addField(field)  (cFieldAdded++, (*pT++) = offsetof(Vuforia::ExternalProvider::CameraFrame, field))
-    addField(timestamp);
-    addField(exposureTime);
-    addField(buffer);
-    addField(bufferSize);
-    addField(index);
-    addField(width);
-    addField(height);
-    addField(stride);
-    addField(format);
-    addField(intrinsics);
     #undef addField
     OFFSET_MAP_END()
     }

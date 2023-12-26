@@ -46,7 +46,7 @@ public interface CameraStreamSource {
     /**
      * Requests a single frame bitmap.
      *
-     * Here's a brief example implementation using {@link org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer}:
+     * Here's a brief example implementation using the now-removed VuforiaLocalizer class:
      * <pre>
      * &#64;Override
      * public void getFrameBitamp(Continuation&lt;? extends Consumer&lt;Bitmap&gt;&gt; continuation) {
@@ -65,7 +65,6 @@ public interface CameraStreamSource {
      * </pre>
      *
      * @param continuation frame bitmap consumer continuation
-     * @see org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer#getFrameOnce(Continuation)
      */
     void getFrameBitmap(Continuation<? extends Consumer<Bitmap>> continuation);
 }

@@ -56,8 +56,12 @@ function telemetryAddTextData(key, data) {
     case 'object':
       if (data instanceof Array) {
         telemetry.addTextData(key, String(data));
-      } else {
+      } else if (Object.keys(data).length == 0) {
+        // This is a Java object.
         telemetry.addObjectData(key, data);
+      } else {
+        // This is a JavaScript object.
+        telemetry.addTextData(key, JSON.stringify(data));
       }
       break;
     default:

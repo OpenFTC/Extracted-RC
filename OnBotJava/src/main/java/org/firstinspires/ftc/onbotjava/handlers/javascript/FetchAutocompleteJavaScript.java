@@ -160,7 +160,10 @@ public class FetchAutocompleteJavaScript implements WebHandler {
             if (fieldSecurityModifier == SecurityModifier.PRIVATE) continue;
             final String name1 = field.getName();
             final String fieldType = field.getType().getName();
-            fields.put(name1, new AutoField(fieldSecurityModifier, fieldType));
+            if (field.isSynthetic()) {
+                continue;
+            }
+            fields.put(name1, new AutoField(fieldSecurityModifier, fieldType, Modifier.isStatic(field.getModifiers())));
         }
 
         HashMap<String, ArrayList<AutoMethod>> methods = new HashMap<>();
@@ -175,9 +178,12 @@ public class FetchAutocompleteJavaScript implements WebHandler {
                 paramTypes.add(paramType.getName());
             }
 
+            if (method.isSynthetic()) {
+                continue;
+            }
             if (!methods.containsKey(methodName)) methods.put(methodName, new ArrayList<AutoMethod>());
             methods.get(methodName)
-                    .add(new AutoMethod(fieldSecurityModifier, fieldType,paramTypes));
+                    .add(new AutoMethod(fieldSecurityModifier, fieldType,paramTypes, Modifier.isStatic(method.getModifiers())));
         }
 
         final Class superclass = currentClass.getSuperclass();
@@ -253,10 +259,12 @@ public class FetchAutocompleteJavaScript implements WebHandler {
     private static class AutoField {
         private SecurityModifier modifier;
         private String type;
+        private boolean isStatic;
 
-        private AutoField(SecurityModifier modifier, String type) {
+        private AutoField(SecurityModifier modifier, String type, boolean isStatic) {
             this.modifier = modifier;
             this.type = type;
+            this.isStatic = isStatic;
         }
     }
 
@@ -265,11 +273,14 @@ public class FetchAutocompleteJavaScript implements WebHandler {
         private SecurityModifier modifier;
         private String type;
         private List<String> params;
+        private boolean isStatic;
 
-        private AutoMethod(SecurityModifier modifier, String type, List<String> params) {
+
+        private AutoMethod(SecurityModifier modifier, String type, List<String> params, boolean isStatic) {
             this.modifier = modifier;
             this.type = type;
             this.params = params;
+            this.isStatic = isStatic;
         }
     }
 

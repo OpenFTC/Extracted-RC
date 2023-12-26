@@ -13,13 +13,10 @@
   is requested but only a 800x600 calibration exists for that camera, then the 800x600 is scaled
   down to service the 640x480 request.
 
-  Further, it is important to note that if *no* calibrations exist for a given camera, then Vuforia
-  is offered the entire range of capture resolutions that the hardware can support (and it does its
-  best to deal with the lack of calibration). However, if *any* calibrations are provided for a camera,
-  then capture resolutions in those aspect ratios supported by the camera for which any calibrations
-  are *not* provided are *not* offered. Thus, if you calibrate a camera but fail to calibrate all
-  the camera's supported aspect ratios, you limit the choices of capture resolutions that Vuforia can
-  select from.
+  When using the VisionPortal API, a resolution of 640x480 is used by default, but you are free
+  to manually select any resolution you wish, provided, of course, that it is supported by your camera.
+  The AprilTag VisionProcessor will first check if a calibration was explicitly provided and use it if so.
+  Failing that, it will attempt to load a calibration defined in the calibrations XML files.
 
   One image acquisition program that supports control of camera capture resolution is YouCam 7:
     https://www.cyberlink.com/products/youcam/features_en_US.html

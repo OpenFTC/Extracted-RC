@@ -100,7 +100,6 @@ import com.qualcomm.ftccommon.configuration.RobotConfigFile;
 import com.qualcomm.ftccommon.configuration.RobotConfigFileManager;
 import com.qualcomm.ftccommon.configuration.USBScanManager;
 import com.qualcomm.hardware.HardwareFactory;
-import com.qualcomm.hardware.lynx.EmbeddedControlHubModule;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.lynx.LynxUsbDevice;
 import com.qualcomm.robotcore.eventloop.EventLoop;
@@ -109,11 +108,11 @@ import com.qualcomm.robotcore.eventloop.opmode.OpModeRegister;
 import com.qualcomm.robotcore.exception.RobotCoreException;
 import com.qualcomm.robotcore.hardware.Blinker;
 import com.qualcomm.robotcore.hardware.DeviceManager;
+import com.qualcomm.robotcore.hardware.EmbeddedControlHubModule;
 import com.qualcomm.robotcore.hardware.LynxModuleMeta;
 import com.qualcomm.robotcore.hardware.LynxModuleMetaList;
 import com.qualcomm.robotcore.hardware.ScannedDevices;
 import com.qualcomm.robotcore.hardware.USBAccessibleLynxModule;
-import com.qualcomm.robotcore.hardware.VisuallyIdentifiableHardwareDevice;
 import com.qualcomm.robotcore.hardware.configuration.ConfigurationTypeManager;
 import com.qualcomm.robotcore.hardware.configuration.ControllerConfiguration;
 import com.qualcomm.robotcore.hardware.configuration.LynxConstants;
@@ -126,7 +125,6 @@ import com.qualcomm.robotcore.util.ThreadPool;
 import com.qualcomm.robotcore.util.WebServer;
 
 import org.firstinspires.ftc.robotcore.external.Consumer;
-import org.firstinspires.ftc.robotcore.external.function.Supplier;
 import org.firstinspires.ftc.robotcore.external.stream.CameraStreamServer;
 import org.firstinspires.ftc.robotcore.internal.collections.SimpleGson;
 import org.firstinspires.ftc.robotcore.internal.network.ApChannel;
@@ -162,11 +160,10 @@ import java.util.concurrent.TimeoutException;
 import java.util.regex.Pattern;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
 
 /**
  * {@link FtcEventLoopBase} is an abstract base that handles defines core event processing
- * logic that's available whether or not a Robot is currently extant or not
+ * logic that's available whether a Robot is currently extant or not
  */
 @SuppressWarnings("WeakerAccess")
 public abstract class FtcEventLoopBase implements EventLoop
@@ -1098,7 +1095,7 @@ public abstract class FtcEventLoopBase implements EventLoop
         if (!LynxConstants.isRevControlHub()) return CallbackResult.HANDLED;
         ThreadPool.getDefaultSerial().execute(new Runnable() {
             @Override public void run() {
-                LynxModule embeddedModule = EmbeddedControlHubModule.get();
+                LynxModule embeddedModule = (LynxModule) EmbeddedControlHubModule.get();
                 if (embeddedModule != null) {
                     List<Blinker.Step> confirmButtonPressPattern = new ArrayList<>();
                     confirmButtonPressPattern.add(new Blinker.Step(Color.MAGENTA, 100, TimeUnit.MILLISECONDS));
@@ -1127,7 +1124,7 @@ public abstract class FtcEventLoopBase implements EventLoop
         final int newBand = Integer.parseInt(command.getExtra());
         ThreadPool.getDefaultSerial().execute(new Runnable() {
             @Override public void run() {
-                LynxModule embeddedModule = EmbeddedControlHubModule.get();
+                LynxModule embeddedModule = (LynxModule) EmbeddedControlHubModule.get();
                 if (embeddedModule != null) {
                     int bandColor;
                     if (newBand == ApChannel.AP_BAND_5GHZ) {

@@ -7,7 +7,6 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.Exposur
 import org.firstinspires.ftc.robotcore.internal.camera.libuvc.nativeobject.UvcDeviceHandle;
 import org.firstinspires.ftc.robotcore.internal.collections.MutableReference;
 import org.firstinspires.ftc.robotcore.internal.system.Tracer;
-import org.firstinspires.ftc.robotcore.internal.vuforia.externalprovider.ExtendedExposureMode;
 
 import java.util.concurrent.TimeUnit;
 
@@ -49,7 +48,7 @@ public class UvcApiExposureControl implements ExposureControl
             {
             @Override public Mode get()
                 {
-                return fromVuforia(uvcDeviceHandle.getVuforiaExposureMode());
+                return uvcDeviceHandle.getExposureMode();
                 }
             });
         }
@@ -60,7 +59,7 @@ public class UvcApiExposureControl implements ExposureControl
             {
             @Override public Boolean get()
                 {
-                return uvcDeviceHandle.setVuforiaExposureMode(toVuforia(mode));
+                return uvcDeviceHandle.setExposureMode(mode);
                 }
             });
         }
@@ -71,7 +70,7 @@ public class UvcApiExposureControl implements ExposureControl
             {
             @Override public Boolean get()
                 {
-                return uvcDeviceHandle.isVuforiaExposureModeSupported(toVuforia(mode));
+                return uvcDeviceHandle.isExposureModeSupported(mode);
                 }
             });
         }
@@ -200,44 +199,5 @@ public class UvcApiExposureControl implements ExposureControl
         {
         this.cachedExposureNs = cachedExposureNs;
         this.cachedExposureRefresh = new ElapsedTime();
-        }
-
-    //----------------------------------------------------------------------------------------------
-    // Utility
-    //----------------------------------------------------------------------------------------------
-
-    public static Mode fromVuforia(int vuforia)
-        {
-        return fromVuforia(ExtendedExposureMode.from(vuforia));
-        }
-
-    public static Mode fromVuforia(ExtendedExposureMode vuforia)
-        {
-        switch (vuforia)
-            {
-            case APERTURE_PRIORITY: return Mode.AperturePriority;
-            case AUTO:              return Mode.Auto;
-            case CONTINUOUS_AUTO:   return Mode.ContinuousAuto;
-            case MANUAL:            return Mode.Manual;
-            case SHUTTER_PRIORITY:  return Mode.ShutterPriority;
-            case UNKNOWN:
-            default:
-                return Mode.Unknown;
-            }
-        }
-
-    public static ExtendedExposureMode toVuforia(Mode mode)
-        {
-        switch (mode)
-            {
-            case AperturePriority:  return ExtendedExposureMode.APERTURE_PRIORITY;
-            case Auto:              return ExtendedExposureMode.AUTO;
-            case ContinuousAuto:    return ExtendedExposureMode.CONTINUOUS_AUTO;
-            case Manual:            return ExtendedExposureMode.MANUAL;
-            case ShutterPriority:   return ExtendedExposureMode.SHUTTER_PRIORITY;
-            case Unknown:
-            default:
-                return ExtendedExposureMode.UNKNOWN;
-            }
         }
     }

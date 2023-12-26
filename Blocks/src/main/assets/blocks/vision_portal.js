@@ -126,39 +126,47 @@ Blockly.FtcJava['visionPortalBuilder_setStreamFormat'] = function(block) {
   return visionPortalBuilder + '.setStreamFormat(' + streamFormat + ');\n';
 };
 
-Blockly.Blocks['visionPortalBuilder_enableCameraMonitoring'] = {
+Blockly.Blocks['visionPortalBuilder_enableLiveView'] = {
   init: function() {
     this.appendDummyInput('FIELD_VARIABLE')
         .appendField('call')
         .appendField(new Blockly.FieldVariable('myVisionPortalBuilder', null, ['VisionPortal.Builder'], 'VisionPortal.Builder'),
             'VISION_PORTAL_BUILDER')
         .appendField('.')
-        .appendField(createNonEditableField('enableCameraMonitoring'));
+        .appendField(createNonEditableField('enableLiveView'));
+    // For historical reasons, the input is named ENABLE_CAMERA_MONITORING.
     this.appendValueInput('ENABLE_CAMERA_MONITORING').setCheck('Boolean');
     this.setInputsInline(true);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.setColour(builderColor);
-    this.setTooltip('Enables the camera monitor live view (RC preview).');
+    this.setTooltip('Enables the live camera preview.');
   }
 };
 
-Blockly.JavaScript['visionPortalBuilder_enableCameraMonitoring'] = function(block) {
+Blockly.JavaScript['visionPortalBuilder_enableLiveView'] = function(block) {
   var visionPortalBuilder = Blockly.JavaScript.variableDB_.getName(
       block.getFieldValue('VISION_PORTAL_BUILDER'), Blockly.Variables.NAME_TYPE);
-  var enableCameraMonitoring = Blockly.JavaScript.valueToCode(
+  // For historical reasons, the input is named ENABLE_CAMERA_MONITORING.
+  var enableLiveView = Blockly.JavaScript.valueToCode(
       block, 'ENABLE_CAMERA_MONITORING', Blockly.JavaScript.ORDER_COMMA);
-  return visionPortalIdentifierForJavaScript + '.enableCameraMonitoring(' +
-      visionPortalBuilder + ', ' + enableCameraMonitoring + ');\n';
+  return visionPortalIdentifierForJavaScript + '.enableLiveView(' +
+      visionPortalBuilder + ', ' + enableLiveView + ');\n';
 };
 
-Blockly.FtcJava['visionPortalBuilder_enableCameraMonitoring'] = function(block) {
+Blockly.FtcJava['visionPortalBuilder_enableLiveView'] = function(block) {
   var visionPortalBuilder = Blockly.FtcJava.variableDB_.getName(
       block.getFieldValue('VISION_PORTAL_BUILDER'), Blockly.Variables.NAME_TYPE);
-  var enableCameraMonitoring = Blockly.FtcJava.valueToCode(
+  // For historical reasons, the input is named ENABLE_CAMERA_MONITORING.
+  var enableLiveView = Blockly.FtcJava.valueToCode(
       block, 'ENABLE_CAMERA_MONITORING', Blockly.FtcJava.ORDER_NONE);
-  return visionPortalBuilder + '.enableCameraMonitoring(' + enableCameraMonitoring + ');\n';
+  return visionPortalBuilder + '.enableLiveView(' + enableLiveView + ');\n';
 };
+
+// For the 8.2 release, the block type was visionPortalBuilder_enableCameraMonitoring.
+Blockly.Blocks['visionPortalBuilder_enableCameraMonitoring'] = Blockly.Blocks['visionPortalBuilder_enableLiveView'];
+Blockly.JavaScript['visionPortalBuilder_enableCameraMonitoring'] = Blockly.JavaScript['visionPortalBuilder_enableLiveView'];
+Blockly.FtcJava['visionPortalBuilder_enableCameraMonitoring'] = Blockly.FtcJava['visionPortalBuilder_enableLiveView'];
 
 Blockly.Blocks['visionPortalBuilder_setAutoStopLiveView'] = {
   init: function() {
@@ -194,20 +202,20 @@ Blockly.FtcJava['visionPortalBuilder_setAutoStopLiveView'] = function(block) {
   return visionPortalBuilder + '.setAutoStopLiveView(' + autoStopLiveView + ');\n';
 };
 
-Blockly.Blocks['visionPortalBuilder_setCameraMonitorViewId'] = {
+Blockly.Blocks['visionPortalBuilder_setLiveViewContainerId'] = {
   init: function() {
     this.appendDummyInput('FIELD_VARIABLE')
         .appendField('call')
         .appendField(new Blockly.FieldVariable('myVisionPortalBuilder', null, ['VisionPortal.Builder'], 'VisionPortal.Builder'),
             'VISION_PORTAL_BUILDER')
         .appendField('.')
-        .appendField(createNonEditableField('setCameraMonitorViewId'));
+        .appendField(createNonEditableField('setLiveViewContainerId'));
     this.appendValueInput('VIEW_ID').setCheck('Number');
     this.setInputsInline(true);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.setColour(builderColor);
-    this.setTooltip('Sets the camera monitor view id.');
+    this.setTooltip('Sets the live view container id.');
     this.getFtcJavaInputType = function(inputName) {
       switch (inputName) {
         case 'VIEW_ID':
@@ -218,22 +226,27 @@ Blockly.Blocks['visionPortalBuilder_setCameraMonitorViewId'] = {
   }
 };
 
-Blockly.JavaScript['visionPortalBuilder_setCameraMonitorViewId'] = function(block) {
+Blockly.JavaScript['visionPortalBuilder_setLiveViewContainerId'] = function(block) {
   var visionPortalBuilder = Blockly.JavaScript.variableDB_.getName(
       block.getFieldValue('VISION_PORTAL_BUILDER'), Blockly.Variables.NAME_TYPE);
   var viewId = Blockly.JavaScript.valueToCode(
       block, 'VIEW_ID', Blockly.JavaScript.ORDER_COMMA);
-  return visionPortalIdentifierForJavaScript + '.setCameraMonitorViewId(' +
+  return visionPortalIdentifierForJavaScript + '.setLiveViewContainerId(' +
       visionPortalBuilder + ', ' + viewId + ');\n';
 };
 
-Blockly.FtcJava['visionPortalBuilder_setCameraMonitorViewId'] = function(block) {
+Blockly.FtcJava['visionPortalBuilder_setLiveViewContainerId'] = function(block) {
   var visionPortalBuilder = Blockly.FtcJava.variableDB_.getName(
       block.getFieldValue('VISION_PORTAL_BUILDER'), Blockly.Variables.NAME_TYPE);
   var viewId = Blockly.FtcJava.valueToCode(
       block, 'VIEW_ID', Blockly.FtcJava.ORDER_NONE);
-  return visionPortalBuilder + '.setCameraMonitorViewId(' + viewId + ');\n';
+  return visionPortalBuilder + '.setLiveViewContainerId(' + viewId + ');\n';
 };
+
+// For the 8.2 release, the block type was visionPortalBuilder_setCameraMonitorViewId.
+Blockly.Blocks['visionPortalBuilder_setCameraMonitorViewId'] = Blockly.Blocks['visionPortalBuilder_setLiveViewContainerId'];
+Blockly.JavaScript['visionPortalBuilder_setCameraMonitorViewId'] = Blockly.JavaScript['visionPortalBuilder_setLiveViewContainerId'];
+Blockly.FtcJava['visionPortalBuilder_setCameraMonitorViewId'] = Blockly.FtcJava['visionPortalBuilder_setLiveViewContainerId'];
 
 Blockly.Blocks['visionPortalBuilder_setCameraResolution'] = {
   init: function() {
@@ -543,6 +556,43 @@ Blockly.FtcJava['visionPortal_getCameraState'] = function(block) {
       block, 'VISION_PORTAL', Blockly.FtcJava.ORDER_MEMBER);
   var code = visionPortal + '.getCameraState()';
   return [code, Blockly.FtcJava.ORDER_FUNCTION_CALL];
+};
+
+Blockly.Blocks['visionPortal_saveNextFrameRaw'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('call')
+        .appendField(createNonEditableField('VisionPortal'))
+        .appendField('.')
+        .appendField(createNonEditableField('saveNextFrameRaw'));
+    this.appendValueInput('VISION_PORTAL').setCheck('VisionPortal')
+        .appendField('visionPortal')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('FILENAME').setCheck('String')
+        .appendField('filename')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setColour(functionColor);
+    this.setTooltip('Saves the next frame to the given file.');
+  }
+};
+
+Blockly.JavaScript['visionPortal_saveNextFrameRaw'] = function(block) {
+  var visionPortal = Blockly.JavaScript.valueToCode(
+      block, 'VISION_PORTAL', Blockly.JavaScript.ORDER_COMMA);
+  var filename = Blockly.JavaScript.valueToCode(
+      block, 'FILENAME', Blockly.JavaScript.ORDER_COMMA);
+  return visionPortalIdentifierForJavaScript + '.saveNextFrameRaw(' +
+      visionPortal + ', ' + filename + ');\n';
+};
+
+Blockly.FtcJava['visionPortal_saveNextFrameRaw'] = function(block) {
+  var visionPortal = Blockly.FtcJava.valueToCode(
+      block, 'VISION_PORTAL', Blockly.FtcJava.ORDER_MEMBER);
+  var filename = Blockly.FtcJava.valueToCode(
+      block, 'FILENAME', Blockly.FtcJava.ORDER_NONE);
+  return visionPortal + '.saveNextFrameRaw(' + filename + ');\n';
 };
 
 Blockly.Blocks['visionPortal_stopStreaming'] = {

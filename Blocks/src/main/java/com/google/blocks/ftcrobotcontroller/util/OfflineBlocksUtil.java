@@ -113,6 +113,7 @@ public class OfflineBlocksUtil {
     assetsToInclude.add("blocks/gamepad.js");
     assetsToInclude.add("blocks/gyro_sensor.js");
     assetsToInclude.add("blocks/hardware_util.js");
+    assetsToInclude.add("blocks/husky_lens.js");
     assetsToInclude.add("blocks/imu.js");
     assetsToInclude.add("blocks/imu_parameters.js");
     assetsToInclude.add("blocks/ir_seeker_sensor.js");

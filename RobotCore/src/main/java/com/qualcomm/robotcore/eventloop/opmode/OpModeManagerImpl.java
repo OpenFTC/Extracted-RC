@@ -80,7 +80,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * {@link OpModeManagerImpl} is the owner of the concept of a 'current' opmode.
+ * {@link OpModeManagerImpl} is the owner of the concept of a 'current' OpMode.
  */
 @SuppressWarnings("unused,WeakerAccess")
 public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier {
@@ -176,7 +176,7 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
   public OpModeManagerImpl(Activity activity, HardwareMap hardwareMap) {
     this.hardwareMap = hardwareMap;
 
-    // switch to the default op mode
+    // switch to the default OpMode
     initOpMode(DEFAULT_OP_MODE_NAME);
 
     this.context = activity;
@@ -286,14 +286,14 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
     boolean isDefaultOpMode = opModeName.equals(DEFAULT_OP_MODE_NAME);
     preventDangerousHardwareAccess = isDefaultOpMode;
 
-    // This may get called before the Op Modes have been registered, so let's special-case the
-    // default Op Mode, since that one MUST work
+    // This may get called before the OpModes have been registered, so let's special-case the
+    // default OpMode, since that one MUST work
     OpModeMeta meta;
     if (isDefaultOpMode) { meta = RegisteredOpModes.DEFAULT_OP_MODE_METADATA; }
     else { meta = RegisteredOpModes.getInstance().getOpModeMetadata(opModeName); }
 
     if (meta == null) {
-      RobotLog.ee(TAG, "initOpMode(): Was unable to find metadata for Op Mode %s", opModeName);
+      RobotLog.ee(TAG, "initOpMode(): Was unable to find metadata for OpMode %s", opModeName);
       return;
     }
 
@@ -305,7 +305,7 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
     newState.callToInitNeeded = true;
     newState.gamepadResetNeeded = true;
     newState.telemetryClearNeeded = !isDefaultOpMode;  // no semantic need to clear if we're just stopping
-    newState.callToStartNeeded = isSystem; // System Op Modes should auto-transition to Run mode
+    newState.callToStartNeeded = isSystem; // System OpModes should auto-transition to Run mode
     newState.onlyTransitionIfDefaultOpModeIsRunning = onlyInitIfDefaultIsRunning;
 
     // We *insist* on becoming the new state
@@ -359,8 +359,8 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
     }
 
 
-    // Robustly ensure that gamepad state from previous Op Modes doesn't
-    // leak into new Op Modes.
+    // Robustly ensure that gamepad state from previous OpModes doesn't
+    // leak into new OpModes.
     if (gamepadResetNeeded) {
       opModeGamepads[0].reset();
       opModeGamepads[1].reset();
@@ -420,7 +420,7 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
 
       // The point about resetting the hardware is to have it in the same state
       // every time for the *user's* code so that they can simplify their initialization
-      // logic. There's no point in bothering / spending the time for the default opmode.
+      // logic. There's no point in bothering / spending the time for the default OpMode.
       if (!initializingDefaultOpMode) {
         resetHardwareForOpMode();
       }
@@ -442,7 +442,7 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
     else if (opModeState == OpModeState.INIT || opModeState == OpModeState.LOOPING) {
       checkOnActiveOpMode();
 
-      // If the Driver Station just now connected, make sure it knows the status of the current Op Mode
+      // If the Driver Station just now connected, make sure it knows the status of the current OpMode
       boolean peerIsConnected = NetworkConnectionHandler.getInstance().isPeerConnected();
       if (peerIsConnected && !peerWasConnected) {
         String command;
@@ -459,7 +459,7 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
     }
   }
 
-  // resets the hardware to the state expected at the start of an opmode
+  // resets the hardware to the state expected at the start of an OpMode
   protected void resetHardwareForOpMode() {
     // First reset all instances of LynxModule and LynxController, so that all HardwareDevice
     // classes that use a LynxController subclass get the final say
@@ -478,10 +478,10 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
     }
   }
 
-  /** @return {@code true} if the Op Mode swap succeeded */
+  /** @return {@code true} if the OpMode swap succeeded */
   private boolean performOpModeSwap() {
     String newOpModeName = queuedOpModeMetadata.name;
-    RobotLog.i("Attempting to switch to op mode " + newOpModeName);
+    RobotLog.i("Attempting to switch to OpMode " + newOpModeName);
 
     OpMode opMode = RegisteredOpModes.getInstance().getOpMode(newOpModeName);
     if (opMode != null) {
@@ -494,7 +494,7 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
   }
 
   private void failedToSwapOpMode() {
-    RobotLog.ee(TAG, "Unable to start op mode " + queuedOpModeMetadata.name);
+    RobotLog.ee(TAG, "Unable to start OpMode " + queuedOpModeMetadata.name);
     initOpMode(DEFAULT_OP_MODE_NAME);
   }
 
@@ -629,7 +629,7 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
 
               AppUtil.getInstance().showAlertDialog(UILocation.BOTH, "OpMode Force-Stopped", String.format(msgForUser, method));
 
-              // Clear this flag so we don't crash the default opmode
+              // Clear this flag so we don't crash the default OpMode
               for (RobotCoreLynxUsbDevice dev : hardwareMap.getAll(RobotCoreLynxUsbDevice.class)) {
                 dev.setThrowOnNetworkLockAcquisition(false);
               }
@@ -849,9 +849,9 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
   //------------------------------------------------------------------------------------------------
 
   /**
-   * {@link DefaultOpMode} is the opmode that the system runs when no user opmode is active.
-   * Note that it's not necessarily the case that this opmode runs when a user opmode stops: there
-   * are situations in which we can transition directly for one user opmode to another.
+   * {@link DefaultOpMode} is the OpMode that the system runs when no user OpMode is active.
+   * Note that it's not necessarily the case that this OpMode runs when a user OpMode stops: there
+   * are situations in which we can transition directly for one user OpMode to another.
    */
   @SuppressWarnings("WeakerAccess")
   public static class DefaultOpMode extends OpMode {

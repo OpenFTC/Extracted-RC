@@ -34,8 +34,7 @@ Blockly.Blocks['elapsedTime2_create'] = {
         .appendField('new')
         .appendField(createNonEditableField('ElapsedTime'));
     this.setColour(functionColor);
-    this.setTooltip('Creates an ElapsedTime object representing a timer with SECONDS resolution, ' +
-        'initialized with the current time.');
+    this.setTooltip('Creates an ElapsedTime object, initialized with System.nanoTime.');
   }
 };
 
@@ -98,7 +97,7 @@ Blockly.Blocks['elapsedTime2_create_withResolution'] = {
         .setAlign(Blockly.ALIGN_RIGHT);
     this.setColour(functionColor);
     this.setTooltip('Creates an ElapsedTime object representing a timer with the given resolution, ' +
-        'initialized with the current time.');
+        'initialized with System.nanoTime.');
   }
 };
 

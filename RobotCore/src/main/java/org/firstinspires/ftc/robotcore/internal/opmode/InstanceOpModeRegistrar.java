@@ -33,7 +33,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.firstinspires.ftc.robotcore.internal.opmode;
 
 /**
- * Used for registering instance opmodes
+ * Used for registering instance OpModes
  */
 @SuppressWarnings("WeakerAccess")
 public interface InstanceOpModeRegistrar

@@ -45,7 +45,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.qualcomm.ftccommon.CommandList;
 import com.qualcomm.ftccommon.R;
 import com.qualcomm.robotcore.exception.DuplicateNameException;
 import com.qualcomm.robotcore.exception.RobotCoreException;
@@ -74,9 +73,11 @@ import org.xmlpull.v1.XmlPullParser;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Semaphore;
 
 @SuppressWarnings("WeakerAccess")
@@ -337,43 +338,60 @@ public class FtcConfigurationActivity extends EditActivity {
     RobotConfigMap newRobotConfigMap = new RobotConfigMap();
 
     configurationUtility.resetNameUniquifiers();
-    for(Map.Entry<SerialNumber, DeviceManager.UsbDeviceType> entry : scannedDevices.entrySet()) {
-      final SerialNumber serialNumber = entry.getKey();
-      final DeviceManager.UsbDeviceType deviceType = entry.getValue();
 
-      @SuppressWarnings("rawtypes")
-      ControllerConfiguration controllerConfiguration = null;
-
-      if (carryOver(serialNumber, existingControllers)) {
-        // For Lynx USB devices, we want to perform discovery, and then carry over individual modules, rather than the whole portal.
-        if (deviceType == DeviceManager.UsbDeviceType.LYNX_USB_DEVICE) {
-          RobotLog.vv(TAG, "Performing Lynx discovery");
-          controllerConfiguration = configurationUtility.buildNewControllerConfiguration(serialNumber, deviceType, usbScanManager.getLynxModuleMetaListSupplier(serialNumber));
-          LynxUsbDeviceConfiguration lynxUsbConfiguration = (LynxUsbDeviceConfiguration) controllerConfiguration;
-          List<LynxModuleConfiguration> discoveredModules = new ArrayList<>(lynxUsbConfiguration.getModules()); // Gives us a list that we won't be editing, so that we can safely iterate over it
-          for (LynxModuleConfiguration discoveredModule: discoveredModules) {
-            for (LynxModuleConfiguration existingModule: ((LynxUsbDeviceConfiguration) existingControllers.get(serialNumber)).getModules()) {
-              if (discoveredModule.getModuleAddress() == existingModule.getModuleAddress()) {
-                RobotLog.vv(TAG, "carrying over %s", existingModule.getModuleSerialNumber());
-                existingModule.setParentModuleAddress(discoveredModule.getParentModuleAddress()); // Preserve parent state from discovery
-                lynxUsbConfiguration.getModules().remove(discoveredModule);
-                lynxUsbConfiguration.getModules().add(existingModule);
-              }
-            }
-          }
-        } else {
-          RobotLog.vv(TAG, "carrying over %s", serialNumber);
-          controllerConfiguration = existingControllers.get(serialNumber);
-        }
-
+    // Separate newly-found devices from ones that were already in the configuration
+    Set<Map.Entry<SerialNumber, DeviceManager.UsbDeviceType>> devicesToCarryOver = new HashSet<>();
+    Set<Map.Entry<SerialNumber, DeviceManager.UsbDeviceType>> devicesToCreate = new HashSet<>();
+    for (Map.Entry<SerialNumber, DeviceManager.UsbDeviceType> entry : scannedDevices.entrySet()) {
+      if (carryOver(entry.getKey(), existingControllers)) {
+        devicesToCarryOver.add(entry);
       } else {
-        controllerConfiguration = configurationUtility.buildNewControllerConfiguration(serialNumber, deviceType, usbScanManager.getLynxModuleMetaListSupplier(serialNumber));
-      }
-      if (controllerConfiguration != null) {
-        controllerConfiguration.setKnownToBeAttached(true);
-        newRobotConfigMap.put(serialNumber, controllerConfiguration);
+        devicesToCreate.add(entry);
       }
     }
+
+    // Carry over all previously-configured controllers before adding newly-found controllers,
+    // to ensure that existing controllers keep their names
+    for (Map.Entry<SerialNumber, DeviceManager.UsbDeviceType> entry : devicesToCarryOver) {
+      final SerialNumber serialNumber = entry.getKey();
+      final DeviceManager.UsbDeviceType deviceType = entry.getValue();
+      ControllerConfiguration<?> controllerConfiguration;
+
+      // For Lynx USB devices, we want to perform discovery, and then carry over individual modules, rather than the whole portal.
+      if (deviceType == DeviceManager.UsbDeviceType.LYNX_USB_DEVICE) {
+        RobotLog.vv(TAG, "Performing Lynx discovery");
+        controllerConfiguration = configurationUtility.buildNewControllerConfiguration(serialNumber, deviceType, usbScanManager.getLynxModuleMetaListSupplier(serialNumber));
+        LynxUsbDeviceConfiguration lynxUsbConfiguration = (LynxUsbDeviceConfiguration) controllerConfiguration;
+        List<LynxModuleConfiguration> discoveredModules = new ArrayList<>(lynxUsbConfiguration.getModules()); // Gives us a list that we won't be editing, so that we can safely iterate over it
+        for (LynxModuleConfiguration discoveredModule: discoveredModules) {
+          for (LynxModuleConfiguration existingModule: ((LynxUsbDeviceConfiguration) existingControllers.get(serialNumber)).getModules()) {
+            if (discoveredModule.getModuleAddress() == existingModule.getModuleAddress()) {
+              RobotLog.vv(TAG, "carrying over %s", existingModule.getModuleSerialNumber());
+              existingModule.setParentModuleAddress(discoveredModule.getParentModuleAddress()); // Preserve parent state from discovery
+              lynxUsbConfiguration.getModules().remove(discoveredModule);
+              lynxUsbConfiguration.getModules().add(existingModule);
+              configurationUtility.noteExistingName(existingModule.getConfigurationType(), existingModule.getName());
+            }
+          }
+        }
+      } else {
+        RobotLog.vv(TAG, "carrying over %s", serialNumber);
+        controllerConfiguration = existingControllers.get(serialNumber);
+        configurationUtility.noteExistingName(controllerConfiguration.getConfigurationType(), controllerConfiguration.getName());
+      }
+
+      controllerConfiguration.setKnownToBeAttached(true);
+      newRobotConfigMap.put(serialNumber, controllerConfiguration);
+    }
+
+    // Now that we've carried over previously-configured controllers, we can add the newly-found controllers
+    for (Map.Entry<SerialNumber, DeviceManager.UsbDeviceType> entry : devicesToCreate) {
+      final SerialNumber serialNumber = entry.getKey();
+      ControllerConfiguration<?> controllerConfiguration = configurationUtility.buildNewControllerConfiguration(serialNumber, entry.getValue(), usbScanManager.getLynxModuleMetaListSupplier(serialNumber));
+      controllerConfiguration.setKnownToBeAttached(true);
+      newRobotConfigMap.put(serialNumber, controllerConfiguration);
+    }
+
     return newRobotConfigMap;
   }
 
@@ -629,6 +647,7 @@ public class FtcConfigurationActivity extends EditActivity {
     String data;
     try {
       data = robotConfigFileManager.toXml(getRobotConfigMap());
+      clearDuplicateWarning();
     } catch (DuplicateNameException e) {
       warnDuplicateNames(e.getMessage());
       RobotLog.ee(TAG, e.getMessage());
@@ -674,7 +693,6 @@ public class FtcConfigurationActivity extends EditActivity {
           RobotLog.ee(TAG, e.getMessage());
           return;
         }
-        clearDuplicateWarning();
         confirmSave();
         pauseAfterSave();
         finishOk();

@@ -32,14 +32,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.qualcomm.robotcore.eventloop.opmode;
 
 /**
- * Register Op Modes
+ * Register OpModes
  */
 public interface OpModeRegister {
 
   /**
-   * The Op Mode Manager will call this method when it wants a list of all
-   * available op modes. Add you op mode to the list to enable it.
-   * @param manager op mode manager
+   * The OpMode Manager will call this method when it wants a list of all
+   * available OpModes. Add you OpMode to the list to enable it.
+   * @param manager OpMode manager
    */
   void register(OpModeManager manager);
 }

@@ -36,7 +36,6 @@ import android.opengl.GLES20;
 import androidx.annotation.RawRes;
 
 import com.qualcomm.robotcore.R;
-import com.vuforia.Mesh;
 
 import org.firstinspires.ftc.robotcore.internal.opengl.models.MeshObject;
 
@@ -62,15 +61,6 @@ public class CubeMeshVertexShader extends SimpleVertexShader
 
         GLES20.glEnableVertexAttribArray(a_vertexPosition);
         GLES20.glEnableVertexAttribArray(a_vertexNormal);
-        GLES20.glEnableVertexAttribArray(a_vertexTexCoord);
-        }
-
-    public void setCoordinates(Mesh mesh)
-        {
-        GLES20.glVertexAttribPointer(a_vertexPosition, 3, GLES20.GL_FLOAT, false, 0, mesh.getPositions());
-        GLES20.glVertexAttribPointer(a_vertexTexCoord, 2, GLES20.GL_FLOAT, false, 0, mesh.getUVs());
-
-        GLES20.glEnableVertexAttribArray(a_vertexPosition);
         GLES20.glEnableVertexAttribArray(a_vertexTexCoord);
         }
 

@@ -49,11 +49,11 @@ import java.util.concurrent.TimeUnit;
  * <p>
  * Event loops need to implement this interface. Contains methods for managing the life cycle of your robot.
  */
-// TODO(Noah): Consider making it so that hardware can only be accessed through an Op Mode. That way,
+// TODO(Noah): Consider making it so that hardware can only be accessed through an OpMode. That way,
 //             it's no longer possible to have references to hardware that persist through a robot
 //             restart. This would require making it so that certain operations fail with a
 //             "robot starting up" or "robot stopped" error, which would in itself require robocol
-//             changes. We could have a system Op Mode that accepts a queue of specialized
+//             changes. We could have a system OpMode that accepts a queue of specialized
 //             runnables, which provide helper code for accessing hardware that's not in the
 //             hardwareMap already.
 public interface EventLoop {

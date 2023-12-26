@@ -210,72 +210,62 @@ public class AprilTagProcessorImpl extends AprilTagProcessor
 
             for (long ptrDetection : detectionPointers)
             {
-                AprilTagDetection detection = new AprilTagDetection();
-                detection.frameAcquisitionNanoTime = captureTimeNanos;
+                AprilTagMetadata metadata = tagLibrary.lookupTag(ApriltagDetectionJNI.getId(ptrDetection));
 
-                detection.id = ApriltagDetectionJNI.getId(ptrDetection);
-
-                AprilTagMetadata metadata = tagLibrary.lookupTag(detection.id);
-                detection.metadata = metadata;
-
-                detection.hamming = ApriltagDetectionJNI.getHamming(ptrDetection);
-                detection.decisionMargin = ApriltagDetectionJNI.getDecisionMargin(ptrDetection);
-                double[] center = ApriltagDetectionJNI.getCenterpoint(ptrDetection);
-                detection.center = new Point(center[0], center[1]);
                 double[][] corners = ApriltagDetectionJNI.getCorners(ptrDetection);
 
-                detection.corners = new Point[4];
+                Point[] cornerPts = new Point[4];
                 for (int p = 0; p < 4; p++)
                 {
-                    detection.corners[p] = new Point(corners[p][0], corners[p][1]);
+                    cornerPts[p] = new Point(corners[p][0], corners[p][1]);
                 }
+
+                AprilTagPoseRaw rawPose;
+                AprilTagPoseFtc ftcPose;
 
                 if (metadata != null)
                 {
                     PoseSolver solver = poseSolver; // snapshot, can change
 
-                    detection.rawPose = new AprilTagPoseRaw();
-
                     long startSolveTime = System.currentTimeMillis();
 
                     if (solver == PoseSolver.APRILTAG_BUILTIN)
                     {
-                        // Translation
                         double[] pose = ApriltagDetectionJNI.getPoseEstimate(
                                 ptrDetection,
                                 outputUnitsLength.fromUnit(metadata.distanceUnit, metadata.tagsize),
                                 fx, fy, cx, cy);
 
-                        detection.rawPose.x = pose[0];
-                        detection.rawPose.y = pose[1];
-                        detection.rawPose.z = pose[2];
-
-                        // Rotation
+                        // Build rotation matrix
                         float[] rotMtxVals = new float[3 * 3];
                         for (int i = 0; i < 9; i++)
                         {
                             rotMtxVals[i] = (float) pose[3 + i];
                         }
-                        detection.rawPose.R = new GeneralMatrixF(3, 3, rotMtxVals);
+
+                        rawPose = new AprilTagPoseRaw(
+                                pose[0], pose[1], pose[2], // x y z
+                                new GeneralMatrixF(3, 3, rotMtxVals)); // R
                     }
                     else
                     {
                         Pose opencvPose = poseFromTrapezoid(
-                                detection.corners,
+                                cornerPts,
                                 cameraMatrix,
                                 outputUnitsLength.fromUnit(metadata.distanceUnit, metadata.tagsize),
                                 solver.code);
 
-                        detection.rawPose.x = opencvPose.tvec.get(0,0)[0];
-                        detection.rawPose.y = opencvPose.tvec.get(1,0)[0];
-                        detection.rawPose.z = opencvPose.tvec.get(2,0)[0];
-
+                        // Build rotation matrix
                         Mat R = new Mat(3, 3, CvType.CV_32F);
                         Calib3d.Rodrigues(opencvPose.rvec, R);
-
                         float[] tmp2 = new float[9];
                         R.get(0,0, tmp2);
-                        detection.rawPose.R = new GeneralMatrixF(3,3, tmp2);
+
+                        rawPose = new AprilTagPoseRaw(
+                                opencvPose.tvec.get(0,0)[0], // x
+                                opencvPose.tvec.get(1,0)[0], // y
+                                opencvPose.tvec.get(2,0)[0], // z
+                                new GeneralMatrixF(3,3, tmp2)); // R
                     }
 
                     long endSolveTime = System.currentTimeMillis();
@@ -284,28 +274,36 @@ public class AprilTagProcessorImpl extends AprilTagProcessor
                 else
                 {
                     // We don't know anything about the tag size so we can't solve the pose
-                    detection.rawPose = null;
+                    rawPose = null;
                 }
 
-                if (detection.rawPose != null)
+                if (rawPose != null)
                 {
-                    detection.ftcPose = new AprilTagPoseFtc();
+                    Orientation rot = Orientation.getOrientation(rawPose.R, AxesReference.INTRINSIC, AxesOrder.YXZ, outputUnitsAngle);
 
-                    detection.ftcPose.x =  detection.rawPose.x;
-                    detection.ftcPose.y =  detection.rawPose.z;
-                    detection.ftcPose.z = -detection.rawPose.y;
-
-                    Orientation rot = Orientation.getOrientation(detection.rawPose.R, AxesReference.INTRINSIC, AxesOrder.YXZ, outputUnitsAngle);
-                    detection.ftcPose.yaw = -rot.firstAngle;
-                    detection.ftcPose.roll = rot.thirdAngle;
-                    detection.ftcPose.pitch = rot.secondAngle;
-
-                    detection.ftcPose.range = Math.hypot(detection.ftcPose.x, detection.ftcPose.y);
-                    detection.ftcPose.bearing = outputUnitsAngle.fromUnit(AngleUnit.RADIANS, Math.atan2(-detection.ftcPose.x, detection.ftcPose.y));
-                    detection.ftcPose.elevation = outputUnitsAngle.fromUnit(AngleUnit.RADIANS, Math.atan2(detection.ftcPose.z, detection.ftcPose.y));
+                    ftcPose = new AprilTagPoseFtc(
+                            rawPose.x,  // x   NB: These are *intentionally* not matched directly;
+                            rawPose.z,  // y       this is the mapping between the AprilTag coordinate
+                            -rawPose.y, // z       system and the FTC coordinate system
+                            -rot.firstAngle, // yaw
+                            rot.secondAngle, // pitch
+                            rot.thirdAngle,  // roll
+                            Math.hypot(rawPose.x, rawPose.z), // range
+                            outputUnitsAngle.fromUnit(AngleUnit.RADIANS, Math.atan2(-rawPose.x, rawPose.z)), // bearing
+                            outputUnitsAngle.fromUnit(AngleUnit.RADIANS, Math.atan2(-rawPose.y, rawPose.z))); // elevation
+                }
+                else
+                {
+                    ftcPose = null;
                 }
 
-                detections.add(detection);
+                double[] center = ApriltagDetectionJNI.getCenterpoint(ptrDetection);
+
+                detections.add(new AprilTagDetection(
+                        ApriltagDetectionJNI.getId(ptrDetection),
+                        ApriltagDetectionJNI.getHamming(ptrDetection),
+                        ApriltagDetectionJNI.getDecisionMargin(ptrDetection),
+                        new Point(center[0], center[1]), cornerPts, metadata, ftcPose, rawPose, captureTimeNanos));
             }
 
             ApriltagDetectionJNI.freeDetectionList(ptrDetectionArray);

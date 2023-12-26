@@ -9,10 +9,10 @@
 </variables>
 <block type="procedures_defnoreturn" id="N5+,3)OebbE6UZcs_7Pq" deletable="false" x="10" y="10">
 <field name="NAME">runOpMode</field>
-<comment pinned="false" h="45" w="532">This function is executed when this Op Mode is selected from the Driver Station.</comment>
+<comment pinned="false" h="45" w="532">This function is executed when this OpMode is selected from the Driver Station.</comment>
 <statement name="STACK">
 <block type="comment" id="W[upihAQT8!:[,2wul*s">
-<field name="COMMENT">This op mode demonstrates the color and distance features of the REV sensor.</field>
+<field name="COMMENT">This OpMode demonstrates the color and distance features of the REV sensor.</field>
 <next>
 <block type="variables_set" id="jsi_j`*08npd8T@Dj!2B">
 <field name="VAR" id="0)52Pew1EzfSRGo:9}fh">gain</field>

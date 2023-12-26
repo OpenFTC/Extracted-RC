@@ -267,7 +267,7 @@ public class AprilTagCanvasAnnotator
     {
         float cornerRound = 5 * canvasDensityScale;
 
-        float tag_id_width = 120*canvasDensityScale;
+        float tag_id_width = 140*canvasDensityScale;
         float tag_id_height = 50*canvasDensityScale;
 
         float id_x = (float) detection.center.x * bmpPxToCanvasPx - tag_id_width/2;
@@ -283,7 +283,7 @@ public class AprilTagCanvasAnnotator
         canvas.rotate((float) Math.toDegrees(Math.atan2(lowerRight.y - lowerLeft.y, lowerRight.x-lowerLeft.x)), (float) detection.center.x*bmpPxToCanvasPx, (float) detection.center.y*bmpPxToCanvasPx);
 
         canvas.drawRoundRect(id_x, id_y, id_x+tag_id_width, id_y+tag_id_height, cornerRound, cornerRound, rectPaint);
-        canvas.drawText(String.format("ID %02d", detection.id), tag_id_text_x, tag_id_text_y, textPaint);
+        canvas.drawText(String.format("ID %03d", detection.id), tag_id_text_x, tag_id_text_y, textPaint);
 
         canvas.restore();
     }

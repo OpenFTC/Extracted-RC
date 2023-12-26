@@ -40,11 +40,16 @@ import com.qualcomm.ftccommon.FtcEventLoop;
 import com.qualcomm.ftccommon.R;
 import com.qualcomm.hardware.HardwareDeviceManager;
 import com.qualcomm.hardware.HardwareManualControlOpMode;
+import com.qualcomm.hardware.bosch.BHI260IMU;
+import com.qualcomm.hardware.bosch.BNO055Util;
+import com.qualcomm.hardware.lynx.LynxEmbeddedBNO055IMUNew;
+import com.qualcomm.hardware.lynx.LynxI2cDeviceSynch;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.lynx.LynxNackException;
 import com.qualcomm.hardware.lynx.LynxUsbDevice;
 import com.qualcomm.hardware.lynx.LynxUsbDevice.SystemOperationHandle;
 import com.qualcomm.hardware.lynx.LynxUsbDeviceImpl;
+import com.qualcomm.hardware.lynx.commands.core.LynxFirmwareVersionManager;
 import com.qualcomm.robotcore.eventloop.EventLoopManager;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;
@@ -52,13 +57,18 @@ import com.qualcomm.robotcore.eventloop.opmode.OpModeManagerImpl;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeManagerNotifier;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeRegistrar;
 import com.qualcomm.robotcore.exception.RobotCoreException;
+import com.qualcomm.robotcore.hardware.EmbeddedControlHubModule;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.usb.RobotArmingStateNotifier;
+import com.qualcomm.robotcore.util.Device;
 import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.util.SerialNumber;
 
 import com.qualcomm.robotcore.util.ThreadPool;
 import org.firstinspires.ftc.ftccommon.external.OnCreateEventLoop;
+import org.firstinspires.ftc.ftccommon.internal.manualcontrol.exceptions.DeviceNotControlHubException;
 import org.firstinspires.ftc.ftccommon.internal.manualcontrol.exceptions.FailedToOpenHubException;
+import org.firstinspires.ftc.ftccommon.internal.manualcontrol.exceptions.ImuNotFoundException;
 import org.firstinspires.ftc.ftccommon.internal.manualcontrol.exceptions.InvalidDeviceIdException;
 import org.firstinspires.ftc.ftccommon.internal.manualcontrol.exceptions.InvalidParameterException;
 import org.firstinspires.ftc.ftccommon.internal.manualcontrol.exceptions.UserOpModeRunningException;
@@ -109,7 +119,7 @@ public class ManualControlOpMode extends HardwareManualControlOpMode {
     }
 
     //----------------------------------------------------------------------------------------------
-    // Static Op Mode tracking code
+    // Static OpMode tracking code
     //----------------------------------------------------------------------------------------------
 
     private static final Object currentOpModeLock = new Object();
@@ -150,7 +160,7 @@ public class ManualControlOpMode extends HardwareManualControlOpMode {
         } else if (opMode instanceof OpModeManagerImpl.DefaultOpMode) {
             currentOpMode = CurrentOpMode.DEFAULT;
         } else if (opMode instanceof ManualControlOpMode) {
-            // When the Manual Control Op Mode _actually_ starts running, it will
+            // When the Manual Control OpMode _actually_ starts running, it will
             // set currentOpMode to MANUAL_CONTROL itself.
             currentOpMode = CurrentOpMode.PENDING;
         } else {
@@ -175,14 +185,14 @@ public class ManualControlOpMode extends HardwareManualControlOpMode {
             }
 
             // By checking this in a loop and calling wait() on a lock that gets notified when
-            // either a new event loop starts up or the current Op Mode changes, we should be
+            // either a new event loop starts up or the current OpMode changes, we should be
             // fully resilient to Robot Restarts.
             while (currentOpMode == CurrentOpMode.DEFAULT) {
-                // Tell opModeManager to start the Manual Control Op Mode, but only if the default
-                // Op Mode is still the actively running one
+                // Tell opModeManager to start the Manual Control OpMode, but only if the default
+                // OpMode is still the actively running one
                 opModeManager.initOpMode(MANUAL_CONTROL_OP_MODE_NAME, true);
 
-                // Wait for a new Op Mode to start
+                // Wait for a new OpMode to start
                 currentOpMode = CurrentOpMode.PENDING;
                 while (currentOpMode == CurrentOpMode.PENDING) {
                     currentOpModeLock.wait();
@@ -220,13 +230,37 @@ public class ManualControlOpMode extends HardwareManualControlOpMode {
     //----------------------------------------------------------------------------------------------
     private final BlockingDeque<FutureTask<?>> taskQueue = new LinkedBlockingDeque<>();
 
-    // These will ONLY be accessed from the main Op Mode thread
+    // These will ONLY be accessed from the main OpMode thread
     private final Map<Integer, SystemOperationHandle> handleIdToHandleMap = new HashMap<>();
     private final List<LynxUsbDevice> usbDevices = new LinkedList<>();
     private int nextHandleId = 0;
+    private IMU controlHubImu;
 
     public ManualControlOpMode() {
         HardwareManualControlOpMode.setInstance(this);
+    }
+
+    public void initializeImu(IMU.Parameters parameters) throws ImuNotFoundException, DeviceNotControlHubException {
+        LynxModule module = (LynxModule) EmbeddedControlHubModule.get();
+        if (!Device.isRevControlHub()) {
+            throw new DeviceNotControlHubException();
+        }
+
+        if (module == null) {
+            throw new RuntimeException("Unable to access the Control Hub's internal module");
+        }
+        //the IMU is on I2C bus 0.
+        LynxI2cDeviceSynch device = LynxFirmwareVersionManager.createLynxI2cDeviceSynch(AppUtil.getDefContext(), module, 0);
+        controlHubImu = createImu(device);
+        boolean successful = controlHubImu.initialize(parameters);
+        if(!successful) {
+            controlHubImu = null;
+            throw new ImuNotFoundException("Unable to initialize IMU");
+        }
+    }
+
+    public IMU getImu() {
+        return controlHubImu;
     }
 
     /**
@@ -248,9 +282,9 @@ public class ManualControlOpMode extends HardwareManualControlOpMode {
                 task.run();
             }
         } finally {
-            // The Manual Control Op Mode is stopping
+            // The Manual Control OpMode is stopping
 
-            // Unmark ourselves as the currently-running Op Mode
+            // Unmark ourselves as the currently-running OpMode
             synchronized (currentOpModeLock) {
                 currentOpMode = CurrentOpMode.PENDING;
             }
@@ -261,7 +295,7 @@ public class ManualControlOpMode extends HardwareManualControlOpMode {
                 handler.stopManualControl();
             }
 
-            // Cancel any tasks that were queued to run on this Op Mode's thread
+            // Cancel any tasks that were queued to run on this OpMode's thread
             FutureTask<?> nextTask = taskQueue.poll();
             while (nextTask != null) {
                 // The task is running on this thread, which doesn't need to get interrupted
@@ -269,13 +303,17 @@ public class ManualControlOpMode extends HardwareManualControlOpMode {
                 nextTask = taskQueue.poll();
             }
 
-            // Close all system operation handles that this Op Mode still has open
+            // Close all system operation handles that this OpMode still has open
             for (int handleId: handleIdToHandleMap.keySet()) {
                 closeSystemOperationHandle(handleId);
             }
             handleIdToHandleMap.clear();
 
-            // Close all USB device delegates that this Op Mode opened
+            // Close the current IMU
+            controlHubImu.close();
+            controlHubImu = null;
+
+            // Close all USB device delegates that this OpMode opened
             for (LynxUsbDevice usbDevice: usbDevices) {
                 usbDevice.close();
             }
@@ -303,14 +341,14 @@ public class ManualControlOpMode extends HardwareManualControlOpMode {
         try {
             return task.get();
         } catch (CancellationException e) {
-            // This indicates that the Manual Control Op Mode was stopped before our task ran
+            // This indicates that the Manual Control OpMode was stopped before our task ran
             throw new WebSocketNotAuthorizedForManualControlException();
         } catch (ExecutionException exceptionWrapper) {
             // This indicates that the callable threw an Exception.
             Throwable e = exceptionWrapper.getCause();
 
             if (e instanceof InterruptedException) {
-                // This indicates that the Manual Control Op Mode was stopped mid-task, in which
+                // This indicates that the Manual Control OpMode was stopped mid-task, in which
                 // case we can throw a more helpful exception than just RuntimeException.
                 throw new WebSocketNotAuthorizedForManualControlException();
             } else if (e instanceof WebSocketCommandException) {
@@ -326,7 +364,7 @@ public class ManualControlOpMode extends HardwareManualControlOpMode {
     }
 
     /**
-     * ONLY call this from the Manual Control Op Mode thread
+     * ONLY call this from the Manual Control OpMode thread
      */
     public int openHubAndGetHandleId(OpenHubParameters parameters) throws InterruptedException, FailedToOpenHubException, InvalidParameterException {
         // We always open a new handle when this method is called, so that handles can be closed
@@ -363,7 +401,7 @@ public class ManualControlOpMode extends HardwareManualControlOpMode {
     }
 
     /**
-     * ONLY call this from the Manual Control Op Mode thread
+     * ONLY call this from the Manual Control OpMode thread
      */
     public SystemOperationHandle getSystemOperationHandle(HandleIdParameters parameters) throws InvalidDeviceIdException, InvalidParameterException {
         SystemOperationHandle handle = handleIdToHandleMap.get(parameters.getHandleId());
@@ -372,14 +410,14 @@ public class ManualControlOpMode extends HardwareManualControlOpMode {
     }
 
     /**
-     * ONLY call this from the Manual Control Op Mode thread.
+     * ONLY call this from the Manual Control OpMode thread.
      * <p>
      * Idempotent.
      */
     public void closeSystemOperationHandle(int handleId) {
         SystemOperationHandle handleToClose = handleIdToHandleMap.get(handleId);
         if (handleToClose != null) {
-            // Temporarily de-interrupt the Op Mode thread so that we can talk to the hardware in peace
+            // Temporarily de-interrupt the OpMode thread so that we can talk to the hardware in peace
             boolean threadWasInterrupted = Thread.interrupted();
             try {
                 handleIdToHandleMap.remove(handleId);
@@ -410,7 +448,7 @@ public class ManualControlOpMode extends HardwareManualControlOpMode {
             } finally {
                 handleToClose.close();
                 if (threadWasInterrupted) {
-                    // Re-interrupt the Op Mode thread
+                    // Re-interrupt the OpMode thread
                     Thread.currentThread().interrupt();
                 }
             }
@@ -443,8 +481,8 @@ public class ManualControlOpMode extends HardwareManualControlOpMode {
 
     @Override
     public void onLynxModuleAddressChanged(LynxModule module, int oldAddress, int newAddress) {
-        // We must run this on a background thread, because when we're the ones changing the address, the Op Mode thread
-        // will end up waiting for this function to exit, which also needs to run code on the Op Mode thread. If we
+        // We must run this on a background thread, because when we're the ones changing the address, the OpMode thread
+        // will end up waiting for this function to exit, which also needs to run code on the OpMode thread. If we
         // block the address changing process in that way, we get a deadlock.
         ThreadPool.getDefault().execute(() -> {
             try {
@@ -476,5 +514,15 @@ public class ManualControlOpMode extends HardwareManualControlOpMode {
                 .filter(entry -> entry.getValue().wrapsModule(module))
                 .mapToInt(Map.Entry::getKey)
                 .toArray();
+    }
+
+    private IMU createImu(LynxI2cDeviceSynch device) throws ImuNotFoundException {
+        if (BHI260IMU.imuIsPresent(device)) {
+            return new BHI260IMU(device, true);
+        } else if (BNO055Util.imuIsPresent(device, false)) {
+            return new LynxEmbeddedBNO055IMUNew(device, true);
+        } else {
+            throw new ImuNotFoundException("Failed to communicate with BHI260 or BNO055 IMU.");
+        }
     }
 }

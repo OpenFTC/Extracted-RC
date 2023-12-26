@@ -45,13 +45,37 @@ public interface FocusControl extends CameraControl
         ContinuousAuto,     // continuous auto focus
         Macro,              //
         Infinity,           //
-        Fixed               // Fixed focus that can't be adjusted
+        Fixed;              // Fixed focus that can't be adjusted
+
+        public static FocusControl.Mode fromId(int index)
+            {
+            if (index >= 0 && index < values().length)
+                {
+                return values()[index];
+                }
+            return Unknown;
+            }
         }
 
+    /**
+     * Get the current focus mode of the camera
+     * @return the current focus mode of the camera
+     */
     Mode getMode();
 
+
+    /**
+     * Set the focus mode of the camera
+     * @param mode the mode to enter
+     * @return whether the operation was successful
+     */
     boolean setMode(Mode mode);
 
+    /**
+     * Check whether the camera supports a given focus mode
+     * @param mode the mode in question
+     * @return whether the mode in question is supported
+     */
     boolean isModeSupported(Mode mode);
 
     //----------------------------------------------------------------------------------------------
@@ -60,16 +84,34 @@ public interface FocusControl extends CameraControl
 
     double unknownFocusLength = -1.0;
 
-    /** returns &lt;0 if not available */
+    /**
+     * Get the minimum focal distance supported by the camera
+     * @return the minimum focal distance supported, or 0 if unavailable
+     */
     double getMinFocusLength();
 
-    /** returns &lt;0 if not available */
+    /**
+     * Get the maximum focal distance supported by the camera
+     * @return the maximum focal distance supported, or 0 if unavailable
+     */
     double getMaxFocusLength();
 
-    /** returns &lt;0 if not available */
+    /**
+     * Get the camera's current focus length
+     * @return the camera's current focus length, or 0 if unavailable
+     */
     double getFocusLength();
 
+    /**
+     * Set the camera's focus length. Only works if you're in fixed mode.
+     * @param focusLength the desired focus length
+     * @return whether the operation succeeded
+     */
     boolean setFocusLength(double focusLength);
 
+    /**
+     * Check whether your camera supports control over focus
+     * @return whether your camera supports control over focus
+     */
     boolean isFocusLengthSupported();
     }

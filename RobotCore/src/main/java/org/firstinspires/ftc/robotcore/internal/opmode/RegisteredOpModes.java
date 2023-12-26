@@ -194,7 +194,7 @@ public class RegisteredOpModes implements OpModeManager
                 opModeClasses.clear();
                 opModeInstances.clear();
 
-                // register our default op mode first, that way the user can override it (eh?)
+                // register our default OpMode first, that way the user can override it (eh?)
                 register(DEFAULT_OP_MODE_METADATA, OpModeManagerImpl.DefaultOpMode.class);
 
                 // Somewhat arbitrary, but do the annotated ones LAST so we
@@ -235,7 +235,7 @@ public class RegisteredOpModes implements OpModeManager
             public void run()
                 {
 
-                // Unregister any existing opmodes that were dynamically loaded
+                // Unregister any existing OpModes that were dynamically loaded
                 List<OpModeMetaAndClass> extant = new ArrayList<>(opModeClasses.values());
                 for (OpModeMetaAndClass opModeMetaAndClass : extant)
                     {
@@ -246,7 +246,7 @@ public class RegisteredOpModes implements OpModeManager
                         }
                     }
 
-                // Add any new opmodes
+                // Add any new OpModes
                 ClassManager.getInstance().processOnBotJavaClasses();
                 AnnotatedOpModeClassFilter.getInstance().registerOnBotJavaClasses(RegisteredOpModes.this);
                 }
@@ -261,7 +261,7 @@ public class RegisteredOpModes implements OpModeManager
             public void run()
                 {
 
-                // Unregister any existing opmodes that were dynamically loaded
+                // Unregister any existing OpModes that were dynamically loaded
                 List<OpModeMetaAndClass> extant = new ArrayList<>(opModeClasses.values());
                 for (OpModeMetaAndClass opModeMetaAndClass : extant)
                     {
@@ -272,7 +272,7 @@ public class RegisteredOpModes implements OpModeManager
                         }
                     }
 
-                // Add any new opmodes
+                // Add any new OpModes
                 AnnotatedOpModeClassFilter.getInstance().registerExternalLibrariesClasses(RegisteredOpModes.this);
                 }
             });
@@ -286,7 +286,7 @@ public class RegisteredOpModes implements OpModeManager
             public void run()
                 {
 
-                // Unregister existing instance opmodes
+                // Unregister existing instance OpModes
                 synchronized (instanceOpModeRegistrars)
                     {
                     List<OpModeMetaAndInstance> extant = new ArrayList<OpModeMetaAndInstance>(opModeInstances.values());

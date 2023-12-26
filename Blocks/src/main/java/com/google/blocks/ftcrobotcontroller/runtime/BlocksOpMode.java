@@ -45,10 +45,10 @@ import com.google.blocks.ftcrobotcontroller.util.FileUtil;
 import com.google.blocks.ftcrobotcontroller.util.Identifier;
 import com.google.blocks.ftcrobotcontroller.util.ProjectsUtil;
 import com.qualcomm.hardware.bosch.BNO055IMUImpl;
-import com.qualcomm.hardware.lynx.EmbeddedControlHubModule;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;
+import com.qualcomm.robotcore.hardware.EmbeddedControlHubModule;
 import com.qualcomm.robotcore.hardware.LynxModuleImuType;
 import com.qualcomm.robotcore.util.RobotLog;
 
@@ -107,7 +107,7 @@ public final class BlocksOpMode extends LinearOpMode {
   private volatile boolean wasTerminated = false;
 
   /**
-   * Instantiates a BlocksOpMode that loads JavaScript from a file and executes it when the op mode
+   * The BlocksOpMode constructor loads JavaScript from a file and executes it when a Blocks OpMode
    * is run.
    *
    * @param project the name of the project.
@@ -163,16 +163,16 @@ public final class BlocksOpMode extends LinearOpMode {
         "Fatal error occurred while executing the block labeled \"" + getFullBlockLabel() + "\". " +
         errorMessage, e);
     fatalExceptionHolder.set(re);
-    throw re; // This will cause the opmode to stop.
+    throw re; // This will cause the OpMode to stop.
   }
 
   private void checkIfStopRequested() {
     if (interruptedTime.get() != 0L &&
         isStopRequested() &&
         System.currentTimeMillis() - interruptedTime.get() >= /* bite BEFORE main watchdog*/MS_BEFORE_FORCE_STOP_AFTER_STOP_REQUESTED-100) {
-      RobotLog.i(getLogPrefix() + "checkIfStopRequested - about to stop opmode by throwing RuntimeException");
+      RobotLog.i(getLogPrefix() + "checkIfStopRequested - about to stop OpMode by throwing RuntimeException");
       forceStopped = true;
-      throw new RuntimeException("Stopping opmode " + project + " by force.");
+      throw new RuntimeException("Stopping OpMode " + project + " by force.");
     }
   }
 
@@ -263,7 +263,7 @@ public final class BlocksOpMode extends LinearOpMode {
       javascriptInterfaces.put(
           Identifier.BLOCKS_OP_MODE.identifierForJavaScript, blocksOpModeAccess);
 
-      // Start running the user's op mode blocks by calling loadScript on the UI thread.
+      // Start running the user's OpMode blocks by calling loadScript on the UI thread.
       // Execution of the script is done by the WebView component, which uses the Java Bridge
       // thread to call into java.
 
@@ -374,7 +374,7 @@ public final class BlocksOpMode extends LinearOpMode {
     String name = nameOfOpModeLoadedIntoWebView.get();
     if (name != null) {
       RobotLog.w(getLogPrefix() + "cleanUpPreviousBlocksOpMode - Warning: The Blocks runtime system is still loaded " +
-          "with the Blocks op mode named " + name + ".");
+          "with the Blocks OpMode named " + name + ".");
       RobotLog.w(getLogPrefix() + "cleanUpPreviousBlocksOpMode - Trying to clean up now.");
       AppUtil.getInstance().synchronousRunOnUiThread(new Runnable() {
         @Override
@@ -398,8 +398,8 @@ public final class BlocksOpMode extends LinearOpMode {
       } else {
         RobotLog.e(getLogPrefix() + "cleanUpPreviousBlocksOpMode - Error: Clean up failed.");
         throw new RuntimeException(
-            "Unable to start running the Blocks op mode named " + project + ". The Blocks runtime " +
-            "system is still loaded with the previous Blocks op mode named " + name + ". " +
+            "Unable to start running the Blocks OpMode named " + project + ". The Blocks runtime " +
+            "system is still loaded with the previous Blocks OpMode named " + name + ". " +
             "Please restart the Robot Controller app.");
       }
     }
@@ -559,10 +559,10 @@ public final class BlocksOpMode extends LinearOpMode {
       if (hardwareItemMap.contains(hardwareType)) {
         for (HardwareItem hardwareItem : hardwareItemMap.getHardwareItems(hardwareType)) {
           // Don't instantiate the HardwareAccess instance if the identifier isn't used in the
-          // blocks opmode.
+          // Blocks OpMode.
           if (identifiersUsed != null && !identifiersUsed.contains(hardwareItem.identifier)) {
             RobotLog.i(getLogPrefix() + "Skipping hardware device named \"" +
-                hardwareItem.deviceName + "\". It isn't used in this blocks opmode.");
+                hardwareItem.deviceName + "\". It isn't used in this Blocks OpMode.");
             continue;
           }
           if (javascriptInterfaces.containsKey(hardwareItem.identifier)) {
@@ -607,10 +607,10 @@ public final class BlocksOpMode extends LinearOpMode {
     public void scriptStarting() {
       RobotLog.i(getLogPrefix() + "scriptStarting");
       /* Clear the interrupt flag on this thread (the JavaBridge thread), which may have been set
-         during a previous Blocks Op Mode run.
+         during a previous Blocks OpMode run.
 
          Note that this thread is tied to the WebView, which is why it is reused for all Blocks
-         Op Modes.
+         OpModes.
 
          We clear the interrupt flag by calling the (normally undesirable) method Thread.interrupted().
       */
@@ -667,7 +667,7 @@ public final class BlocksOpMode extends LinearOpMode {
            return;
         }
 
-        // An exception occured while the blocks opmode was executing.
+        // An exception occured while the Blocks OpMode was executing.
         // If the currentBlockLabel parameter is not empty, it is the label of the block that caused the exception.
         if (currentBlockLabel != null && !currentBlockLabel.isEmpty()) {
           fatalErrorMessageHolder.compareAndSet(null,
@@ -692,12 +692,12 @@ public final class BlocksOpMode extends LinearOpMode {
     }
 
     private String getWrongImuErrorMessage() {
-      LynxModule controlHub = EmbeddedControlHubModule.get();
+      LynxModule controlHub = (LynxModule) EmbeddedControlHubModule.get();
       if (controlHub != null) {
         LynxModuleImuType controlHubImuType = controlHub.getImuType();
         if (controlHubImuType == LynxModuleImuType.BHI260) {
           return "You attempted to use a BNO055 IMU on a Control Hub that contains a BHI260AP IMU. " +
-                  "You need to update your Op Mode to use the IMU blocks instead of the IMU-BNO055 blocks.";
+                  "You need to update your OpMode to use the IMU blocks instead of the IMU-BNO055 blocks.";
         }
       }
       return null;

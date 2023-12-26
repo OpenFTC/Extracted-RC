@@ -53,27 +53,17 @@ add_library( # Specifies the name of the library.
         src/main/cpp/libusb/os/linux_usbfs.c
         src/main/cpp/libusb/os/poll_posix.c
         src/main/cpp/libusb/os/threads_posix.c
-        src/main/cpp/libusb/os/linux_netlink.c
-        src/main/cpp/vuforia/NativeVuforiaWebcam.cpp)
+        src/main/cpp/libusb/os/linux_netlink.c)
 
 # Specifies a path to native header files.
 include_directories(
         src/main/cpp/libusb
         src/main/cpp/libusb/android
         src/main/cpp/libuvc/include
-        src/main/cpp/include
-        src/main/cpp/vuforia
-        src/main/cpp/include/Vuforia)
-
-# Specify path to prebuilt object
-add_library(Vuforia-prebuilt SHARED IMPORTED)
-set_target_properties(Vuforia-prebuilt PROPERTIES IMPORTED_LOCATION
-        # For unknown reasons we cannot just use a relative path
-        ${CMAKE_CURRENT_SOURCE_DIR}/libs/${ANDROID_ABI}/libVuforia.so)
+        src/main/cpp/include)
 
 # linking libs
 target_link_libraries(
         RobotCore
-        Vuforia-prebuilt
         log
         jnigraphics)

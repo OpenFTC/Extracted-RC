@@ -3,7 +3,7 @@
 </variables>
 <block type="procedures_defnoreturn" id="OpN8!1beqW{8Bw6M/?m+" deletable="false" x="50" y="50">
 <field name="NAME">runOpMode</field>
-<comment pinned="false" h="45" w="532">This function is executed when this Op Mode is selected from the Driver Station.</comment>
+<comment pinned="false" h="45" w="532">This function is executed when this OpMode is selected from the Driver Station.</comment>
 <statement name="STACK">
 <block type="comment" id="2E)2A*`b^PiWrgwVLCzD">
 <field name="COMMENT">Reverse one of the drive motors.</field>

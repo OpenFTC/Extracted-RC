@@ -5,7 +5,7 @@
       </comment>
       <field name="VISION_PORTAL_BUILDER" variabletype="VisionPortal.Builder">myVisionPortalBuilder</field>
     </block>
-    <placeholder_camera_visionPortalBuilder_setCamera_withCameraDirection/>
+    <placeholder_builtinCamera_visionPortalBuilder_setCamera_withCameraDirection/>
     <placeholder_webcam_visionPortalBuilder_setCamera_withWebcam/>
     <placeholder_switchableCamera_visionPortalBuilder_setCamera_withSwitchableCameraName/>
     <block type="visionPortalBuilder_setStreamFormat">
@@ -14,8 +14,8 @@
       <field name="VISION_PORTAL_BUILDER" variabletype="VisionPortal.Builder">myVisionPortalBuilder</field>
       <value name="STREAM_FORMAT"><shadow type="visionPortal_typedEnum_streamFormat"></shadow></value>
     </block>
-    <block type="visionPortalBuilder_enableCameraMonitoring">
-      <comment pinned="false" h="150" w="325">Enable the camera monitor live view (RC preview).
+    <block type="visionPortalBuilder_enableLiveView">
+      <comment pinned="false" h="150" w="325">Enable the live camera preview.
       </comment>
       <field name="VISION_PORTAL_BUILDER" variabletype="VisionPortal.Builder">myVisionPortalBuilder</field>
       <value name="ENABLE_CAMERA_MONITORING"><shadow type="logic_boolean"><field name="BOOL">TRUE</field></shadow></value>
@@ -26,8 +26,8 @@
       <field name="VISION_PORTAL_BUILDER" variabletype="VisionPortal.Builder">myVisionPortalBuilder</field>
       <value name="AUTO_STOP_LIVE_VIEW"><shadow type="logic_boolean"><field name="BOOL">TRUE</field></shadow></value>
     </block>
-    <block type="visionPortalBuilder_setCameraMonitorViewId">
-      <comment pinned="false" h="150" w="325">Set the camera monitor view id.
+    <block type="visionPortalBuilder_setLiveViewContainerId">
+      <comment pinned="false" h="150" w="325">Set the live view container id.
       </comment>
       <field name="VISION_PORTAL_BUILDER" variabletype="VisionPortal.Builder">myVisionPortalBuilder</field>
     </block>
@@ -62,7 +62,7 @@
     </block>
   </category>
   <category name="VisionPortal">
-    <placeholder_camera_visionPortal_easyCreate_withCameraDirection/>
+    <placeholder_builtinCamera_visionPortal_easyCreate_withCameraDirection/>
     <placeholder_webcam_visionPortal_easyCreate_withWebcam/>
     <placeholder_switchableCamera_visionPortal_easyCreate_withSwitchableCameraName/>
     <block type="visionPortal_setProcessorEnabled">
@@ -97,6 +97,12 @@
       <value name="VISION_PORTAL"><block type="variables_get"><field name="VAR">myVisionPortal</field></block></value>
     </block>
     <block type="visionPortal_typedEnum_cameraState"><field name="CAMERA_STATE">STREAMING</field></block>
+    <block type="visionPortal_saveNextFrameRaw">
+      <comment pinned="false" h="150" w="325">Save the next frame to the given file.
+      </comment>
+      <value name="VISION_PORTAL"><block type="variables_get"><field name="VAR">myVisionPortal</field></block></value>
+      <value name="FILENAME"><shadow type="text"><field name="TEXT">CameraFrameCapture-0</field></shadow></value>
+    </block>
     <block type="visionPortal_stopStreaming">
       <comment pinned="false" h="150" w="325">Temporarily stop the streaming session. This can save CPU resources, with the ability to resume quickly when needed.
       </comment>
@@ -606,7 +612,7 @@ detections multiple times.
         <comment pinned="false" h="150" w="325">Set the name of the asset where the model can be found.
         </comment>
         <field name="TFOD_PROCESSOR_BUILDER" variabletype="TfodProcessor.Builder">myTfodProcessorBuilder</field>
-        <value name="MODEL_ASSET_NAME"><shadow type="text"><field name="TEXT">PowerPlay.tflite</field></shadow></value>
+        <value name="MODEL_ASSET_NAME"><shadow type="text"><field name="TEXT">CenterStage.tflite</field></shadow></value>
       </block>
       <block type="tfodProcessorBuilder_setModelFileName">
         <comment pinned="false" h="150" w="325">Set the name of the file where the model can be found.
@@ -618,10 +624,8 @@ detections multiple times.
         <comment pinned="false" h="150" w="325">Set the full ordered list of labels the model is trained to recognize.
         </comment>
         <field name="TFOD_PROCESSOR_BUILDER" variabletype="TfodProcessor.Builder">myTfodProcessorBuilder</field>
-        <value name="LABELS"><block type="lists_create_with"><mutation items="3"/>
-          <value name="ADD0"><block type="text"><field name="TEXT">1 Bolt</field></block></value>
-          <value name="ADD1"><block type="text"><field name="TEXT">2 Bulb</field></block></value>
-          <value name="ADD2"><block type="text"><field name="TEXT">3 Panel</field></block></value>
+        <value name="LABELS"><block type="lists_create_with"><mutation items="1"/>
+          <value name="ADD0"><block type="text"><field name="TEXT">Pixel</field></block></value>
           </block></value>
       </block>
       <block type="tfodProcessorBuilder_setIsModelTensorFlow2">

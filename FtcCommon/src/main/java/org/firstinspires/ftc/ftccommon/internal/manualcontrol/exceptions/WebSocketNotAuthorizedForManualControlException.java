@@ -35,8 +35,8 @@ package org.firstinspires.ftc.ftccommon.internal.manualcontrol.exceptions;
 import org.firstinspires.ftc.robotcore.internal.webserver.websockets.WebSocketCommandException;
 
 /**
- * Since we automatically clear the authorized Web Sockets when the Manual Control Op Mode exits,
- * this exception may also indicate that the Manual Control Op Mode has stopped.
+ * Since we automatically clear the authorized Web Sockets when the Manual Control OpMode exits,
+ * this exception may also indicate that the Manual Control OpMode has stopped.
  */
 public class WebSocketNotAuthorizedForManualControlException extends WebSocketCommandException {
     public WebSocketNotAuthorizedForManualControlException() {

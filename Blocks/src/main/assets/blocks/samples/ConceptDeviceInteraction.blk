@@ -4,11 +4,11 @@
 </variables>
 <block type="procedures_defnoreturn" id="^h|yUs(BfxI3Q4gJLPyE" deletable="false" x="40" y="18">
 <field name="NAME">runOpMode</field>
-<comment pinned="false" h="45" w="532">This function is executed when this Op Mode is selected from the Driver Station.</comment>
+<comment pinned="false" h="45" w="532">This function is executed when this OpMode is selected from the Driver Station.</comment>
 <statement name="STACK">
 <block type="comment" id="EF:o+CCvmWfm*_:7q[ff">
-<field name="COMMENT">This is an example op mode.</field>
-<comment pinned="false" h="109" w="311">This example op mode is used in the FTC Blocks Programming Tool training tutorial. It shows how to control a motor, a servo, and to read a couple of sensors.</comment>
+<field name="COMMENT">This is an example OpMode.</field>
+<comment pinned="false" h="109" w="311">This example OpMode is used in the FTC Blocks Programming Tool training tutorial. It shows how to control a motor, a servo, and to read a couple of sensors.</comment>
 <next>
 <block type="digitalChannel_setProperty_DigitalChannelMode" id="jf~%z/q]FR]fmT+F^K0R">
 <field name="IDENTIFIER">digitalTouchAsDigitalChannel</field>

@@ -137,7 +137,7 @@ public abstract class ManualControlDeviceCommandHandler<P extends HandleIdParame
             } else if (exception instanceof IllegalArgumentException) {
                 throw new InvalidParameterException(exception.getMessage());
             } else if (exception instanceof InterruptedException) {
-                // Ultimately, this indicates that the Manual Control Op Mode has been stopped.
+                // Ultimately, this indicates that the Manual Control OpMode has been stopped.
                 throw new WebSocketNotAuthorizedForManualControlException();
             } else if (exception instanceof WebSocketCommandException) {
                 // Throw WebSocketCommandException as-is.

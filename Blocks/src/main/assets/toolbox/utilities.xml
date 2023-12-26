@@ -220,18 +220,8 @@
   </category>
   <category name="ElapsedTime">
     <block type="elapsedTime2_create"></block>
-    <block type="elapsedTime2_create_withStartTime">
-      <value name="START_TIME"><block type="system_nanoTime"></block></value>
-    </block>
-    <block type="elapsedTime2_create_withResolution">
-      <value name="RESOLUTION"><shadow type="elapsedTime2_typedEnum_resolution"></shadow></value>
-    </block>
     <block type="elapsedTime2_getProperty_Number">
       <field name="PROP">StartTime</field>
-      <value name="ELAPSED_TIME"><block type="variables_get"><field name="VAR">myElapsedTime</field></block></value>
-    </block>
-    <block type="elapsedTime2_getProperty_Number">
-      <field name="PROP">Time</field>
       <value name="ELAPSED_TIME"><block type="variables_get"><field name="VAR">myElapsedTime</field></block></value>
     </block>
     <block type="elapsedTime2_getProperty_Number">
@@ -242,18 +232,7 @@
       <field name="PROP">Milliseconds</field>
       <value name="ELAPSED_TIME"><block type="variables_get"><field name="VAR">myElapsedTime</field></block></value>
     </block>
-    <block type="elapsedTime2_getProperty_Resolution">
-      <field name="PROP">Resolution</field>
-      <value name="ELAPSED_TIME"><block type="variables_get"><field name="VAR">myElapsedTime</field></block></value>
-    </block>
     <block type="elapsedTime2_reset">
-      <value name="ELAPSED_TIME"><block type="variables_get"><field name="VAR">myElapsedTime</field></block></value>
-    </block>
-    <block type="elapsedTime2_log">
-      <value name="ELAPSED_TIME"><block type="variables_get"><field name="VAR">myElapsedTime</field></block></value>
-      <value name="LABEL"><shadow type="text"><field name="TEXT">label</field></shadow></value>
-    </block>
-    <block type="elapsedTime2_toText">
       <value name="ELAPSED_TIME"><block type="variables_get"><field name="VAR">myElapsedTime</field></block></value>
     </block>
   </category>
@@ -807,7 +786,14 @@
     </block>
   </category>
   <category name="Time">
-    <block type="system_nanoTime"></block>
+    <block type="system_currentTimeMillis">
+      <comment pinned="false" h="150" w="325">Get the current time in milliseconds. The value returned represents the number of milliseconds since midnight, January 1, 1970 UTC.
+      </comment>
+    </block>
+    <block type="system_nanoTime">
+      <comment pinned="false" h="150" w="325">Get the current value of a high-resolution time source, in nanoseconds. This value can only be used to measure elapsed time and is not related to any other notion of system or wall-clock time. The value returned represents the number of nanoseconds since some fixed but arbitrary origin time (perhaps in the future, so values may be negative).
+      </comment>
+    </block>
   </category>
   <category name="Vector">
     <block type="vectorF_getProperty_Number">

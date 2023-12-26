@@ -37,12 +37,11 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import com.qualcomm.robotcore.R;
-import com.qualcomm.robotcore.exception.RobotCoreException;
 import com.qualcomm.robotcore.hardware.DeviceManager;
+import com.qualcomm.robotcore.hardware.EmbeddedControlHubModule;
 import com.qualcomm.robotcore.hardware.LynxModuleImuType;
 import com.qualcomm.robotcore.hardware.LynxModuleMeta;
 import com.qualcomm.robotcore.hardware.LynxModuleMetaList;
-import com.qualcomm.robotcore.hardware.RobotCoreLynxUsbDevice;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.I2cDeviceConfigurationType;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.ServoConfigurationType;
@@ -56,6 +55,7 @@ import org.firstinspires.ftc.robotcore.internal.system.Assert;
 import org.firstinspires.ftc.robotcore.internal.system.Misc;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -102,7 +102,7 @@ public class ConfigurationUtility
         return existingNames;
         }
 
-    protected void noteExistingName(ConfigurationType configurationType, String name)
+    public void noteExistingName(ConfigurationType configurationType, String name)
         {
         getExistingNames(configurationType).add(name);
         }
@@ -174,7 +174,9 @@ public class ConfigurationUtility
     public WebcamConfiguration buildNewWebcam(SerialNumber serialNumber)
         {
         String name = createUniqueName(BuiltInConfigurationType.WEBCAM, R.string.counted_camera_name);
-        return new WebcamConfiguration(name, serialNumber);
+        WebcamConfiguration result = new WebcamConfiguration(name, serialNumber);
+        result.setEnabled(true);
+        return result;
         }
 
     public LynxUsbDeviceConfiguration buildNewLynxUsbDevice(SerialNumber serialNumber, Supplier<LynxModuleMetaList> lynxModuleMetaListSupplier)
@@ -187,7 +189,7 @@ public class ConfigurationUtility
         boolean isEmbeddedControlHubUsbDevice = serialNumber.isEmbedded();
         try {
             if (metas == null) metas = new LynxModuleMetaList(serialNumber);
-            RobotLog.vv(TAG, "buildLynxUsbDevice(): discovered lynx modules: %s", metas);
+            RobotLog.vv(TAG, "buildLynxUsbDevice(): lynx modules: %s", metas);
 
             LynxModuleMeta parentMeta = metas.getParent();
             LynxModuleImuType parentImuType;
@@ -262,6 +264,7 @@ public class ConfigurationUtility
                 name = createUniqueName(BuiltInConfigurationType.LYNX_USB_DEVICE, R.string.counted_lynx_usb_device_name);
             }
             LynxUsbDeviceConfiguration result = new LynxUsbDeviceConfiguration(name, modules, serialNumber);
+            result.setEnabled(true);
             return result;
             }
         finally
@@ -325,31 +328,12 @@ public class ConfigurationUtility
      * the functionality of that embedded module, such as its LEDs. */
     protected LynxUsbDeviceConfiguration buildNewEmbeddedLynxUsbDevice(final @NonNull DeviceManager deviceManager)
         {
-        LynxUsbDeviceConfiguration controllerConfiguration = buildNewLynxUsbDevice(LynxConstants.SERIAL_NUMBER_EMBEDDED, new Supplier<LynxModuleMetaList>()
-            {
-            @Override public LynxModuleMetaList get()
-                {
-                RobotCoreLynxUsbDevice device = null;
-                try {
-                    device = deviceManager.createLynxUsbDevice(LynxConstants.SERIAL_NUMBER_EMBEDDED, null);
-                    return device.discoverModules(true);
-                    }
-                catch (InterruptedException e)
-                    {
-                    Thread.currentThread().interrupt();
-                    }
-                catch (RobotCoreException e)
-                    {
-                    RobotLog.ee(TAG, e, "exception in buildNewEmbeddedLynxUsbDevice()");
-                    }
-                finally
-                    {
-                    if (device != null) device.close();
-                    }
-                return null;
-                }
-            });
-
+        LynxModuleMeta embeddedMeta = new LynxModuleMeta(LynxConstants.CH_EMBEDDED_MODULE_ADDRESS, true);
+        embeddedMeta.setImuType(EmbeddedControlHubModule.getImuType());
+        LynxModuleMetaList embeddedMetaList = new LynxModuleMetaList(
+                LynxConstants.SERIAL_NUMBER_EMBEDDED,
+                Collections.singletonList(embeddedMeta));
+        LynxUsbDeviceConfiguration controllerConfiguration = buildNewLynxUsbDevice(LynxConstants.SERIAL_NUMBER_EMBEDDED, embeddedMetaList);
         controllerConfiguration.setEnabled(true);
         controllerConfiguration.setSystemSynthetic(true);
         for (LynxModuleConfiguration moduleConfiguration : controllerConfiguration.getModules())

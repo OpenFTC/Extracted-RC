@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:ns1="http://schemas.android.com/tools">
     <array name="app_theme_colors">
         <item>@color/medium_light_red</item>
         <item>@color/medium_light_green</item>
@@ -171,17 +171,6 @@
     <color name="very_very_dark_purple">#14012d</color>
     <color name="very_very_dark_red">#2d0104</color>
     <color name="very_very_dark_teal">#01212d</color>
-    <string name="VUFORIA_INIT_ERROR_DEVICE_NOT_SUPPORTED">Failed to initialize Vuforia. This device is not supported.</string>
-    <string name="VUFORIA_INIT_ERROR_NO_CAMERA_ACCESS">Failed to initialize Vuforia because the camera is not accessible.  If using a webcam check that it is connected to a USB hub.  If using either
-       the phone camera or a webcam check that the application has the Camera permission.</string>
-    <string name="VUFORIA_INIT_LICENSE_ERROR_CANCELED_KEY">This app license key has been canceled and may no longer be used. Please get a new license key.</string>
-    <string name="VUFORIA_INIT_LICENSE_ERROR_INVALID_KEY">Invalid Vuforia App Key used. See the Vuforia Samples for comments on obtaining a Vuforia Key.</string>
-    <string name="VUFORIA_INIT_LICENSE_ERROR_MISMATCH_KEY">Vuforia App key is not valid for this product. Please get a valid key, by logging into your account at developer.vuforia.com and choosing the right product type during project creation.</string>
-    <string name="VUFORIA_INIT_LICENSE_ERROR_MISSING_KEY">Vuforia App key is missing. Please get a valid key, by logging into your account at developer.vuforia.com and creating a new project.</string>
-    <string name="VUFORIA_INIT_LICENSE_ERROR_NO_NETWORK_PERMANENT">No network available. Please make sure you are connected to the Internet.</string>
-    <string name="VUFORIA_INIT_LICENSE_ERROR_NO_NETWORK_TRANSIENT">Unable to contact server. Please try again later.</string>
-    <string name="VUFORIA_INIT_LICENSE_ERROR_PRODUCT_TYPE_MISMATCH">Vuforia App key is not valid for this product. Please get a valid key, by logging into your account at developer.vuforia.com and choosing the right product type during project creation.</string>
-    <string name="VUFORIA_INIT_LICENSE_ERROR_UNKNOWN_ERROR">Failed to initialize Vuforia.</string>
     <string name="actionlistenerfailure_busy">Error: BUSY</string>
     <string name="actionlistenerfailure_error">Error</string>
     <string name="actionlistenerfailure_nop2p">Wi-Fi Direct not supported</string>
@@ -244,6 +233,8 @@
     <string name="deviceDisplayNameUnknownUSBDevice">unknown USB device [%s]</string>
     <string name="device_name_format_ds">0000-%s-DS</string>
     <string name="device_name_format_rc">0000-%s-RC</string>
+    <string name="dfrobot_huskylens_description" ns1:ignore="ExtraTranslation">HuskyLens Vision Sensor</string>
+    <string name="dfrobot_huskylens_name" ns1:ignore="ExtraTranslation">HuskyLens</string>
     <string name="dialogEnableModifyingSettingsMessage">
         The original release of Android 6.0 has a bug preventing correct operation of the Driver
         Station app. You can work around this bug by granting the ability to "modify system settings"
@@ -315,7 +306,7 @@
     <string name="permPermanentlyDeniedRecovery">
     Click here to be redirected to the Settings activity, then select Permissions and enable %s</string>
     <string name="permRcCameraExplain">The Robot Controller must be able to access the camera in order to enable
-    Vuforia and Tensorflow features.  Regardless of whether or not your OpMode uses these features, you must allow
+    computer vision features.  Regardless of whether or not your OpMode uses these features, you must allow
     this permission. It is not possible to run the application without this permission.  You must allow all permissions.</string>
     <string name="permRcReadExternalStorageExplain">The Robot Controller must be able to access external storage
     for the Blocks and OnBot Java development environments and robot logging.  It is not possible to run the
@@ -503,7 +494,7 @@
     <string name="warningDhOsObsolete">The Driver Hub OS does not meet the minimum requirement for this FTC season. Update to Driver Hub OS %s or later.</string>
     <string name="warningDsAppObsolete">The Driver Station app is obsolete. You should install the new version for this FTC season.</string>
     <string name="warningDsClockBehind">The Driver Station\'s clock is behind. Please set the clock to the correct time.</string>
-    <string name="warningDuplicateOpMode">An Op Mode with the name \'%s\' is already registered; renaming the duplicate Op Mode.</string>
+    <string name="warningDuplicateOpMode">An OpMode with the name \'%s\' is already registered; renaming the duplicate OpMode.</string>
     <string name="warningI2cCommError">Error communicating with I2C device(s) </string>
     <string name="warningMismatchedAppVersions">The Robot Controller and Driver Station app versions do not match, which is required for competition. You should update the %s app.</string>
     <string name="warningProblemCommunicatingWithUSBDevice">Problem communicating with %s.</string>

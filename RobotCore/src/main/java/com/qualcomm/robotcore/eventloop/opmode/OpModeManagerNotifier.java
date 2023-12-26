@@ -38,35 +38,35 @@ import com.qualcomm.robotcore.hardware.HardwareDevice;
 
 /**
  * {@link OpModeManagerNotifier.Notifications} is an interface by which interested
- * parties can receive notification of the coming and going of opmodes.
+ * parties can receive notification of the coming and going of OpModes.
  * @see OpModeManagerImpl#getOpModeManagerOfActivity(Activity)
  */
 public interface OpModeManagerNotifier
     {
     /**
      * {@link Notifications} can be used to receive notifications of the comings
-     * and goings of opmodes in the system. These notifications are sent to any
+     * and goings of OpModes in the system. These notifications are sent to any
      * {@link HardwareDevice} in the hardware map that additional implements the
      * {@link Notifications} interface. Notifications may also be received by objects
      * that register themselves with the OpMode manager.
      */
     interface Notifications
         {
-        /** The indicated opmode is just about to be initialized. */
+        /** The indicated OpMode is just about to be initialized. */
         void onOpModePreInit(OpMode opMode);
 
-        /** The indicated opmode is just about to be started. */
+        /** The indicated OpMode is just about to be started. */
         void onOpModePreStart(OpMode opMode);
 
-        /** The indicated opmode has just been stopped. */
+        /** The indicated OpMode has just been stopped. */
         void onOpModePostStop(OpMode opMode);
         }
 
     /**
      * Registers an object as explicitly interested in receiving notifications as
-     * to the coming and going of opmodes.
+     * to the coming and going of OpModes.
      * @param listener the object which is to receive notifications
-     * @return the currently active opmode at the instant of registration
+     * @return the currently active OpMode at the instant of registration
      * @see #unregisterListener(Notifications)
      */
     OpMode registerListener(OpModeManagerNotifier.Notifications listener);

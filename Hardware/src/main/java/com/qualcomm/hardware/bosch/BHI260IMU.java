@@ -36,7 +36,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.qualcomm.hardware.R;
-import com.qualcomm.hardware.lynx.EmbeddedControlHubModule;
 import com.qualcomm.hardware.lynx.LynxI2cDeviceSynch;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.lynx.commands.core.LynxFirmwareVersionManager;
@@ -44,6 +43,7 @@ import com.qualcomm.hardware.lynx.commands.core.LynxI2cWriteMultipleBytesCommand
 import com.qualcomm.hardware.lynx.commands.core.LynxI2cWriteReadMultipleBytesCommand;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.EmbeddedControlHubModule;
 import com.qualcomm.robotcore.hardware.HardwareDeviceHealth;
 import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynchDeviceWithParameters;
@@ -1170,7 +1170,7 @@ public class BHI260IMU extends I2cDeviceSynchDeviceWithParameters<I2cDeviceSynch
                 // Returns true if deviceClient is valid
                 private boolean refreshDeviceClient() {
                     if (deviceClient == null || deviceClient.getHealthStatus() == HardwareDeviceHealth.HealthStatus.CLOSED) {
-                        LynxModule embeddedControlHubModule = EmbeddedControlHubModule.get();
+                        LynxModule embeddedControlHubModule = (LynxModule) EmbeddedControlHubModule.get();
                         if (embeddedControlHubModule == null || !embeddedControlHubModule.isOpen()) {
                             deviceClient = null;
                             return false;

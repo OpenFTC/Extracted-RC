@@ -292,19 +292,9 @@ public class ProjectsUtil {
       requestedCapabilities.add(Capability.SWITCHABLE_CAMERA);
     }
 
-    if (blkFileContent.contains("navigation_webcamName")) {
-      // ConceptAprilTag, ConceptTensorFlowObjectDetection, and
-      // ConceptTensorFlowObjectDetectionCustomModel include both _withWebcam and
-      // _withCameraDirection blocks. We don't show the warning for missing webcam.
-      if (!sampleName.equals("ConceptAprilTag") &&
-          !sampleName.equals("ConceptTensorFlowObjectDetection") &&
-          !sampleName.equals("ConceptTensorFlowObjectDetectionCustomModel")) {
-        requestedCapabilities.add(Capability.WEBCAM);
-      }
-    }
-
-    if (blkFileContent.contains("navigation_typedEnum_builtinCameraDirection")) {
-      requestedCapabilities.add(Capability.CAMERA);
+    if (blkFileContent.contains("navigation_typedEnum_builtinCameraDirection") ||
+        blkFileContent.contains("navigation_webcamName")) {
+      requestedCapabilities.add(Capability.VISION);
     }
 
     return requestedCapabilities;
@@ -879,8 +869,8 @@ public class ProjectsUtil {
           FileUtil.copyFile(oldJs, newJs);
         } catch (IOException e) {
           throw new IOExceptionWithUserVisibleMessage(
-              "The blocks project was successfully copied, but the new op mode cannot be run until it " +
-              "is saved in the blocks editor.");
+              "The Blocks OpMode was successfully copied, but the new OpMode cannot be run until it " +
+              "is saved in the Blocks editor.");
         }
         return null;
       }

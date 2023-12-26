@@ -57,6 +57,7 @@ import org.firstinspires.ftc.ftccommon.internal.manualcontrol.commands.AnalogCom
 import org.firstinspires.ftc.ftccommon.internal.manualcontrol.commands.BulkInputCommand;
 import org.firstinspires.ftc.ftccommon.internal.manualcontrol.commands.DigitalCommands;
 import org.firstinspires.ftc.ftccommon.internal.manualcontrol.commands.I2cCommands;
+import org.firstinspires.ftc.ftccommon.internal.manualcontrol.commands.ImuCommands;
 import org.firstinspires.ftc.ftccommon.internal.manualcontrol.commands.LedCommands;
 import org.firstinspires.ftc.ftccommon.internal.manualcontrol.commands.LogCommands;
 import org.firstinspires.ftc.ftccommon.internal.manualcontrol.commands.MotorCommands;
@@ -97,7 +98,7 @@ public class ManualControlWebSocketHandler extends WebSocketNamespaceHandler {
     // Static state and methods
     //----------------------------------------------------------------------------------------------
     public static final String WS_NAMESPACE = "MC";
-    private static final ManualControlApiVersion API_VERSION = new ManualControlApiVersion(0, 1);
+    private static final ManualControlApiVersion API_VERSION = new ManualControlApiVersion(1, 0);
     @Nullable private static volatile ManualControlWebSocketHandler instance;
 
     @WebHandlerRegistrar
@@ -150,6 +151,7 @@ public class ManualControlWebSocketHandler extends WebSocketNamespaceHandler {
         messageTypeHandlerMap.put("sendFailSafe", new SendFailSafeCommand(this));
         messageTypeHandlerMap.put("setHubAddress", new SetHubAddressCommand(this));
 
+        ImuCommands.register(messageTypeHandlerMap, this);
         MotorCommands.register(messageTypeHandlerMap, this);
         ServoCommands.register(messageTypeHandlerMap, this);
         AnalogCommands.register(messageTypeHandlerMap, this);
@@ -185,7 +187,7 @@ public class ManualControlWebSocketHandler extends WebSocketNamespaceHandler {
         }
         ManualControlOpMode opModeInstance = ManualControlOpMode.getInstance();
         if (opModeInstance != null) {
-            // This is safe to call even if a different Op Mode is already running
+            // This is safe to call even if a different OpMode is already running
             opModeInstance.requestOpModeStop();
         }
     }

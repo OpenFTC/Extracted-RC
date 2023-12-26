@@ -672,7 +672,7 @@ public class EventLoopManager implements RecvLoopRunnable.RecvLoopCallback, Netw
       return CallbackResult.HANDLED;
     }
 
-    // Store the new gamepad data for later use by the OpMode (iterative Op Modes need to wait to
+    // Store the new gamepad data for later use by the OpMode (iterative OpModes need to wait to
     // update the gamepad data until the currently-running user method finishes).
     if (gamepad.getUser() == GamepadUser.ONE) {
       latestGamepad1Data = gamepad;
@@ -746,7 +746,7 @@ public class EventLoopManager implements RecvLoopRunnable.RecvLoopCallback, Netw
 
     // opModeManager will be null if not running FtcEventLoop right now
     if (opModeManager != null) {
-      String msg = "Lost connection while running op mode: " + opModeManager.getActiveOpModeName();
+      String msg = "Lost connection while running OpMode: " + opModeManager.getActiveOpModeName();
       opModeManager.initOpMode(OpModeManager.DEFAULT_OP_MODE_NAME);
       RobotLog.ii(TAG, msg);
     }

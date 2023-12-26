@@ -54,6 +54,8 @@ Blockly.Comment.prototype.setVisible = function(visible) {
 };
 
 function initializeFtcBlocks() {
+  setUpWebSocket();
+
   fetchJavaScriptForHardware(function(jsHardware, errorMessage) {
     if (jsHardware) {
       var newScript = document.createElement('script');
@@ -82,7 +84,7 @@ function initializeAutoTransitionSelect() {
   option.value = '';
   option.text = '';
   autoTransitionSelect.add(option);
-  // Then add the generated options, which are the names of the TeleOp op modes.
+  // Then add the generated options, which are the names of the TeleOp OpModes.
   for (var i = 0; i < AUTO_TRANSITION_OPTIONS.length; i++) {
     const option = document.createElement('option');
     option.value = AUTO_TRANSITION_OPTIONS[i];
@@ -512,8 +514,8 @@ function loadBlocks(blkFileContent, opt_blocksLoaded_callback) {
   document.getElementById('project_enabled').checked = extra['enabled'];
 
   if (!foundAutoTransition) {
-    alert('The Op Mode named "' + extra['autoTransition'] + '" was previously chosen as the ' +
-        'Preselect TeleOp. There is currently no TeleOp Op Mode with that name.');
+    alert('The OpMode named "' + extra['autoTransition'] + '" was previously chosen as the ' +
+        'Preselect TeleOp. There is currently no TeleOp OpMode with that name.');
   }
 
   loadBlocksIntoWorkspace(blocksContent, opt_blocksLoaded_callback);

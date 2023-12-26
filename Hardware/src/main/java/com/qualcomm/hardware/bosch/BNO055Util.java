@@ -82,7 +82,7 @@ public class BNO055Util {
                 (parameters.accelUnit.bVal /*<< 0*/);    // accelerometer units
         write8(deviceClient, Register.UNIT_SEL, unitsel);
 
-        // Set the default axis map (the user may have changed it in a previous Op Mode run)
+        // Set the default axis map (the user may have changed it in a previous OpMode run)
         write8(deviceClient, Register.AXIS_MAP_CONFIG, 0x24);
         write8(deviceClient, Register.AXIS_MAP_SIGN, 0);
 

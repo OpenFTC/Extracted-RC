@@ -1,0 +1,33 @@
+<category name="HuskyLens.Block">
+  <block type="huskyLensBlock_getProperty_Number">
+    <field name="PROP">x</field>
+    <value name="HUSKY_LENS_BLOCK"><block type="variables_get"><field name="VAR">myHuskyLensBlock</field></block></value>
+  </block>
+  <block type="huskyLensBlock_getProperty_Number">
+    <field name="PROP">y</field>
+    <value name="HUSKY_LENS_BLOCK"><block type="variables_get"><field name="VAR">myHuskyLensBlock</field></block></value>
+  </block>
+  <block type="huskyLensBlock_getProperty_Number">
+    <field name="PROP">width</field>
+    <value name="HUSKY_LENS_BLOCK"><block type="variables_get"><field name="VAR">myHuskyLensBlock</field></block></value>
+  </block>
+  <block type="huskyLensBlock_getProperty_Number">
+    <field name="PROP">height</field>
+    <value name="HUSKY_LENS_BLOCK"><block type="variables_get"><field name="VAR">myHuskyLensBlock</field></block></value>
+  </block>
+  <block type="huskyLensBlock_getProperty_Number">
+    <field name="PROP">top</field>
+    <value name="HUSKY_LENS_BLOCK"><block type="variables_get"><field name="VAR">myHuskyLensBlock</field></block></value>
+  </block>
+  <block type="huskyLensBlock_getProperty_Number">
+    <field name="PROP">left</field>
+    <value name="HUSKY_LENS_BLOCK"><block type="variables_get"><field name="VAR">myHuskyLensBlock</field></block></value>
+  </block>
+  <block type="huskyLensBlock_getProperty_Number">
+    <field name="PROP">id</field>
+    <value name="HUSKY_LENS_BLOCK"><block type="variables_get"><field name="VAR">myHuskyLensBlock</field></block></value>
+  </block>
+  <block type="huskyLensBlock_toText">
+    <value name="HUSKY_LENS_BLOCK"><block type="variables_get"><field name="VAR">myHuskyLensBlock</field></block></value>
+  </block>
+</category>

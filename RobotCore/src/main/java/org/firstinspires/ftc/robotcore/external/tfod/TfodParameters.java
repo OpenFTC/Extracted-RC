@@ -42,11 +42,9 @@ import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
  */
 public class TfodParameters {
   public static class CurrentGame {
-    public static final String MODEL_ASSET = "PowerPlay.tflite";
+    public static final String MODEL_ASSET = "CenterStage.tflite";
     public static final String[] LABELS = {
-      "1 Bolt",
-      "2 Bulb",
-      "3 Panel"
+      "Pixel"
     };
     public static final boolean IS_MODEL_TENSOR_FLOW_2 = true;
     public static final boolean IS_MODEL_QUANTIZED = true;

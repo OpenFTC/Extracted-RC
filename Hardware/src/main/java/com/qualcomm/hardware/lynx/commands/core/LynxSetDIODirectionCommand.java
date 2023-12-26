@@ -112,7 +112,7 @@ public class LynxSetDIODirectionCommand extends LynxDekaInterfaceCommand<LynxAck
         {
         // I (Noah) would prefer to consider this command as dangerous if it's setting the mode to OUTPUT.
         // However, when an LED is configured, it needs to be able to set the channel to be an output before
-        // the Op Mode starts. In reality, nothing dangerous should be connected to a digital port anyway.
+        // the OpMode starts. In reality, nothing dangerous should be connected to a digital port anyway.
         return false;
         }
 

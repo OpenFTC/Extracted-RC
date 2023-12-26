@@ -36,6 +36,8 @@ class TelemetryAccess extends Access {
   @JavascriptInterface
   @Block(classes = Telemetry.class, methodName = "addData")
   public void addNumericData(String key, double data) {
+    // Note(lizlooney): This method is no longer used in the JavaScript code generator because
+    // it makes a number like 123 doesn't show up as 123.0.
     try {
       startBlockExecution(BlockType.FUNCTION, ".addData");
       telemetry.addData(key, data);

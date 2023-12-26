@@ -61,8 +61,13 @@ public class OpModeMeta
         if (name == null) { return false; }
         if (name.trim().isEmpty()) { return false; }
 
-        boolean namedLikeSystem = name.startsWith("$") && name.endsWith("$");
+        boolean namedLikeSystem = isSystemName(name);
         return isSystem == namedLikeSystem;
+        }
+
+    public static boolean isSystemName(String name)
+        {
+        return name.startsWith("$") && name.endsWith("$");
         }
 
     //----------------------------------------------------------------------------------------------
@@ -91,7 +96,7 @@ public class OpModeMeta
             }
         if (!nameIsLegalForOpMode(name, isSystem))
             {
-            throw new RuntimeException("The name \"" + name + "\" is not legal for this Op Mode");
+            throw new RuntimeException("The name \"" + name + "\" is not legal for this OpMode");
             }
 
         this.flavor = flavor;
@@ -104,7 +109,7 @@ public class OpModeMeta
             {
             if (systemOpModeBaseDisplayName == null)
                 {
-                throw new RuntimeException("System Op Modes must specify a separate display name");
+                throw new RuntimeException("System OpModes must specify a separate display name");
                 }
             this.systemOpModeBaseDisplayName = systemOpModeBaseDisplayName;
             }

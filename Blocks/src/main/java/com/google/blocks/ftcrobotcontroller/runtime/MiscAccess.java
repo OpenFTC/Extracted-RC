@@ -474,4 +474,32 @@ class MiscAccess extends Access {
       endBlockExecution();
     }
   }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  public String huskyLensBlockToText(String json) {
+    try {
+      startBlockExecution(BlockType.FUNCTION, "HuskyLens.Block", "toText");
+      return HuskyLensAccess.huskyLensBlockToText(json);
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  public String huskyLensArrowToText(String json) {
+    try {
+      startBlockExecution(BlockType.FUNCTION, "HuskyLens.Arrow", "toText");
+      return HuskyLensAccess.huskyLensArrowToText(json);
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
 }

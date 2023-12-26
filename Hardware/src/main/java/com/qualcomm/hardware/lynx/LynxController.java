@@ -196,7 +196,7 @@ public abstract class LynxController extends LynxCommExceptionHandler implements
 
     @Override public void resetDeviceConfigurationForOpMode()
         {
-        // Before every opmode, we put the device into an expected state so that user
+        // Before every OpMode, we put the device into an expected state so that user
         // level initialization logic should always see the same thing and thus need only
         // explicitly initialize that which is different than same.
         try {

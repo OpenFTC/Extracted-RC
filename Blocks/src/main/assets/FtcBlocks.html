@@ -31,6 +31,7 @@
   };
   </script>
   <script type="text/javascript" src="/js/less.min.js"></script>
+  <script type="text/javascript" src="/js/websocket-iframe.js"></script>
 
   <script type="text/javascript">
 
@@ -93,6 +94,7 @@
       "blocks/gamepad.js",
       "blocks/gyro_sensor.js",
       "blocks/hardware_util.js",
+      "blocks/husky_lens.js",
       "blocks/imu.js",
       "blocks/imu_parameters.js",
       "blocks/ir_seeker_sensor.js",
@@ -175,9 +177,9 @@
     <tr>
       <td class="buttons_td" colspan="2">
         <table width="100%"><tr><td>
-          <button onclick="saveButtonClicked()">Save Op Mode</button>
+          <button onclick="saveButtonClicked()">Save OpMode</button>
           <button onclick="exportJavaButtonClicked()">Export to Java</button>
-          <button onclick="downloadButtonClicked()">Download Op Mode</button>
+          <button onclick="downloadButtonClicked()">Download OpMode</button>
           <button id="downloadImageButton" style="display: none" disabled="true"
                   onclick="downloadImageButtonClicked()">Download Image of Blocks</button>
           <a id="download_link"></a>
@@ -191,7 +193,7 @@
     </tr>
     <tr class="project_row_tr">
       <td class="project_row_td">
-        Op Mode Name:&nbsp;<span id="project_name" class="not_bold"></span>
+        OpMode Name:&nbsp;<span id="project_name" class="not_bold"></span>
         &nbsp;
         <select id="project_flavor" class="not_bold" onchange="projectFlavorChanged()">
           <option value="TELEOP">TeleOp</option>
@@ -239,7 +241,7 @@
 
   <div id="saveWithWarningsDialog" class="modal_dialog"><div class="modal_dialog_container"><div class="modal_dialog_content">
     <center>
-      <h3 style="margin-top: 0px">Save Op Mode</h3><br>
+      <h3 style="margin-top: 0px">Save OpMode</h3><br>
       <div id="saveWithWarningsMessage"></div><br>
       Are you sure you want to save now?<br><br>
       <table width="100%">

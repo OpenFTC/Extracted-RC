@@ -22,6 +22,7 @@ import static com.google.blocks.ftcrobotcontroller.util.ProjectsUtil.escapeSingl
 import static com.google.blocks.ftcrobotcontroller.util.ToolboxUtil.escapeForXml;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
@@ -37,6 +38,8 @@ import com.google.blocks.ftcrobotcontroller.util.ToolboxUtil;
 import com.qualcomm.ftccommon.configuration.RobotConfigFile;
 import com.qualcomm.ftccommon.configuration.RobotConfigFileManager;
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.dfrobot.HuskyLens;
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver.BlinkinPattern;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
@@ -58,6 +61,7 @@ import com.qualcomm.robotcore.hardware.configuration.annotations.DevicePropertie
 import com.qualcomm.robotcore.hardware.configuration.DeviceConfiguration;
 import com.qualcomm.robotcore.robot.RobotState;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Device;
 import com.qualcomm.robotcore.util.RobotLog;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -86,7 +90,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Axis;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.robotcore.external.navigation.TempUnit;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.internal.opmode.BlocksClassFilter;
@@ -112,11 +115,16 @@ public class HardwareUtil {
   public static final String IDENTIFIERS_USED_PREFIX = "// IDENTIFIERS_USED=";
 
   public enum Capability {
-    CAMERA("camera"),
+    BUILTIN_CAMERA("builtinCamera"),
     WEBCAM("webcam"),
     SWITCHABLE_CAMERA("switchableCamera"),
     VISION("vision");
 
+    /**
+     * The placeholderType field is used to include or omit some parts of the toolbox. For
+     * example, if the robot does not have multiple webcams, the blocks that support switchable
+     * camera will be omitted from the toolbox.
+     */
     private final String placeholderType;
 
     Capability(String placeholderType) {
@@ -597,7 +605,7 @@ public class HardwareUtil {
         .append("}\n\n");
 
     // Generate the JS method getWarningForCapabilityRequestedBySample which takes a capability
-    // that is requested by a sample op mode.
+    // that is requested by a sample OpMode.
     // If the system does not have the capability and the user should be warned about this,
     // the method returns the warning message.
     // If the system has the capability or no warning is needed, the method returns ''.
@@ -606,17 +614,7 @@ public class HardwareUtil {
         .append("  switch (capability) {\n");
 
     for (Capability capability : Capability.values()) {
-      boolean capable = capabilities.get(capability);
-
-      // If there's no built-in camera, but there is a webcam, our code will use the webcam. So,
-      // no warning is necessary.
-      if (capability == Capability.CAMERA && !capable) {
-        if (capabilities.get(Capability.WEBCAM)) {
-          capable = true;
-        }
-      }
-
-      if (!capable) {
+      if (!capabilities.get(capability)) {
         String warning = getCapabilityWarning(capability);
         if (warning != null) {
           jsHardware
@@ -1116,6 +1114,11 @@ public class HardwareUtil {
         shadow = (defaultValue == null)
             ? ToolboxUtil.makeTypedEnumShadow("elapsedTime2", "resolution")
             : ToolboxUtil.makeTypedEnumShadow("elapsedTime2", "resolution", "RESOLUTION", defaultValue);
+      } else if (argType.equals(HuskyLens.Algorithm.class.getName())) {
+        String defaultValue = parseEnumDefaultValue(parameterDefaultValues[i], HuskyLens.Algorithm.class);
+        shadow = (defaultValue == null)
+            ? ToolboxUtil.makeTypedEnumShadow("huskyLens", "algorithm")
+            : ToolboxUtil.makeTypedEnumShadow("huskyLens", "algorithm", "ALGORITHM", defaultValue);
       } else if (argType.equals(IrSeekerSensor.Mode.class.getName())) {
         String defaultValue = parseEnumDefaultValue(parameterDefaultValues[i], IrSeekerSensor.Mode.class);
         shadow = (defaultValue == null)
@@ -1131,11 +1134,6 @@ public class HardwareUtil {
         shadow = (defaultValue == null)
             ? ToolboxUtil.makeTypedEnumShadow("pidfCoefficients", "motorControlAlgorithm")
             : ToolboxUtil.makeTypedEnumShadow("pidfCoefficients", "motorControlAlgorithm", "MOTOR_CONTROL_ALGORITHM", defaultValue);
-      } else if (argType.equals(RelicRecoveryVuMark.class.getName())) {
-        String defaultValue = parseEnumDefaultValue(parameterDefaultValues[i], RelicRecoveryVuMark.class);
-        shadow = (defaultValue == null)
-            ? ToolboxUtil.makeTypedEnumShadow("vuMarks", "relicRecoveryVuMark")
-            : ToolboxUtil.makeTypedEnumShadow("vuMarks", "relicRecoveryVuMark", "RELIC_RECOVERY_VU_MARK", defaultValue);
       } else if (argType.equals(Servo.Direction.class.getName())) {
         String defaultValue = parseEnumDefaultValue(parameterDefaultValues[i], Servo.Direction.class);
         shadow = (defaultValue == null)
@@ -1311,34 +1309,36 @@ public class HardwareUtil {
     return null;
   }
 
+  /**
+   * Returns a warning that is shown to the user if they try to create a Blocks OpMode using a
+   * sample that requires a capability that is not satisfied by the current robot configuration.
+   * For example, if the user tries to create a new OpMode based on the sample
+   * ConceptAprilTagSwitchableCameras and the robot does not have multiple webcams, an appropriate
+   * warning will be shown.
+   */
   private static String getCapabilityWarning(Capability capability) {
     switch (capability) {
-      case CAMERA:
-        return "This device does not have a camera.";
-      case WEBCAM:
-        return "The current configuration has no webcam.";
       case SWITCHABLE_CAMERA:
         return "The current configuration does not have multiple webcams.";
-      default:
-        // No warning for Capability.VISION. The user will see the warning about camera/webcam.
-        return null;
+      case VISION:
+        return "The current configuration has no webcam.";
     }
+    return null;
   }
 
   @SuppressWarnings("deprecation")
   public static Map<Capability, Boolean> getCapabilities(HardwareItemMap hardwareItemMap) {
     Map<Capability, Boolean> capabilities = new HashMap<>();
-    // PackageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA) incorrectly returns true on a
-    // control hub, so here I use Camera.getNumberOfCameras() to determine whether there are any
-    // built-in cameras.
-    boolean camera = android.hardware.Camera.getNumberOfCameras() > 0;
+    boolean hasBuiltinCamera = Device.isRevControlHub()
+        ? false // A Control Hub has no builtin cameras.
+        : AppUtil.getDefContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
     int numberOfWebcams = hardwareItemMap.getHardwareItems(HardwareType.WEBCAM_NAME).size();
     boolean webcam = numberOfWebcams > 0;
     boolean switchableCamera = numberOfWebcams > 1;
-    capabilities.put(Capability.CAMERA, camera);
+    capabilities.put(Capability.BUILTIN_CAMERA, hasBuiltinCamera);
     capabilities.put(Capability.WEBCAM, webcam);
     capabilities.put(Capability.SWITCHABLE_CAMERA, switchableCamera);
-    capabilities.put(Capability.VISION, camera || webcam);
+    capabilities.put(Capability.VISION, hasBuiltinCamera || webcam);
     return capabilities;
   }
 
@@ -1539,6 +1539,9 @@ public class HardwareUtil {
         case GYRO_SENSOR:
           addGyroSensorCategoryToToolbox(xmlToolbox, hardwareType, hardwareItems);
           break;
+        case HUSKY_LENS:
+          addHuskyLensCategoryToToolbox(xmlToolbox, hardwareType, hardwareItems, assetManager);
+          break;
         case IMU:
           addImuCategoryToToolbox(xmlToolbox, hardwareType, hardwareItems, assetManager);
           break;
@@ -1688,7 +1691,7 @@ public class HardwareUtil {
         "Initializes the IMU with non-default settings. To use this block, plug one of the " +
         "\"new IMU.Parameters\" blocks into the parameters socket." +
         "</comment>");
-    ToolboxUtil.addFunctions(xmlToolbox, hardwareType, identifier, initFunctions, initFunctionComments);
+    ToolboxUtil.addFunctions(xmlToolbox, hardwareType, identifier, initFunctions, initFunctionComments, null);
     if (assetManager != null) {
       addAsset(
           xmlToolbox, assetManager, "toolbox/imu_parameters.xml");
@@ -2061,6 +2064,41 @@ public class HardwareUtil {
   }
 
   /**
+   * Adds the category for HuskyLens to the toolbox.
+   */
+  private static void addHuskyLensCategoryToToolbox(
+      StringBuilder xmlToolbox, HardwareType hardwareType, List<HardwareItem> hardwareItems,
+      AssetManager assetManager) throws IOException {
+    String identifier = hardwareItems.get(0).identifier;
+
+    // Functions
+    Map<String, Map<String, String>> functions = new LinkedHashMap<String, Map<String, String>>();
+    Map<String, String> variableSetters = new HashMap<String, String>();
+    functions.put("knock", null);
+    Map<String, String> selectAlgorithmArgs = new LinkedHashMap<String, String>();
+    selectAlgorithmArgs.put("ALGORITHM", ToolboxUtil.makeTypedEnumShadow(hardwareType, "algorithm", "ALGORITHM", "TAG_RECOGNITION"));
+    functions.put("selectAlgorithm", selectAlgorithmArgs);
+    functions.put("blocks", null);
+    variableSetters.put("blocks", "myHuskyLensBlocks");
+    Map<String, String> blocks_withIdArgs = new LinkedHashMap<String, String>();
+    blocks_withIdArgs.put("ID", ToolboxUtil.makeNumberShadow(1));
+    functions.put("blocks_withId", blocks_withIdArgs);
+    variableSetters.put("blocks_withId", "myHuskyLensBlocks");
+    functions.put("arrows", null);
+    variableSetters.put("arrows", "myHuskyLensArrows");
+    Map<String, String> arrows_withIdArgs = new LinkedHashMap<String, String>();
+    arrows_withIdArgs.put("ID", ToolboxUtil.makeNumberShadow(1));
+    functions.put("arrows_withId", arrows_withIdArgs);
+    variableSetters.put("arrows_withId", "myHuskyLensArrows");
+    ToolboxUtil.addFunctions(xmlToolbox, hardwareType, identifier, functions, null, variableSetters);
+
+    if (assetManager != null) {
+      addAsset(xmlToolbox, assetManager, "toolbox/husky_lens_block.xml");
+      addAsset(xmlToolbox, assetManager, "toolbox/husky_lens_arrow.xml");
+    }
+  }
+
+  /**
    * Adds the category for IR seeker sensor to the toolbox.
    */
   private static void addIrSeekerSensorCategoryToToolbox(
@@ -2411,13 +2449,15 @@ public class HardwareUtil {
     set.add("Size");
     // com.qualcomm.ftccommon
     set.add("SoundPlayer");
+    // com.qualcomm.hardware.bosch
+    set.add("BNO055IMU");
+    set.add("JustLoggingAccelerationIntegrator");
+    // com.qualcomm.hardware.dfrobot
+    set.add("HuskyLens");
     // com.qualcomm.hardware.modernrobotics
     set.add("ModernRoboticsI2cCompassSensor");
     set.add("ModernRoboticsI2cGyro");
     set.add("ModernRoboticsI2cRangeSensor");
-    // com.qualcomm.hardware.bosch
-    set.add("BNO055IMU");
-    set.add("JustLoggingAccelerationIntegrator");
     // com.qualcomm.hardware.rev
     set.add("RevBlinkinLedDriver");
     // com.qualcomm.robotcore.eventloop
@@ -2521,7 +2561,6 @@ public class HardwareUtil {
     set.add("Orientation");
     set.add("Position");
     set.add("Quaternion");
-    set.add("RelicRecoveryVuMark");
     set.add("Temperature");
     set.add("TempUnit");
     set.add("UnnormalizedAngleUnit");

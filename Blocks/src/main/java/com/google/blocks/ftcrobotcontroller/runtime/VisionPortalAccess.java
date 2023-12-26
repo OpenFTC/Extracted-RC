@@ -133,13 +133,13 @@ class VisionPortalAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
-  @Block(classes = VisionPortal.Builder.class, methodName = "enableCameraMonitoring")
-  public void enableCameraMonitoring(Object visionPortalBuilderArg, boolean enableCameraMonitoring) {
+  @Block(classes = VisionPortal.Builder.class, methodName = "enableLiveView")
+  public void enableLiveView(Object visionPortalBuilderArg, boolean enableLiveView) {
     try {
-      startBlockExecution(BlockType.FUNCTION, "VisionPortal.Builder", ".enableCameraMonitoring");
+      startBlockExecution(BlockType.FUNCTION, "VisionPortal.Builder", ".enableLiveView");
       VisionPortal.Builder visionPortalBuilder = checkVisionPortalBuilder(visionPortalBuilderArg);
       if (visionPortalBuilder != null) {
-        visionPortalBuilder.enableCameraMonitoring(enableCameraMonitoring);
+        visionPortalBuilder.enableLiveView(enableLiveView);
       }
     } catch (Throwable e) {
       blocksOpMode.handleFatalException(e);
@@ -169,13 +169,13 @@ class VisionPortalAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
-  @Block(classes = VisionPortal.Builder.class, methodName = "setCameraMonitorViewId")
-  public void setCameraMonitorViewId(Object visionPortalBuilderArg, int viewId) {
+  @Block(classes = VisionPortal.Builder.class, methodName = "setLiveViewContainerId")
+  public void setLiveViewContainerId(Object visionPortalBuilderArg, int viewId) {
     try {
-      startBlockExecution(BlockType.FUNCTION, "VisionPortal.Builder", ".setCameraMonitorViewId");
+      startBlockExecution(BlockType.FUNCTION, "VisionPortal.Builder", ".setLiveViewContainerId");
       VisionPortal.Builder visionPortalBuilder = checkVisionPortalBuilder(visionPortalBuilderArg);
       if (visionPortalBuilder != null) {
-        visionPortalBuilder.setCameraMonitorViewId(viewId);
+        visionPortalBuilder.setLiveViewContainerId(viewId);
       }
     } catch (Throwable e) {
       blocksOpMode.handleFatalException(e);
@@ -350,6 +350,24 @@ class VisionPortalAccess extends Access {
         }
       }
       return "";
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(classes = VisionPortal.class, methodName = "saveNextFrameRaw")
+  public void saveNextFrameRaw(Object visionPortalArg, String filename) {
+    try {
+      startBlockExecution(BlockType.FUNCTION, "VisionPortal", ".saveNextFrameRaw");
+      VisionPortal visionPortal = checkVisionPortal(visionPortalArg);
+      if (visionPortal != null) {
+        visionPortal.saveNextFrameRaw(filename);
+      }
     } catch (Throwable e) {
       blocksOpMode.handleFatalException(e);
       throw new AssertionError("impossible", e);

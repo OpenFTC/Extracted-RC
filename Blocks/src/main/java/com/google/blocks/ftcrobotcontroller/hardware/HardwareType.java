@@ -21,6 +21,7 @@ import com.google.blocks.ftcrobotcontroller.util.ToolboxIcon;
 import com.google.blocks.ftcrobotcontroller.util.ToolboxUtil;
 import com.qualcomm.hardware.adafruit.AdafruitBNO055IMU;
 import com.qualcomm.hardware.bosch.BNO055IMUImpl;
+import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.hardware.lynx.LynxEmbeddedIMU;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsAnalogOpticalDistanceSensor;
@@ -135,6 +136,11 @@ public enum HardwareType {
       ToolboxFolder.SENSORS, "GyroSensor", ToolboxIcon.GYRO_SENSOR,
       GyroSensor.class,
       BuiltInConfigurationType.GYRO.getXmlTag()),
+  HUSKY_LENS( // see husky_lens.js
+      "createHuskyLensDropdown", "huskyLens", "AsHuskyLens", "_HuskyLens",
+      ToolboxFolder.SENSORS, "HuskyLens", null, // No toolbox icon.
+      HuskyLens.class,
+      ConfigurationTypeManager.getXmlTag(HuskyLens.class)),
   IMU( // see imu.js
       "createImuDropdown", "imu", "AsIMU", "_IMU",
       ToolboxFolder.SENSORS, "IMU", null, // No toolbox icon yet.

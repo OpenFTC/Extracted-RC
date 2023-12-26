@@ -68,7 +68,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * Retrieving devices from a HardwareMap will initialize them if they have not already been
  * initialized, which may take some time. As a result, you should ONLY access a HardwareMap from
- * the Init phase of your Op Mode.
+ * the Init phase of your OpMode.
  */
 @SuppressWarnings("WeakerAccess")
 public class HardwareMap implements Iterable<HardwareDevice> {
@@ -196,7 +196,7 @@ public class HardwareMap implements Iterable<HardwareDevice> {
    *
    * If the device has not already been initialized, calling this method will initialize it, which
    * may take some time. As a result, you should ONLY call this method during the Init phase of your
-   * Op Mode.
+   * OpMode.
    *
    * @param classOrInterface  the class or interface indicating the type of the device object to be retrieved
    * @param deviceName        the name of the device object to be retrieved
@@ -224,7 +224,7 @@ public class HardwareMap implements Iterable<HardwareDevice> {
    * <p>
    * If the device has not already been initialized, calling this method will initialize it, which
    * may take some time. As a result, you should ONLY call this method during the Init phase of your
-   * Op Mode.
+   * OpMode.
    *
    * @see #get(Class, String)
    */
@@ -289,7 +289,7 @@ public class HardwareMap implements Iterable<HardwareDevice> {
    * <p>
    * If the device has not already been initialized, calling this method will initialize it, which
    * may take some time. As a result, you should ONLY call this method during the Init phase of your
-   * Op Mode.
+   * OpMode.
    */
   public @Nullable <T> T get(Class<? extends T> classOrInterface, SerialNumber serialNumber) {
     synchronized (lock) {
@@ -320,7 +320,7 @@ public class HardwareMap implements Iterable<HardwareDevice> {
    *
    * If the device has not already been initialized, calling this method will initialize it, which
    * may take some time. As a result, you should ONLY call this method during the Init phase of your
-   * Op Mode.
+   * OpMode.
    *
    * @param deviceName  the name of the device object to be retrieved
    * @return a device with the indicated name.
@@ -348,7 +348,7 @@ public class HardwareMap implements Iterable<HardwareDevice> {
    * <p>
    * Any matching devices that have not already been initialized wil be initialized now, which may
    * take some time. As a result, you should ONLY call this method during the Init phase of your
-   * Op Mode.
+   * OpMode.
    *
    * @param classOrInterface the class or interface indicating the type of the device object to be retrieved
    * @return all the devices registered in the map which are instances of classOrInterface
@@ -623,7 +623,7 @@ public class HardwareMap implements Iterable<HardwareDevice> {
    * <p>
    * Retrieving devices from a DeviceMapping will initialize them if they have not already been
    * initialized, which may take some time. As a result, you should ONLY access a DeviceMapping from
-   * the Init phase of your Op Mode.
+   * the Init phase of your OpMode.
    *
    * @param <DEVICE_TYPE>
    * @see com.qualcomm.robotcore.hardware.HardwareMap.DeviceMapping#get(String)
@@ -653,7 +653,7 @@ public class HardwareMap implements Iterable<HardwareDevice> {
      * <p>
      * If the device has not already been initialized, calling this method will initialize it, which
      * may take some time. As a result, you should ONLY call this method during the Init phase of
-     * your Op Mode.
+     * your OpMode.
      *
      * @param deviceName the name of the device object to be retrieved
      * @return a device with the indicated name
@@ -772,7 +772,7 @@ public class HardwareMap implements Iterable<HardwareDevice> {
     /**
      * Returns an iterator over all the devices in this DeviceMapping. This will initialize any
      * un-initialized devices in the DeviceMapping, so you should ONLY call it during the Init phase
-     * of your Op Mode.
+     * of your OpMode.
      *
      * @return an iterator over all the devices in this DeviceMapping.
      */
@@ -786,7 +786,7 @@ public class HardwareMap implements Iterable<HardwareDevice> {
     /**
      * Returns a collection of all the (name, device) pairs in this DeviceMapping. This will
      * initialize any un-initialized devices in the DeviceMapping, so you should ONLY call it during
-     * the Init phase of your Op Mode.
+     * the Init phase of your OpMode.
      *
      * @return a collection of all the (name, device) pairs in this DeviceMapping.
      */

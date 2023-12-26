@@ -46,24 +46,11 @@ function getConfigurationName(callback) {
   }
 }
 
-/**
- * Sends a ping request and calls the callback.
- */
-function sendPing(name, callback) {
-  if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
-    // html/js is in a browser, loaded as an http:// URL.
-    sendPingViaHttp(name, callback);
-  } else {
-    callback(false);
-  }
-}
-
 //..........................................................................
 // Code used when html/js is in a browser, loaded as a http:// URL.
 
 // The following are generated dynamically in ProgrammingModeServer.fetchJavaScriptForServer():
 // URI_HARDWARE
-// URI_PING
 // PARAM_NAME
 
 function fetchJavaScriptForHardwareViaHttp(callback) {
@@ -100,23 +87,6 @@ function getConfigurationNameViaHttp(callback) {
     }
   };
   xhr.send();
-}
-
-function sendPingViaHttp(name, callback) {
-  var xhr = new XMLHttpRequest();
-  xhr.open('POST', URI_PING, true);
-  xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-  xhr.onreadystatechange = function() {
-    if (xhr.readyState === 4) {
-      if (xhr.status === 200) {
-        callback(true);
-      } else {
-        callback(false);
-      }
-    }
-  };
-  var params = PARAM_NAME + '=' + encodeURIComponent(name);
-  xhr.send(params);
 }
 
 //..........................................................................

@@ -106,7 +106,7 @@ public class LynxModuleWarningManager {
     /**
      * Unlike {@link LynxModule#noteNotResponding()}, this method should be called repeatedly while
      * the module is unresponsive. This is so that we can keep track of if the module was ever
-     * unresponsive while a user Op Mode was running.
+     * unresponsive while a user OpMode was running.
      */
     public void reportModuleUnresponsive(LynxModule module) {
         if (!module.isUserModule() || !module.isOpen) return;
@@ -125,8 +125,8 @@ public class LynxModuleWarningManager {
         String moduleName = getModuleName(module);
         String logMessage = "%s regained power after a complete power loss.";
 
-        if (userOpModeRunning) { // Module resets while the user is not running an Op Mode are normal
-            logMessage += " A user Op Mode was running, so unexpected behavior may occur.";
+        if (userOpModeRunning) { // Module resets while the user is not running an OpMode are normal
+            logMessage += " A user OpMode was running, so unexpected behavior may occur.";
             boolean newlyReported = modulesReportedReset.add(moduleName);
             if (newlyReported) {
                 synchronized (warningMessageLock) {
@@ -134,7 +134,7 @@ public class LynxModuleWarningManager {
                 }
             }
         } else {
-            logMessage += " No user Op Mode was running.";
+            logMessage += " No user OpMode was running.";
         }
         RobotLog.ww("HubPowerCycle", logMessage, moduleName);
     }

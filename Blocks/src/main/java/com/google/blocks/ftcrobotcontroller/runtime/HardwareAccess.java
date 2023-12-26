@@ -86,6 +86,8 @@ abstract class HardwareAccess<DEVICE_TYPE extends HardwareDevice> extends Access
         return new DistanceSensorAccess(blocksOpMode, hardwareItem, hardwareMap);
       case GYRO_SENSOR:
         return new GyroSensorAccess(blocksOpMode, hardwareItem, hardwareMap);
+      case HUSKY_LENS:
+        return new HuskyLensAccess(blocksOpMode, hardwareItem, hardwareMap);
       case IMU:
         return new ImuAccess(blocksOpMode, hardwareItem, hardwareMap);
       case IR_SEEKER_SENSOR:

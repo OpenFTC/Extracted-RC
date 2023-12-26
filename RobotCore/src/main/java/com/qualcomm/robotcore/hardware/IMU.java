@@ -65,8 +65,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
  * System, it is defined as how far the robot has turned around the Z axis. Sometimes yaw is also
  * referred to as "heading". The yaw can drift slowly over time, because most implementations do not
  * use a magnetometer as an absolute reference (magnetometer readings are disrupted by nearby
- * motors). The yaw reference is <i>preserved between Op Mode runs</i>, unless the Robot Controller
- * application is restarted, the Restart Robot option is selected, or the second Op Mode calls
+ * motors). The yaw reference is <i>preserved between OpMode runs</i>, unless the Robot Controller
+ * application is restarted, the Restart Robot option is selected, or the second OpMode calls
  * {@link #resetYaw()}. This means that your yaw reference point can remain consistent through both
  * the Autonomous and TeleOp phases of the match.
  * <p>

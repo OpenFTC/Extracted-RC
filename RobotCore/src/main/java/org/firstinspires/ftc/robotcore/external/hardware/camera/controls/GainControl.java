@@ -58,6 +58,8 @@ public interface GainControl extends CameraControl
 
     /***
      * Set the gain for this camera.
+     * Gain can be adjusted only if ExposureControl Mode is set to MANUAL (typically not the default)
+     * Further, gain will be actively managed if in AUTO exposure mode.
      *
      * @param gain the gain to set
      * @return whether the operation was successful or not

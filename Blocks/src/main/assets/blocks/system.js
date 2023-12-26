@@ -34,8 +34,7 @@ Blockly.Blocks['system_nanoTime'] = {
         .appendField('.')
         .appendField(createNonEditableField('nanoTime'));
     this.setColour(functionColor);
-    this.setTooltip('Returns the current value of the running Java Virtual Machine\'s ' +
-        'high-resolution time source, in nanoseconds.');
+    this.setTooltip('Returns the current value of a high-resolution time source, in nanoseconds.');
     this.getFtcJavaOutputType = function() {
       return 'long';
     };
@@ -49,5 +48,31 @@ Blockly.JavaScript['system_nanoTime'] = function(block) {
 
 Blockly.FtcJava['system_nanoTime'] = function(block) {
   var code = 'System.nanoTime()';
+  return [code, Blockly.FtcJava.ORDER_FUNCTION_CALL];
+};
+
+Blockly.Blocks['system_currentTimeMillis'] = {
+  init: function() {
+    this.setOutput(true, 'Number');
+    this.appendDummyInput()
+    .appendField('call')
+    .appendField(createNonEditableField('System'))
+    .appendField('.')
+    .appendField(createNonEditableField('currentTimeMillis'));
+    this.setColour(functionColor);
+    this.setTooltip('Returns the current time in milliseconds.');
+    this.getFtcJavaOutputType = function() {
+      return 'long';
+    };
+  }
+};
+
+Blockly.JavaScript['system_currentTimeMillis'] = function(block) {
+  var code = systemIdentifierForJavaScript + '.currentTimeMillis()';
+  return [code, Blockly.JavaScript.ORDER_FUNCTION_CALL];
+};
+
+Blockly.FtcJava['system_currentTimeMillis'] = function(block) {
+  var code = 'System.currentTimeMillis()';
   return [code, Blockly.FtcJava.ORDER_FUNCTION_CALL];
 };

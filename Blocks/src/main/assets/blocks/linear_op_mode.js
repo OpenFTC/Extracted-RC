@@ -16,7 +16,7 @@
  */
 
 /**
- * @fileoverview FTC robot blocks related to linear op mode.
+ * @fileoverview FTC robot blocks related to LinearOpMode.
  * @author lizlooney@google.com (Liz Looney)
  */
 
@@ -215,7 +215,7 @@ Blockly.Blocks['linearOpMode_getRuntime'] = {
         .appendField('call')
         .appendField(createNonEditableField('getRuntime'));
     this.setColour(functionColor);
-    this.setTooltip('Returns the number of seconds this op mode has been running.');
+    this.setTooltip('Returns the number of seconds this OpMode has been running.');
   }
 };
 
@@ -236,7 +236,7 @@ Blockly.Blocks['linearOpMode_getRuntime_Number'] = {
         .appendField('call')
         .appendField(createNonEditableField('getRuntime'));
     this.setColour(functionColor);
-    this.setTooltip('Returns the number of seconds this op mode has been running.');
+    this.setTooltip('Returns the number of seconds this OpMode has been running.');
     this.getFtcJavaOutputType = function() {
       return 'double';
     };

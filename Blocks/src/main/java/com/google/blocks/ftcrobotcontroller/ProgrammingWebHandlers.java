@@ -247,7 +247,7 @@ public class ProgrammingWebHandlers implements ProgrammingMode {
   }
 
   /**
-   * Fetches a new archive of all the blocks opmodes.
+   * Fetches a new archive of all the Blocks OpModes.
    */
   private static class FetchBlocksArchive implements WebHandler {
 

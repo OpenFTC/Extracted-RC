@@ -126,7 +126,7 @@ public class UpdateUI {
             previousOpModeMeta = opModeMeta;
           }
 
-          setText(textOpMode, "Op Mode: " + opModeMeta.getDisplayName());
+          setText(textOpMode, "OpMode: " + opModeMeta.getDisplayName());
 
           refreshTextErrorMessage();
         }

@@ -309,7 +309,7 @@ public abstract class BroadcomColorSensorImpl extends I2cDeviceSynchDeviceWithPa
     public synchronized void enableLed(boolean enable)
     {
         // We can't directly control the LED with I2C; it's always on
-        // ignore; used to throw an error, but the default opmode can try to turn off
+        // ignore; used to throw an error, but the default OpMode can try to turn off
         // (for range sensor variant) so got constant exceptions
     }
 

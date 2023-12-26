@@ -61,6 +61,7 @@
   <script type="text/javascript" src="blocks/gamepad.js"></script>
   <script type="text/javascript" src="blocks/gyro_sensor.js"></script>
   <script type="text/javascript" src="blocks/hardware_util.js"></script>
+  <script type="text/javascript" src="blocks/husky_lens.js"></script>
   <script type="text/javascript" src="blocks/imu.js"></script>
   <script type="text/javascript" src="blocks/imu_parameters.js"></script>
   <script type="text/javascript" src="blocks/ir_seeker_sensor.js"></script>
@@ -136,9 +137,9 @@
     <tr>
       <td class="buttons_td" colspan="2">
         <table width="100%"><tr><td>
-          <button onclick="saveButtonClicked()">Save Op Mode</button>
+          <button onclick="saveButtonClicked()">Save OpMode</button>
           <button onclick="exportJavaButtonClicked()">Download Java</button>
-          <button onclick="downloadButtonClicked()">Download Op Mode</button>
+          <button onclick="downloadButtonClicked()">Download OpMode</button>
           <button id="downloadImageButton" style="display: none" disabled="true"
                   onclick="downloadImageButtonClicked()">Download Image of Blocks</button>
           <a id="download_link"></a>
@@ -152,7 +153,7 @@
     </tr>
     <tr class="project_row_tr">
       <td class="project_row_td">
-        Op Mode Name:&nbsp;<span id="project_name" class="not_bold"></span>
+        OpMode Name:&nbsp;<span id="project_name" class="not_bold"></span>
         &nbsp;
         <select id="project_flavor" class="not_bold" onchange="projectFlavorChanged()">
           <option value="TELEOP">TeleOp</option>
@@ -200,7 +201,7 @@
 
   <div id="saveWithWarningsDialog" class="modal_dialog"><div class="modal_dialog_container"><div class="modal_dialog_content">
     <center>
-      <h3 style="margin-top: 0px">Save Op Mode</h3><br>
+      <h3 style="margin-top: 0px">Save OpMode</h3><br>
       <div id="saveWithWarningsMessage"></div><br>
       Are you sure you want to save now?<br><br>
       <table width="100%">

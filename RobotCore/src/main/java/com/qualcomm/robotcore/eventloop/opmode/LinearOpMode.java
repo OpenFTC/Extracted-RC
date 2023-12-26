@@ -7,10 +7,10 @@ import org.firstinspires.ftc.robotcore.internal.opmode.TelemetryInternal;
 import org.firstinspires.ftc.robotcore.internal.system.Assert;
 
 /**
- * Base class for user defined linear operation modes (op modes).
+ * Base class for user defined linear operation modes (linear OpModes).
  * <p>
- * This class derives from OpMode, but you should not override the methods from
- * OpMode.
+ * This class derives from {@link OpMode}, but you are not able to
+ * override the methods defined in OpMode.
  */
 @SuppressWarnings("unused")
 public abstract class LinearOpMode extends OpMode {
@@ -27,6 +27,9 @@ public abstract class LinearOpMode extends OpMode {
   // Construction
   //------------------------------------------------------------------------------------------------
 
+  /**
+   * LinearOpMode constructor
+   */
   public LinearOpMode() {
   }
 
@@ -37,15 +40,19 @@ public abstract class LinearOpMode extends OpMode {
   /**
    * Override this method and place your code here.
    * <p>
-   * Please do not swallow the InterruptedException, as it is used in cases
-   * where the op mode needs to be terminated early.
-   * @throws InterruptedException
+   * Please do not catch {@link InterruptedException}s that are thrown in your OpMode
+   * unless you are doing it to perform some brief cleanup, in which case you must exit
+   * immediately afterward. Once the OpMode has been told to stop, your ability to
+   * control hardware will be limited.
+   *
+   * @throws InterruptedException When the OpMode is stopped while calling a method
+   *                              that can throw {@link InterruptedException}
    */
   abstract public void runOpMode() throws InterruptedException;
 
   /**
-   * Pauses the Linear Op Mode until start has been pressed or until the current thread
-   * is interrupted.
+   * Pauses until the play button has been pressed (or until the current thread
+   * gets interrupted, which typically indicates that the OpMode has been stopped).
    */
   public void waitForStart() {
     while (!isStarted()) {
@@ -77,8 +84,9 @@ public abstract class LinearOpMode extends OpMode {
   }
 
   /**
-   * Sleeps for the given amount of milliseconds, or until the thread is interrupted. This is
-   * simple shorthand for the operating-system-provided {@link Thread#sleep(long) sleep()} method.
+   * Sleeps for the given amount of milliseconds, or until the thread is interrupted (which usually
+   * indicates that the OpMode has been stopped).
+   * <p>This is simple shorthand for {@link Thread#sleep(long) sleep()}, but it does not throw {@link InterruptedException}.</p>
    *
    * @param milliseconds amount of time to sleep, in milliseconds
    * @see Thread#sleep(long)
@@ -92,13 +100,16 @@ public abstract class LinearOpMode extends OpMode {
   }
 
   /**
-   * Answer as to whether this opMode is active and the robot should continue onwards. If the
-   * opMode is not active, the OpMode should terminate at its earliest convenience.
+   * Determine whether this OpMode is in the Run phase (meaning it has been started and not yet told
+   * to stop). For safety reasons, the Run phase is the only time that the robot should move freely,
+   * so if this method returns {@code false}, the robot should not make any significant movements.
    *
-   * <p>Note that internally this method calls {@link #idle()}</p>
+   * <p>If this method returns false after {@link #waitForStart()} has previously been called, you
+   * should break out of any loops and allow the OpMode to exit at its earliest convenience.</p>
    *
-   * @return whether the OpMode is currently active. If this returns false, you should
-   *         break out of the loop in your {@link #runOpMode()} method and return to its caller.
+   * <p>Note that this method calls {@link #idle()} internally.</p>
+   *
+   * @return Whether the OpMode is in the Run phase and the robot is allowed to move freely.
    * @see #runOpMode()
    * @see #isStarted()
    * @see #isStopRequested()
@@ -112,20 +123,26 @@ public abstract class LinearOpMode extends OpMode {
   }
 
   /**
-   * Can be used to break out of an Init loop when false is returned. Touching
-   * Start or Stop will return false.
+   * Determine whether this OpMode is still in the Init phase (indicating that the play button has
+   * not been pressed and the OpMode has not been stopped).
+   * <p>
+   * Can be used to break out of an Init loop when false is returned.
    *
-   * @return Whether the OpMode is currently in Init. A return of false can exit
-   *         an Init loop and proceed with the next action.
+   * @return Whether the OpMode is currently in the Init phase.
    */
   public final boolean opModeInInit() {
     return !isStarted() && !isStopRequested();
   }
 
   /**
-   * Has the opMode been started?
+   * Determine if the OpMode has been started (the play button has been pressed).
    *
-   * @return whether this opMode has been started or not
+   * <p>To avoid difficult-to-debug deadlocks, this method will also return
+   * {@code true} if the current thread has been interrupted (which typically
+   * indicates that the OpMode has been told to stop), even if the play
+   * button has not been pressed.</p>
+   *
+   * @return Whether this opMode has been started or not
    * @see #opModeIsActive()
    * @see #isStopRequested()
    */
@@ -141,9 +158,12 @@ public abstract class LinearOpMode extends OpMode {
   }
 
   /**
-   * Has the the stopping of the opMode been requested?
+   * Determine whether the OpMode has been asked to stop.
    *
-   * @return whether stopping opMode has been requested or not
+   * <p>If this method returns false, you should break out of any loops
+   * and allow the OpMode to exit at its earliest convenience.</p>
+   *
+   * @return Whether the OpMode has been asked to stop
    * @see #opModeIsActive()
    * @see #isStarted()
    */
@@ -151,18 +171,22 @@ public abstract class LinearOpMode extends OpMode {
     return this.stopRequested || Thread.currentThread().isInterrupted();
   }
 
-  // Prevent the non-Linear OpMode methods from being overridden
+  /** This method may not be overridden by linear OpModes */
   @Override final public void init() { }
+  /** This method may not be overridden by linear OpModes */
   @Override final public void init_loop() { }
+  /** This method may not be overridden by linear OpModes */
   @Override final public void start() { }
+  /** This method may not be overridden by linear OpModes */
   @Override final public void loop() { }
+  /** This method may not be overridden by linear OpModes */
   @Override final public void stop() { }
 
   //----------------------------------------------------------------------------------------------
   // OpModeInternal hooks (LinearOpMode MUST override ALL of them to not inherit behavior from OpMode)
   //----------------------------------------------------------------------------------------------
 
-  // Package-private, called on the OpModeThread when the Op Mode is initialized
+  // Package-private, called on the OpModeThread when the OpMode is initialized
   @Override
   final void internalRunOpMode() throws InterruptedException {
     // Do NOT call super.internalRunOpMode().
@@ -215,10 +239,10 @@ public abstract class LinearOpMode extends OpMode {
       RobotLog.addGlobalWarningMessage("The OpMode which was just initialized ended prematurely as a result of not monitoring for the start condition. Did you forget to call waitForStart()?");
     }
 
-    // executorService being null would indicate that this method was called on an Op Mode that had not yet been initialized
+    // executorService being null would indicate that this method was called on an OpMode that had not yet been initialized
     Assert.assertTrue(executorService != null);
 
-    // For LinearOpMode, the Op Mode thread needs to be interrupted, as the user may have called a
+    // For LinearOpMode, the OpMode thread needs to be interrupted, as the user may have called a
     // long-running method that can only be stopped early by interrupting the thread.
     executorService.shutdownNow();
   }

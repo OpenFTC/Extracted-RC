@@ -79,6 +79,7 @@ import com.qualcomm.robotcore.eventloop.EventLoopManager;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeRegister;
 import com.qualcomm.robotcore.exception.RobotCoreException;
+import com.qualcomm.robotcore.hardware.EmbeddedControlHubModule;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.I2cWarningManager;
@@ -151,7 +152,7 @@ public class FtcEventLoop extends FtcEventLoopBase {
   }
 
   protected static OpModeManagerImpl createOpModeManager(Activity activityContext) {
-    // The HardwareMap created here is just a placeholder and won't be exposed to Op Modes, so it's
+    // The HardwareMap created here is just a placeholder and won't be exposed to OpModes, so it's
     // OK to pass in null for the notifier parameter.
     return new OpModeManagerImpl(activityContext, new HardwareMap(activityContext, null));
   }
@@ -213,23 +214,30 @@ public class FtcEventLoop extends FtcEventLoopBase {
         // enough to warrant not running the event loop (and thereby triggering the Control Hub OS watchdog).
         try {
           temporaryEmbeddedLynxUsb = ensureEmbeddedControlHubModuleIsSetUp();
+          final int chAddress = LynxConstants.CH_EMBEDDED_MODULE_ADDRESS;
 
-          if (appJustLaunched) {
-            final int chAddress = LynxConstants.CH_EMBEDDED_MODULE_ADDRESS;
+          // Mark the IMU type of the Control Hub for use with configurations that are missing
+          // the embedded <LynxModule> entry.
+          final AtomicReference<LynxModuleImuType> imuTypeRef = new AtomicReference<>();
+          temporaryEmbeddedLynxUsb.performSystemOperationOnParentModule(chAddress, module -> {
+              LynxModuleImuType imuType = module.getImuType();
+              imuTypeRef.set(imuType);
+              EmbeddedControlHubModule.setImuType(imuType);
+          }, 200, TimeUnit.MILLISECONDS);
+
+          if (appJustLaunched && imuTypeRef.get() == LynxModuleImuType.BHI260) {
             try {
               // Flash the BHI260 IMU firmware if necessary
               temporaryEmbeddedLynxUsb.performSystemOperationOnParentModule(chAddress, module -> {
-                if (module.getImuType() == LynxModuleImuType.BHI260) {
-                  LynxI2cDeviceSynch tempImuI2cClient = LynxFirmwareVersionManager.createLynxI2cDeviceSynch(AppUtil.getDefContext(), module, 0);
-                  try { BHI260IMU.flashFirmwareIfNecessary(tempImuI2cClient); }
-                  finally { tempImuI2cClient.close(); }
-                }
+                LynxI2cDeviceSynch tempImuI2cClient = LynxFirmwareVersionManager.createLynxI2cDeviceSynch(AppUtil.getDefContext(), module, 0);
+                try { BHI260IMU.flashFirmwareIfNecessary(tempImuI2cClient); }
+                finally { tempImuI2cClient.close(); }
               }, 60, TimeUnit.SECONDS);
             } catch (TimeoutException e) {
               RobotLog.ee(TAG, e, "Timeout expired while flashing BHI260AP IMU firmware");
             }
           }
-        } catch (RobotCoreException e) {
+        } catch (RobotCoreException | TimeoutException e) {
           RobotLog.ee(TAG, e, "Error communicating with internal Control Hub LynxModule");
         }
       }
@@ -299,7 +307,7 @@ public class FtcEventLoop extends FtcEventLoopBase {
   public void teardown() throws RobotCoreException, InterruptedException {
     RobotLog.ii(TAG, "======= TEARDOWN =======");
 
-    // Stopping the active Op Mode will send failsafe commands to all REV Hubs. Do this
+    // Stopping the active OpMode will send failsafe commands to all REV Hubs. Do this
     // BEFORE calling super.teardown(), as that will close the REV Hubs.
     opModeManager.stopActiveOpMode();
     opModeManager.teardown();
@@ -343,9 +351,9 @@ public class FtcEventLoop extends FtcEventLoopBase {
   }
 
   /**
-   * The driver station is requesting our opmode list/ UI state. Build up an appropriately-delimited
+   * The driver station is requesting our OpMode list/ UI state. Build up an appropriately-delimited
    * list and send it back to them. Also take this opportunity to forcibly refresh their error/warning
-   * state: the opmode list is only infrequently requested (so sending another datagram isn't
+   * state: the OpMode list is only infrequently requested (so sending another datagram isn't
    * a traffic burden) and it's requested just after a driver station reconnects after a disconnect
    * (so doing the refresh now is probably an opportune thing to do).
    */
@@ -375,7 +383,7 @@ public class FtcEventLoop extends FtcEventLoopBase {
   }
 
   protected void handleCommandRunOpMode(String extra) {
-    // Make sure we're in the opmode that the DS thinks we are
+    // Make sure we're in the OpMode that the DS thinks we are
     String newOpMode = ftcEventLoopHandler.getOpMode(extra);
     if (!opModeManager.getActiveOpModeName().equals(newOpMode)) {
       opModeManager.initOpMode(newOpMode);

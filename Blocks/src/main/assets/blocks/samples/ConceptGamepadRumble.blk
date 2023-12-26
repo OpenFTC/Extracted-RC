@@ -14,7 +14,7 @@
 </variables>
 <block type="procedures_defnoreturn" id="WtpyD@tEu+EoY=P9iY,D" deletable="false" x="39" y="4">
 <field name="NAME">runOpMode</field>
-<comment pinned="false" h="45" w="532">This function is executed when this Op Mode is selected from the Driver Station.</comment>
+<comment pinned="false" h="45" w="532">This function is executed when this OpMode is selected from the Driver Station.</comment>
 <statement name="STACK">
 <block type="comment" id="|~t=5+j(vm3qALF7vFty">
 <field name="COMMENT">This sample illustrates using the rumble feature</field>
@@ -27,7 +27,7 @@
 <comment pinned="true" h="229" w="550">Some gamepads "rumble" better than others.
 
 The Xbox &amp; PS4 have a left (rumble1) and right (rumble2) rumble motor. These two gamepads have two distinct rumble modes: Large on the left, and small on the right.
-However, the ETpark gamepad only responds to rumble1, and may only run at full power.
+However, the Etpark gamepad only responds to rumble1, and may only run at full power.
 Finally, the Logitech F310 gamepad does not have *any* rumble ability.
 
 You can use this sample to experiment with your specific gamepads to explore their rumble features.</comment>

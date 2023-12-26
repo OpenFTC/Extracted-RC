@@ -120,7 +120,7 @@ public class LynxSetMotorChannelModeCommand extends LynxDekaInterfaceCommand<Lyn
     public boolean isDangerous()
         {
         // The system needs to be able to send this command to set the zero-power behavior to FLOAT.
-        // Because a failsafe command gets sent as soon as the Op Mode is stopped, this command is not dangerous by itself.
+        // Because a failsafe command gets sent as soon as the OpMode is stopped, this command is not dangerous by itself.
         return false;
         }
 

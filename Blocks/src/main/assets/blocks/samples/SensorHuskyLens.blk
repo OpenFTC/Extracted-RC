@@ -1,0 +1,285 @@
+<xml xmlns="https://developers.google.com/blockly/xml">
+<variables>
+<variable id="nE`Uyj[fI]uuu44z#f*L">myElapsedTime</variable>
+<variable id="cG)$JrG{06oj2s$K#/;g">myHuskyLensBlocks</variable>
+<variable id="U^di!!8ecgdQojP8h-gC">myHuskyLensBlock</variable>
+</variables>
+<block type="procedures_defnoreturn" id="WtpyD@tEu+EoY=P9iY,D" deletable="false" x="49" y="43">
+<field name="NAME">runOpMode</field>
+<comment pinned="true" h="221" w="668">This OpMode illustrates how to use the DFRobot HuskyLens.
+
+The HuskyLens is a Vision Sensor with a built-in object detection model.  It can
+detect a number of predefined objects and AprilTags in the 36h11 family, can
+recognize colors, and can be trained to detect custom objects. See this website for
+documentation: https://wiki.dfrobot.com/HUSKYLENS_V1.0_SKU_SEN0305_SEN0336
+
+This sample illustrates how to detect AprilTags, but can be used to detect other types
+of objects by changing the algorithm. It assumes that the HuskyLens is configured with
+a name of "huskylens".</comment>
+<data>{"commentPositionLeft":208,"commentPositionTop":-32}</data>
+<statement name="STACK">
+<block type="comment" id="Lc#BFtj*NTB48YL;eBl.">
+<field name="COMMENT">Put initialization blocks here.</field>
+<next>
+<block type="telemetry_addTextData_All" id="L?i.qG6pu+rzoHG]h%k2">
+<value name="KEY">
+<shadow type="text" id="ww=/wH,qWmC=HRzPwS$2">
+<field name="TEXT">&gt;&gt;</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text">
+<field name="TEXT">text</field>
+</shadow>
+<block type="logic_ternary" id="8;K?q9{:@EXaQOe.m8!9">
+<value name="IF">
+<block type="huskyLens_knock" id="2^]Nh4XfCvI(x}j#_*wq">
+<field name="IDENTIFIER">huskylensAsHuskyLens</field>
+<data>{"IDENTIFIER":"huskylens"}</data>
+</block>
+</value>
+<value name="THEN">
+<block type="text" id="8/A2B}Kj934aBnp5wn+7">
+<field name="TEXT">Touch start to continue</field>
+</block>
+</value>
+<value name="ELSE">
+<block type="text" id="vJH(#V*7ofcLRs`@*9qA">
+<field name="TEXT">Problem communicating with HuskyLens</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="huskyLens_selectAlgorithm" id="A#,2/8jbt@fVx-9z?A[W">
+<field name="IDENTIFIER">huskylensAsHuskyLens</field>
+<data>{"IDENTIFIER":"huskylens"}</data>
+<value name="ALGORITHM">
+<shadow type="huskyLens_typedEnum_algorithm" id="_E68ji}MRY9NMbN|Z@kB">
+<field name="ALGORITHM">TAG_RECOGNITION</field>
+</shadow>
+</value>
+<next>
+<block type="telemetry_update" id="5V,H@{S3:Pg74vfd4V/B">
+<next>
+<block type="variables_set" id="E4;(0=G0GkKQZ$!2ieAV">
+<field name="VAR" id="nE`Uyj[fI]uuu44z#f*L">myElapsedTime</field>
+<value name="VALUE">
+<block type="elapsedTime2_create" id="4E8irF|S~8U=wUQPKmE."/>
+</value>
+<next>
+<block type="linearOpMode_waitForStart" id=":`$wN_ci`O;o6P0~.(+g">
+<next>
+<block type="controls_if" id="}Q?5mbxSO8Di;i!__6[y">
+<value name="IF0">
+<block type="linearOpMode_opModeIsActive" id=")o%YFX/#9kvv^sgXr4~5"/>
+</value>
+<statement name="DO0">
+<block type="comment" id="(rU-p_T_/B|vExcs}liL">
+<field name="COMMENT">Put run blocks here.</field>
+<next>
+<block type="controls_whileUntil" id="^0Kagy/e+Ea{rbZPv2G6">
+<field name="MODE">WHILE</field>
+<value name="BOOL">
+<block type="linearOpMode_opModeIsActive" id="e)cr{!2VIET83s,JWC.="/>
+</value>
+<statement name="DO">
+<block type="comment" id="Jh/;L$n@JuX8AQJDFCul">
+<field name="COMMENT">Put loop blocks here.</field>
+<next>
+<block type="controls_if" id="V#|KZ%79SiW%Z)ncw_bw">
+<value name="IF0">
+<block type="logic_compare" id="2^y57~U[/9#8[xw(vmur">
+<field name="OP">GTE</field>
+<value name="A">
+<block type="elapsedTime2_getProperty_Number" id="ZN!ROIFf.FxC6Js#a(:%">
+<field name="PROP">Seconds</field>
+<value name="ELAPSED_TIME">
+<block type="variables_get" id="oNak1$sfowyP9.K%[-R)">
+<field name="VAR" id="nE`Uyj[fI]uuu44z#f*L">myElapsedTime</field>
+</block>
+</value>
+</block>
+</value>
+<value name="B">
+<block type="math_number" id="B}?Fg==NZiLWITi$Z0pp">
+<field name="NUM">1</field>
+</block>
+</value>
+</block>
+</value>
+<statement name="DO0">
+<block type="elapsedTime2_reset" id=",4*nbAY)/o%i[}R([2/v">
+<value name="ELAPSED_TIME">
+<block type="variables_get" id="3K$8t|l0MWb9w|H_H2ip">
+<field name="VAR" id="nE`Uyj[fI]uuu44z#f*L">myElapsedTime</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id="[`[o2a`)6M*2O}~bKYVe">
+<field name="VAR" id="cG)$JrG{06oj2s$K#/;g">myHuskyLensBlocks</field>
+<value name="VALUE">
+<block type="huskyLens_blocks" id="5NLE#{^MB?o23Iy)n8Z#">
+<field name="IDENTIFIER">huskylensAsHuskyLens</field>
+<data>{"IDENTIFIER":"huskylens"}</data>
+</block>
+</value>
+<next>
+<block type="telemetry_addNumericData_Number" id="mVaxG29w4%6895sEb)54">
+<value name="KEY">
+<shadow type="text" id="w0:%PDJa2pdjNPh+2fe+">
+<field name="TEXT">Block count</field>
+</shadow>
+</value>
+<value name="NUMBER">
+<shadow type="math_number" id="^wHtStbb)E~l:cgbW.qD">
+<field name="NUM">123</field>
+</shadow>
+<block type="lists_length" id="r+~9af3X6$(A]VZ1dWkD">
+<value name="VALUE">
+<block type="variables_get" id="+ke[n.r$ln:@#)]`{1zV">
+<field name="VAR" id="cG)$JrG{06oj2s$K#/;g">myHuskyLensBlocks</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="controls_forEach" id="eWy:Q)s?5EO_Lky`d4Xj">
+<field name="VAR" id="U^di!!8ecgdQojP8h-gC">myHuskyLensBlock</field>
+<value name="LIST">
+<block type="variables_get" id="Tmi{kHoN7!_Nm6fSZo4[">
+<field name="VAR" id="cG)$JrG{06oj2s$K#/;g">myHuskyLensBlocks</field>
+</block>
+</value>
+<statement name="DO">
+<block type="telemetry_addTextData_All" id="00PR]h6a7,aqbm%)*s:j">
+<value name="KEY">
+<shadow type="text" id="![tT{)r`Dif$wrFjr|b6">
+<field name="TEXT">Block</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id="^/JqCwA9qsUZUFd.Z,p9">
+<field name="TEXT">text</field>
+</shadow>
+<block type="text_join" id="=v;9)qyg1kw#YksHtfS7">
+<mutation items="10"/>
+<value name="ADD0">
+<block type="text" id="wuLuQ-,,a26NA$f-Ml(W">
+<field name="TEXT">id=</field>
+</block>
+</value>
+<value name="ADD1">
+<block type="huskyLensBlock_getProperty_Number" id="S_@)1m,M{of[.uK2d]I;">
+<field name="PROP">id</field>
+<value name="HUSKY_LENS_BLOCK">
+<block type="variables_get" id="+NsHy;|`pdIYUt/Q%Oa5">
+<field name="VAR" id="U^di!!8ecgdQojP8h-gC">myHuskyLensBlock</field>
+</block>
+</value>
+</block>
+</value>
+<value name="ADD2">
+<block type="text" id="wEqp|(eF.Cm?n,JO6UE#">
+<field name="TEXT"> size: </field>
+</block>
+</value>
+<value name="ADD3">
+<block type="huskyLensBlock_getProperty_Number" id="JV8j1Z:smc^(j#.+(:[.">
+<field name="PROP">width</field>
+<value name="HUSKY_LENS_BLOCK">
+<block type="variables_get" id="FjvzXit%xO`IRqmvJ4uN">
+<field name="VAR" id="U^di!!8ecgdQojP8h-gC">myHuskyLensBlock</field>
+</block>
+</value>
+</block>
+</value>
+<value name="ADD4">
+<block type="text" id="tF@GSKD/%o+=H)xMzT(-">
+<field name="TEXT">x</field>
+</block>
+</value>
+<value name="ADD5">
+<block type="huskyLensBlock_getProperty_Number" id="Gm!,uwC/d{#v,`9C)h^6">
+<field name="PROP">height</field>
+<value name="HUSKY_LENS_BLOCK">
+<block type="variables_get" id="TZNF%M6tNM!a^%7:,,[q">
+<field name="VAR" id="U^di!!8ecgdQojP8h-gC">myHuskyLensBlock</field>
+</block>
+</value>
+</block>
+</value>
+<value name="ADD6">
+<block type="text" id="I-~t(4nyw08nm;,eO[a~">
+<field name="TEXT"> position: </field>
+</block>
+</value>
+<value name="ADD7">
+<block type="huskyLensBlock_getProperty_Number" id=":yq^iI*ap)}t[o4,VKpB">
+<field name="PROP">x</field>
+<value name="HUSKY_LENS_BLOCK">
+<block type="variables_get" id="kV#(BHviBD[E#${ud=Nz">
+<field name="VAR" id="U^di!!8ecgdQojP8h-gC">myHuskyLensBlock</field>
+</block>
+</value>
+</block>
+</value>
+<value name="ADD8">
+<block type="text" id="_yDXG0HM#B@^!L6.n{y;">
+<field name="TEXT">,</field>
+</block>
+</value>
+<value name="ADD9">
+<block type="huskyLensBlock_getProperty_Number" id=";8gK_;kQn#pl^D7BVhYY">
+<field name="PROP">y</field>
+<value name="HUSKY_LENS_BLOCK">
+<block type="variables_get" id="4yVe2RM2;awwukeCDJ$q">
+<field name="VAR" id="U^di!!8ecgdQojP8h-gC">myHuskyLensBlock</field>
+</block>
+</value>
+</block>
+</value>
+</block>
+</value>
+</block>
+</statement>
+<next>
+<block type="telemetry_update" id="exvivmft-pX$n!1,8Ea$"/>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</xml>
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<Extra>
+<OpModeMeta flavor="TELEOP" group="" autoTransition="" />
+<Enabled value="true" />
+</Extra>

@@ -43683,6 +43683,12 @@ d\rdd\u0390dddddeeeeeffgghhiijjkkllmmnnooppqq
     exitTypeName(ctx) {
       this.typesRequired.push(ctx.text);
     }
+    exitUnannClassOrInterfaceType(ctx) {
+      this.typesRequired.push(ctx.text);
+    }
+    exitUnannTypeVariable(ctx) {
+      this.typesRequired.push(ctx.Identifier().text);
+    }
     exitClassType(ctx) {
       this.typesRequired.push(ctx.text);
     }
@@ -43704,8 +43710,6 @@ d\rdd\u0390dddddeeeeeffgghhiijjkkllmmnnooppqq
       this.handleVariableDeclaration(ctx, "local");
     }
     exitFieldDeclaration(ctx) {
-      if (this.scope.current.level !== 0)
-        return;
       this.handleVariableDeclaration(ctx, "field");
     }
     handleVariableDeclaration(ctx, decType) {
@@ -43723,8 +43727,6 @@ d\rdd\u0390dddddeeeeeffgghhiijjkkllmmnnooppqq
       });
     }
     exitMethodDeclaration(ctx) {
-      if (this.scope.current.level !== 0)
-        return;
       const methodModifiers = ctx.methodModifier();
       const methodHeader = ctx.methodHeader();
       const securityModifierTokens = methodModifiers.filter((x) => !(x instanceof AnnotationContext));
@@ -43760,6 +43762,42 @@ d\rdd\u0390dddddeeeeeffgghhiijjkkllmmnnooppqq
         params: formalParameterTypes
       });
     }
+    enterConstructorBody() {
+      this.enterBlock();
+    }
+    exitConstructorBody(ctx) {
+      this._exitBlockScope(ctx.start.startIndex, ctx.stop.stopIndex);
+    }
+    enterClassBody() {
+      this.enterBlock();
+    }
+    exitClassBody(ctx) {
+      this._exitBlockScope(ctx.start.startIndex, ctx.stop.stopIndex);
+    }
+    enterInterfaceBody() {
+      this.enterBlock();
+    }
+    exitInterfaceBody(ctx) {
+      this._exitBlockScope(ctx.start.startIndex, ctx.stop.stopIndex);
+    }
+    enterEnumBody() {
+      this.enterBlock();
+    }
+    exitEnumBody(ctx) {
+      this._exitBlockScope(ctx.start.startIndex, ctx.stop.stopIndex);
+    }
+    enterSwitchBlock() {
+      this.enterBlock();
+    }
+    exitSwitchBlock(ctx) {
+      this._exitBlockScope(ctx.start.startIndex, ctx.stop.stopIndex);
+    }
+    enterAnnotationTypeBody() {
+      this.enterBlock();
+    }
+    exitAnnotationTypeBody(ctx) {
+      this._exitBlockScope(ctx.start.startIndex, ctx.stop.stopIndex);
+    }
     enterBlock() {
       const parentScope = this.scope.current;
       this.scope.parent.push(parentScope);
@@ -43774,8 +43812,11 @@ d\rdd\u0390dddddeeeeeffgghhiijjkkllmmnnooppqq
       };
     }
     exitBlock(ctx) {
-      this.scope.current.start = ctx.start.startIndex;
-      this.scope.current.stop = ctx.stop.stopIndex;
+      this._exitBlockScope(ctx.start.startIndex, ctx.stop.stopIndex);
+    }
+    _exitBlockScope(start, stop) {
+      this.scope.current.start = start;
+      this.scope.current.stop = stop;
       this.scope.current = this.scope.parent.pop();
     }
     processTokens(lexer) {
@@ -43817,36 +43858,36 @@ d\rdd\u0390dddddeeeeeffgghhiijjkkllmmnnooppqq
       const annotations = this.inferErrorAnnotations(value);
       this.sender.emit("annotate", annotations);
     }
-    findMatchingScope(scope_map, id, node) {
-      function walkScope(id2, node2) {
-        if (id2 === node2.id)
-          return node2;
-        for (const x of node2.scopes) {
-          const test = walkScope(id2, x);
-          if (test !== null) {
-            return test;
-          }
-        }
-        return null;
+    static findMatchingScopeFromId(id, node) {
+      if (id === node.id) {
+        return node;
       }
+      for (const x of node.scopes) {
+        const test = JavaWorker.findMatchingScopeFromId(id, x);
+        if (test !== null) {
+          return test;
+        }
+      }
+      return null;
+    }
+    static findMatchingScope(scope_map, id, node) {
       if (!scope_map.has(id)) {
-        scope_map.set(id, walkScope(id, node));
+        scope_map.set(id, JavaWorker.findMatchingScopeFromId(id, node));
       }
       return scope_map.get(id);
     }
-    processVariables(variablesToProcess) {
-      const variableScopePicture = new VariableScope();
+    static processVariables(variablesToProcess) {
+      const rootScope = new VariableScope();
       const scopeCache = new Map();
-      for (let i = 0; i < variablesToProcess.length; i++) {
-        const variable = variablesToProcess[i];
+      for (const variable of variablesToProcess) {
         let testScope = variable.scope;
         let closetParent = null;
-        const nonMatchedScopes = [];
+        const scopesThatNeedToBeAdded = [];
         const maxScopeLevel = testScope.level;
         for (let k = 0; k <= maxScopeLevel; k++) {
-          closetParent = this.findMatchingScope(scopeCache, testScope.id, variableScopePicture);
+          closetParent = this.findMatchingScope(scopeCache, testScope.id, rootScope);
           if (closetParent === null) {
-            nonMatchedScopes.push(testScope);
+            scopesThatNeedToBeAdded.push(testScope);
             testScope = testScope.parent;
           } else {
             break;
@@ -43856,26 +43897,22 @@ d\rdd\u0390dddddeeeeeffgghhiijjkkllmmnnooppqq
           console.warn("java worker warning: closest parent is null");
           break;
         }
-        const numberOfNonMatchedScopes = nonMatchedScopes.length;
-        for (let k = 0; k < numberOfNonMatchedScopes && closetParent !== null; k++) {
-          let newElement = nonMatchedScopes.pop();
-          newElement = new VariableScope(newElement.start, newElement.stop, newElement.id, newElement.level);
+        for (const { start, stop, id, level } of scopesThatNeedToBeAdded.reverse()) {
+          const newElement = new VariableScope(start, stop, id, level);
           closetParent.scopes.push(newElement);
+          scopeCache.set(id, newElement);
           closetParent = newElement;
-        }
-        if (closetParent === null) {
-          console.warn("java worker warning: closest parent is null past scope matching");
-          break;
         }
         closetParent.variables.push({
           id: variable.id,
           type: variable.type,
           decType: variable.decType,
           line: variable.line,
-          level: variable.scope.level
+          level: variable.scope.level,
+          scope: variable.scope
         });
       }
-      return variableScopePicture;
+      return rootScope;
     }
     inferErrorAnnotations(input) {
       const stream = antlr4.CharStreams.fromString(input);
@@ -43911,14 +43948,14 @@ d\rdd\u0390dddddeeeeeffgghhiijjkkllmmnnooppqq
       parseResults.packageName = javaListener.packageName;
       parseResults.interfaces = javaListener.interfaceNames;
       parseResults.parentClass = javaListener.parentClassName;
-      parseResults.variables = this.processVariables(javaListener.variables);
+      parseResults.variables = JavaWorker.processVariables(javaListener.variables);
       parseResults.methods = javaListener.methods;
       return parseResults;
     }
   };
   var sender = null;
   var main = null;
-  onmessage = function(e) {
+  addEventListener("message", function(e) {
     const msg = e.data;
     if (msg.event && sender) {
       sender._signal(msg.event, msg.data);
@@ -43931,7 +43968,7 @@ d\rdd\u0390dddddeeeeeffgghhiijjkkllmmnnooppqq
       sender = new Sender();
       main = new JavaWorker(sender);
     }
-  };
+  });
 })();
 /*!
  * Copyright 2016 The ANTLR Project. All rights reserved.

@@ -614,7 +614,7 @@ public class RobotLog {
    * stopMatchLogging
    *
    * If we have a cached start time, then dump the log to the desired filename and exit.
-   * This has the effect of capturing the log between Init and Stop of any given opmode.
+   * This has the effect of capturing the log between Init and Stop of any given OpMode.
    */
   public static synchronized void stopMatchLogging() {
     if (matchStartTime != null) {

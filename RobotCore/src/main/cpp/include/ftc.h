@@ -176,7 +176,6 @@ inline LPCSTR ftcBaseNameOfFile(LPCSTR file)
     inline std::string_view ftcMethodName(LPCSTR szPrettyFunction)
         {
         const std::string_view prettyFunction(szPrettyFunction);
-        // TODO: consider Vuforia::ExternalProvider::ExternalCamera *vuforiaext_createExternalCamera(); handle correctly
         size_t colons = prettyFunction.find("::");
         int openParen = prettyFunction.rfind("(");
         size_t begin;

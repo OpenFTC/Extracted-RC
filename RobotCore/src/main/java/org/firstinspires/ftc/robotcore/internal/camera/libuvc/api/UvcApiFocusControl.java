@@ -4,7 +4,6 @@ import org.firstinspires.ftc.robotcore.external.function.Supplier;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.FocusControl;
 import org.firstinspires.ftc.robotcore.internal.camera.libuvc.nativeobject.UvcDeviceHandle;
 import org.firstinspires.ftc.robotcore.internal.system.Tracer;
-import org.firstinspires.ftc.robotcore.internal.vuforia.externalprovider.FocusMode;
 
 @SuppressWarnings("WeakerAccess")
 public class UvcApiFocusControl implements FocusControl
@@ -35,7 +34,7 @@ public class UvcApiFocusControl implements FocusControl
 
     @Override public Mode getMode()
         {
-        return fromVuforia(uvcDeviceHandle.getVuforiaFocusMode());
+        return uvcDeviceHandle.getFocusMode();
         }
 
     @Override public boolean setMode(final Mode mode)
@@ -44,7 +43,7 @@ public class UvcApiFocusControl implements FocusControl
             {
             @Override public Boolean get()
                 {
-                return uvcDeviceHandle.setVuforiaFocusMode(toVuforia(mode));
+                return uvcDeviceHandle.setFocusMode(mode);
                 }
             });
         }
@@ -55,7 +54,7 @@ public class UvcApiFocusControl implements FocusControl
             {
             @Override public Boolean get()
                 {
-                return uvcDeviceHandle.isVuforiaFocusModeSupported(toVuforia(mode));
+                return uvcDeviceHandle.isFocusModeSupported(mode);
                 }
             });
         }
@@ -115,44 +114,4 @@ public class UvcApiFocusControl implements FocusControl
                 }
             });
         }
-
-    //----------------------------------------------------------------------------------------------
-    // Utility
-    //----------------------------------------------------------------------------------------------
-
-    public static Mode fromVuforia(int vuforia)
-        {
-        return fromVuforia(FocusMode.from(vuforia));
-        }
-
-    public static Mode fromVuforia(FocusMode vuforia)
-        {
-        switch (vuforia)
-            {
-            case AUTO:              return Mode.Auto;
-            case CONTINUOUS_AUTO:   return Mode.ContinuousAuto;
-            case MACRO:             return Mode.Macro;
-            case INFINITY_FOCUS:    return Mode.Infinity;
-            case FIXED:             return Mode.Fixed;
-            case UNKNOWN:
-            default:
-                return Mode.Unknown;
-            }
-        }
-
-    public static FocusMode toVuforia(Mode mode)
-        {
-        switch (mode)
-            {
-            case Auto:           return FocusMode.AUTO;
-            case ContinuousAuto: return FocusMode.CONTINUOUS_AUTO;
-            case Macro:          return FocusMode.MACRO;
-            case Infinity:       return FocusMode.INFINITY_FOCUS;
-            case Fixed:          return FocusMode.FIXED;
-            case Unknown:
-            default:
-                return FocusMode.UNKNOWN;
-            }
-        }
-
     }

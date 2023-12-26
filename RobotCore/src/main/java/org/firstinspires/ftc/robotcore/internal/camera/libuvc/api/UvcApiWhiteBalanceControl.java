@@ -34,12 +34,9 @@
 package org.firstinspires.ftc.robotcore.internal.camera.libuvc.api;
 
 import org.firstinspires.ftc.robotcore.external.function.Supplier;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.FocusControl;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.WhiteBalanceControl;
 import org.firstinspires.ftc.robotcore.internal.camera.libuvc.nativeobject.UvcDeviceHandle;
 import org.firstinspires.ftc.robotcore.internal.system.Tracer;
-import org.firstinspires.ftc.robotcore.internal.vuforia.externalprovider.FocusMode;
 
 @SuppressWarnings("WeakerAccess")
 public class UvcApiWhiteBalanceControl implements WhiteBalanceControl

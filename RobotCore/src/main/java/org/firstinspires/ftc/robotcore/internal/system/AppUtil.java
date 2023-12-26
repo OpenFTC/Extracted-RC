@@ -156,7 +156,7 @@ public class AppUtil
      * associated with their robot */
     public static final File ROBOT_SETTINGS = new File(FIRST_FOLDER, "/settings/");
 
-    /** {@link #ROBOT_DATA_DIR} is a convenient place in which to put persistent data created by your opmode */
+    /** {@link #ROBOT_DATA_DIR} is a convenient place in which to put persistent data created by your OpMode */
     public static final File ROBOT_DATA_DIR = new File(FIRST_FOLDER, "/data/");
 
     /** {@link #UPDATES_DIR} is a folder used to manage updates to firmware, installed APKs, and other components */

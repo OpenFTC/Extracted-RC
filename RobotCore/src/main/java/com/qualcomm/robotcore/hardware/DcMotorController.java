@@ -143,7 +143,7 @@ public interface DcMotorController extends HardwareDevice {
   int getMotorCurrentPosition(int motor);
 
   /**
-   * Reset the state we hold for the given motor so that it's clean at the start of an opmode
+   * Reset the state we hold for the given motor so that it's clean at the start of an OpMode
    * @param motor
    */
   void resetDeviceConfigurationForOpMode(int motor);

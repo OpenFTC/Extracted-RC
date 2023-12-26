@@ -55,12 +55,12 @@ import java.util.Locale;
  *
  * <p>In the 2015/16 season, the call to {@link #update()} was not required; now, however,
  * in a {@link LinearOpMode}, unless {@link #update()} is called, nothing will appear on the
- * driver station screen. In other, loop-based opmodes, {@link #update()} continues to be called
+ * driver station screen. In other, loop-based OpModes, {@link #update()} continues to be called
  * automatically at the end of {@link OpMode#loop()} and {@link OpMode#init_loop()}; no call to
- * {@link #update()} is required in loop-based opmodes.</p>
+ * {@link #update()} is required in loop-based OpModes.</p>
  *
  * <pre>
- *     // loop-based opmode
+ *     // loop-based OpMode
  *     telemetry.addData("count", currentCount);
  *     telemetry.addData("elapsedTime", "%.3f", elapsedSeconds);
  * </pre>

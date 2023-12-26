@@ -36,6 +36,6 @@ import org.firstinspires.ftc.robotcore.internal.webserver.websockets.WebSocketCo
 
 public class UserOpModeRunningException extends WebSocketCommandException {
     public UserOpModeRunningException() {
-        super("USER_OP_MODE_RUNNING", "A user Op Mode is currently running");
+        super("USER_OP_MODE_RUNNING", "A user OpMode is currently running");
     }
 }

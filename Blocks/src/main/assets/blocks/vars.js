@@ -57,6 +57,14 @@ var commentColor = 200;
 
 var identifierFieldNames = ['IDENTIFIER', 'IDENTIFIER1', 'IDENTIFIER2'];
 
+
+// TODO(Noah): Replace this placeholder function used to enable time syncing with correct implementation
+function setUpWebSocket() {
+  if (typeof WEBSOCKET_LIB !== 'undefined') {
+    WEBSOCKET_LIB.webSocketManager.subscribeToNamespace("ControlHubUpdater");
+  }
+}
+
 function createNonEditableField(label) {
   var field = new Blockly.FieldTextInput(label);
   field.CURSOR = '';
@@ -199,6 +207,8 @@ function knownTypeToClassName(type) {
     case 'BNO055IMU.SystemStatus':
     case 'JustLoggingAccelerationIntegrator':
       return 'com.qualcomm.hardware.bosch.' + type;
+    case 'HuskyLens':
+      return 'com.qualcomm.hardware.dfrobot.' + type;
     case 'ModernRoboticsI2cCompassSensor':
     case 'ModernRoboticsI2cGyro':
     case 'ModernRoboticsI2cGyro.HeadingMode':
@@ -346,7 +356,6 @@ function knownTypeToClassName(type) {
     case 'Orientation':
     case 'Position':
     case 'Quaternion':
-    case 'RelicRecoveryVuMark':
     case 'Temperature':
     case 'TempUnit':
     case 'UnnormalizedAngleUnit':
@@ -390,14 +399,19 @@ function generateJavaScriptCode() {
 function disableOrphans() {
   Blockly.Events.disable();
   var disabled = [];
-  var blocks = workspace.getTopBlocks(true);
-  for (var x = 0, block; block = blocks[x]; x++) {
-    if (block.type != 'procedures_defnoreturn' &&
-        block.type != 'procedures_defreturn' &&
-        block.isEnabled()) {
+  var topBlocks = workspace.getTopBlocks(true);
+  for (var x = 0, topBlock; topBlock = topBlocks[x]; x++) {
+    if (topBlock.type != 'procedures_defnoreturn' &&
+        topBlock.type != 'procedures_defreturn' &&
+        topBlock.isEnabled()) {
+
+      // Process all the blocks in this cluster.
+      var block = topBlock;
       do {
-        block.setEnabled(false);
-        disabled.push(block);
+        if (block.isEnabled()) {
+          block.setEnabled(false);
+          disabled.push(block);
+        }
         block = block.getNextBlock();
       } while (block);
     }
@@ -434,9 +448,7 @@ function collectIdentifiersUsed() {
   });
 }
 
-var
-
-TOGGLE_OUTPUT_BOOLEAN_MUTATOR_MIXIN = {
+var TOGGLE_OUTPUT_BOOLEAN_MUTATOR_MIXIN = {
   hasOutput_: false,
   MENUITEM_USE_RETURN_VALUE_: 'Use return value',
   MENUITEM_IGNORE_RETURN_VALUE_: 'Ignore return value',

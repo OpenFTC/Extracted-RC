@@ -34,8 +34,6 @@ package org.firstinspires.ftc.robotcore.external.matrices;
 
 import android.opengl.Matrix;
 
-import com.vuforia.Matrix44F;
-
 import org.firstinspires.ftc.robotcore.external.Const;
 import org.firstinspires.ftc.robotcore.external.NonConst;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -77,11 +75,6 @@ public class OpenGLMatrix extends ColumnMajorMatrixF
         super(4,4);
         this.data = data;
         if (this.data.length != 4*4) throw dimensionsError();
-        }
-
-    public OpenGLMatrix(Matrix44F matrix)
-        {
-        this(matrix.getData());
         }
 
     /**

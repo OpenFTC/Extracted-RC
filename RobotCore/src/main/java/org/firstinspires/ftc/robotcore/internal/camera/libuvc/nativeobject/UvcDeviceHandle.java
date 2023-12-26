@@ -32,6 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.robotcore.internal.camera.libuvc.nativeobject;
 
+import android.annotation.SuppressLint;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -44,6 +45,8 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraCaptureSes
 import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraException;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.CameraControl;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.FocusControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.PtzControl;
 import org.firstinspires.ftc.robotcore.internal.camera.CameraImpl;
 import org.firstinspires.ftc.robotcore.internal.camera.CameraState;
@@ -64,8 +67,6 @@ import org.firstinspires.ftc.robotcore.internal.system.Tracer;
 import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
 import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibrationIdentity;
 import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibrationManager;
-import org.firstinspires.ftc.robotcore.internal.vuforia.externalprovider.ExtendedExposureMode;
-import org.firstinspires.ftc.robotcore.internal.vuforia.externalprovider.FocusMode;
 import org.firstinspires.ftc.robotcore.internal.camera.calibration.VendorProductCalibrationIdentity;
 
 import java.util.ArrayList;
@@ -121,6 +122,7 @@ public class UvcDeviceHandle extends NativeObject<UvcDevice> implements RefCount
         reportSelfClosed();
         }
 
+    @SuppressLint("MissingSuperCall") // super.destructor() IS getting called, but the linter isn't recognizing that
     @Override protected void destructor()
         {
         tracer.trace("destructor", new Runnable()
@@ -228,27 +230,27 @@ public class UvcDeviceHandle extends NativeObject<UvcDevice> implements RefCount
         return null;
         }
 
-    public FocusMode getVuforiaFocusMode()
+    public FocusControl.Mode getFocusMode()
         {
         synchronized (lock)
             {
-            return FocusMode.from(nativeGetVuforiaFocusMode(pointer));
+            return FocusControl.Mode.fromId(nativeGetFocusModeId(pointer));
             }
         }
 
-    public boolean setVuforiaFocusMode(FocusMode vuforia)
+    public boolean setFocusMode(FocusControl.Mode mode)
         {
         synchronized (lock)
             {
-            return nativeSetVuforiaFocusMode(pointer, vuforia.ordinal());
+            return nativeSetFocusMode(pointer, mode.ordinal());
             }
         }
 
-    public boolean isVuforiaFocusModeSupported(FocusMode vuforia)
+    public boolean isFocusModeSupported(FocusControl.Mode mode)
         {
         synchronized (lock)
             {
-            return nativeIsVuforiaFocusModeSupported(pointer, vuforia.ordinal());
+            return nativeIsFocusModeSupported(pointer, mode.ordinal());
             }
         }
 
@@ -294,27 +296,27 @@ public class UvcDeviceHandle extends NativeObject<UvcDevice> implements RefCount
 
     //----------------------------------------------------------------------------------------------
 
-    public int getVuforiaExposureMode()
+    public ExposureControl.Mode getExposureMode()
         {
         synchronized (lock)
             {
-            return nativeGetVuforiaExposureMode(pointer);
+            return ExposureControl.Mode.fromId(nativeGetExposureModeId(pointer));
             }
         }
 
-    public boolean setVuforiaExposureMode(ExtendedExposureMode vuforia)
+    public boolean setExposureMode(ExposureControl.Mode mode)
         {
         synchronized (lock)
             {
-            return nativeSetVuforiaExposureMode(pointer, vuforia.ordinal());
+            return nativeSetExposureMode(pointer, mode.ordinal());
             }
         }
 
-    public boolean isVuforiaExposureModeSupported(ExtendedExposureMode vuforia)
+    public boolean isExposureModeSupported(ExposureControl.Mode mode)
         {
         synchronized (lock)
             {
-            return nativeIsVuforiaExposureModeSupported(pointer, vuforia.ordinal());
+            return nativeIsExposureModeSupported(pointer, mode.ordinal());
             }
         }
 
@@ -724,9 +726,9 @@ public class UvcDeviceHandle extends NativeObject<UvcDevice> implements RefCount
     protected native static void nativeAddRefDeviceHandle(long pointer);
     protected native static void nativeReleaseRefDeviceHandle(long pointer);
 
-    protected native static boolean nativeIsVuforiaFocusModeSupported(long pointer, int mode);
-    protected native static int nativeGetVuforiaFocusMode(long pointer);
-    protected native static boolean nativeSetVuforiaFocusMode(long pointer, int mode);
+    protected native static boolean nativeIsFocusModeSupported(long pointer, int mode);
+    protected native static int nativeGetFocusModeId(long pointer);
+    protected native static boolean nativeSetFocusMode(long pointer, int mode);
 
     protected native static double nativeGetMinFocusLength(long pointer);
     protected native static double nativeGetMaxFocusLength(long pointer);
@@ -734,9 +736,9 @@ public class UvcDeviceHandle extends NativeObject<UvcDevice> implements RefCount
     protected native static boolean nativeSetFocusLength(long pointer, double focusLength);
     protected native static boolean nativeIsFocusLengthSupported(long pointer);
 
-    protected native static boolean nativeIsVuforiaExposureModeSupported(long pointer, int mode);
-    protected native static int nativeGetVuforiaExposureMode(long pointer);
-    protected native static boolean nativeSetVuforiaExposureMode(long pointer, int mode);
+    protected native static boolean nativeIsExposureModeSupported(long pointer, int modeId);
+    protected native static int nativeGetExposureModeId(long pointer);
+    protected native static boolean nativeSetExposureMode(long pointer, int modeId);
 
     protected native static boolean nativeIsExposureSupported(long pointer);
     protected native static long nativeGetMinExposure(long pointer);

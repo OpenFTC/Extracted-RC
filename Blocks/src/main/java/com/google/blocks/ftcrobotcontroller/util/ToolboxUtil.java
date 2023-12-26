@@ -195,7 +195,7 @@ public class ToolboxUtil {
   public static void addFunctions(
       StringBuilder xmlToolbox, HardwareType hardwareType, String identifier,
       Map<String, Map<String, String>> functions) {
-    addFunctions(xmlToolbox, hardwareType, identifier, functions, null);
+    addFunctions(xmlToolbox, hardwareType, identifier, functions, null, null);
   }
 
   /**
@@ -203,19 +203,30 @@ public class ToolboxUtil {
    */
   public static void addFunctions(
       StringBuilder xmlToolbox, HardwareType hardwareType, String identifier,
-      Map<String, Map<String, String>> functions, Map<String, String> functionComments) {
+      Map<String, Map<String, String>> functions,
+      Map<String, String> functionComments, Map<String, String> variableSetters) {
     for (Map.Entry<String, Map<String, String>> functionEntry : functions.entrySet()) {
       String functionName = functionEntry.getKey();
       Map<String, String> args = functionEntry.getValue();
-      String comment = (functionComments != null) ? functionComments.get(functionName) : null;
+
+      String variableSetter = (variableSetters != null) ? variableSetters.get(functionName) : null;
+      if (variableSetter != null) {
+        xmlToolbox
+            .append("<block type=\"variables_set\">")
+            .append("<field name=\"VAR\">").append(variableSetter).append("</field>")
+            .append("<value name=\"VALUE\">\n");
+      }
 
       xmlToolbox
           .append("<block type=\"").append(hardwareType.blockTypePrefix).append("_")
           .append(functionName).append("\">\n");
+
+      String comment = (functionComments != null) ? functionComments.get(functionName) : null;
       if (comment != null && comment.startsWith("<comment") && comment.endsWith("</comment>")) {
         xmlToolbox
             .append(comment).append("\n");
       }
+
       xmlToolbox
           .append("<field name=\"IDENTIFIER\">").append(identifier)
           .append("</field>\n");
@@ -231,6 +242,11 @@ public class ToolboxUtil {
       }
       xmlToolbox
           .append("</block>\n");
+
+      if (variableSetter != null) {
+        xmlToolbox
+            .append("</value></block>");
+      }
     }
   }
 

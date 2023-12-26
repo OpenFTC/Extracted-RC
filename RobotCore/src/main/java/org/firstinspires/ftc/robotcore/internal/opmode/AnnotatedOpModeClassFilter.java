@@ -59,7 +59,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Does the heavy lifting of managing annotation-based opmode registrations.
+ * Does the heavy lifting of managing annotation-based OpMode registrations.
  *
  * This is modelled after the following, without which we could not have been successful
  * in this endeavor.
@@ -292,7 +292,7 @@ public class AnnotatedOpModeClassFilter implements ClassFilter
 
     boolean checkUserOpModeName(@NonNull Class<?> clazz, @Nullable String opModeName)
         {
-        // Some opmode names aren't allowed to be used
+        // Some OpMode names aren't allowed to be used
         if (opModeName == null)
             {
             opModeName = getOpModeName(clazz);
@@ -571,7 +571,7 @@ public class AnnotatedOpModeClassFilter implements ClassFilter
             }
         }
 
-    /** add this class, which has opmode annotations, to the map of classes to register */
+    /** add this class, which has OpMode annotations, to the map of classes to register */
     private boolean addAnnotatedOpMode(Class<OpMode> clazz)
         {
         if (clazz.isAnnotationPresent(TeleOp.class))

@@ -25,7 +25,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 /**
  * An abstract base class that provides access to hardwareMap, telemetry, gamepad1, and gamepad2,
  * in order to assist a novice Java coder who wants to implement some code in Java that can be
- * called from a Blocks op mode.
+ * called from a Blocks OpMode.
  *
  * The use of this class is not required for exporting a method to the Blocks programming
  * environment. See {@link ExportToBlocks} for details on how to export a method to Blocks.
@@ -34,12 +34,12 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
  */
 public abstract class BlocksOpModeCompanion {
   /**
-   * The currently running blocks op mode, as an {@link OpMode}.
+   * The currently running Blocks OpMode, as an {@link OpMode}.
    */
   public static OpMode opMode;
 
   /**
-   * The currently running blocks op mode, as an {@link LinearOpMode}.
+   * The currently running Blocks OpMode, as an {@link LinearOpMode}.
    */
   public static LinearOpMode linearOpMode;
 

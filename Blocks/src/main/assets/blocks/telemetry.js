@@ -53,7 +53,8 @@ Blockly.JavaScript['telemetry_addNumericData'] = function(block) {
       block, 'KEY', Blockly.JavaScript.ORDER_COMMA);
   var number = Blockly.JavaScript.valueToCode(
       block, 'NUMBER', Blockly.JavaScript.ORDER_COMMA);
-  return telemetryIdentifierForJavaScript + '.addNumericData(' + key + ', ' + number + ');\n';
+  // Convert the number to a String in JavaScript so a number like 123 doesn't show up as 123.0.
+  return telemetryIdentifierForJavaScript + '.addTextData(' + key + ', String(' + number + '));\n';
 };
 
 Blockly.FtcJava['telemetry_addNumericData'] = function(block) {

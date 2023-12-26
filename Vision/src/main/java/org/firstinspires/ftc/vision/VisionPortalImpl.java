@@ -318,6 +318,11 @@ public class VisionPortalImpl extends VisionPortal
 
     class ProcessingPipeline extends TimestampedOpenCvPipeline
     {
+        public ProcessingPipeline()
+        {
+            MEMLEAK_DETECTION_ENABLED = false;
+        }
+
         @Override
         public void init(Mat firstFrame)
         {

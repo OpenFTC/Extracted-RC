@@ -36,7 +36,6 @@ import android.opengl.GLES20;
 import androidx.annotation.RawRes;
 
 import com.qualcomm.robotcore.R;
-import com.vuforia.GLTextureUnit;
 
 import org.firstinspires.ftc.robotcore.internal.opengl.Texture;
 
@@ -56,11 +55,6 @@ public class CubeMeshFragmentShader
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texture.mTextureID[0]);
         GLES20.glUniform1i(u_texSampler2DHandle, 0);
-        }
-
-    public void setTextureUnit(GLTextureUnit textureUnit)
-        {
-        GLES20.glUniform1i(u_texSampler2DHandle, textureUnit.getTextureUnit());
         }
 
     }

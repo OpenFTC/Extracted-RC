@@ -99,7 +99,15 @@ public final class OnBotJavaFileSystemUtils {
     public static NanoHTTPD.Response getFile(Map<String, List<String>> data, boolean folderAsZip, String lineEndings) {
         if (!data.containsKey(RequestConditions.REQUEST_KEY_FILE)) return StandardResponses.badRequest();
         String trimmedUri = data.get(RequestConditions.REQUEST_KEY_FILE).get(0);
-        final String filePath = OnBotJavaManager.javaRoot.getAbsolutePath() + trimmedUri;
+        final String filePath;
+        // Determine if we are referencing the external library directory or the src directory
+        // References to the external library directory start with /src/ExternalLibraries
+        // This is due to how external libraries interact with frontend code to trigger downloads and the like
+        if (trimmedUri.startsWith("/src" + OnBotJavaManager.EXTERNAL_LIBRARIES)) {
+            filePath = OnBotJavaManager.extLibDir.getAbsolutePath() + trimmedUri.substring(("/src" + OnBotJavaManager.EXTERNAL_LIBRARIES).length());
+        } else {
+            filePath = OnBotJavaManager.javaRoot.getAbsolutePath() + trimmedUri;
+        }
         if (OnBotJavaSecurityManager.isValidSourceFileLocation(trimmedUri)) { // is a file
             return getFileAsFile(lineEndings, filePath);
         } else if (OnBotJavaSecurityManager.isValidSourceFileOrFolder(trimmedUri, false)) { // is a folder

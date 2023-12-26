@@ -179,16 +179,16 @@ public abstract class BNO055IMUImpl extends I2cDeviceSynchDeviceWithParameters<I
 
     //------------------------------------------------------------------------------------------
     // Notifications
-    // This particular sensor wants to take action not only when the a user opmode is started (for
+    // This particular sensor wants to take action not only when the a user OpMode is started (for
     // which it gets a resetDeviceConfigurationForOpMode() as all HardwareDevices do) but also when
-    // the opmode ends. To that end, it implements OpModeManagerNotifier.Notifications.
+    // the OpMode ends. To that end, it implements OpModeManagerNotifier.Notifications.
     //------------------------------------------------------------------------------------------
 
     @Override public void resetDeviceConfigurationForOpMode()
         {
-        // So that teams can maintain a 0-heading point across Op Modes, we want to preserve the
+        // So that teams can maintain a 0-heading point across OpModes, we want to preserve the
         // parameters from run to run, and we do NOT want to mark the device as needing
-        // initialization between Op Modes.
+        // initialization between OpModes.
         Parameters previousParameters = this.parameters;
         boolean previouslyInitialized = this.isInitialized;
 

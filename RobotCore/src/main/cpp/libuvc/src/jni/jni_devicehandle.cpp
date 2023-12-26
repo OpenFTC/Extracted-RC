@@ -39,7 +39,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <ftc.h>
 #include <asm/errno.h>
 #include <libuvc/libuvc_internal.h>
-#include <Vuforia/ExternalProvider.h>
 #include "ftc.h"
 
 #undef TAG
@@ -422,23 +421,33 @@ Java_org_firstinspires_ftc_robotcore_internal_camera_libuvc_nativeobject_UvcDevi
     return static_cast<jboolean>(val);
     }
 
-enum class ExtendedExposureMode : int32_t   // logically extends ExtendedExposureMode
+enum class ExposureMode : int32_t // Matches ExposureControl.Mode in Java
 {
     UNKNOWN,            ///< Unknown exposure mode.
     AUTO,               ///< Single trigger auto exposure.
     CONTINUOUS_AUTO,    ///< Continuous auto exposure.
     MANUAL,             ///< Manual exposure mode.
     SHUTTER_PRIORITY,   ///< Shutter priority mode.
-    APERTURE_PRIORITY,  // added
+    APERTURE_PRIORITY,  ///< Aperture priority mode.
+};
+
+enum class FocusMode : int32_t // Matches FocusControl.Mode in Java
+{
+    UNKNOWN,            ///< Unknown focus mode.
+    AUTO,               ///< Single trigger auto focus.
+    CONTINUOUS_AUTO,    ///< Continuous auto focus.
+    MACRO,              ///< Macro mode.
+    INFINITY_FOCUS,     ///< Focus to infinity.
+    FIXED,              ///< Fixed focus that can't be adjusted.
 };
 
 
 JNIEXPORT jboolean JNICALL
-Java_org_firstinspires_ftc_robotcore_internal_camera_libuvc_nativeobject_UvcDeviceHandle_nativeIsVuforiaExposureModeSupported(JNIEnv *env, jclass type, JNI_NATIVE_POINTER pointer, jint vuforiaMode)
+Java_org_firstinspires_ftc_robotcore_internal_camera_libuvc_nativeobject_UvcDeviceHandle_nativeIsExposureModeSupported(JNIEnv *env, jclass type, JNI_NATIVE_POINTER pointer, jint modeId)
     {
     FTC_TRACE_VERBOSE();
     uvc_device_handle_t* pUvcDeviceHandle = (uvc_device_handle_t*) pointer;
-    ExtendedExposureMode mode = ExtendedExposureMode(vuforiaMode);
+    ExposureMode mode = ExposureMode(modeId);
     bool success = false;
     if (pUvcDeviceHandle)
         {
@@ -452,24 +461,24 @@ Java_org_firstinspires_ftc_robotcore_internal_camera_libuvc_nativeobject_UvcDevi
                 {
                 switch (mode)
                     {
-                    case ExtendedExposureMode::AUTO:
+                    case ExposureMode::AUTO:
                         // Unless otherwise stated auto exposure is always continuous, not only for one exposure
                         success = false;
                         break;
 
-                    case ExtendedExposureMode::CONTINUOUS_AUTO:
+                    case ExposureMode::CONTINUOUS_AUTO:
                         success = (supportedModes & (int)UvcAutoExposureMode::AUTO)!=0;
                         break;
 
-                    case ExtendedExposureMode::APERTURE_PRIORITY: // never actually used by Vuforia
+                    case ExposureMode::APERTURE_PRIORITY:
                         success = (supportedModes & (int)UvcAutoExposureMode::APERTURE_PRIORITY) != 0;
                         break;
 
-                    case ExtendedExposureMode::MANUAL:
+                    case ExposureMode::MANUAL:
                         success = (supportedModes & (int)UvcAutoExposureMode::MANUAL) != 0;
                         break;
 
-                    case ExtendedExposureMode::SHUTTER_PRIORITY:
+                    case ExposureMode::SHUTTER_PRIORITY:
                         success = (supportedModes & (int)UvcAutoExposureMode::SHUTTER_PRIORITY) != 0;
                         break;
 
@@ -488,12 +497,12 @@ Java_org_firstinspires_ftc_robotcore_internal_camera_libuvc_nativeobject_UvcDevi
     }
 
 JNIEXPORT jint JNICALL
-Java_org_firstinspires_ftc_robotcore_internal_camera_libuvc_nativeobject_UvcDeviceHandle_nativeGetVuforiaExposureMode(JNIEnv *env, jclass type, JNI_NATIVE_POINTER pointer)
+Java_org_firstinspires_ftc_robotcore_internal_camera_libuvc_nativeobject_UvcDeviceHandle_nativeGetExposureModeId(JNIEnv *env, jclass type, JNI_NATIVE_POINTER pointer)
     {
     FTC_TRACE();
     uvc_device_handle_t* pUvcDeviceHandle = (uvc_device_handle_t*) pointer;
 
-    ExtendedExposureMode result = ExtendedExposureMode::UNKNOWN;
+    ExposureMode result = ExposureMode::UNKNOWN;
 
     if (pUvcDeviceHandle)
         {
@@ -505,19 +514,19 @@ Java_org_firstinspires_ftc_robotcore_internal_camera_libuvc_nativeobject_UvcDevi
             switch ((UvcAutoExposureMode)mode)
                 {
                 case UvcAutoExposureMode::MANUAL:
-                    result = ExtendedExposureMode::MANUAL;
+                    result = ExposureMode::MANUAL;
                     break;
 
                 case UvcAutoExposureMode::AUTO:
-                    result = ExtendedExposureMode::CONTINUOUS_AUTO;
+                    result = ExposureMode::CONTINUOUS_AUTO;
                     break;
 
                 case UvcAutoExposureMode::APERTURE_PRIORITY:
-                    result = ExtendedExposureMode::APERTURE_PRIORITY;
+                    result = ExposureMode::APERTURE_PRIORITY;
                     break;
 
                 case UvcAutoExposureMode::SHUTTER_PRIORITY:
-                    result = ExtendedExposureMode::SHUTTER_PRIORITY;
+                    result = ExposureMode::SHUTTER_PRIORITY;
                     break;
 
                 default:
@@ -533,11 +542,11 @@ Java_org_firstinspires_ftc_robotcore_internal_camera_libuvc_nativeobject_UvcDevi
     }
 
 JNIEXPORT jboolean JNICALL
-Java_org_firstinspires_ftc_robotcore_internal_camera_libuvc_nativeobject_UvcDeviceHandle_nativeSetVuforiaExposureMode(JNIEnv *env, jclass type, JNI_NATIVE_POINTER pointer, jint vuforiaMode)
+Java_org_firstinspires_ftc_robotcore_internal_camera_libuvc_nativeobject_UvcDeviceHandle_nativeSetExposureMode(JNIEnv *env, jclass type, JNI_NATIVE_POINTER pointer, jint modeId)
     {
     FTC_TRACE_VERBOSE();
     uvc_device_handle_t* pUvcDeviceHandle = (uvc_device_handle_t*) pointer;
-    ExtendedExposureMode mode = ExtendedExposureMode(vuforiaMode);
+    ExposureMode mode = ExposureMode(modeId);
 
     bool success = true;
     if (pUvcDeviceHandle)
@@ -545,13 +554,13 @@ Java_org_firstinspires_ftc_robotcore_internal_camera_libuvc_nativeobject_UvcDevi
         NATIVE_API_ONE_CALLER_VERBOSE();
         switch (mode)
             {
-            case ExtendedExposureMode::AUTO:
+            case ExposureMode::AUTO:
                 // Unless otherwise stated auto exposure is always continuous, not only for one exposure
                 LOGE("Auto exposure mode for only one exposure is not supported");
                 success = false;
                 break;
 
-            case ExtendedExposureMode::CONTINUOUS_AUTO:
+            case ExposureMode::CONTINUOUS_AUTO:
                 {
                 uvc_error_t rc = uvc_set_ae_mode(pUvcDeviceHandle, (int)UvcAutoExposureMode::AUTO);
                 if (rc != UVC_SUCCESS)
@@ -562,7 +571,7 @@ Java_org_firstinspires_ftc_robotcore_internal_camera_libuvc_nativeobject_UvcDevi
                 }
                 break;
 
-            case ExtendedExposureMode::APERTURE_PRIORITY:
+            case ExposureMode::APERTURE_PRIORITY:
                 {
                 uvc_error_t rc = uvc_set_ae_mode(pUvcDeviceHandle, (int)UvcAutoExposureMode::APERTURE_PRIORITY);
                 if (rc != UVC_SUCCESS)
@@ -573,7 +582,7 @@ Java_org_firstinspires_ftc_robotcore_internal_camera_libuvc_nativeobject_UvcDevi
                 }
                 break;
 
-            case ExtendedExposureMode::MANUAL:
+            case ExposureMode::MANUAL:
                 {
                 uvc_error_t rc = uvc_set_ae_mode(pUvcDeviceHandle, (int)UvcAutoExposureMode::MANUAL);
                 if (rc != UVC_SUCCESS)
@@ -584,7 +593,7 @@ Java_org_firstinspires_ftc_robotcore_internal_camera_libuvc_nativeobject_UvcDevi
                 }
                 break;
 
-            case ExtendedExposureMode::SHUTTER_PRIORITY:
+            case ExposureMode::SHUTTER_PRIORITY:
                 {
                 uvc_error_t rc = uvc_set_ae_mode(pUvcDeviceHandle, (int)UvcAutoExposureMode::SHUTTER_PRIORITY);
                 if (rc != UVC_SUCCESS)
@@ -618,7 +627,7 @@ int64_t nsFromUvcExposure(int64_t exposure)
 
 int64_t uvcExposureFromNs(int64_t ns)
     {
-    // UVC exposure time unit is 100us, while Vuforia expected unit is 1ns
+    // UVC exposure time unit is 100us, while the SDK's expected unit is 1ns
     return ns / HUNDRED_THOUSAND;
     }
 
@@ -1084,11 +1093,11 @@ Java_org_firstinspires_ftc_robotcore_internal_camera_libuvc_nativeobject_UvcDevi
 //--------------------------------------------------------------------------------------------------
 
 JNIEXPORT jboolean JNICALL
-Java_org_firstinspires_ftc_robotcore_internal_camera_libuvc_nativeobject_UvcDeviceHandle_nativeIsVuforiaFocusModeSupported(JNIEnv *env, jclass type, JNI_NATIVE_POINTER pointer, jint vuforiaMode)
+Java_org_firstinspires_ftc_robotcore_internal_camera_libuvc_nativeobject_UvcDeviceHandle_nativeIsFocusModeSupported(JNIEnv *env, jclass type, JNI_NATIVE_POINTER pointer, jint modeId)
     {
     FTC_TRACE_VERBOSE();
     uvc_device_handle_t* pUvcDeviceHandle = (uvc_device_handle_t*) pointer;
-    Vuforia::ExternalProvider::FocusMode mode = Vuforia::ExternalProvider::FocusMode(vuforiaMode);
+    FocusMode mode = FocusMode(modeId);
 
     bool success = false;
     if (pUvcDeviceHandle)
@@ -1097,21 +1106,21 @@ Java_org_firstinspires_ftc_robotcore_internal_camera_libuvc_nativeobject_UvcDevi
         const uvc_input_terminal_t* inputTerminal = uvc_get_input_terminals(pUvcDeviceHandle);
         switch (mode)
             {
-            case Vuforia::ExternalProvider::FocusMode::AUTO:
+            case FocusMode::AUTO:
                 // Unless otherwise stated auto focus is always continuous, not only for one exposure
                 success = false;
                 break;
 
-            case Vuforia::ExternalProvider::FocusMode::CONTINUOUS_AUTO:
+            case FocusMode::CONTINUOUS_AUTO:
                 success = inputTerminal->isSupported(UvcCtCtrlSupported::FOCUS_AUTO);
                 break;
 
-            case Vuforia::ExternalProvider::FocusMode::MACRO:
-            case Vuforia::ExternalProvider::FocusMode::INFINITY_FOCUS:
+            case FocusMode::MACRO:
+            case FocusMode::INFINITY_FOCUS:
                 success = inputTerminal->isSupported(UvcCtCtrlSupported::FOCUS_SIMPLE);
                 break;
 
-            case Vuforia::ExternalProvider::FocusMode::FIXED:
+            case FocusMode::FIXED:
                 // Fixed focus mode is always supported. But whether we support
                 // getting / setting the absolute focus value is another matter.
                 success = true;
@@ -1127,13 +1136,13 @@ Java_org_firstinspires_ftc_robotcore_internal_camera_libuvc_nativeobject_UvcDevi
 
 
 JNIEXPORT jint JNICALL
-Java_org_firstinspires_ftc_robotcore_internal_camera_libuvc_nativeobject_UvcDeviceHandle_nativeGetVuforiaFocusMode(JNIEnv *env, jclass type, JNI_NATIVE_POINTER pointer)
+Java_org_firstinspires_ftc_robotcore_internal_camera_libuvc_nativeobject_UvcDeviceHandle_nativeGetFocusModeId(JNIEnv *env, jclass type, JNI_NATIVE_POINTER pointer)
     {
     FTC_TRACE_VERBOSE();
     uvc_device_handle_t* pDeviceHandle = (uvc_device_handle_t*) pointer;
 
     // If all else fails, then we are essentially on fixed focus mode
-    Vuforia::ExternalProvider::FocusMode result = Vuforia::ExternalProvider::FocusMode::FIXED;
+    FocusMode result = FocusMode::FIXED;
 
     if (pDeviceHandle)
         {
@@ -1144,7 +1153,7 @@ Java_org_firstinspires_ftc_robotcore_internal_camera_libuvc_nativeobject_UvcDevi
         uvc_error rc = uvc_get_focus_auto(pDeviceHandle, &state, UVC_GET_CUR);
         if (rc == UVC_SUCCESS && state == 1)
             {
-            result = Vuforia::ExternalProvider::FocusMode::CONTINUOUS_AUTO;
+            result = FocusMode::CONTINUOUS_AUTO;
             }
         else
             {
@@ -1155,10 +1164,10 @@ Java_org_firstinspires_ftc_robotcore_internal_camera_libuvc_nativeobject_UvcDevi
                 switch ((UvcSimpleFocusMode)state)
                     {
                     case UvcSimpleFocusMode::MACRO:
-                        result = Vuforia::ExternalProvider::FocusMode::MACRO;
+                        result = FocusMode::MACRO;
                         break;
                     case UvcSimpleFocusMode::SCENE:
-                        result = Vuforia::ExternalProvider::FocusMode::INFINITY_FOCUS;
+                        result = FocusMode::INFINITY_FOCUS;
                         break;
                     default: break;
                     }
@@ -1170,11 +1179,11 @@ Java_org_firstinspires_ftc_robotcore_internal_camera_libuvc_nativeobject_UvcDevi
     }
 
 JNIEXPORT jboolean JNICALL
-Java_org_firstinspires_ftc_robotcore_internal_camera_libuvc_nativeobject_UvcDeviceHandle_nativeSetVuforiaFocusMode(JNIEnv *env, jclass type, JNI_NATIVE_POINTER pointer, jint vuforiaMode)
+Java_org_firstinspires_ftc_robotcore_internal_camera_libuvc_nativeobject_UvcDeviceHandle_nativeSetFocusMode(JNIEnv *env, jclass type, JNI_NATIVE_POINTER pointer, jint modeId)
     {
     FTC_TRACE_VERBOSE();
     uvc_device_handle_t* pUvcDeviceHandle = (uvc_device_handle_t*) pointer;
-    Vuforia::ExternalProvider::FocusMode mode = Vuforia::ExternalProvider::FocusMode(vuforiaMode);
+    FocusMode mode = FocusMode(modeId);
 
     bool success = true;
     if (pUvcDeviceHandle)
@@ -1184,13 +1193,13 @@ Java_org_firstinspires_ftc_robotcore_internal_camera_libuvc_nativeobject_UvcDevi
 
         switch (mode)
             {
-            case Vuforia::ExternalProvider::FocusMode::AUTO:
+            case FocusMode::AUTO:
                 // Unless otherwise stated auto focus is always continuous, not only for one exposure
                 LOGE("Auto focus mode for only one exposure is not supported");
                 success = false;
                 break;
 
-            case Vuforia::ExternalProvider::FocusMode::CONTINUOUS_AUTO:
+            case FocusMode::CONTINUOUS_AUTO:
                 {
                 result = uvc_set_focus_auto(pUvcDeviceHandle, (int)UvcAutoFocusMode::AUTO);
                 if (result == UVC_SUCCESS)
@@ -1205,7 +1214,7 @@ Java_org_firstinspires_ftc_robotcore_internal_camera_libuvc_nativeobject_UvcDevi
                 }
                 break;
 
-            case Vuforia::ExternalProvider::FocusMode::MACRO:
+            case FocusMode::MACRO:
                 {
                 result = uvc_set_focus_simple_range(pUvcDeviceHandle, (int)UvcSimpleFocusMode::MACRO);
                 if (result == UVC_SUCCESS)
@@ -1220,7 +1229,7 @@ Java_org_firstinspires_ftc_robotcore_internal_camera_libuvc_nativeobject_UvcDevi
                 }
                 break;
 
-            case Vuforia::ExternalProvider::FocusMode::INFINITY_FOCUS:
+            case FocusMode::INFINITY_FOCUS:
                 {
                 result = uvc_set_focus_simple_range(pUvcDeviceHandle, (int)UvcSimpleFocusMode::SCENE);
                 if (result == UVC_SUCCESS)
@@ -1234,7 +1243,7 @@ Java_org_firstinspires_ftc_robotcore_internal_camera_libuvc_nativeobject_UvcDevi
                 }
                 break;
 
-            case Vuforia::ExternalProvider::FocusMode::FIXED:
+            case FocusMode::FIXED:
                 {
                 // If we support auto focus, set the auto focus mode to FIXED
                 const uvc_input_terminal_t* inputTerminal = uvc_get_input_terminals(pUvcDeviceHandle);

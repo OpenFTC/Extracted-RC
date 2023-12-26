@@ -61,9 +61,6 @@ import org.firstinspires.ftc.robotcore.internal.system.BmpFileWriter;
 import org.firstinspires.ftc.robotcore.internal.system.Deadline;
 import org.firstinspires.ftc.robotcore.internal.system.Misc;
 import org.firstinspires.ftc.robotcore.internal.ui.UILocation;
-import org.firstinspires.ftc.robotcore.internal.vuforia.externalprovider.CameraCallback;
-import org.firstinspires.ftc.robotcore.internal.vuforia.externalprovider.CameraMode;
-import org.firstinspires.ftc.robotcore.internal.vuforia.externalprovider.VuforiaWebcam;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -77,10 +74,9 @@ import java.util.concurrent.TimeUnit;
  * A simple illustration of how to use the UVC (Webcam) API. Think of it as providing a wholistic
  * conceptual overview of the flow of opening, rendering, and closing cameras. However, it is old
  * and a bit crufty, doesn't handle the error situations well, etc. If you want a <em>real</em>
- * example of how API actually gets used in practice, I suggest you look at {@link VuforiaWebcam#openCamera()},
- * and {@link VuforiaWebcam#startCamera(CameraMode, CameraCallback)}, as those are the entry points
- * that actually get used in practice when this infrastructure is used with Vuforia. As such, they
- * are much better tested than the conceptual flow here.
+ * example of how API actually gets used in practice, I suggest you look at OpenCvWebcamImpl in the
+ * EasyOpenCV library. Since that code powers OpenCV, AprilTag, and TensorFlow in the SDK, it is
+ * much better tested than the conceptual flow here.
  */
 @SuppressWarnings("WeakerAccess")
 public class WebcamExample

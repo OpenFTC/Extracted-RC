@@ -47,7 +47,7 @@ public abstract class ManualControlCommandHandler<P, R> extends WebSocketCommand
      * Runs on the ManualControlOpMode's thread
      *
      * @throws WebSocketCommandException if the command cannot be completed successfully
-     * @throws InterruptedException if the Manual Control Op Mode was stopped while this method was executing
+     * @throws InterruptedException if the Manual Control OpMode was stopped while this method was executing
      */
     public abstract R handleManualControlCommand(P parameters) throws WebSocketCommandException, InterruptedException;
 

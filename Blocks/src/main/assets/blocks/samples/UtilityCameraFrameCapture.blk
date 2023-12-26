@@ -1,0 +1,465 @@
+<xml xmlns="https://developers.google.com/blockly/xml">
+<variables>
+<variable id="3.)/eLHm(iRl1^Qsq;Hb">USE_WEBCAM</variable>
+<variable id="*J.+=YV4XcFv=X()@-Dg">RESOLUTION_WIDTH</variable>
+<variable id="Yy@WKcy4Z|OTLOyX,pXa">RESOLUTION_HEIGHT</variable>
+<variable type="VisionPortal.Builder" id="wx@xgbnS_]b0DQL.08Qg">myVisionPortalBuilder</variable>
+<variable id="Xk!_{IPng0#/P|7dx?3N">myVisionPortal</variable>
+<variable id="]l),iyryetR7X~U3U3L,">lastX</variable>
+<variable id=";3!4:a|T?UUN{5%d!Je#">frameCount</variable>
+<variable id="jUwjw-y$LINF^aWpe?s;">capReqTime</variable>
+<variable id="m@q;(Dtg`po9gtAL7_Az">x</variable>
+</variables>
+<block type="procedures_defnoreturn" id="WtpyD@tEu+EoY=P9iY,D" deletable="false" x="0" y="0">
+<field name="NAME">runOpMode</field>
+<comment pinned="false" h="45" w="532">This function is executed when this OpMode is selected from the Driver Station.</comment>
+<statement name="STACK">
+<block type="comment" id="vG1;7$#*;crH,9)V$Lbq">
+<field name="COMMENT">This Utility OpMode helps calibrate a webcam or RC phone camera, useful for AprilTag pose estimation</field>
+<next>
+<block type="comment" id="(o),uE!1R)lWmXbQcSB4">
+<field name="COMMENT">with the FTC VisionPortal.   It captures a camera frame (image) and stores it on the Robot </field>
+<next>
+<block type="comment" id="xfyje?|mmJh,KZ=+-[w0">
+<field name="COMMENT">Controller (Control Hub or RC phone), with each press of the gamepad button X (or Square).</field>
+<next>
+<block type="comment" id="xI/y2m$@nKDEVS!i,4]y">
+<field name="COMMENT">Full calibration instructions are here: https://ftc-docs.firstinspires.org/camera-calibration</field>
+<next>
+<block type="comment" id="n]6=bEV9C]K%rrq-9jxg">
+<field name="COMMENT">EDIT THESE PARAMETERS AS NEEDED</field>
+<next>
+<block type="variables_set" id="+WOa|3hz0c^Rah6+[;U4">
+<field name="VAR" id="3.)/eLHm(iRl1^Qsq;Hb">USE_WEBCAM</field>
+<value name="VALUE">
+<block type="logic_boolean" id="C]dWgdzJ2YW[h}=7w5QN">
+<field name="BOOL">TRUE</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id="x$eqoZ;y3gfO9Va-IX@2">
+<field name="VAR" id="*J.+=YV4XcFv=X()@-Dg">RESOLUTION_WIDTH</field>
+<value name="VALUE">
+<block type="math_number" id="Lh2*S-.}SgkGO,4E+rhu">
+<field name="NUM">640</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id="D3SQXD?Fz})9+zJX8OH#">
+<field name="VAR" id="Yy@WKcy4Z|OTLOyX,pXa">RESOLUTION_HEIGHT</field>
+<value name="VALUE">
+<block type="math_number" id="bwj{kt5p)k+g3/5|#^mO">
+<field name="NUM">480</field>
+</block>
+</value>
+<next>
+<block type="comment" id="w{nzs#L5ZbP.GKW2S`x_">
+<field name="COMMENT">Create a VisionPortal.Builder and set attributes related to the camera.</field>
+<next>
+<block type="visionPortalBuilder_create_assign" id="s1^/ZS*LG[dC%CsYcl=%">
+<field name="VISION_PORTAL_BUILDER" id="wx@xgbnS_]b0DQL.08Qg" variabletype="VisionPortal.Builder">myVisionPortalBuilder</field>
+<next>
+<block type="controls_if" id="T`t))DI)e(S6b*Xls7U=">
+<mutation else="1"/>
+<value name="IF0">
+<block type="variables_get" id="Zr+H]wQb_aiB|J+{-0:G">
+<field name="VAR" id="3.)/eLHm(iRl1^Qsq;Hb">USE_WEBCAM</field>
+</block>
+</value>
+<statement name="DO0">
+<block type="visionPortalBuilder_setCamera" id="h;`Yd}]R=F.Fw89p`1N/">
+<field name="VISION_PORTAL_BUILDER" id="wx@xgbnS_]b0DQL.08Qg" variabletype="VisionPortal.Builder">myVisionPortalBuilder</field>
+<comment pinned="false" h="68" w="247">Use a webcam.</comment>
+<data>{"commentPositionLeft":-62,"commentPositionTop":-93}</data>
+<value name="CAMERA">
+<shadow type="navigation_webcamName" id="b`AjugjMrzm855@U*q;W">
+<field name="WEBCAM_NAME">Webcam 1</field>
+</shadow>
+</value>
+</block>
+</statement>
+<statement name="ELSE">
+<block type="visionPortalBuilder_setCamera" id="pm=N,.9EB)-Y)[HJlB;-">
+<field name="VISION_PORTAL_BUILDER" id="wx@xgbnS_]b0DQL.08Qg" variabletype="VisionPortal.Builder">myVisionPortalBuilder</field>
+<comment pinned="false" h="56" w="298">Use the device's back camera.</comment>
+<value name="CAMERA">
+<shadow type="navigation_typedEnum_builtinCameraDirection" id="8u8O_}55dptgjBxmKq`9">
+<field name="CAMERA_DIRECTION">BACK</field>
+</shadow>
+</value>
+</block>
+</statement>
+<next>
+<block type="visionPortalBuilder_setCameraResolution" id="c~/Ho}4[LR+CDb[#6y^*">
+<field name="VISION_PORTAL_BUILDER" id="wx@xgbnS_]b0DQL.08Qg" variabletype="VisionPortal.Builder">myVisionPortalBuilder</field>
+<value name="CAMERA_WIDTH">
+<shadow type="math_number" id="fpfMbA5mn]=SWvw?D~-L">
+<field name="NUM">640</field>
+</shadow>
+<block type="variables_get" id="eWO-Kbmt*m3wYx1LG.rx">
+<field name="VAR" id="*J.+=YV4XcFv=X()@-Dg">RESOLUTION_WIDTH</field>
+</block>
+</value>
+<value name="CAMERA_HEIGHT">
+<shadow type="math_number" id="n.oj$W5CCoysd1|+Abb@">
+<field name="NUM">480</field>
+</shadow>
+<block type="variables_get" id="IgEYa/C(#E(%xD[jp-Ch">
+<field name="VAR" id="Yy@WKcy4Z|OTLOyX,pXa">RESOLUTION_HEIGHT</field>
+</block>
+</value>
+<next>
+<block type="comment" id="6Q2EYFS^A(u/rVLX*nI}">
+<field name="COMMENT">Create a VisionPortal by calling build.</field>
+<next>
+<block type="variables_set" id="UggZXj@UuhBf97)(oA;m">
+<field name="VAR" id="Xk!_{IPng0#/P|7dx?3N">myVisionPortal</field>
+<value name="VALUE">
+<block type="visionPortalBuilder_build" id="OBOV:tKH!^AaYsI{A$~x">
+<field name="VISION_PORTAL_BUILDER" id="wx@xgbnS_]b0DQL.08Qg" variabletype="VisionPortal.Builder">myVisionPortalBuilder</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id="@3#FJ;_AfBGmSrY$$qqB">
+<field name="VAR" id="]l),iyryetR7X~U3U3L,">lastX</field>
+<value name="VALUE">
+<block type="logic_boolean" id="xr+o,TF(@giJZqjzL4#%">
+<field name="BOOL">FALSE</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id="-U+lK}wMvJhF,34R89zP">
+<field name="VAR" id=";3!4:a|T?UUN{5%d!Je#">frameCount</field>
+<value name="VALUE">
+<block type="math_number" id="qDD5q=`KnOM~ifyPX~+;">
+<field name="NUM">0</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id="e*p6?ewecQ6{eoJPG.XD">
+<field name="VAR" id="jUwjw-y$LINF^aWpe?s;">capReqTime</field>
+<value name="VALUE">
+<block type="math_number" id=",Q2gnXq[kQ@$3l0I(e{d">
+<field name="NUM">0</field>
+</block>
+</value>
+<next>
+<block type="controls_whileUntil" id="^0Kagy/e+Ea{rbZPv2G6">
+<field name="MODE">WHILE</field>
+<value name="BOOL">
+<block type="logic_negate" id="M%Gxz6)UGMF`*)[vkYhc">
+<value name="BOOL">
+<block type="linearOpMode_isStopRequested" id="{jY@Gd`$OZ6r(fVlml6s"/>
+</value>
+</block>
+</value>
+<statement name="DO">
+<block type="variables_set" id="d:`Xr^h`Y%N,#!j,6SW*">
+<field name="VAR" id="m@q;(Dtg`po9gtAL7_Az">x</field>
+<value name="VALUE">
+<block type="gamepad_getProperty_Boolean" id="sf5eF=@`n`#)!Rt91x@*">
+<field name="IDENTIFIER">gamepad1</field>
+<field name="PROP">X</field>
+<data>{"IDENTIFIER":"gamepad1"}</data>
+</block>
+</value>
+<next>
+<block type="controls_if" id="ZCH9r0G1Z98RHxz0E3Ui">
+<value name="IF0">
+<block type="logic_operation" id="@|a*X%hY}J]Lc1AF|9ly">
+<field name="OP">AND</field>
+<value name="A">
+<block type="variables_get" id="U$quPCBPd{ma%=jgQI$l">
+<field name="VAR" id="m@q;(Dtg`po9gtAL7_Az">x</field>
+</block>
+</value>
+<value name="B">
+<block type="logic_negate" id="5;r#Moe/BFjyjmpQ;6=$">
+<value name="BOOL">
+<block type="variables_get" id=";R^N_ZRM|:,VO;RwxfG~">
+<field name="VAR" id="]l),iyryetR7X~U3U3L,">lastX</field>
+</block>
+</value>
+</block>
+</value>
+</block>
+</value>
+<statement name="DO0">
+<block type="visionPortal_saveNextFrameRaw" id="G5-/l;#*G`2.kkqk~#AG">
+<comment pinned="false" h="150" w="325">Save the next frame to the given file.</comment>
+<value name="VISION_PORTAL">
+<block type="variables_get" id="`kDX:CeVH;`{;Dmn_#mk">
+<field name="VAR" id="Xk!_{IPng0#/P|7dx?3N">myVisionPortal</field>
+</block>
+</value>
+<value name="FILENAME">
+<shadow type="text" id="%e0c?Q-=Vbf@T}k`DD6q">
+<field name="TEXT"/>
+</shadow>
+<block type="text_join" id="OYnGIGjGm01ZfB$%^Nc5">
+<mutation items="2"/>
+<value name="ADD0">
+<block type="text" id="sC*ENc(T@8B8@*?`po-R">
+<field name="TEXT">CameraFrameCapture-</field>
+</block>
+</value>
+<value name="ADD1">
+<block type="variables_get" id="7r|k#4um+]/TU4c^WQS3">
+<field name="VAR" id=";3!4:a|T?UUN{5%d!Je#">frameCount</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="math_change" id="i#ju+e_jzadJ~vsK56m[">
+<field name="VAR" id=";3!4:a|T?UUN{5%d!Je#">frameCount</field>
+<value name="DELTA">
+<shadow type="math_number" id="fgr5;!4ONk3]/x:Gkm]@">
+<field name="NUM">1</field>
+</shadow>
+</value>
+<next>
+<block type="variables_set" id="tHZLj_6:j$G+FFb!XOOA">
+<field name="VAR" id="jUwjw-y$LINF^aWpe?s;">capReqTime</field>
+<value name="VALUE">
+<block type="system_currentTimeMillis" id="UBWeHw/wJuk9f$e]_db[">
+<comment pinned="false" h="150" w="325">Get the current time in milliseconds. The value returned represents the number of milliseconds since midnight, January 1, 1970 UTC.</comment>
+</block>
+</value>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+<next>
+<block type="variables_set" id="/V*NbnggCWgR!)e9iMJC">
+<field name="VAR" id="]l),iyryetR7X~U3U3L,">lastX</field>
+<value name="VALUE">
+<block type="variables_get" id=".SZz2~Rnu=CH.)PFsJSq">
+<field name="VAR" id="m@q;(Dtg`po9gtAL7_Az">x</field>
+</block>
+</value>
+<next>
+<block type="telemetry_addLine" id="W99,A$!V~rS}Hs3$T`L.">
+<value name="TEXT">
+<shadow type="text" id="zpu}5Q1mh4:-lAa,G73C">
+<field name="TEXT">######## Camera Capture Utility ########</field>
+</shadow>
+</value>
+<next>
+<block type="telemetry_addLine" id="~:38j}P.x$w.}ve=h^|Z">
+<value name="TEXT">
+<shadow type="text" id="K!%GQaBN~tamGWNTgg10">
+<field name="TEXT"/>
+</shadow>
+<block type="text_join" id="XWkP?[P!)%n*V`@_P3|}">
+<mutation items="4"/>
+<value name="ADD0">
+<block type="text" id="9!%4X)SYU]w2I;ohbcg|">
+<field name="TEXT"> &gt; Resolution: </field>
+</block>
+</value>
+<value name="ADD1">
+<block type="variables_get" id="Gz*t/Fa*H[Yw]EP:(M|T">
+<field name="VAR" id="*J.+=YV4XcFv=X()@-Dg">RESOLUTION_WIDTH</field>
+</block>
+</value>
+<value name="ADD2">
+<block type="text" id="N#QFCOPVT3R`!LJn@~.w">
+<field name="TEXT">x</field>
+</block>
+</value>
+<value name="ADD3">
+<block type="variables_get" id="Zk~}KHn/EO@GtPq$L$@I">
+<field name="VAR" id="Yy@WKcy4Z|OTLOyX,pXa">RESOLUTION_HEIGHT</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_addLine" id="lh)yk=y;T8u1RonRon`K">
+<value name="TEXT">
+<shadow type="text" id="}v(eT]h4`FEZPbISKwB7">
+<field name="TEXT"> &gt; Press X (or Square) to capture a frame</field>
+</shadow>
+</value>
+<next>
+<block type="telemetry_addTextData_All" id="HQ?whA]lrP2k1?kfihFS">
+<value name="KEY">
+<shadow type="text" id="fD_`~[%n,t`hL%v`au#(">
+<field name="TEXT">&gt; Camera Status</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id="u`A7~3DzDQdIMhFCT65-">
+<field name="TEXT">text</field>
+</shadow>
+<block type="visionPortal_getCameraState" id="6Xtn:qp3q9=#-gDQ:[[v">
+<value name="VISION_PORTAL">
+<block type="variables_get" id="B:V-}P)R9veJy:KXP()I">
+<field name="VAR" id="Xk!_{IPng0#/P|7dx?3N">myVisionPortal</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="controls_if" id="%guybr!2`bHT}@0q%n+Y">
+<value name="IF0">
+<block type="logic_compare" id="K/9h_-iDu#o#Gk~~ul,7">
+<field name="OP">NEQ</field>
+<value name="A">
+<block type="variables_get" id="[X5;G6xQs$jdz@N-uI#9">
+<field name="VAR" id="jUwjw-y$LINF^aWpe?s;">capReqTime</field>
+</block>
+</value>
+<value name="B">
+<block type="math_number" id="rQ|m06:CO|]yd.%K;~qT">
+<field name="NUM">0</field>
+</block>
+</value>
+</block>
+</value>
+<statement name="DO0">
+<block type="telemetry_addLine" id="D^gD@D.Xj8s1_pfD+5VL">
+<value name="TEXT">
+<shadow type="text" id="lnf+|[R.aS^EQ~nI#}{$">
+<field name="TEXT"/>
+</shadow>
+</value>
+<next>
+<block type="telemetry_addLine" id="SXuE3sMWOJ!:B8l#Y}4P">
+<value name="TEXT">
+<shadow type="text" id="|m^8Mc)x%[Y[)+v[L|+w">
+<field name="TEXT">Captured Frame!</field>
+</shadow>
+</value>
+</block>
+</next>
+</block>
+</statement>
+<next>
+<block type="controls_if" id="EN/I):suEF}y.w|K~)U]">
+<value name="IF0">
+<block type="logic_operation" id="rQzBddh1[r3}Kn[so=7D" inline="false">
+<field name="OP">AND</field>
+<value name="A">
+<block type="logic_compare" id="2^geZ#UM,9d,^Rq7c9(D">
+<field name="OP">NEQ</field>
+<value name="A">
+<block type="variables_get" id="jQ/+A~+WG]:X$h=~c5Ui">
+<field name="VAR" id="jUwjw-y$LINF^aWpe?s;">capReqTime</field>
+</block>
+</value>
+<value name="B">
+<block type="math_number" id="]BwDF[/N(,z{z5gVd?TP">
+<field name="NUM">0</field>
+</block>
+</value>
+</block>
+</value>
+<value name="B">
+<block type="logic_compare" id="{S(M#HB_RzB*B],zY!fQ">
+<field name="OP">GT</field>
+<value name="A">
+<block type="math_arithmetic" id="rK?[cHFz@**h:;A[EMZ1">
+<field name="OP">MINUS</field>
+<value name="A">
+<shadow type="math_number" id="`naTI]HtzOCn)3EXBH.r">
+<field name="NUM">1</field>
+</shadow>
+<block type="system_currentTimeMillis" id="_$b|1p[|;p*]s@E7@jT6"/>
+</value>
+<value name="B">
+<shadow type="math_number" id="zKu%o(ZUSQaiqN$^Za~X">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="}ecKlh.^2l(SlS*A_N/u">
+<field name="VAR" id="jUwjw-y$LINF^aWpe?s;">capReqTime</field>
+</block>
+</value>
+</block>
+</value>
+<value name="B">
+<block type="math_number" id="5,O2t~i9P/|*.kEqA^Jz">
+<field name="NUM">1000</field>
+</block>
+</value>
+</block>
+</value>
+</block>
+</value>
+<statement name="DO0">
+<block type="variables_set" id=":XhK~#]ZFpvU.0|d5H4}">
+<field name="VAR" id="jUwjw-y$LINF^aWpe?s;">capReqTime</field>
+<value name="VALUE">
+<block type="math_number" id="AUPSxa~2xF;.tGrW1bfc">
+<field name="NUM">0</field>
+</block>
+</value>
+</block>
+</statement>
+<next>
+<block type="telemetry_update" id="exvivmft-pX$n!1,8Ea$"/>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</xml>
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<Extra>
+<OpModeMeta flavor="TELEOP" group="" autoTransition="" />
+<Enabled value="true" />
+</Extra>

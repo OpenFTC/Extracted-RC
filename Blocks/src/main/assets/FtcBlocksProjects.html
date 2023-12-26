@@ -8,6 +8,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta charset="utf-8">
 
+  <!-- Bootstrap -->
   <link href="/css/bootstrap.min.css" rel="stylesheet">
   <script type="text/javascript" src="/js/jquery-3.4.1.min.js"></script>
   <script type="text/javascript" src="/js/bootstrap.min.js"></script>
@@ -16,6 +17,7 @@
   <link rel="stylesheet" type="text/css" href="css/blocks_common.css">
 
   <script type="text/javascript" src="/js/less.min.js"></script>
+  <script type="text/javascript" src="/js/websocket-iframe.js"></script>
 
   <script type="text/javascript" src="blockly/blockly_compressed.js"></script>
   <script type="text/javascript" src="blockly/msg/messages.js"></script>
@@ -24,7 +26,6 @@
   <script type="text/javascript" src="ftcblockly/generators/javascript.js"></script>
   <script type="text/javascript" src="ftcblockly/generators/ftcjava.js"></script>
 
-  <script type="text/javascript" src="/js/websocket-iframe.js"></script>
   <script type="text/javascript" src="server"></script>
   <script type="text/javascript" src="blocks/FtcBlocksProjects_common.js"></script>
 
@@ -58,6 +59,7 @@
   <script type="text/javascript" src="blocks/gamepad.js"></script>
   <script type="text/javascript" src="blocks/gyro_sensor.js"></script>
   <script type="text/javascript" src="blocks/hardware_util.js"></script>
+  <script type="text/javascript" src="blocks/husky_lens.js"></script>
   <script type="text/javascript" src="blocks/imu.js"></script>
   <script type="text/javascript" src="blocks/imu_parameters.js"></script>
   <script type="text/javascript" src="blocks/ir_seeker_sensor.js"></script>
@@ -122,7 +124,7 @@
   <script type="text/javascript" src="blocks/obsolete/vuforia_trackable_default_listener.js"></script>
   <script type="text/javascript" src="blocks/obsolete/vuforia_trackables.js"></script>
 
-  <title>FTC - My Op Modes</title>
+  <title>FTC - My OpModes</title>
 </head>
 
 <body onload="initialize()">
@@ -135,12 +137,12 @@
       <table width="100%">
         <tr>
           <td>
-            <button id="newProjectButton" disabled="true" onclick="newProjectButtonClicked()">Create New Op Mode</button>
-            <button id="uploadProjectButton" onclick="uploadProjectButtonClicked()">Upload Op Mode</button>
+            <button id="newProjectButton" disabled="true" onclick="newProjectButtonClicked()">Create New OpMode</button>
+            <button id="uploadProjectButton" onclick="uploadProjectButtonClicked()">Upload OpMode</button>
             <button id="downloadOfflineBlocksButton"
                onclick="downloadOfflineBlocksButtonClicked()">Download Offline Blocks Editor</button>
             <button id="archiveButton"
-               onclick="archiveButtonClicked()">Download All Op Modes</button>
+               onclick="archiveButtonClicked()">Download All OpModes</button>
           </td>
           <td align="right">
             <a class="help" href="FtcTFLiteModels.html">TensorFlow Lite Models</a>
@@ -151,10 +153,10 @@
         </tr>
         <tr>
           <td>
-            <button id="renameProjectButton" disabled="true" onclick="renameProjectButtonClicked()">Rename Selected Op Mode</button>
-            <button id="copyProjectButton" disabled="true" onclick="copyProjectButtonClicked()">Copy Selected Op Mode</button>
-            <button id="deleteProjectsButton" disabled="true" onclick="deleteProjectsButtonClicked()">Delete Selected Op Modes</button>
-            <button id="downloadProjectsButton" disabled="true" onclick="downloadProjectsButtonClicked()">Download Selected Op Modes</button>
+            <button id="renameProjectButton" disabled="true" onclick="renameProjectButtonClicked()">Rename Selected OpMode</button>
+            <button id="copyProjectButton" disabled="true" onclick="copyProjectButtonClicked()">Copy Selected OpMode</button>
+            <button id="deleteProjectsButton" disabled="true" onclick="deleteProjectsButtonClicked()">Delete Selected OpModes</button>
+            <button id="downloadProjectsButton" disabled="true" onclick="downloadProjectsButtonClicked()">Download Selected OpModes</button>
             <a id="download_link"></a>
           </td>
           <td align="right">
@@ -168,7 +170,7 @@
     <td class="blank_td" colspan="2"></td>
   </tr>
   <tr>
-    <td class="my_projects_td" colspan="2">My Op Modes</td>
+    <td class="my_projects_td" colspan="2">My OpModes</td>
   </tr>
   <tr>
     <td class="blank_td" colspan="2"></td>
@@ -178,7 +180,7 @@
   <table id="projectsTable" width="100%">
     <tr class="header_tr">
       <td><input type="checkbox" id="checkbox_all" onclick="projectCheckAllChanged()"></td>
-      <td width="30%"><div class="header_td" onclick="toggleSortByName()">Op Mode Name<span id="sortByNameIndicator">&nbsp;</span></div></td>
+      <td width="30%"><div class="header_td" onclick="toggleSortByName()">OpMode Name<span id="sortByNameIndicator">&nbsp;</span></div></td>
       <td width="40%"><div class="header_td" onclick="toggleSortByDateModified()">Date Modified<span id="sortByDateModifiedIndicator">&nbsp;</span></div></td>
       <td width="20%"><div class="header_td">Enabled</div></td>
     </tr>
@@ -188,7 +190,7 @@
 <div id="newProjectNameDialog" class="modal_dialog"><div class="modal_dialog_container"><div class="modal_dialog_content">
   <center>
   <h3 style="margin-top: 0px" id="newProjectNameDialogTitle"></h3><br>
-  Op Mode Name:
+  OpMode Name:
   <input type="text" id="newProjectName" style="width: 50ch"><br>
   <div id="newProjectSamplesArea"><br><br>
     Sample:
@@ -222,8 +224,8 @@
 
 <div id="deleteProjectsDialog" class="modal_dialog"><div class="modal_dialog_container"><div class="modal_dialog_content">
   <center>
-  <h3 style="margin-top: 0px">Delete Selected Op Modes</h3><br>
-  Are you sure you want to delete these Op Modes?
+  <h3 style="margin-top: 0px">Delete Selected OpModes</h3><br>
+  Are you sure you want to delete these OpModes?
   <table id="deleteProjectsTable">
   </table>
   <table width="100%">

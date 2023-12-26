@@ -65,14 +65,6 @@ function resize() {
   projectsTableScroll.style.height = (window.innerHeight - y) + 'px';
 }
 
-
-// TODO(Noah): Replace this placeholder function used to enable time syncing with correct implementation
-function setUpWebSocket() {
-  if (typeof WEBSOCKET_LIB !== 'undefined') {
-    WEBSOCKET_LIB.webSocketManager.subscribeToNamespace("ControlHubUpdater");
-  }
-}
-
 function initializeProjects() {
   projects = [];
   fetchProjects(function(jsonProjects, errorMessage) {
@@ -89,10 +81,10 @@ function initializeSamples() {
   var select = document.getElementById('newProjectSamplesSelect');
   select.options.length = 0; // Clear previous values just in case.
 
-  // Insert the first option, which is for the default op mode.
+  // Insert the first option, which is for the default OpMode.
   var option = document.createElement('option')
   option.innerHTML = 'BasicOpMode';
-  option.value = ''; // Indicates the default op mode.
+  option.value = ''; // Indicates the default OpMode.
   select.appendChild(option);
 
   fetchSamples(function(jsonSamples, errorMessage) {
@@ -105,7 +97,7 @@ function initializeSamples() {
         option.value = JSON.stringify(sample);
         select.appendChild(option);
       }
-      // Now we can enable the Create New Op Mode  button.
+      // Now we can enable the Create New OpMode  button.
       document.getElementById('newProjectButton').disabled = false;
     } else {
       console.log(errorMessage);
@@ -119,7 +111,6 @@ function sampleSelected() {
   if (jsonSample) {
     var sample = JSON.parse(jsonSample);
     if (sample.requestedCapabilities) {
-      var delimiter = '';
       for (var i = 0; i < sample.requestedCapabilities.length; i++) {
         var requestedCapability = sample.requestedCapabilities[i];
         var warning = getWarningForCapabilityRequestedBySample(requestedCapability);
@@ -191,7 +182,7 @@ function sortProjectsAndFillTable() {
           projects[i].escapedName + '</div>';
     } else {
       tdName.innerHTML = '<div class="invalid_project_name">' +
-          projects[i].escapedName + '&nbsp;&nbsp;&nbsp;&nbsp;<span class="tooltiptext">This Op Mode must be renamed.</span></div>';
+          projects[i].escapedName + '&nbsp;&nbsp;&nbsp;&nbsp;<span class="tooltiptext">This OpMode must be renamed.</span></div>';
     }
 
     var tdDateModified = tr.insertCell(-1);
@@ -256,7 +247,7 @@ function newProjectButtonClicked() {
   document.getElementById('newProjectName').value = '';
   document.getElementById('newProjectNameError').innerHTML = '';
   newProjectNameDialogMode = NEW_PROJECT_NAME_DIALOG_MODE_NEW_PROJECT;
-  document.getElementById('newProjectNameDialogTitle').innerHTML = 'Create New Op Mode';
+  document.getElementById('newProjectNameDialogTitle').innerHTML = 'Create New OpMode';
   var select = document.getElementById('newProjectSamplesSelect');
   document.getElementById('newProjectSamplesArea').style.visibility =
       (select.options.length > 1) ? 'visible' : 'hidden';
@@ -311,7 +302,7 @@ function okNewProjectNameDialog() {
 function newProjectOk(newProjectName) {
   var select = document.getElementById('newProjectSamplesSelect');
   var jsonSample = select.options[select.selectedIndex].value;
-  // For the first item, value is ''. This indicates the default op mode.
+  // For the first item, value is ''. This indicates the default OpMode.
   var sampleName = jsonSample
       ? JSON.parse(jsonSample).name
       : '';
@@ -332,7 +323,7 @@ function uploadProjectButtonClicked() {
   // Show modal dialog asking for file.
   document.getElementById('uploadProjectFileInput').value = ''
   document.getElementById('uploadProjectError').innerHTML = '';
-  document.getElementById('uploadProjectDialogTitle').innerHTML = 'Upload Op Mode';
+  document.getElementById('uploadProjectDialogTitle').innerHTML = 'Upload OpMode';
   document.getElementById('uploadProjectOk').disabled = true;
   document.getElementById('uploadProjectFileInput').onchange = function() {
     var files = document.getElementById('uploadProjectFileInput').files;
@@ -431,7 +422,7 @@ function renameProjectButtonClicked() {
   document.getElementById('newProjectName').value = projects[checkedProjects[0]].name;
   document.getElementById('newProjectNameError').innerHTML = '';
   newProjectNameDialogMode = NEW_PROJECT_NAME_DIALOG_MODE_RENAME_PROJECT;
-  document.getElementById('newProjectNameDialogTitle').innerHTML = 'Rename Selected Op Mode';
+  document.getElementById('newProjectNameDialogTitle').innerHTML = 'Rename Selected OpMode';
   document.getElementById('newProjectSamplesArea').style.visibility = 'hidden';
   document.getElementById('newProjectNameDialog').style.display = 'block';
   document.getElementById('newProjectName').focus();
@@ -454,7 +445,7 @@ function copyProjectButtonClicked() {
   document.getElementById('newProjectName').value = projects[checkedProjects[0]].name;
   document.getElementById('newProjectNameError').innerHTML = '';
   newProjectNameDialogMode = NEW_PROJECT_NAME_DIALOG_MODE_COPY_PROJECT;
-  document.getElementById('newProjectNameDialogTitle').innerHTML = 'Copy Selected Op Mode';
+  document.getElementById('newProjectNameDialogTitle').innerHTML = 'Copy Selected OpMode';
   document.getElementById('newProjectSamplesArea').style.visibility = 'hidden';
   document.getElementById('newProjectNameDialog').style.display = 'block';
   document.getElementById('newProjectName').focus();

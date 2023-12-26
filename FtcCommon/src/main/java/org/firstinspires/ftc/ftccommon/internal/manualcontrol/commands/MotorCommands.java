@@ -9,10 +9,10 @@ import com.qualcomm.hardware.lynx.commands.core.LynxGetMotorChannelModeCommand;
 import com.qualcomm.hardware.lynx.commands.core.LynxGetMotorChannelModeResponse;
 import com.qualcomm.hardware.lynx.commands.core.LynxGetMotorConstantPowerCommand;
 import com.qualcomm.hardware.lynx.commands.core.LynxGetMotorEncoderPositionCommand;
-import com.qualcomm.hardware.lynx.commands.core.LynxGetMotorPIDControlLoopCoefficientsCommand;
-import com.qualcomm.hardware.lynx.commands.core.LynxGetMotorPIDControlLoopCoefficientsResponse;
 import com.qualcomm.hardware.lynx.commands.core.LynxGetMotorPIDFControlLoopCoefficientsCommand;
 import com.qualcomm.hardware.lynx.commands.core.LynxGetMotorPIDFControlLoopCoefficientsResponse;
+import com.qualcomm.hardware.lynx.commands.core.LynxGetMotorPIDControlLoopCoefficientsCommand;
+import com.qualcomm.hardware.lynx.commands.core.LynxGetMotorPIDControlLoopCoefficientsResponse;
 import com.qualcomm.hardware.lynx.commands.core.LynxGetMotorTargetPositionCommand;
 import com.qualcomm.hardware.lynx.commands.core.LynxGetMotorTargetPositionResponse;
 import com.qualcomm.hardware.lynx.commands.core.LynxGetMotorTargetVelocityCommand;
@@ -44,8 +44,7 @@ import org.firstinspires.ftc.ftccommon.internal.manualcontrol.parameters.MotorTa
 import org.firstinspires.ftc.ftccommon.internal.manualcontrol.parameters.MotorTargetVelocityParameters;
 import org.firstinspires.ftc.ftccommon.internal.manualcontrol.responses.MotorModeResponse;
 import org.firstinspires.ftc.ftccommon.internal.manualcontrol.responses.MotorTargetPosition;
-import org.firstinspires.ftc.ftccommon.internal.manualcontrol.responses.PidCoefficients;
-import org.firstinspires.ftc.ftccommon.internal.manualcontrol.responses.PidfCoefficients;
+import org.firstinspires.ftc.ftccommon.internal.manualcontrol.responses.ClosedLoopControlCoefficients;
 import org.firstinspires.ftc.robotcore.internal.webserver.websockets.WebSocketCommandException;
 import org.firstinspires.ftc.robotcore.internal.webserver.websockets.WebSocketMessageTypeHandler;
 
@@ -68,9 +67,8 @@ public class MotorCommands {
         handlerMap.put("getMotorTargetPosition", new GetMotorTargetPositionCommand(handler));
         handlerMap.put("getMotorEncoder", new GetMotorEncoderCommand(handler));
         handlerMap.put("getIsMotorAtTarget", new GetIsMotorAtTargetCommand(handler));
-        handlerMap.put("getMotorPidCoefficients", new GetMotorPidCoefficientsCommand(handler));
         handlerMap.put("setMotorPidCoefficients", new SetMotorPidCoefficientsCommand(handler));
-        handlerMap.put("getMotorPidfCoefficients", new GetMotorPidfCoefficientsCommand(handler));
+        handlerMap.put("getMotorClosedLoopControlCoefficients", new GetMotorClosedLoopControlCoefficientsCommand(handler));
         handlerMap.put("setMotorPidfCoefficients", new SetMotorPidfCoefficientsCommand(handler));
     }
 
@@ -266,20 +264,6 @@ public class MotorCommands {
         }
     }
 
-    private static class GetMotorPidCoefficientsCommand extends ManualControlDeviceCommandHandler<MotorModeParameters, PidCoefficients> {
-        public GetMotorPidCoefficientsCommand(ManualControlWebSocketHandler handler) { super(handler); }
-        @NonNull @Override protected Class<MotorModeParameters> getPayloadClass() { return MotorModeParameters.class; }
-        @NonNull @Override protected Class<PidCoefficients> getResultClass() { return PidCoefficients.class; }
-
-        @Override
-        public PidCoefficients performOperationOnDevice(LynxModule module, MotorModeParameters params) throws InvalidParameterException, LynxNackException, InterruptedException {
-            LynxGetMotorPIDControlLoopCoefficientsCommand command = new LynxGetMotorPIDControlLoopCoefficientsCommand(
-                    module, params.getMotorChannel(), params.getMotorMode());
-            LynxGetMotorPIDControlLoopCoefficientsResponse response = command.sendReceive();
-            return new PidCoefficients(response.getP(), response.getI(), response.getD());
-        }
-    }
-
     private static class SetMotorPidCoefficientsCommand extends ManualControlDeviceCommandHandler<MotorPidCoefficientsParameters, Void> {
         public SetMotorPidCoefficientsCommand(ManualControlWebSocketHandler handler) { super(handler); }
         @NonNull @Override protected Class<MotorPidCoefficientsParameters> getPayloadClass() { return MotorPidCoefficientsParameters.class; }
@@ -296,17 +280,26 @@ public class MotorCommands {
         }
     }
 
-    private static class GetMotorPidfCoefficientsCommand extends ManualControlDeviceCommandHandler<MotorModeParameters, PidfCoefficients> {
-        public GetMotorPidfCoefficientsCommand(ManualControlWebSocketHandler handler) { super(handler); }
+    private static class GetMotorClosedLoopControlCoefficientsCommand extends ManualControlDeviceCommandHandler<MotorModeParameters, ClosedLoopControlCoefficients> {
+        public GetMotorClosedLoopControlCoefficientsCommand(ManualControlWebSocketHandler handler) { super(handler); }
         @NonNull @Override protected Class<MotorModeParameters> getPayloadClass() { return MotorModeParameters.class; }
-        @NonNull @Override protected Class<PidfCoefficients> getResultClass() { return PidfCoefficients.class; }
+        @NonNull @Override protected Class<ClosedLoopControlCoefficients> getResultClass() { return ClosedLoopControlCoefficients.class; }
 
         @Override
-        public PidfCoefficients performOperationOnDevice(LynxModule module, MotorModeParameters params) throws InvalidParameterException, LynxNackException, InterruptedException {
-            LynxGetMotorPIDFControlLoopCoefficientsCommand command = new LynxGetMotorPIDFControlLoopCoefficientsCommand(
-                    module, params.getMotorChannel(), params.getMotorMode());
-            LynxGetMotorPIDFControlLoopCoefficientsResponse response = command.sendReceive();
-            return new PidfCoefficients(response.getP(), response.getI(), response.getD(), response.getF());
+        public ClosedLoopControlCoefficients performOperationOnDevice(LynxModule module, MotorModeParameters params) throws InvalidParameterException, LynxNackException, InterruptedException {
+            if(module.isCommandSupported(LynxGetMotorPIDFControlLoopCoefficientsCommand.class)) {
+                LynxGetMotorPIDFControlLoopCoefficientsCommand command = new LynxGetMotorPIDFControlLoopCoefficientsCommand(
+                        module, params.getMotorChannel(), params.getMotorMode());
+                LynxGetMotorPIDFControlLoopCoefficientsResponse response = command.sendReceive();
+                return new ClosedLoopControlCoefficients(response.getP(), response.getI(), response.getD(), response.getF(),
+                        response.getInternalMotorControlAlgorithm().getValue());
+            } else {
+                LynxGetMotorPIDControlLoopCoefficientsCommand command = new LynxGetMotorPIDControlLoopCoefficientsCommand(
+                        module, params.getMotorChannel(), params.getMotorMode());
+                LynxGetMotorPIDControlLoopCoefficientsResponse response = command.sendReceive();
+                return new ClosedLoopControlCoefficients(response.getP(), response.getI(), response.getD(), 0,
+                        LynxSetMotorPIDFControlLoopCoefficientsCommand.InternalMotorControlAlgorithm.LegacyPID.getValue());
+            }
         }
     }
 

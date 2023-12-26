@@ -90,10 +90,10 @@
 </block>
 <block type="procedures_defnoreturn" id="WtpyD@tEu+EoY=P9iY,D" deletable="false" x="-476" y="-66">
 <field name="NAME">runOpMode</field>
-<comment pinned="false" h="45" w="532">This function is executed when this Op Mode is selected from the Driver Station.</comment>
+<comment pinned="false" h="45" w="532">This function is executed when this OpMode is selected from the Driver Station.</comment>
 <statement name="STACK">
 <block type="comment" id="Lc#BFtj*NTB48YL;eBl.">
-<field name="COMMENT">This op mode shows how to use the Blinkin LED Controller.</field>
+<field name="COMMENT">This OpMode shows how to use the Blinkin LED Controller.</field>
 <next>
 <block type="comment" id="uICR?i}RNr=wyhoY;u2)">
 <field name="COMMENT">Initialize the system.</field>
@@ -108,7 +108,7 @@
 <block type="linearOpMode_waitForStart" id=":`$wN_ci`O;o6P0~.(+g">
 <next>
 <block type="comment" id="d+ECDojO_t6T:!``#COF">
-<field name="COMMENT">Check to make sure op mode is still active.</field>
+<field name="COMMENT">Check to make sure the OpMode is still active.</field>
 <next>
 <block type="controls_if" id="}Q?5mbxSO8Di;i!__6[y">
 <value name="IF0">
@@ -147,7 +147,7 @@
 </value>
 <next>
 <block type="comment" id="AL8[=;*GT}#h]S#pUKOe">
-<field name="COMMENT">Loop while the op mode is still active.</field>
+<field name="COMMENT">Loop while the OpMode is still active.</field>
 <next>
 <block type="controls_whileUntil" id="^0Kagy/e+Ea{rbZPv2G6">
 <field name="MODE">WHILE</field>
@@ -265,7 +265,7 @@
 <next>
 <block type="variables_set" id="glH8Rku~/sZ^a*`;PbI(">
 <field name="VAR" id="_A@%7_?t|;}7^yA)fZvM" variabletype="">autoDisplay</field>
-<comment pinned="false" h="69" w="381">If autoDisplay is true, then the op mode should cycle automatically through the blink patterns.</comment>
+<comment pinned="false" h="69" w="381">If autoDisplay is true, then the OpMode should cycle automatically through the blink patterns.</comment>
 <value name="VALUE">
 <block type="logic_boolean" id="@M9~@55v6^u(JcDtPf+x">
 <field name="BOOL">TRUE</field>
@@ -283,7 +283,7 @@
 </value>
 <value name="TEXT">
 <shadow type="text" id="mYMt*?JK:xwcP/)L)2)G">
-<field name="TEXT">Push start to run op mode...</field>
+<field name="TEXT">Push start to run OpMode...</field>
 </shadow>
 </value>
 <next>

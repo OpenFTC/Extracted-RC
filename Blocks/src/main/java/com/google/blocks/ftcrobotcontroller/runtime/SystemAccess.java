@@ -42,4 +42,18 @@ class SystemAccess extends Access {
       endBlockExecution();
     }
   }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  public long currentTimeMillis() {
+    try {
+      startBlockExecution(BlockType.FUNCTION, ".currentTimeMillis");
+      return System.currentTimeMillis();
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
 }

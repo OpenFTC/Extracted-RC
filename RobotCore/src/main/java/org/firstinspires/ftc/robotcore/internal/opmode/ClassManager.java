@@ -252,14 +252,15 @@ public class ClassManager {
 
     protected boolean logClassNotFound(String className)
     {
-        String[] prefixes = { "com.vuforia." };
-        for (String prefix : prefixes)
-        {
-            if (className.startsWith(prefix))
-            {
-                return false;
-            }
-        }
+        // TODO: Uncomment this code and add a string to the prefixes array if you need to ignore a class not being found
+//        String[] prefixes = { };
+//        for (String prefix : prefixes)
+//        {
+//            if (className.startsWith(prefix))
+//            {
+//                return false;
+//            }
+//        }
         return true;
     }
 

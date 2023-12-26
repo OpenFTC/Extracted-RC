@@ -105,7 +105,7 @@ public abstract class VisionPortal
      * Split up the screen for using multiple vision portals with live views simultaneously
      * @param numPortals the number of portals to create space for on the screen
      * @param mpl the methodology for laying out the multiple live views on the screen
-     * @return an array of view IDs, whose elements may be passed to {@link Builder#setCameraMonitorViewId(int)}
+     * @return an array of view IDs, whose elements may be passed to {@link Builder#setLiveViewContainerId(int)}
      */
     public static int[] makeMultiPortalView(int numPortals, MultiPortalLayout mpl)
     {
@@ -149,7 +149,7 @@ public abstract class VisionPortal
         private static final ArrayList<VisionProcessor> attachedProcessors = new ArrayList<>();
 
         private CameraName camera;
-        private int cameraMonitorViewId = DEFAULT_VIEW_CONTAINER_ID; // 0 == none
+        private int liveViewContainerId = DEFAULT_VIEW_CONTAINER_ID; // 0 == none
         private boolean autoStopLiveView = true;
         private Size cameraResolution = new Size(640, 480);
         private StreamFormat streamFormat = null;
@@ -195,7 +195,7 @@ public abstract class VisionPortal
          * @param enableLiveView whether or not to use a live preview
          * @return the {@link Builder} object, to allow for method chaining
          */
-        public Builder enableCameraMonitoring(boolean enableLiveView)
+        public Builder enableLiveView(boolean enableLiveView)
         {
             int viewId;
             if (enableLiveView)
@@ -206,7 +206,7 @@ public abstract class VisionPortal
             {
                 viewId = 0;
             }
-            return setCameraMonitorViewId(viewId);
+            return setLiveViewContainerId(viewId);
         }
 
         /**
@@ -222,14 +222,14 @@ public abstract class VisionPortal
         }
 
         /**
-         * A more advanced version of {@link #enableCameraMonitoring(boolean)}; allows you
+         * A more advanced version of {@link #enableLiveView(boolean)}; allows you
          * to specify a specific view ID to use as a container, rather than just using the default one
-         * @param cameraMonitorViewId view ID of container for live view
+         * @param liveViewContainerId view ID of container for live view
          * @return the {@link Builder} object, to allow for method chaining
          */
-        public Builder setCameraMonitorViewId(int cameraMonitorViewId)
+        public Builder setLiveViewContainerId(int liveViewContainerId)
         {
-            this.cameraMonitorViewId = cameraMonitorViewId;
+            this.liveViewContainerId = liveViewContainerId;
             return this;
         }
 
@@ -313,9 +313,14 @@ public abstract class VisionPortal
                 streamFormat = STREAM_FORMAT_DEFAULT;
             }
 
-            return new VisionPortalImpl(
-                camera, cameraMonitorViewId, autoStopLiveView, cameraResolution, streamFormat,
+            VisionPortal portal = new VisionPortalImpl(
+                camera, liveViewContainerId, autoStopLiveView, cameraResolution, streamFormat,
                 processors.toArray(new VisionProcessor[processors.size()]));
+
+            // Clear this list to allow safe re-use of the builder object
+            processors.clear();
+
+            return portal;
         }
     }
 

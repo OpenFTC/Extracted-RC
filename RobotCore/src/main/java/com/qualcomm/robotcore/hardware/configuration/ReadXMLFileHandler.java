@@ -33,6 +33,7 @@ package com.qualcomm.robotcore.hardware.configuration;
 
 import com.qualcomm.robotcore.exception.RobotCoreException;
 import com.qualcomm.robotcore.hardware.DeviceManager;
+import com.qualcomm.robotcore.hardware.EmbeddedControlHubModule;
 import com.qualcomm.robotcore.util.GlobalWarningSource;
 import com.qualcomm.robotcore.util.RobotLog;
 
@@ -165,21 +166,47 @@ public class ReadXMLFileHandler extends ConfigurationUtility {
    * that the serially connected "USB" device and the primary module are in the map */
   private void addEmbeddedLynxModuleIfNecessary(List<ControllerConfiguration> deviceControllers) {
     if (LynxConstants.isRevControlHub()) {
-      for (ControllerConfiguration controllerConfiguration : deviceControllers) {
+      LynxUsbDeviceConfiguration embeddedLynxUsbDeviceConfiguration = null;
+      for (ControllerConfiguration<?> controllerConfiguration: deviceControllers) {
         if (LynxConstants.isEmbeddedSerialNumber(controllerConfiguration.getSerialNumber())) {
-          // Ok, the 'usb' device is there, so we'll *assume* that the primary lynx module
-          // is there too, as there's no reasonable way to remove same
-          RobotLog.vv(TAG, "embedded lynx USB device is already present");
-          return;
+          embeddedLynxUsbDeviceConfiguration = (LynxUsbDeviceConfiguration) controllerConfiguration;
+          break;
         }
       }
-      // An embedded (serially connected) lynx module is absent. Make a new one.
-      // The need for this typically occurs when we have no actual hardware configuration
-      // that is active: all that we're parsing is the result of calling RobotConfigFile.getXmlNone(),
-      // which is (currently at least) an entirely empty <Robot/>
-      RobotLog.vv(TAG, "auto-configuring embedded lynx USB device");
-      ControllerConfiguration controllerConfiguration = buildNewEmbeddedLynxUsbDevice(deviceManager);
-      deviceControllers.add(controllerConfiguration);
+
+      if (embeddedLynxUsbDeviceConfiguration == null) {
+        // An embedded (serially connected) lynx USB device is absent. Make a new one.
+        // The need for this typically occurs when we have no actual hardware configuration
+        // that is active: all that we're parsing is the result of calling RobotConfigFile.getXmlNone(),
+        // which is (currently at least) an entirely empty <Robot/>
+        RobotLog.vv(TAG, "auto-configuring embedded lynx USB device");
+        ControllerConfiguration controllerConfiguration = buildNewEmbeddedLynxUsbDevice(deviceManager);
+        deviceControllers.add(controllerConfiguration);
+      } else {
+        // The lynx USB device was found, but we need to make sure it has an associated lynx module
+        // or else the light won't turn green and the device will look dead.
+        LynxModuleConfiguration embeddedLynxModuleConfiguration = null;
+        for (LynxModuleConfiguration lynxModuleConfiguration: embeddedLynxUsbDeviceConfiguration.getModules()) {
+          if (lynxModuleConfiguration.getModuleAddress() == LynxConstants.CH_EMBEDDED_MODULE_ADDRESS) {
+            embeddedLynxModuleConfiguration = lynxModuleConfiguration;
+            break;
+          }
+        }
+
+        if (embeddedLynxModuleConfiguration == null) {
+          RobotLog.vv(TAG, "auto-configuring embedded lynx module");
+          embeddedLynxModuleConfiguration = buildNewLynxModule(
+                  LynxConstants.CH_EMBEDDED_MODULE_ADDRESS,
+                  LynxConstants.CH_EMBEDDED_MODULE_ADDRESS,
+                  EmbeddedControlHubModule.getImuType(),
+                  true,
+                  true);
+          embeddedLynxModuleConfiguration.setSystemSynthetic(true);
+          embeddedLynxUsbDeviceConfiguration.getModules().add(embeddedLynxModuleConfiguration);
+        } else {
+          RobotLog.vv(TAG, "embedded lynx USB device and module are already present");
+        }
+      }
     }
   }
 
