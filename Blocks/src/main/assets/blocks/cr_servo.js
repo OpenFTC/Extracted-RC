@@ -320,8 +320,8 @@ Blockly.JavaScript['crServo_enum_direction'] = function(block) {
 };
 
 Blockly.FtcJava['crServo_enum_direction'] = function(block) {
-  var code = 'DcMotorSimple.Direction.' + block.getFieldValue('DIRECTION');
-  Blockly.FtcJava.generateImport_('DcMotorSimple');
+  var code = 'CRServo.Direction.' + block.getFieldValue('DIRECTION');
+  Blockly.FtcJava.generateImport_('CRServo');
   return [code, Blockly.FtcJava.ORDER_MEMBER];
 };
 

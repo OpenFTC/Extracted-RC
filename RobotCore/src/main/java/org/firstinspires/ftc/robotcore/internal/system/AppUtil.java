@@ -1677,10 +1677,16 @@ public class AppUtil
         {
         // Calculate minimum SDK release date:
         //
-        // The FTC kickoff release comes out sometime in September. If it's currently October or
-        // later, than any versions older than September 1st of this year should be considered obsolete.
+        // This software relies upon the BUILD date of the kickoff release, not the RELEASE date.
+        // The first candidate build of the FTC kickoff release may be built as early as early August
+        // depending upon the timing of kickoff in September.   Offseason releases will always be planned
+        // to target June or July.  Building an offseason in release in August is just silly.  Therefore
+        // August 1, is an acceptable cutoff date for this algorithm.
         //
-        // On the other hand, if it's not October yet, then any versions older than September 1st
+        // If it's currently October or later, than any versions older than August 1st of this year should
+        // be considered obsolete.
+        //
+        // On the other hand, if it's not October yet, then any versions older than August 1st
         // of _last_ year should be considered obsolete.
         //
         // We use separate logic from getFtcSeasonYear() because we don't want to show the warning
@@ -1690,11 +1696,11 @@ public class AppUtil
         YearMonth currentMonth = YearMonth.now();
         if (currentMonth.getMonth().getValue() >= Month.OCTOBER.getValue())
             {
-            minimumMonth = YearMonth.of(currentMonth.getYear(), Month.SEPTEMBER);
+            minimumMonth = YearMonth.of(currentMonth.getYear(), Month.AUGUST);
             }
         else
             {
-            minimumMonth = YearMonth.of(currentMonth.getYear() - 1, Month.SEPTEMBER);
+            minimumMonth = YearMonth.of(currentMonth.getYear() - 1, Month.AUGUST);
             }
 
         return sdkBuildMonth.isBefore(minimumMonth);

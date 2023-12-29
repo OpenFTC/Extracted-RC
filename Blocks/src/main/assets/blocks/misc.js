@@ -31,7 +31,7 @@ Blockly.Blocks['comment'] = {
   init: function() {
     this.appendDummyInput()
         .appendField(new Blockly.FieldTextInput(''), 'COMMENT');
-    this.getField('COMMENT').maxDisplayLength = 100;
+    this.getField('COMMENT').maxDisplayLength = 140;
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.setColour(commentColor);

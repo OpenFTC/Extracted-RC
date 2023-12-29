@@ -43,6 +43,8 @@ Blockly.FtcJava.INDENT_CONTINUE = '    ';
 
 Blockly.FtcJava.CLASS_SCOPE = '<class>';
 
+Blockly.FtcJava.COMMENT_WRAP = 80; // does not account for indenting level.
+
 /**
  * Order of operation ENUMs.
  * https://docs.oracle.com/javase/tutorial/java/nutsandbolts/operators.html
@@ -939,6 +941,7 @@ Blockly.FtcJava.scrub_ = function(block, code) {
         if (childBlock) {
           var comment = Blockly.FtcJava.allNestedComments(childBlock);
           if (comment) {
+            comment = Blockly.utils.string.wrap(comment, Blockly.FtcJava.COMMENT_WRAP - 3);
             commentCode += Blockly.FtcJava.prefixLines(comment, '// ');
           }
         }

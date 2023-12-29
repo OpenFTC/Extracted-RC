@@ -906,8 +906,8 @@ Blockly.JavaScript['dcMotor_enum_direction'] = function(block) {
 };
 
 Blockly.FtcJava['dcMotor_enum_direction'] = function(block) {
-  var code = 'DcMotorSimple.Direction.' + block.getFieldValue('DIRECTION');
-  Blockly.FtcJava.generateImport_('DcMotorSimple');
+  var code = 'DcMotor.Direction.' + block.getFieldValue('DIRECTION');
+  Blockly.FtcJava.generateImport_('DcMotor');
   return [code, Blockly.FtcJava.ORDER_MEMBER];
 };
 

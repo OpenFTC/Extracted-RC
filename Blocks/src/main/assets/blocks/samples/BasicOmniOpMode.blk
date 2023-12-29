@@ -1,0 +1,1038 @@
+<xml xmlns="https://developers.google.com/blockly/xml">
+<variables>
+<variable id="+CP[0*{1J`c;3HTvP%W{">leftFrontPower</variable>
+<variable id="%=G;ExcF`IeP)U5Tqt$A">leftBackPower</variable>
+<variable id="P:XwW3E6}H_!OjE.l{6x">rightFrontPower</variable>
+<variable id="]a=q2O(hYa7{h#/A$!IC">rightBackPower</variable>
+<variable id="[.pAw0rC;@QmWxE_o*05">runtime</variable>
+<variable id="+2Qv8oDa_v90|LL;eD!k">axial</variable>
+<variable id="bbz%Ci44gd/O)rKAh7BE">lateral</variable>
+<variable id="k?zh^k_Orxi[sNPs.)Vz">yaw</variable>
+<variable id="IxRiC(G0*rhsrF1IbZ:m">max</variable>
+</variables>
+<block type="procedures_defnoreturn" id="OpN8!1beqW{8Bw6M/?m+" deletable="false" x="0" y="0">
+<field name="NAME">runOpMode</field>
+<comment pinned="false" h="45" w="532">This function is executed when this OpMode is selected from the Driver Station.</comment>
+<data>{"commentPositionLeft":161,"commentPositionTop":-11}</data>
+<statement name="STACK">
+<block type="comment" id="R}sP%-SY;~SFB0:i9A1B">
+<field name="COMMENT">This OpMode illustrates driving a 4-motor Omni-Directional (or Holonomic) robot.</field>
+<next>
+<block type="comment" id="It=-XrwJ@![JAt-l]x:O">
+<field name="COMMENT">This code will work with either a Mecanum-Drive or an X-Drive train.</field>
+<next>
+<block type="comment" id="TL9)^IzU8-)Go=StfO:;">
+<field name="COMMENT">Both of these drives are illustrated at https://gm0.org/en/latest/docs/robot-design/drivetrains/holonomic.html</field>
+<next>
+<block type="comment" id="d~h|9XfT=RjN+}m$2Ll_">
+<field name="COMMENT">Note that a Mecanum drive must display an X roller-pattern when viewed from above.</field>
+<next>
+<block type="comment" id="]Z{}u4?K]9Dv!WNYA(nF">
+<field name="COMMENT">Also note that it is critical to set the correct rotation direction for each motor.  See details below.</field>
+<next>
+<block type="comment" id=",#Eb[e0I/2tdmpO6|%Cx">
+<field name="COMMENT">Holonomic drives provide the ability for the robot to move in three axes (directions) simultaneously.</field>
+<next>
+<block type="comment" id="6sd7T0Qne;~M1vBG.i/u">
+<field name="COMMENT">Each motion axis is controlled by one Joystick axis.</field>
+<next>
+<block type="comment" id="fOcqAdHWx]v,u#`2!{#n">
+<field name="COMMENT">1) Axial:    Driving forward and backward                Left-joystick Forward/Backward</field>
+<next>
+<block type="comment" id="uMoBnQjbyO#4m^ycSyJ#">
+<field name="COMMENT">2) Lateral:  Strafing right and left                     Left-joystick Right and Left</field>
+<next>
+<block type="comment" id="}xn[8}}GTN1/G[cTk93$">
+<field name="COMMENT">3) Yaw:      Rotating Clockwise and counter clockwise    Right-joystick Right and Left</field>
+<next>
+<block type="comment" id="v0lK1@ca)Ti8OFb4NRUz">
+<field name="COMMENT">This code is written assuming that the right-side motors need to be reversed for the robot to drive forward.</field>
+<next>
+<block type="comment" id="{iBs!-b{/KI$arFWMK/K">
+<field name="COMMENT">When you first test your robot, if it moves backward when you push the left stick forward, then you must flip</field>
+<next>
+<block type="comment" id="[aL0[;(z?GlC%W5^7Na6">
+<field name="COMMENT">the direction of all 4 motors (see code below).</field>
+<next>
+<block type="variables_set" id="KMq1Y7dl9q#:k{9#`#V/">
+<field name="VAR" id="[.pAw0rC;@QmWxE_o*05">runtime</field>
+<value name="VALUE">
+<block type="elapsedTime2_create" id="sZzX2b(07D4;vJN,Im~4"/>
+</value>
+<next>
+<block type="comment" id="wm/fUE^4|rEhGSB})gN+">
+<field name="COMMENT">########################################################################################</field>
+<next>
+<block type="comment" id="g$gt4R3hK3J:H=_OmM%M">
+<field name="COMMENT">!!!            IMPORTANT Drive Information. Test your motor directions.            !!!!!</field>
+<next>
+<block type="comment" id="VW96$1MqTt[]Lwv1YG$l">
+<field name="COMMENT">########################################################################################</field>
+<next>
+<block type="comment" id="2E)2A*`b^PiWrgwVLCzD">
+<field name="COMMENT">Most robots need the motors on one side to be reversed to drive forward.</field>
+<next>
+<block type="comment" id="cQ-c2LEibfM^C[./!=i*">
+<field name="COMMENT">The motor reversals shown here are for a "direct drive" robot (the wheels turn the same direction as the motor shaft).</field>
+<next>
+<block type="comment" id="N~8H/r^-bLz`For|hGFL">
+<field name="COMMENT">If your robot has additional gear reductions or uses a right-angled drive, it's important to ensure</field>
+<next>
+<block type="comment" id="5/?,dcP)z[tYOC~m/wFi">
+<field name="COMMENT">that your motors are turning in the correct direction.  So, start out with the reversals here, BUT</field>
+<next>
+<block type="comment" id="t+PYibF[=ydR@^C2nB_U">
+<field name="COMMENT">when you first test your robot, push the left joystick forward and observe the direction the wheels turn.</field>
+<next>
+<block type="comment" id="~S@0#C1W+Z]JT*3Ta|IE">
+<field name="COMMENT">Reverse the direction (flip FORWARD &lt;-&gt; REVERSE ) of any wheel that runs backward.</field>
+<next>
+<block type="comment" id="0P@1tm!?$eF`P!B.~;)w">
+<field name="COMMENT">Keep testing until ALL the wheels move the robot forward when you push the left joystick forward.</field>
+<next>
+<block type="dcMotor_setProperty_Direction" id="eq?6z=8[X(p{)!kj=ljm">
+<field name="IDENTIFIER">left_front_driveAsDcMotor</field>
+<field name="PROP">Direction</field>
+<data>{"IDENTIFIER":"left_front_drive"}</data>
+<value name="VALUE">
+<shadow type="dcMotor_typedEnum_direction" id="fA5KX5L@6hypglpOh=^Z">
+<field name="DIRECTION">REVERSE</field>
+</shadow>
+</value>
+<next>
+<block type="dcMotor_setProperty_Direction" id="gOic0grHo]9$s{C+aCU7">
+<field name="IDENTIFIER">left_back_driveAsDcMotor</field>
+<field name="PROP">Direction</field>
+<data>{"IDENTIFIER":"left_back_drive"}</data>
+<value name="VALUE">
+<shadow type="dcMotor_typedEnum_direction" id=":EJJkhX`?DuRjn=0J3a.">
+<field name="DIRECTION">REVERSE</field>
+</shadow>
+</value>
+<next>
+<block type="dcMotor_setProperty_Direction" id="moG^)wr%:b#e+;}l8q.M">
+<field name="IDENTIFIER">right_front_driveAsDcMotor</field>
+<field name="PROP">Direction</field>
+<data>{"IDENTIFIER":"right_front_drive"}</data>
+<value name="VALUE">
+<shadow type="dcMotor_typedEnum_direction" id="1ieRtIu(?KJY-W#5)em,">
+<field name="DIRECTION">FORWARD</field>
+</shadow>
+</value>
+<next>
+<block type="dcMotor_setProperty_Direction" id="=c`?5^m?HdXPMYXus?ns">
+<field name="IDENTIFIER">right_back_driveAsDcMotor</field>
+<field name="PROP">Direction</field>
+<data>{"IDENTIFIER":"right_back_drive"}</data>
+<value name="VALUE">
+<shadow type="dcMotor_typedEnum_direction" id="fU~42G2~0]CW`~Dm=43/">
+<field name="DIRECTION">FORWARD</field>
+</shadow>
+</value>
+<next>
+<block type="comment" id="yZ;(w:4Zz-]iv%sbRp5Y">
+<field name="COMMENT">Wait for the game to start (driver presses PLAY)</field>
+<next>
+<block type="telemetry_addTextData_All" id="a.kwb6Bf4W0Ml6L?wVrO">
+<value name="KEY">
+<shadow type="text" id="$pcuLH_2p@qilBTN:cj*">
+<field name="TEXT">Status</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id="sIdp9F^/XakOw5H#gHwH">
+<field name="TEXT">Initialized</field>
+</shadow>
+</value>
+<next>
+<block type="telemetry_update" id="aX[SbT8Otnw52)GNh_.@">
+<next>
+<block type="linearOpMode_waitForStart" id=":K8^U;yjvZn8aWa~t|#1">
+<next>
+<block type="elapsedTime2_reset" id="Q9]V70g,8dyNGh~`|Tu1">
+<value name="ELAPSED_TIME">
+<block type="variables_get" id="S,t[%a..*HWEueJcIz:9">
+<field name="VAR" id="[.pAw0rC;@QmWxE_o*05">runtime</field>
+</block>
+</value>
+<next>
+<block type="comment" id="!@3d,RrH.g;UWr@grE7;">
+<field name="COMMENT">Run until the end of the match (driver presses STOP)</field>
+<next>
+<block type="controls_whileUntil" id=";?u-rJ#FN3IEUo%rzP0!">
+<field name="MODE">WHILE</field>
+<value name="BOOL">
+<block type="linearOpMode_opModeIsActive" id="-(|WoGbw`fofYl;9=5+0"/>
+</value>
+<statement name="DO">
+<block type="comment" id="bwiOyw^59}Vl*q^]I#JB">
+<field name="COMMENT">POV Mode uses left joystick to go forward &amp; strafe, and right joystick to rotate.</field>
+<next>
+<block type="comment" id="j%/]x0!:SV!7p5sYtU9W">
+<field name="COMMENT">Note: pushing stick forward gives negative value</field>
+<next>
+<block type="variables_set" id="LnP,Ej$Vi+$jeyKM?oYd">
+<field name="VAR" id="+2Qv8oDa_v90|LL;eD!k">axial</field>
+<value name="VALUE">
+<block type="math_single" id="Um;xRhA3RedA$Fae=~H+">
+<field name="OP">NEG</field>
+<value name="NUM">
+<shadow type="math_number" id="tlZp-rTRifTTkeD[|Lu.">
+<field name="NUM">9</field>
+</shadow>
+<block type="gamepad_getProperty_Number" id="0T]lW*f)$scjn2(ruawC">
+<field name="IDENTIFIER">gamepad1</field>
+<field name="PROP">LeftStickY</field>
+<data>{"IDENTIFIER":"gamepad1"}</data>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="variables_set" id="so]V(sUAy-g(7`jz.5%H">
+<field name="VAR" id="bbz%Ci44gd/O)rKAh7BE">lateral</field>
+<value name="VALUE">
+<block type="gamepad_getProperty_Number" id="9N@vk~2iS+{Gtr2BWtDt">
+<field name="IDENTIFIER">gamepad1</field>
+<field name="PROP">LeftStickX</field>
+<data>{"IDENTIFIER":"gamepad1"}</data>
+</block>
+</value>
+<next>
+<block type="variables_set" id=";kE)fjEDAqK-w53kspGB">
+<field name="VAR" id="k?zh^k_Orxi[sNPs.)Vz">yaw</field>
+<value name="VALUE">
+<block type="gamepad_getProperty_Number" id="Wt%;YZ-CbXeNsO1Yk5Vl">
+<field name="IDENTIFIER">gamepad1</field>
+<field name="PROP">RightStickX</field>
+<data>{"IDENTIFIER":"gamepad1"}</data>
+</block>
+</value>
+<next>
+<block type="comment" id="uUl:=zV8R`pnCZMreG9l">
+<field name="COMMENT">Combine the joystick requests for each axis-motion to determine each wheel's power.</field>
+<next>
+<block type="comment" id="z~QrbknnquW=!O#}.zy:">
+<field name="COMMENT">Set up a variable for each drive wheel to save the power level for telemetry.</field>
+<next>
+<block type="variables_set" id="YhAethecMuvgOFq-E0%Q">
+<field name="VAR" id="+CP[0*{1J`c;3HTvP%W{">leftFrontPower</field>
+<value name="VALUE">
+<block type="math_arithmetic" id="?#Ij55*Do#8._o#usT.-">
+<field name="OP">ADD</field>
+<value name="A">
+<shadow type="math_number" id="j1j-.4,-5fz4T89:Ael|">
+<field name="NUM">1</field>
+</shadow>
+<block type="math_arithmetic" id="kMPV_nU;PJ#Q9q.dh1P~">
+<field name="OP">ADD</field>
+<value name="A">
+<shadow type="math_number" id="cj(7eIz(PQH7T6i|m;dZ">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="EmwnUCyxV2Y/3^zqRDMT">
+<field name="VAR" id="+2Qv8oDa_v90|LL;eD!k">axial</field>
+</block>
+</value>
+<value name="B">
+<shadow type="math_number" id="nKO;cC}bf2U`3(Uy5%Ce">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="==Ru;Xt,5ZQb/PFOTn!c">
+<field name="VAR" id="bbz%Ci44gd/O)rKAh7BE">lateral</field>
+</block>
+</value>
+</block>
+</value>
+<value name="B">
+<shadow type="math_number" id="fxA,U5ppK7@S=tGtjo]f">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="C4mTce(NoZuaURuB$^zD">
+<field name="VAR" id="k?zh^k_Orxi[sNPs.)Vz">yaw</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="variables_set" id="reX~^rI!cx6,xsa,@Lcw">
+<field name="VAR" id="P:XwW3E6}H_!OjE.l{6x">rightFrontPower</field>
+<value name="VALUE">
+<block type="math_arithmetic" id="kS|GRN,|QK|DC0r_$1G*">
+<field name="OP">MINUS</field>
+<value name="A">
+<shadow type="math_number">
+<field name="NUM">1</field>
+</shadow>
+<block type="math_arithmetic" id=",SSkMM!4YNG)n;q}m_0B">
+<field name="OP">MINUS</field>
+<value name="A">
+<shadow type="math_number">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="80sjhGM5fFHhD@2f}e7n">
+<field name="VAR" id="+2Qv8oDa_v90|LL;eD!k">axial</field>
+</block>
+</value>
+<value name="B">
+<shadow type="math_number">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id=":{jAQR+q+5T;kriS*(@7">
+<field name="VAR" id="bbz%Ci44gd/O)rKAh7BE">lateral</field>
+</block>
+</value>
+</block>
+</value>
+<value name="B">
+<shadow type="math_number">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="(:(]DNu.5v[{7_/41JWa">
+<field name="VAR" id="k?zh^k_Orxi[sNPs.)Vz">yaw</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="variables_set" id="A~#l#yaJDc?d]|vDyWM3">
+<field name="VAR" id="%=G;ExcF`IeP)U5Tqt$A">leftBackPower</field>
+<value name="VALUE">
+<block type="math_arithmetic" id="s.6=#Q-xnL!.gWsx`C]T">
+<field name="OP">ADD</field>
+<value name="A">
+<shadow type="math_number">
+<field name="NUM">1</field>
+</shadow>
+<block type="math_arithmetic" id="I2QJ}bGwcjq*9|?[g~#:">
+<field name="OP">MINUS</field>
+<value name="A">
+<shadow type="math_number">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id=",yrVmhb#,Bl7w|*2K|xX">
+<field name="VAR" id="+2Qv8oDa_v90|LL;eD!k">axial</field>
+</block>
+</value>
+<value name="B">
+<shadow type="math_number">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="#!AA}QmJO]/rnxw(UPRg">
+<field name="VAR" id="bbz%Ci44gd/O)rKAh7BE">lateral</field>
+</block>
+</value>
+</block>
+</value>
+<value name="B">
+<shadow type="math_number">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id=")B%E(3kjHcSB{syZV=HJ">
+<field name="VAR" id="k?zh^k_Orxi[sNPs.)Vz">yaw</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="variables_set" id="d,x6GsMrY@QI[b|OHpj;">
+<field name="VAR" id="]a=q2O(hYa7{h#/A$!IC">rightBackPower</field>
+<value name="VALUE">
+<block type="math_arithmetic" id="_D9AcluQ(f@Jt3bE2:Q:">
+<field name="OP">MINUS</field>
+<value name="A">
+<shadow type="math_number">
+<field name="NUM">1</field>
+</shadow>
+<block type="math_arithmetic" id="xdQ$k$ez;EiM8Js*rzI{">
+<field name="OP">ADD</field>
+<value name="A">
+<shadow type="math_number" id="`zAD(m^b/fqm@:_;[g)e">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="H2IS6(#`9M7@%vy1_FU~">
+<field name="VAR" id="+2Qv8oDa_v90|LL;eD!k">axial</field>
+</block>
+</value>
+<value name="B">
+<shadow type="math_number">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="Y0qvpGmtK(q@CN6ud5f=">
+<field name="VAR" id="bbz%Ci44gd/O)rKAh7BE">lateral</field>
+</block>
+</value>
+</block>
+</value>
+<value name="B">
+<shadow type="math_number">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="ViV7MGEPpo.1Ux`GyXF)">
+<field name="VAR" id="k?zh^k_Orxi[sNPs.)Vz">yaw</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="comment" id="KScZS@fCmu+w:By,3i$D">
+<field name="COMMENT">Normalize the values so no wheel power exceeds 100%</field>
+<next>
+<block type="comment" id="UIAUZnI$YneS6H46A]Sh">
+<field name="COMMENT">This ensures that the robot maintains the desired motion.</field>
+<next>
+<block type="variables_set" id="A9*sUIOSM{=TNY0,biKv">
+<field name="VAR" id="IxRiC(G0*rhsrF1IbZ:m">max</field>
+<value name="VALUE">
+<block type="math_on_list" id="n/^+daiBM|MZ](FaPnnH">
+<mutation op="MAX"/>
+<field name="OP">MAX</field>
+<value name="LIST">
+<block type="lists_create_with" id=",F6BBZuJSLhJ:qFICOr^">
+<mutation items="4"/>
+<value name="ADD0">
+<block type="math_single" id="rd,9|7doOP%7=xN+V^pg">
+<field name="OP">ABS</field>
+<value name="NUM">
+<shadow type="math_number" id=";!iWC[1`G%mRBz*v*1E1">
+<field name="NUM">9</field>
+</shadow>
+<block type="variables_get" id="!;dK+ieK7K?pgogVp-Jb">
+<field name="VAR" id="+CP[0*{1J`c;3HTvP%W{">leftFrontPower</field>
+</block>
+</value>
+</block>
+</value>
+<value name="ADD1">
+<block type="math_single" id="A.!XaWopK7:SU?Z|nx]`">
+<field name="OP">ABS</field>
+<value name="NUM">
+<shadow type="math_number">
+<field name="NUM">9</field>
+</shadow>
+<block type="variables_get" id="v0(AA?UoCpb#bP}IpF.5">
+<field name="VAR" id="P:XwW3E6}H_!OjE.l{6x">rightFrontPower</field>
+</block>
+</value>
+</block>
+</value>
+<value name="ADD2">
+<block type="math_single" id="/2V2/3Y!cM7l^QohaXfP">
+<field name="OP">ABS</field>
+<value name="NUM">
+<shadow type="math_number">
+<field name="NUM">9</field>
+</shadow>
+<block type="variables_get" id="JpI+qkn#HwT8/URT7$LV">
+<field name="VAR" id="%=G;ExcF`IeP)U5Tqt$A">leftBackPower</field>
+</block>
+</value>
+</block>
+</value>
+<value name="ADD3">
+<block type="math_single" id="Mdh^C9jDpAiNTd[-[K~F">
+<field name="OP">ABS</field>
+<value name="NUM">
+<shadow type="math_number">
+<field name="NUM">9</field>
+</shadow>
+<block type="variables_get" id="eqKL[ni#4X74#8$n445(">
+<field name="VAR" id="]a=q2O(hYa7{h#/A$!IC">rightBackPower</field>
+</block>
+</value>
+</block>
+</value>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="controls_if" id="bgUDxcF,Qq|sn{{jP]oU">
+<value name="IF0">
+<block type="logic_compare" id="/PnUZf$1GP].99~f0OZO">
+<field name="OP">GT</field>
+<value name="A">
+<block type="variables_get" id="s|1jNp#01Q`f-RfKO^CU">
+<field name="VAR" id="IxRiC(G0*rhsrF1IbZ:m">max</field>
+</block>
+</value>
+<value name="B">
+<block type="math_number" id="Q+6D|UWAC+O`iG3,`DTG">
+<field name="NUM">1</field>
+</block>
+</value>
+</block>
+</value>
+<statement name="DO0">
+<block type="variables_set" id="b%}j[O1+?P}^7zY4^u(%">
+<field name="VAR" id="+CP[0*{1J`c;3HTvP%W{">leftFrontPower</field>
+<value name="VALUE">
+<block type="math_arithmetic" id="v?z%;Rn9_}J:!|RxW~iG">
+<field name="OP">DIVIDE</field>
+<value name="A">
+<shadow type="math_number" id="K~LNdieXlJ~4+35t6z7O">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="O_XPhZ9jufVb-s8[6;S]">
+<field name="VAR" id="+CP[0*{1J`c;3HTvP%W{">leftFrontPower</field>
+</block>
+</value>
+<value name="B">
+<shadow type="math_number" id="I?Nf]iMvfjE2$i`#BY2i">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="DV)guROrfOTJ^J})!uD,">
+<field name="VAR" id="IxRiC(G0*rhsrF1IbZ:m">max</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="variables_set" id="RNwSt^J2*`MRO+}2-=^j">
+<field name="VAR" id="P:XwW3E6}H_!OjE.l{6x">rightFrontPower</field>
+<value name="VALUE">
+<block type="math_arithmetic" id="MP)K$qv!G)4H.PR0[8=F">
+<field name="OP">DIVIDE</field>
+<value name="A">
+<shadow type="math_number">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="$h(ja?]VC7;W%E1aWYSb">
+<field name="VAR" id="P:XwW3E6}H_!OjE.l{6x">rightFrontPower</field>
+</block>
+</value>
+<value name="B">
+<shadow type="math_number">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="1~UzlUXx{^8=T~.O}6A{">
+<field name="VAR" id="IxRiC(G0*rhsrF1IbZ:m">max</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="variables_set" id="Nf/K*BaP}*P,yy%X?ezU">
+<field name="VAR" id="%=G;ExcF`IeP)U5Tqt$A">leftBackPower</field>
+<value name="VALUE">
+<block type="math_arithmetic" id="zj+~rya@pP}JyT+Y7gG#">
+<field name="OP">DIVIDE</field>
+<value name="A">
+<shadow type="math_number">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="oAx{U/W%9Ta~MDbwZei:">
+<field name="VAR" id="%=G;ExcF`IeP)U5Tqt$A">leftBackPower</field>
+</block>
+</value>
+<value name="B">
+<shadow type="math_number">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="7vj$S~0I_R3JqdA7fKqA">
+<field name="VAR" id="IxRiC(G0*rhsrF1IbZ:m">max</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="variables_set" id="H|VS.7jz8L`Q?HCUugx1">
+<field name="VAR" id="]a=q2O(hYa7{h#/A$!IC">rightBackPower</field>
+<value name="VALUE">
+<block type="math_arithmetic" id="4oB2Ul}gA/m:cT}ca1LE">
+<field name="OP">DIVIDE</field>
+<value name="A">
+<shadow type="math_number">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="jf;1she/c_9R_97td}5B">
+<field name="VAR" id="]a=q2O(hYa7{h#/A$!IC">rightBackPower</field>
+</block>
+</value>
+<value name="B">
+<shadow type="math_number">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="7{_t$P(#v1c$L{XtQ)b-">
+<field name="VAR" id="IxRiC(G0*rhsrF1IbZ:m">max</field>
+</block>
+</value>
+</block>
+</value>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+<next>
+<block type="procedures_callnoreturn" id="obr^-5%]`%%d{Q-r73^d" disabled="true">
+<mutation name="testMotorDirections"/>
+<comment pinned="false" h="68" w="509">Enable this block to test your motor directions.
+Once the correct motors move in the correct direction re-disable this block.</comment>
+<data>{"commentPositionLeft":-40,"commentPositionTop":-105}</data>
+<next>
+<block type="comment" id="RlywCd8Exlr%x^L$Q*1U">
+<field name="COMMENT">Send calculated power to wheels.</field>
+<next>
+<block type="dcMotor_setDualProperty" id="?fu!mk[evxtjh1mAGC7J">
+<field name="PROP">Power</field>
+<field name="IDENTIFIER1">left_front_driveAsDcMotor</field>
+<field name="IDENTIFIER2">right_front_driveAsDcMotor</field>
+<data>{"IDENTIFIER1":"left_front_drive","IDENTIFIER2":"right_front_drive"}</data>
+<value name="VALUE1">
+<shadow type="math_number" id="xm^!xz;E%A,_X6P[I?kY">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="u{~mI1NzqS=6OOR]gy4]">
+<field name="VAR" id="+CP[0*{1J`c;3HTvP%W{">leftFrontPower</field>
+</block>
+</value>
+<value name="VALUE2">
+<shadow type="math_number" id="uY}|nHkeXKe^U}8i.{%1">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="y,,33}Lj6PYB6;/T;aV(">
+<field name="VAR" id="P:XwW3E6}H_!OjE.l{6x">rightFrontPower</field>
+</block>
+</value>
+<next>
+<block type="dcMotor_setDualProperty" id="LD`9.|KA`bUzLTq%g5#p">
+<field name="PROP">Power</field>
+<field name="IDENTIFIER1">left_back_driveAsDcMotor</field>
+<field name="IDENTIFIER2">right_back_driveAsDcMotor</field>
+<data>{"IDENTIFIER1":"left_back_drive","IDENTIFIER2":"right_back_drive"}</data>
+<value name="VALUE1">
+<shadow type="math_number">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="(~P]l7zJ*%`A9(*](rXz">
+<field name="VAR" id="%=G;ExcF`IeP)U5Tqt$A">leftBackPower</field>
+</block>
+</value>
+<value name="VALUE2">
+<shadow type="math_number">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="]l?Iv5ZMG,=M50WqzqgU">
+<field name="VAR" id="]a=q2O(hYa7{h#/A$!IC">rightBackPower</field>
+</block>
+</value>
+<next>
+<block type="comment" id="6yX+w@y2!irAxD7~YnFK">
+<field name="COMMENT">Show the elapsed game time and wheel power.</field>
+<next>
+<block type="telemetry_addTextData_All" id="eg4HGb/N(C3yB(T)R:yK">
+<value name="KEY">
+<shadow type="text" id="IMA__.nK8mu^Yb|epi-v">
+<field name="TEXT">Status</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id="OWYhEsjJqk%JQ{kOs;6*">
+<field name="TEXT">text</field>
+</shadow>
+<block type="text_join" id="})TH[xhz@3I@c1f(83ax">
+<mutation items="2"/>
+<value name="ADD0">
+<block type="text" id="wE!UYoCJf;uu(8khUXpy">
+<field name="TEXT">Run Time: </field>
+</block>
+</value>
+<value name="ADD1">
+<block type="variables_get" id="K^fE7^rYC#SKH}^:[u1*">
+<field name="VAR" id="[.pAw0rC;@QmWxE_o*05">runtime</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_addTextData_All" id="BV3q/Zx?Hf7_aK,EGk3;">
+<value name="KEY">
+<shadow type="text" id="X1Ibb}#A44Tzo}5T7/:u">
+<field name="TEXT">Front left/Right</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id="1k^!GWl|kvfDMc)M_ejx">
+<field name="TEXT">text</field>
+</shadow>
+<block type="text_join" id="REY)gu*!oB{z,Cf-z[(#">
+<mutation items="3"/>
+<value name="ADD0">
+<block type="misc_formatNumber_withWidth" id="sN/ld(XV-4(4#BP8a[Q,">
+<value name="NUMBER">
+<shadow type="math_number" id="W^/yI|LkykG3z#92QmAl">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="variables_get" id="X5za(Sz)JAeD$;QKZ(=w">
+<field name="VAR" id="+CP[0*{1J`c;3HTvP%W{">leftFrontPower</field>
+</block>
+</value>
+<value name="WIDTH">
+<shadow type="math_number" id="L0=9o6G14.]aM_$CD6W8">
+<field name="NUM">4</field>
+</shadow>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="2)9~z+C}|=svVi,lLs|-">
+<field name="NUM">2</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="ADD1">
+<block type="text" id="Djf_I.;EC=gxvZUQN7k!">
+<field name="TEXT">, </field>
+</block>
+</value>
+<value name="ADD2">
+<block type="misc_formatNumber_withWidth" id="4k{sOFgN9!jOIci^Mvg]">
+<value name="NUMBER">
+<shadow type="math_number" id="VIt@{xFJlGPwoc`Z!=sA">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="variables_get" id="sWNK8QH|6:Q6BGkhdSs;">
+<field name="VAR" id="P:XwW3E6}H_!OjE.l{6x">rightFrontPower</field>
+</block>
+</value>
+<value name="WIDTH">
+<shadow type="math_number" id="M9(eL7psdL^KC~sy~$Xo">
+<field name="NUM">4</field>
+</shadow>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="S^Mw:pfz$=g~s}Q1o}sZ">
+<field name="NUM">2</field>
+</shadow>
+</value>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_addTextData_All" id="/G$3mnw[5a2Hs!_:/A0|">
+<value name="KEY">
+<shadow type="text" id="Kp;|q@mS,W^ZE([r0ulL">
+<field name="TEXT">Back  left/Right</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id="5gMGR{Jb=V#JD(`4V7zt">
+<field name="TEXT">text</field>
+</shadow>
+<block type="text_join" id="b$=pOHC.-Y#|K-L}^*FH">
+<mutation items="3"/>
+<value name="ADD0">
+<block type="misc_formatNumber_withWidth" id="()YBfHgdmKL8T)cYBtwv">
+<value name="NUMBER">
+<shadow type="math_number">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="variables_get" id="Y+[,S?P@}aD3e;!E%BWm">
+<field name="VAR" id="%=G;ExcF`IeP)U5Tqt$A">leftBackPower</field>
+</block>
+</value>
+<value name="WIDTH">
+<shadow type="math_number" id="tkC@e-=7sPbqb[?|a!`T">
+<field name="NUM">4</field>
+</shadow>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="0%Q_J`YPk6HfKI^;-G3z">
+<field name="NUM">2</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="ADD1">
+<block type="text" id="P`6mli,ryz$,YyYYLO`s">
+<field name="TEXT">, </field>
+</block>
+</value>
+<value name="ADD2">
+<block type="misc_formatNumber_withWidth" id="pB.p!jOaOt-)uP/8a*sq">
+<value name="NUMBER">
+<shadow type="math_number">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="variables_get" id="EGEy}Jnfz~e^|kz0t3]H">
+<field name="VAR" id="]a=q2O(hYa7{h#/A$!IC">rightBackPower</field>
+</block>
+</value>
+<value name="WIDTH">
+<shadow type="math_number" id="7+gVTBMpFZ!}:ji7#MB,">
+<field name="NUM">4</field>
+</shadow>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="W5]+e7sJB3D+!_;{-dpp">
+<field name="NUM">2</field>
+</shadow>
+</value>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_update" id="Il/_Kv^vY42Foa}=N4Ix"/>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+<block type="procedures_defnoreturn" id="GO@@mLmns%q,a%Ka6,rV" x="0" y="2744">
+<field name="NAME">testMotorDirections</field>
+<comment pinned="false" h="43" w="419">This function is used to test your motor directions.</comment>
+<data>{"commentPositionLeft":-39,"commentPositionTop":-65}</data>
+<statement name="STACK">
+<block type="comment" id="Vw,8LZpYAJ/CDruelpt^">
+<field name="COMMENT">Each button should make the corresponding motor run FORWARD.</field>
+<next>
+<block type="comment" id="hf.,1m4z]fEL*eK??#e6">
+<field name="COMMENT">  1) First get all the motors to take to correct positions on the robot</field>
+<next>
+<block type="comment" id="b8alWUM[zIL~7|Q^T5pf">
+<field name="COMMENT">     by adjusting your Robot Configuration if necessary.</field>
+<next>
+<block type="comment" id="k/g0U7:(7e[[cV84s_[O">
+<field name="COMMENT">  2) Then make sure they run in the correct direction by modifying the</field>
+<next>
+<block type="comment" id="@QJ{b;%,dr49f{Dkiup_">
+<field name="COMMENT">     the setDirection() calls above.</field>
+<next>
+<block type="variables_set" id="GB`NLcBc$TP@Lnu9/b0b">
+<field name="VAR" id="+CP[0*{1J`c;3HTvP%W{">leftFrontPower</field>
+<value name="VALUE">
+<block type="logic_ternary" id="aD!|jew-lPHFPj-NY#x_">
+<value name="IF">
+<block type="gamepad_getProperty_Boolean" id="M[YsLW7hCP`[/h(OzA!a">
+<field name="IDENTIFIER">gamepad1</field>
+<field name="PROP">X</field>
+<data>{"IDENTIFIER":"gamepad1"}</data>
+</block>
+</value>
+<value name="THEN">
+<block type="math_number" id=":)Cnqp35Y;(}(2((1^}u">
+<field name="NUM">1</field>
+</block>
+</value>
+<value name="ELSE">
+<block type="math_number" id="JGa4sT+~=+UW]+L[g%y~">
+<field name="NUM">0</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="variables_set" id="x7#w8Z|[vUY1Vs`Mu/6u">
+<field name="VAR" id="%=G;ExcF`IeP)U5Tqt$A">leftBackPower</field>
+<value name="VALUE">
+<block type="logic_ternary" id="s1X}S[3Ql-7yg!tDQ`II">
+<value name="IF">
+<block type="gamepad_getProperty_Boolean" id="2iPm.!HGu+tcxsHtIAS^">
+<field name="IDENTIFIER">gamepad1</field>
+<field name="PROP">A</field>
+<data>{"IDENTIFIER":"gamepad1"}</data>
+</block>
+</value>
+<value name="THEN">
+<block type="math_number" id="R5GaZ#3aw}4GxJc%^/;o">
+<field name="NUM">1</field>
+</block>
+</value>
+<value name="ELSE">
+<block type="math_number" id="sRFy||@r1K+/x74NVwNa">
+<field name="NUM">0</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="variables_set" id="]~j)-ZQ;t5.jK%krDe%w">
+<field name="VAR" id="P:XwW3E6}H_!OjE.l{6x">rightFrontPower</field>
+<value name="VALUE">
+<block type="logic_ternary" id="V`z_4Jut]K/[!9*#r_2-">
+<value name="IF">
+<block type="gamepad_getProperty_Boolean" id="xss+P1bCU4_!UjQ$c$H*">
+<field name="IDENTIFIER">gamepad1</field>
+<field name="PROP">Y</field>
+<data>{"IDENTIFIER":"gamepad1"}</data>
+</block>
+</value>
+<value name="THEN">
+<block type="math_number" id="GbOHUkp|S$ZtbLo!H$Gd">
+<field name="NUM">1</field>
+</block>
+</value>
+<value name="ELSE">
+<block type="math_number" id="C-CjYWVvX~IsHv!0@m[~">
+<field name="NUM">0</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="variables_set" id="0*uoS9?|8I7EqZ/%]1b;">
+<field name="VAR" id="]a=q2O(hYa7{h#/A$!IC">rightBackPower</field>
+<value name="VALUE">
+<block type="logic_ternary" id="0A`?+EcSCYtU1N4j}79.">
+<value name="IF">
+<block type="gamepad_getProperty_Boolean" id="l_+.BoPG-Y|ct=QX2;,F">
+<field name="IDENTIFIER">gamepad1</field>
+<field name="PROP">B</field>
+<data>{"IDENTIFIER":"gamepad1"}</data>
+</block>
+</value>
+<value name="THEN">
+<block type="math_number" id="vq?{,j?P-)]P$])a+|cb">
+<field name="NUM">1</field>
+</block>
+</value>
+<value name="ELSE">
+<block type="math_number" id="a|E7f[GXc`oD0Pw^ViW3">
+<field name="NUM">0</field>
+</block>
+</value>
+</block>
+</value>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</xml>
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<Extra>
+<OpModeMeta flavor="TELEOP" group="" autoTransition="" />
+<Enabled value="true" />
+</Extra>

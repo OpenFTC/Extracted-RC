@@ -228,10 +228,12 @@ function knownTypeToClassName(type) {
     case 'AccelerationSensor':
     case 'AnalogInput':
     case 'CRServo':
+    case 'CRServo.Direction':
     case 'ColorSensor':
     case 'CompassSensor':
     case 'CompassSensor.CompassMode':
     case 'DcMotor':
+    case 'DcMotor.Direction':
     case 'DcMotor.RunMode':
     case 'DcMotor.ZeroPowerBehavior':
     case 'DcMotorEx':

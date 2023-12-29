@@ -12,11 +12,11 @@
 <next>
 <block type="imu_initialize" id="YFa-}1E/YYbH7ih,p2MZ">
 <field name="IDENTIFIER">imuAsIMU</field>
-<comment pinned="false" h="120" w="250">Initializes the IMU with non-default settings. To use this block, plug one of the "new IMU.Parameters" blocks into the parameters socket.</comment>
+<comment pinned="false" h="120" w="250">Initialize the IMU with non-default settings. To use this block, plug one of the "new IMU.Parameters" blocks into the parameters socket.</comment>
 <data>{"IDENTIFIER":"imu"}</data>
 <value name="PARAMETERS">
 <block type="imuParameters_create" id="gY43_;=B@S~ALfczk-Wa">
-<comment pinned="false" h="150" w="325">Creates a Parameters object for use with an IMU in a REV Robotics Control Hub or Expansion Hub, specifying the hub's orientation on the robot via the direction that the REV Robotics logo is facing and the direction that the USB ports are facing.</comment>
+<comment pinned="false" h="150" w="325">Create a Parameters object for use with an IMU in a REV Robotics Control Hub or Expansion Hub, specifying the hub's orientation on the robot via the direction that the REV Robotics logo is facing and the direction that the USB ports are facing.</comment>
 <value name="IMU_ORIENTATION_ON_ROBOT">
 <block type="revHubOrientationOnRobot_create1" id="qrP9|m*S_Cva+x@u+dBP">
 <value name="LOGO_FACING_DIRECTION">

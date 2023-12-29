@@ -1,5 +1,5 @@
   <block type="imuParameters_create">
-    <comment pinned="false" h="150" w="325">Creates a Parameters object for use with an IMU in a REV
+    <comment pinned="false" h="150" w="325">Create a Parameters object for use with an IMU in a REV
 Robotics Control Hub or Expansion Hub, specifying the hub's orientation on the robot via the
 direction that the REV Robotics logo is facing and the direction that the USB ports are facing.
     </comment>
@@ -11,7 +11,7 @@ direction that the REV Robotics logo is facing and the direction that the USB po
     </value>
   </block>
   <block type="imuParameters_create">
-    <comment pinned="false" h="175" w="375">Creates a Parameters object for use with an IMU in a REV
+    <comment pinned="false" h="175" w="375">Create a Parameters object for use with an IMU in a REV
 Robotics Control Hub or Expansion Hub, specifying the hub's arbitrary orientation on the robot via
 an Orientation block that describes the rotation that would need to be applied in order to rotate
 the hub from having its logo facing up and the USB ports facing forward, to its actual orientation on the robot.
@@ -32,7 +32,7 @@ the hub from having its logo facing up and the USB ports facing forward, to its 
     </value>
   </block>
   <block type="imuParameters_create">
-    <comment pinned="false" h="175" w="375">Creates a Parameters object for use with an IMU in a REV
+    <comment pinned="false" h="175" w="375">Create a Parameters object for use with an IMU in a REV
 Robotics Control Hub or Expansion Hub, specifying the hub's arbitrary orientation on the robot via a
 Quaternion block that describes the rotation that would need to be applied in order to rotate the
 hub from having its logo facing up and the USB ports facing forward, to its actual orientation on the robot.

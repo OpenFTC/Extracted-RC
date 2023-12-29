@@ -1688,7 +1688,7 @@ public class HardwareUtil {
     Map<String, String> initFunctionComments = new HashMap<String, String>();
     initFunctions.put("initialize", null);
     initFunctionComments.put("initialize", "<comment pinned=\"false\" h=\"120\" w=\"250\">" +
-        "Initializes the IMU with non-default settings. To use this block, plug one of the " +
+        "Initialize the IMU with non-default settings. To use this block, plug one of the " +
         "\"new IMU.Parameters\" blocks into the parameters socket." +
         "</comment>");
     ToolboxUtil.addFunctions(xmlToolbox, hardwareType, identifier, initFunctions, initFunctionComments, null);
