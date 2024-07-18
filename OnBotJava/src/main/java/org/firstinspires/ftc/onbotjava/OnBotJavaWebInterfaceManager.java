@@ -46,11 +46,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class OnBotJavaWebInterfaceManager {
-    // TODO: The next time that this list is updated, code will need to be written that adds the
-    //       new values to the existing user OnBotJava autocomplete packages settings, without
-    //       overwriting them entirely. It may make sense to have user-provided packages in a
-    //       separate list from the system-provided packages.
     private static final List<String> packagesToAutocomplete = Arrays.asList(
+            "android/util",
             "org/firstinspires/ftc/ftccommon/external",
             "org/firstinspires/ftc/robotcore/external",
             "org/firstinspires/ftc/vision",

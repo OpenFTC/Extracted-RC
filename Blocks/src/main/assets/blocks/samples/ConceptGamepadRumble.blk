@@ -1,37 +1,30 @@
 <xml xmlns="https://developers.google.com/blockly/xml">
 <variables>
 <variable id="7xsxXz@Rs8KbEM|Ns~|~">lastA</variable>
-<variable id="w:YTiG`};iw7!@!MQPAa">lastLB</variable>
-<variable id="^On^)_Weg5QJh3+v7l(|">highLevel</variable>
 <variable id="QY%Dg=LHC50nk7}QfuNP">customRumbleEffectBuilder</variable>
-<variable id="Rs7S2F.hbJI/]Y}qtJ:?">secondHalf</variable>
-<variable id="]r:H$,Z=WAz6?JTv4X_,">TRIGGER_THRESHOLD</variable>
-<variable id="$fMSvady,8W?GSxVQA5^">runtime</variable>
-<variable id="@D$I54*@/oFi==6nXSwM">HALF_TIME</variable>
+<variable id="w:YTiG`};iw7!@!MQPAa">lastLB</variable>
 <variable id="vc3f@-aJH`-wgBx,pO1:">currentLB</variable>
-<variable id="?I%j?PROpahr-K4gWT.|">currentA</variable>
+<variable id="^On^)_Weg5QJh3+v7l(|">highLevel</variable>
 <variable id="M!~hqtgk7kI]B?w#v2uw">customRumbleEffect</variable>
+<variable id="Rs7S2F.hbJI/]Y}qtJ:?">secondHalf</variable>
+<variable id="?I%j?PROpahr-K4gWT.|">currentA</variable>
+<variable id="]r:H$,Z=WAz6?JTv4X_,">TRIGGER_THRESHOLD</variable>
+<variable id="@D$I54*@/oFi==6nXSwM">HALF_TIME</variable>
+<variable id="$fMSvady,8W?GSxVQA5^">runtime</variable>
 </variables>
-<block type="procedures_defnoreturn" id="WtpyD@tEu+EoY=P9iY,D" deletable="false" x="39" y="4">
+<block type="procedures_defnoreturn" id="WtpyD@tEu+EoY=P9iY,D" deletable="false" x="25" y="228">
 <field name="NAME">runOpMode</field>
-<comment pinned="false" h="45" w="532">This function is executed when this OpMode is selected from the Driver Station.</comment>
+<comment pinned="true" h="208" w="758">This sample illustrates using the rumble feature of many gamepads.
+
+Note: Some gamepads "rumble" better than others.
+  The Xbox &amp; PS4 have a left (rumble1) and right (rumble2) rumble motor.
+  These two gamepads have two distinct rumble modes: Large on the left, and small on the right
+  The Etpark gamepad may only respond to rumble1, and may only run at full power.
+  The Logitech F310 gamepad does not have *any* rumble ability.
+
+Moral:  You should use this sample to experiment with your specific gamepads to explore their rumble features.</comment>
+<data>{"commentPositionLeft":-19,"commentPositionTop":-228}</data>
 <statement name="STACK">
-<block type="comment" id="|~t=5+j(vm3qALF7vFty">
-<field name="COMMENT">This sample illustrates using the rumble feature</field>
-<next>
-<block type="comment" id="wNUJ)E}oT4gmhGLW?xJ]">
-<field name="COMMENT">of many gamepads.</field>
-<next>
-<block type="comment" id="{/$So8R)ZQc*I-zn=#h@">
-<field name="COMMENT"/>
-<comment pinned="true" h="229" w="550">Some gamepads "rumble" better than others.
-
-The Xbox &amp; PS4 have a left (rumble1) and right (rumble2) rumble motor. These two gamepads have two distinct rumble modes: Large on the left, and small on the right.
-However, the Etpark gamepad only responds to rumble1, and may only run at full power.
-Finally, the Logitech F310 gamepad does not have *any* rumble ability.
-
-You can use this sample to experiment with your specific gamepads to explore their rumble features.</comment>
-<next>
 <block type="variables_set" id="UpF,$fwnFe|+Rlr8,Z_r">
 <field name="VAR" id="7xsxXz@Rs8KbEM|Ns~|~">lastA</field>
 <value name="VALUE">
@@ -313,27 +306,13 @@ You can use this sample to experiment with your specific gamepads to explore the
 </block>
 </next>
 </block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
 </statement>
 </block>
-<block type="procedures_defnoreturn" id="(}qvVOD-P(]GRVfdlM@x" x="855" y="9">
+<block type="procedures_defnoreturn" id="(}qvVOD-P(]GRVfdlM@x" x="25" y="1517">
 <field name="NAME">Example1A</field>
-<comment pinned="false" h="80" w="160">Describe this function...</comment>
+<comment pinned="true" h="44" w="557">Example 1. a) Start by creating a three-pulse rumble sequence: right, LEFT, LEFT</comment>
+<data>{"commentPositionLeft":-47,"commentPositionTop":-63}</data>
 <statement name="STACK">
-<block type="comment" id="2MfI]K:4d{$8%yAl4VSb">
-<field name="COMMENT">Example 1. a)</field>
-<next>
-<block type="comment" id="C]/B46HMSW[dM[D0Ii0!">
-<field name="COMMENT">Start by creating a three-pulse rumble sequence:</field>
-<next>
-<block type="comment" id="K#=%Xh`uG3OQta)#KlK#">
-<field name="COMMENT">right, LEFT, LEFT</field>
-<next>
 <block type="variables_set" id="4?x9ZX4/oW3v]9Sv[*e=">
 <field name="VAR" id="QY%Dg=LHC50nk7}QfuNP">customRumbleEffectBuilder</field>
 <value name="VALUE">
@@ -474,33 +453,14 @@ You can use this sample to experiment with your specific gamepads to explore the
 </block>
 </next>
 </block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
 </statement>
 </block>
-<block type="procedures_defnoreturn" id="0p#bZ,tzbRnxEQ,Qx^(u" x="873" y="860">
+<block type="procedures_defnoreturn" id="0p#bZ,tzbRnxEQ,Qx^(u" x="25" y="2387">
 <field name="NAME">Example1B</field>
-<comment pinned="false" h="80" w="160">Describe this function...</comment>
+<comment pinned="true" h="63" w="593">Example 1. b) Watch the runtime timer, and run the custom rumble when we hit half-time.
+Make sure we only signal once by setting "secondHalf" flag to prevent further rumbles.</comment>
+<data>{"commentPositionLeft":-47,"commentPositionTop":-82}</data>
 <statement name="STACK">
-<block type="comment" id="8OHlo9v)^e`/S%RT.4K+">
-<field name="COMMENT">Example 1. b)</field>
-<next>
-<block type="comment" id=",(eb_JVD+bJfPhx*jp35">
-<field name="COMMENT">Watch the runtime timer, and run the custom</field>
-<next>
-<block type="comment" id="$dd@`TQAbW?/-GKRXk8]">
-<field name="COMMENT">rumble when we hit half-time.</field>
-<next>
-<block type="comment" id="hC/8]dM+~l~?BUwn%8-.">
-<field name="COMMENT">Make sure we only signal once by setting</field>
-<next>
-<block type="comment" id="[X%%X$Kv{QmAK50ChVVA">
-<field name="COMMENT">"secondHalf" flag to prevent further rumbles.</field>
-<next>
 <block type="controls_if" id="[)l$3X{F$yOU!.f/+2t)">
 <value name="IF0">
 <block type="logic_operation" id="O!8XIw*dtfK+W7swIEng" inline="false">
@@ -646,37 +606,14 @@ You can use this sample to experiment with your specific gamepads to explore the
 </block>
 </next>
 </block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
 </statement>
 </block>
-<block type="procedures_defnoreturn" id="0u~07@`Q`C%N@PrNoz]i" x="72" y="1254">
+<block type="procedures_defnoreturn" id="0u~07@`Q`C%N@PrNoz]i" x="25" y="3027">
 <field name="NAME">Example2</field>
-<comment pinned="false" h="80" w="160">Describe this function...</comment>
+<comment pinned="true" h="67" w="715">Example 2. If Left Bumper is being pressed, power the rumble motors based on the two trigger depressions.
+This is useful to see how the rumble feels at various power levels.</comment>
+<data>{"commentPositionLeft":-47,"commentPositionTop":-89}</data>
 <statement name="STACK">
-<block type="comment" id="6TJ=M5:7_eJY:`O0CzV`">
-<field name="COMMENT">Example 2.</field>
-<next>
-<block type="comment" id="hN)CTrU]wbuMMz|7L}c[">
-<field name="COMMENT">If Left Bumper is being pressed, power the rumble</field>
-<next>
-<block type="comment" id="#p{Px.dB7nyoOm[~dyk5">
-<field name="COMMENT">motors based on the two trigger depressions.</field>
-<next>
-<block type="comment" id="BpIhWwvW`$zzna}M{)YQ">
-<field name="COMMENT">This is useful to see how the rumble feels at</field>
-<next>
-<block type="comment" id="W%VBWrJmE6-|18h{*{?%">
-<field name="COMMENT">various power levels.</field>
-<next>
 <block type="controls_if" id="M;NQ4G4G;%DkG0e+1,?s">
 <mutation else="1"/>
 <value name="IF0">
@@ -919,34 +856,14 @@ You can use this sample to experiment with your specific gamepads to explore the
 </block>
 </statement>
 </block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
 </statement>
 </block>
-<block type="procedures_defnoreturn" id="9DP]olH%zt?+I`Zsypt|" x="982" y="1544">
+<block type="procedures_defnoreturn" id="9DP]olH%zt?+I`Zsypt|" x="25" y="4195">
 <field name="NAME">Example3</field>
-<comment pinned="false" h="80" w="160">Describe this function...</comment>
+<comment pinned="true" h="64" w="611">Example 3. Blip 3 times at the moment that A (Cross) is pressed. (look for pressed transition)
+BUT !!!  Skip it altogether if the Gamepad is already rumbling.</comment>
+<data>{"commentPositionLeft":-47,"commentPositionTop":-86}</data>
 <statement name="STACK">
-<block type="comment" id="BB(;G3{-#:q(Jyp)fB*,">
-<field name="COMMENT">Example 3. Blip 3 times at the moment that A</field>
-<next>
-<block type="comment" id="x}mli1(R5Q~h^H;[Ynt$">
-<field name="COMMENT">(Cross) is pressed. (look for pressed transition)</field>
-<next>
-<block type="comment" id="p]utgzJrM*wfFB8Hfvgs">
-<field name="COMMENT">BUT !!!  Skip it altogether if the Gamepad is</field>
-<next>
-<block type="comment" id="DliPlco]dU)6-VuSE-x?">
-<field name="COMMENT">already rumbling.</field>
-<next>
 <block type="controls_if" id="IV!t9fR*tr)}GA2a*ZYM">
 <value name="IF0">
 <block type="logic_operation" id=":GA8YjDYbFqRl]V5r`N(" inline="false">
@@ -993,26 +910,13 @@ You can use this sample to experiment with your specific gamepads to explore the
 </block>
 </statement>
 </block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
 </statement>
 </block>
-<block type="procedures_defnoreturn" id="uzNOpmMBKdvzvZ191s0k" x="994" y="1877">
+<block type="procedures_defnoreturn" id="uzNOpmMBKdvzvZ191s0k" x="25" y="4488">
 <field name="NAME">Example4</field>
-<comment pinned="false" h="80" w="160">Describe this function...</comment>
+<comment pinned="true" h="50" w="567">Example 4. Rumble once when gamepad right trigger goes above the THRESHOLD.</comment>
+<data>{"commentPositionLeft":-46,"commentPositionTop":-72}</data>
 <statement name="STACK">
-<block type="comment" id="%Q{__dxa,58mf%mJnAo_">
-<field name="COMMENT">Example 4. Rumble once when gamepad right</field>
-<next>
-<block type="comment" id="qR*kJWx,iSVzLi$!c^=*">
-<field name="COMMENT">trigger goes above the THRESHOLD.</field>
-<next>
 <block type="controls_if" id="t~A@x)#gy!tjFQ~J-B@J">
 <mutation else="1"/>
 <value name="IF0">
@@ -1101,10 +1005,6 @@ You can use this sample to experiment with your specific gamepads to explore the
 </next>
 </block>
 </statement>
-</block>
-</next>
-</block>
-</next>
 </block>
 </statement>
 </block>

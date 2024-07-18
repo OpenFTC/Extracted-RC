@@ -19,7 +19,8 @@ var titlePrefix = 'FTC';
 var currentProjectName;
 var currentClassName = '';
 var savedBlkFileContent;
-var missingHardware = [];
+var missingHardwareNames = [];
+var missingHardwareTypes = [];
 var blockIdsWithMissingHardware = [];
 var WarningBits = {
   NONE: 0,
@@ -28,6 +29,7 @@ var WarningBits = {
   ROVER_RUCKUS: 1 << 2,
   MISSING_METHOD: 1 << 3,
   OBSOLETE: 1 << 4,
+  LEGACY_BNO055IMU: 1 << 5,
 };
 var mouseX, mouseY;
 var previousClipboardXml;
@@ -364,10 +366,12 @@ function knownTypeToClassName(type) {
     case 'Velocity':
     case 'YawPitchRollAngles':
       return 'org.firstinspires.ftc.robotcore.external.navigation.' + type;
-    case 'AppUtil':
-      return 'org.firstinspires.ftc.robotcore.internal.system.' + type;
+    case 'CameraStreamServer':
+      return 'org.firstinspires.ftc.robotcore.external.stream.' + type;
     case 'Recognition':
       return 'org.firstinspires.ftc.robotcore.external.tfod.' + type;
+    case 'AppUtil':
+      return 'org.firstinspires.ftc.robotcore.internal.system.' + type;
   }
   return knownTypeToClassNameObsolete(type);
 }

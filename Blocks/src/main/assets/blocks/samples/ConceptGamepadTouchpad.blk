@@ -1,17 +1,9 @@
 <xml xmlns="https://developers.google.com/blockly/xml">
-<block type="procedures_defnoreturn" id="WtpyD@tEu+EoY=P9iY,D" deletable="false" x="79" y="4">
+<block type="procedures_defnoreturn" id="WtpyD@tEu+EoY=P9iY,D" deletable="false" x="25" y="458">
 <field name="NAME">runOpMode</field>
-<comment pinned="false" h="45" w="532">This function is executed when this OpMode is selected from the Driver Station.</comment>
-<statement name="STACK">
-<block type="comment" id="Lc#BFtj*NTB48YL;eBl.">
-<field name="COMMENT">This sample illustrates using the touchpad</field>
-<next>
-<block type="comment" id=":9|^FFI*/}KHtNoR^{.1">
-<field name="COMMENT">feature found on some gamepads.</field>
-<next>
-<block type="comment" id="o]HTDT?Ql1tgDN=YQlD`">
-<field name="COMMENT"/>
-<comment pinned="true" h="534" w="452">The Sony PS4 gamepad can detect two distinct touches on the central touchpad.
+<comment pinned="true" h="438" w="610">This OpMode illustrates using the touchpad feature found on some gamepads.
+
+The Sony PS4 gamepad can detect two distinct touches on the central touchpad.
 Other gamepads with different touchpads may provide mixed results.
 
 The touchpads are accessed through the Gamepad blocks.
@@ -25,11 +17,12 @@ Several new blocks were added to the Gamepad category in FTC SDK Rev 7.
 
 Finger touches are reported with an X and Y coordinate in following coordinate system.
 
-X is the Horizontal axis, and Y is the vertical axis.
-The 0,0 origin is at the center of the touchpad.
-1.0, 1.0 is at the top right corner of the touchpad.
--1.0,-1.0 is at the bottom left corner of the touchpad.</comment>
-<next>
+  1) X is the Horizontal axis, and Y is the vertical axis.
+  2) The 0,0 origin is at the center of the touchpad.
+  3) 1.0, 1.0 is at the top right corner of the touchpad.
+  4) -1.0,-1.0 is at the bottom left corner of the touchpad.</comment>
+<data>{"commentPositionLeft":-19,"commentPositionTop":-458}</data>
+<statement name="STACK">
 <block type="telemetry_setDisplayFormat" id="G{CGV2@WEqrY=dyhZ#+$">
 <value name="DISPLAY_FORMAT">
 <shadow type="telemetry_typedEnum_displayFormat" id="sqN%:VmFIe+dwioQ]E-H">
@@ -280,12 +273,6 @@ The 0,0 origin is at the center of the touchpad.
 </next>
 </block>
 </statement>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
 </block>
 </next>
 </block>

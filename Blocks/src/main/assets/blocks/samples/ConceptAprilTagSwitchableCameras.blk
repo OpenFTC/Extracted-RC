@@ -11,16 +11,12 @@
 <variable id="|RX@0yH!W}g7-GDnzqn[">newRightBumper</variable>
 <variable type="VisionPortal.Builder" id="wx@xgbnS_]b0DQL.08Qg">myVisionPortalBuilder</variable>
 </variables>
-<block type="procedures_defnoreturn" id="WtpyD@tEu+EoY=P9iY,D" deletable="false" x="0" y="0">
+<block type="procedures_defnoreturn" id="WtpyD@tEu+EoY=P9iY,D" deletable="false" x="25" y="106">
 <field name="NAME">runOpMode</field>
-<comment pinned="false" h="45" w="532">This function is executed when this OpMode is selected from the Driver Station.</comment>
+<comment pinned="true" h="85" w="566">This OpMode illustrates the basics of AprilTag recognition and pose estimation, using
+two webcams.</comment>
+<data>{"commentPositionLeft":-18,"commentPositionTop":-106}</data>
 <statement name="STACK">
-<block type="comment" id="vG1;7$#*;crH,9)V$Lbq">
-<field name="COMMENT">This 2023-2024 OpMode illustrates the basics of AprilTag recognition and pose estimation, using </field>
-<next>
-<block type="comment" id="9x+Pw7NIMObh.ppqpbxk">
-<field name="COMMENT">two webcams.</field>
-<next>
 <block type="procedures_callnoreturn" id="f5VC4xOrYYZrGzpFY}@G">
 <mutation name="initAprilTag"/>
 <comment pinned="false" h="60" w="270">Initialize AprilTag before waitForStart.</comment>
@@ -165,15 +161,12 @@
 </block>
 </next>
 </block>
-</next>
-</block>
-</next>
-</block>
 </statement>
 </block>
-<block type="procedures_defnoreturn" id=":Un!nS!LS%^tq]:g4^?Z" x="0" y="877">
+<block type="procedures_defnoreturn" id=":Un!nS!LS%^tq]:g4^?Z" x="25" y="994">
 <field name="NAME">initAprilTag</field>
-<comment pinned="false" h="80" w="160">Initialize AprilTag Detection.</comment>
+<comment pinned="true" h="42" w="274">Initialize AprilTag Detection.</comment>
+<data>{"commentPositionLeft":-46,"commentPositionTop":-63}</data>
 <statement name="STACK">
 <block type="comment" id="Z#tr,B$;l$RV0)j4q0n.">
 <field name="COMMENT">First, create an AprilTagProcessor.Builder.</field>
@@ -248,9 +241,10 @@
 </block>
 </statement>
 </block>
-<block type="procedures_defnoreturn" id="M[(J8p`1(d0qpSvpnBUG" x="0" y="1251">
+<block type="procedures_defnoreturn" id="M[(J8p`1(d0qpSvpnBUG" x="25" y="1436">
 <field name="NAME">initCameraSwitching</field>
-<comment pinned="false" h="80" w="160">Describe this function...</comment>
+<comment pinned="true" h="47" w="348">Initialize variable used for switching cameras.</comment>
+<data>{"commentPositionLeft":-48,"commentPositionTop":-68}</data>
 <statement name="STACK">
 <block type="variables_set" id="bzQCOK=n~4H%SFBwd[iE">
 <field name="VAR" id="Q*iA|9#K!{XA^=I9_17j">oldLeftBumper</field>
@@ -272,9 +266,10 @@
 </block>
 </statement>
 </block>
-<block type="procedures_defnoreturn" id="k#V^}7P|YB,m,kKNnalb" x="0" y="1369">
+<block type="procedures_defnoreturn" id="k#V^}7P|YB,m,kKNnalb" x="25" y="1618">
 <field name="NAME">telemetryCameraSwitching</field>
-<comment pinned="false" h="80" w="160">Describe this function...</comment>
+<comment pinned="true" h="42" w="417">Display info (using telemetry) related to switching cameras.</comment>
+<data>{"commentPositionLeft":-49,"commentPositionTop":-64}</data>
 <statement name="STACK">
 <block type="controls_if" id="0A?_RV[e2U-Im!uPTNl7">
 <mutation else="1"/>
@@ -347,9 +342,10 @@
 </block>
 </statement>
 </block>
-<block type="procedures_defnoreturn" id="Eg%7GTPuhcoA]FCw9:]O" x="0" y="1780">
+<block type="procedures_defnoreturn" id="Eg%7GTPuhcoA]FCw9:]O" x="25" y="2134">
 <field name="NAME">telemetryAprilTag</field>
-<comment pinned="false" h="80" w="160">Display info (using telemetry) for a recognized AprilTag.</comment>
+<comment pinned="true" h="46" w="412">Display info (using telemetry) for a recognized AprilTag.</comment>
+<data>{"commentPositionLeft":-40,"commentPositionTop":-105}</data>
 <statement name="STACK">
 <block type="variables_set" id="c8~R@@~J_)0dhTTP,GP@">
 <field name="VAR" id="l)/,LjA`jR!1Nc@Z:`l!">myAprilTagDetections</field>
@@ -966,9 +962,10 @@
 </block>
 </statement>
 </block>
-<block type="procedures_defnoreturn" id="v!.6#E@yOowcb_?QX@0r" x="0" y="4628">
+<block type="procedures_defnoreturn" id="v!.6#E@yOowcb_?QX@0r" x="25" y="5044">
 <field name="NAME">doCameraSwitching</field>
-<comment pinned="false" h="80" w="160">Describe this function...</comment>
+<comment pinned="true" h="40" w="408">Switch cameras if LeftBumper or RightBumper is pressed.</comment>
+<data>{"commentPositionLeft":-48,"commentPositionTop":-62}</data>
 <statement name="STACK">
 <block type="controls_if" id="mS|5x-H6KeM-$RS(jDzS">
 <value name="IF0">

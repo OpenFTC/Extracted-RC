@@ -20,7 +20,7 @@
  * @author lizlooney@google.com (Liz Looney)
  */
 
-// NOTE(lizlooney): If/when we update to a newer version of blockly, we need to check that thie
+// NOTE(lizlooney): If/when we update to a newer version of blockly, we need to check that the
 // following still works.
 Blockly.Block.prototype.original_setCommentText = Blockly.Block.prototype.setCommentText;
 
@@ -31,7 +31,7 @@ Blockly.Block.prototype.setCommentText = function(text) {
   }
 }
 
-// NOTE(lizlooney): If/when we update to a newer version of blockly, we need to check that thie
+// NOTE(lizlooney): If/when we update to a newer version of blockly, we need to check that the
 // following still works.
 Blockly.Comment.prototype.original_setVisible = Blockly.Comment.prototype.setVisible;
 
@@ -52,6 +52,48 @@ Blockly.Comment.prototype.setVisible = function(visible) {
     restoreBlockCommentPosition(this.block_, this.bubble_);
   }
 };
+
+// NOTE(lizlooney): If/when we update to a newer version of blockly, we need to check that the
+// following still works.
+Blockly.WorkspaceSvg.prototype.original_getBlocksBoundingBox = Blockly.WorkspaceSvg.prototype.getBlocksBoundingBox;
+
+Blockly.WorkspaceSvg.prototype.getBlocksBoundingBox = function() {
+	// Override the original implementation so that when scrolling, it doesn't chop off the top of a large comment block above the runOpMode method.
+	var box = this.original_getBlocksBoundingBox()
+	box.top = Math.min(box.top, 25);
+	box.left = Math.min(box.left, 25);
+	return box;
+}
+
+// NOTE(lizlooney): If/when we update to a newer version of blockly, we need to check that the
+// following still works.
+Blockly.WorkspaceSvg.prototype.original_cleanUp = Blockly.WorkspaceSvg.prototype.cleanUp;
+
+Blockly.WorkspaceSvg.prototype.cleanUp = function() {
+  this.setResizesEnabled(false);
+  Blockly.Events.setGroup(true);
+  var topBlocks = this.getTopBlocks(true);
+	var leftMargin = 25;
+  var cursorY = 0;
+  for (var i = 0, block; block = topBlocks[i]; i++) {
+    if (!block.isMovable()) {
+      continue;
+    }
+    var xy = block.getRelativeToSurfaceXY();
+    block.moveBy(leftMargin - xy.x, cursorY - xy.y);
+
+		// If the block's comment is above the block, move the block down.
+		if (block.comment && block.comment.bubble_ && block.comment.bubble_.relativeTop_ < 0) {
+			block.moveBy(0, -block.comment.bubble_.relativeTop_);
+		}
+
+    block.snapToGrid();
+    cursorY = block.getRelativeToSurfaceXY().y +
+        block.getHeightWidth().height + Blockly.BlockSvg.MIN_BLOCK_Y;
+  }
+  Blockly.Events.setGroup(false);
+  this.setResizesEnabled(true);
+}
 
 function initializeFtcBlocks() {
   setUpWebSocket();
@@ -199,13 +241,13 @@ function saveButtonClicked() {
   } else {
     var messageDiv = document.getElementById('saveWithWarningsMessage');
     if (blockIdsWithMissingHardware.length == 1) {
-      if (missingHardware.length == 1) {
+      if (missingHardwareNames.length == 1) {
         messageDiv.innerHTML = 'There is 1 block that uses a missing hardware device.';
       } else {
         messageDiv.innerHTML = 'There is 1 block that uses missing hardware devices.';
       }
     } else {
-      if (missingHardware.length == 1) {
+      if (missingHardwareNames.length == 1) {
         messageDiv.innerHTML = 'There are ' + blockIdsWithMissingHardware.length +
             ' blocks that use a missing hardware device.';
       } else {
@@ -213,7 +255,7 @@ function saveButtonClicked() {
             ' blocks that use missing hardware devices.';
       }
     }
-     document.getElementById('saveWithWarningsDialog').style.display = 'block';
+    document.getElementById('saveWithWarningsDialog').style.display = 'block';
   }
 }
 
@@ -231,7 +273,7 @@ function yesSaveWithWarningsDialog() {
 function getCurrentBlkFileContent() {
   var allBlocks = workspace.getAllBlocks();
   for (var iBlock = 0, block; block = allBlocks[iBlock]; iBlock++) {
-    saveBlockWarningHidden(block);
+    saveBlockWarning(block);
     if (block.comment && block.comment.bubble_) {
       saveBlockCommentPosition(block, block.comment.bubble_);
     } else if (!block.comment) {
@@ -437,12 +479,14 @@ function initializeBlockly() {
           }
         }
 
-        var hasWarningBits = checkBlock(block, missingHardware);
-        if (hasWarningBits & WarningBits.MISSING_HARDWARE) {
+        var hasWarningBits = checkBlock(block);
+        if ((hasWarningBits & WarningBits.MISSING_HARDWARE) && !blockIsDisabled(block)) {
+          // Add this block to blockIdsWithMissingHardware.
           if (!blockIdsWithMissingHardware.includes(blockIds[i])) {
             blockIdsWithMissingHardware.push(blockIds[i]);
           }
         } else {
+          // Remove this block from blockIdsWithMissingHardware.
           if (blockIdsWithMissingHardware.includes(blockIds[i])) {
             var index = blockIdsWithMissingHardware.indexOf(blockIds[i]);
             blockIdsWithMissingHardware.splice(index, 1);
@@ -530,7 +574,8 @@ function loadBlocksIntoWorkspace(blocksContent, opt_blocksLoaded_callback) {
   document.title = titlePrefix + ' - ' + currentProjectName;
   var escapedProjectName = currentProjectName.replace(/&/g, '&amp;');
   document.getElementById('project_name').innerHTML = escapedProjectName;
-  missingHardware = [];
+  missingHardwareNames = [];
+  missingHardwareTypes = [];
   blockIdsWithMissingHardware = [];
   workspace.clear();
   Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom(blocksContent), workspace);
@@ -542,11 +587,15 @@ function loadBlocksIntoWorkspace(blocksContent, opt_blocksLoaded_callback) {
       var message = (blockIdsWithMissingHardware.length == 1)
           ? 'An error occured when trying to find the hardware devices for 1 block.\n\n'
           : 'Errors occured when trying to find the hardware devices for ' + blockIdsWithMissingHardware.length +
-              ' blocks.\n\n';
-      if (missingHardware.length > 0) {
+              ' blocks in this Op Mode.\n\n';
+      if (missingHardwareNames.length > 0) {
         message += 'The following hardware devices were not found:\n';
-        for (var i = 0; i < missingHardware.length; i++) {
-          message += '    "' + missingHardware[i] + '"\n';
+        for (var i = 0; i < missingHardwareNames.length; i++) {
+          message += '    "' + missingHardwareNames[i] + '"';
+          if (missingHardwareTypes[i]) {
+            message += ' (' + missingHardwareTypes[i] + ')';
+          }
+          message += '\n';
         }
       }
       message += '\nIf the current configuration is not the appropriate configuration for this ' +
@@ -574,7 +623,7 @@ function repositionBlockComments() {
  * Add/remove the block warning if the given block's identifier(s) are not in the active
  * configuration. Return true if the block now has a warning, false otherwise.
  */
-function checkBlock(block, missingHardware) {
+function checkBlock(block) {
   var warningBits = 0;
   try {
     var warningText = null; // null will remove any previous warning.
@@ -645,25 +694,48 @@ function checkBlock(block, missingHardware) {
             if (typeof field.setText === 'function') {
               field.setText(visibleIdentifierName);
             }
-            if (!missingHardware.includes(visibleIdentifierName)) {
-              missingHardware.push(visibleIdentifierName);
+            var hardwareType = getHardwareType(identifierFieldValue);
+            if (!missingHardwareNames.includes(visibleIdentifierName)) {
+              missingHardwareNames.push(visibleIdentifierName);
+              missingHardwareTypes.push(hardwareType); // hardwareType might be ''.
             }
             warningBits |= WarningBits.MISSING_HARDWARE;
-            if (fieldHasOptions) {
-              warningText = addWarning(warningText,
-                  '"' + visibleIdentifierName + '" is not in the current robot configuration.\n\n' +
-                  'Please activate the configuration that contains the hardware device named "' +
-                  visibleIdentifierName + '",\nor select a device that is in the current robot configuration.');
-            } else {
-              warningText = addWarning(warningText,
-                  '"' + visibleIdentifierName + '" is not in the current robot configuration.\n\n' +
-                  'Please activate the configuration that contains the hardware device named "' +
-                  visibleIdentifierName + '".');
+
+            if (!hardwareType) {
+              // If we don't know the hardware type just use 'hardware device' in the warning text.
+              hardwareType = 'hardware device';
             }
+            var thisWarning = 'There is no ' + hardwareType + ' named "' + visibleIdentifierName +
+                '" in the current robot configuration.\n' +
+                'Please activate the configuration that contains the ' + hardwareType + ' named "' +
+                visibleIdentifierName + '"';
+            if (fieldHasOptions) {
+              thisWarning += ',\nor select a device that is in the current robot configuration.';
+            } else {
+              thisWarning += '.';
+            }
+            warningText = addWarning(warningText, thisWarning);
           }
         }
       }
     }
+
+    if (!block.isShadow() && (block.type.startsWith('bno055imu_') || block.type.startsWith('bno055imuParameters_'))) {
+      var hasOldIMU = false;
+      for (var i = 0; i < allHardwareIdentifiers.length; i++) {
+        var hardwareIdentifier = allHardwareIdentifiers[i];
+        if (hardwareIdentifier.endsWith('AsBNO055IMU')) {
+          hasOldIMU = true;
+          break;
+        }
+      }
+      if (!hasOldIMU) {
+        warningBits |= WarningBits.LEGACY_BNO055IMU;
+        warningText = addWarning(warningText,
+            'This block is for a legacy BNO055 IMU. It will not work with the IMU in new Control Hubs.');
+      }
+    }
+
     if (isObsolete(block)) {
       warningBits |= WarningBits.OBSOLETE;
       warningText = addWarning(warningText,
@@ -694,13 +766,17 @@ function checkBlock(block, missingHardware) {
     }
 
     // If warningText is null, the following will clear a previous warning.
-    var previousWarningText = block.warning ? block.warning.getText() : null;
-    if (previousWarningText != warningText) {
-      block.setWarningText(warningText);
-      if (warningText && block.warning && !readBlockWarningHidden(block)) {
+    block.setWarningText(warningText);
+    if (warningText && block.warning) {
+      // If the warning text has changed (or is new), make the warning visible.
+      // If the warning text has not changed, make the warning visible if it wasn't previously
+      // hidden by the user.
+      if (readBlockWarningText(block) != warningText || !readBlockWarningHidden(block)) {
         block.warning.setVisible(true);
       }
     }
+    saveBlockWarning(block);
+
   } catch (e) {
     console.log('Unable to verify the following block due to exception.');
     console.log(block);
@@ -732,6 +808,26 @@ function removeHardwareIdentifierSuffix(identifierFieldValue) {
   return identifierFieldValue;
 }
 
+function getHardwareType(identifierFieldValue) {
+  var suffixes = getHardwareIdentifierSuffixes();
+  for (var i = 0; i < suffixes.length; i++) {
+    var suffix = suffixes[i];
+    if (identifierFieldValue.endsWith(suffix)) {
+      if (suffix.startsWith('As')) {
+        return humanReadableHardwareType(suffix.substring(2));
+      }
+    }
+  }
+  return '';
+}
+
+function humanReadableHardwareType(hardwareType) {
+  if (hardwareType == 'BNO055IMU') {
+    hardwareType = 'BNO055 IMU';
+  }
+  return hardwareType;
+}
+
 function parseBlockDataJSON(block) {
   if (block.data && block.data.startsWith('{')) {
     try {
@@ -749,22 +845,34 @@ function stringifyBlockDataJSON(block, data) {
   }
 }
 
-function saveBlockWarningHidden(block) {
+function saveBlockWarning(block) {
   var data = parseBlockDataJSON(block);
   if (block.warning) {
-    if (!block.warning.isVisible()) {
-      if (!data) {
-        data = Object.create(null);
-      }
-      data.block_warning_hidden = true;
-    } else {
-      if (data) {
-        delete data.block_warning_hidden;
-      }
+    if (!data) {
+      data = Object.create(null);
+    }
+    data.block_warning_hidden = !block.warning.isVisible();
+    data.block_warning_text = block.warning.getText();
+  } else {
+    // This block does not have a warning.
+    if (data) {
+      delete data.block_warning_hidden;
+      delete data.block_warning_text;
     }
   }
 
   stringifyBlockDataJSON(block, data);
+}
+
+function readBlockWarningText(block) {
+  var data = parseBlockDataJSON(block);
+  if (data) {
+    if (data.block_warning_text) {
+      return data.block_warning_text
+    }
+  }
+
+  return null;
 }
 
 function readBlockWarningHidden(block) {
@@ -778,7 +886,7 @@ function readBlockWarningHidden(block) {
   return false;
 }
 
-// NOTE(lizlooney): If/when we update to a newer version of blockly, we need to check that thie
+// NOTE(lizlooney): If/when we update to a newer version of blockly, we need to check that the
 // following still works.
 function saveBlockCommentPosition(block, bubble) {
   var data = parseBlockDataJSON(block);
@@ -799,7 +907,7 @@ function clearBlockCommentPosition(block) {
   }
 }
 
-// NOTE(lizlooney): If/when we update to a newer version of blockly, we need to check that thie
+// NOTE(lizlooney): If/when we update to a newer version of blockly, we need to check that the
 // following still works.
 function restoreBlockCommentPosition(block, bubble) {
   var data = parseBlockDataJSON(block);
@@ -1090,4 +1198,8 @@ function generateJavaCode() {
     }
   }
   return '';
+}
+
+function blockIsDisabled(block) {
+  return !block.isEnabled() || block.getInheritedDisabled();
 }

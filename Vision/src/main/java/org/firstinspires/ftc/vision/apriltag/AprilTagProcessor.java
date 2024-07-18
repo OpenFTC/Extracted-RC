@@ -73,6 +73,7 @@ public abstract class AprilTagProcessor implements VisionProcessor
         private DistanceUnit outputUnitsLength = DistanceUnit.INCH;
         private AngleUnit outputUnitsAngle = AngleUnit.DEGREES;
         private int threads = THREADS_DEFAULT;
+        private boolean suppressCalibrationWarnings;
 
         private boolean drawAxes = false;
         private boolean drawCube = false;
@@ -94,6 +95,17 @@ public abstract class AprilTagProcessor implements VisionProcessor
             this.fy = fy;
             this.cx = cx;
             this.cy = cy;
+            return this;
+        }
+
+        /**
+         * Set whether any warnings about camera calibration should be suppressed
+         * @param suppressCalibrationWarnings whether to suppress calibration warnings
+         * @return the {@link Builder} object, to allow for method chaining
+         */
+        public Builder setSuppressCalibrationWarnings(boolean suppressCalibrationWarnings)
+        {
+            this.suppressCalibrationWarnings = suppressCalibrationWarnings;
             return this;
         }
 
@@ -213,7 +225,7 @@ public abstract class AprilTagProcessor implements VisionProcessor
                     fx, fy, cx, cy,
                     outputUnitsLength, outputUnitsAngle, tagLibrary,
                     drawAxes, drawCube, drawOutline, drawTagId,
-                    tagFamily, threads
+                    tagFamily, threads, suppressCalibrationWarnings
             );
         }
     }

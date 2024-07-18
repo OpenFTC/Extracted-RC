@@ -1,59 +1,35 @@
 <xml xmlns="https://developers.google.com/blockly/xml">
 <variables>
+<variable id="[.pAw0rC;@QmWxE_o*05">runtime</variable>
 <variable id="+CP[0*{1J`c;3HTvP%W{">leftFrontPower</variable>
 <variable id="%=G;ExcF`IeP)U5Tqt$A">leftBackPower</variable>
 <variable id="P:XwW3E6}H_!OjE.l{6x">rightFrontPower</variable>
 <variable id="]a=q2O(hYa7{h#/A$!IC">rightBackPower</variable>
-<variable id="[.pAw0rC;@QmWxE_o*05">runtime</variable>
 <variable id="+2Qv8oDa_v90|LL;eD!k">axial</variable>
 <variable id="bbz%Ci44gd/O)rKAh7BE">lateral</variable>
 <variable id="k?zh^k_Orxi[sNPs.)Vz">yaw</variable>
 <variable id="IxRiC(G0*rhsrF1IbZ:m">max</variable>
 </variables>
-<block type="procedures_defnoreturn" id="OpN8!1beqW{8Bw6M/?m+" deletable="false" x="0" y="0">
+<block type="procedures_defnoreturn" id="OpN8!1beqW{8Bw6M/?m+" deletable="false" x="25" y="379">
 <field name="NAME">runOpMode</field>
-<comment pinned="false" h="45" w="532">This function is executed when this OpMode is selected from the Driver Station.</comment>
-<data>{"commentPositionLeft":161,"commentPositionTop":-11}</data>
+<comment pinned="true" h="360" w="701">This OpMode illustrates driving a 4-motor Omni-Directional (or Holonomic) robot.
+This code will work with either a Mecanum-Drive or an X-Drive train.
+Note that a Mecanum drive must display an X roller-pattern when viewed from above.
+
+Also note that it is critical to set the correct rotation direction for each motor.  See details below.
+
+Holonomic drives provide the ability for the robot to move in three axes (directions) simultaneously.
+Each motion axis is controlled by one Joystick axis.
+
+1) Axial -- Driving forward and backward -- Left-joystick Forward/Backward
+2) Lateral -- Strafing right and left -- Left-joystick Right and Left
+3) Yaw -- Rotating Clockwise and counter clockwise -- Right-joystick Right and Left
+
+This code is written assuming that the right-side motors need to be reversed for the robot to drive forward.
+When you first test your robot, if it moves backward when you push the left stick forward, then you must flip
+the direction of all 4 motors (see code below).</comment>
+<data>{"commentPositionLeft":-21,"commentPositionTop":-379}</data>
 <statement name="STACK">
-<block type="comment" id="R}sP%-SY;~SFB0:i9A1B">
-<field name="COMMENT">This OpMode illustrates driving a 4-motor Omni-Directional (or Holonomic) robot.</field>
-<next>
-<block type="comment" id="It=-XrwJ@![JAt-l]x:O">
-<field name="COMMENT">This code will work with either a Mecanum-Drive or an X-Drive train.</field>
-<next>
-<block type="comment" id="TL9)^IzU8-)Go=StfO:;">
-<field name="COMMENT">Both of these drives are illustrated at https://gm0.org/en/latest/docs/robot-design/drivetrains/holonomic.html</field>
-<next>
-<block type="comment" id="d~h|9XfT=RjN+}m$2Ll_">
-<field name="COMMENT">Note that a Mecanum drive must display an X roller-pattern when viewed from above.</field>
-<next>
-<block type="comment" id="]Z{}u4?K]9Dv!WNYA(nF">
-<field name="COMMENT">Also note that it is critical to set the correct rotation direction for each motor.  See details below.</field>
-<next>
-<block type="comment" id=",#Eb[e0I/2tdmpO6|%Cx">
-<field name="COMMENT">Holonomic drives provide the ability for the robot to move in three axes (directions) simultaneously.</field>
-<next>
-<block type="comment" id="6sd7T0Qne;~M1vBG.i/u">
-<field name="COMMENT">Each motion axis is controlled by one Joystick axis.</field>
-<next>
-<block type="comment" id="fOcqAdHWx]v,u#`2!{#n">
-<field name="COMMENT">1) Axial:    Driving forward and backward                Left-joystick Forward/Backward</field>
-<next>
-<block type="comment" id="uMoBnQjbyO#4m^ycSyJ#">
-<field name="COMMENT">2) Lateral:  Strafing right and left                     Left-joystick Right and Left</field>
-<next>
-<block type="comment" id="}xn[8}}GTN1/G[cTk93$">
-<field name="COMMENT">3) Yaw:      Rotating Clockwise and counter clockwise    Right-joystick Right and Left</field>
-<next>
-<block type="comment" id="v0lK1@ca)Ti8OFb4NRUz">
-<field name="COMMENT">This code is written assuming that the right-side motors need to be reversed for the robot to drive forward.</field>
-<next>
-<block type="comment" id="{iBs!-b{/KI$arFWMK/K">
-<field name="COMMENT">When you first test your robot, if it moves backward when you push the left stick forward, then you must flip</field>
-<next>
-<block type="comment" id="[aL0[;(z?GlC%W5^7Na6">
-<field name="COMMENT">the direction of all 4 motors (see code below).</field>
-<next>
 <block type="variables_set" id="KMq1Y7dl9q#:k{9#`#V/">
 <field name="VAR" id="[.pAw0rC;@QmWxE_o*05">runtime</field>
 <value name="VALUE">
@@ -61,34 +37,21 @@
 </value>
 <next>
 <block type="comment" id="wm/fUE^4|rEhGSB})gN+">
-<field name="COMMENT">########################################################################################</field>
-<next>
-<block type="comment" id="g$gt4R3hK3J:H=_OmM%M">
-<field name="COMMENT">!!!            IMPORTANT Drive Information. Test your motor directions.            !!!!!</field>
-<next>
-<block type="comment" id="VW96$1MqTt[]Lwv1YG$l">
-<field name="COMMENT">########################################################################################</field>
-<next>
-<block type="comment" id="2E)2A*`b^PiWrgwVLCzD">
-<field name="COMMENT">Most robots need the motors on one side to be reversed to drive forward.</field>
-<next>
-<block type="comment" id="cQ-c2LEibfM^C[./!=i*">
-<field name="COMMENT">The motor reversals shown here are for a "direct drive" robot (the wheels turn the same direction as the motor shaft).</field>
-<next>
-<block type="comment" id="N~8H/r^-bLz`For|hGFL">
-<field name="COMMENT">If your robot has additional gear reductions or uses a right-angled drive, it's important to ensure</field>
-<next>
-<block type="comment" id="5/?,dcP)z[tYOC~m/wFi">
-<field name="COMMENT">that your motors are turning in the correct direction.  So, start out with the reversals here, BUT</field>
-<next>
-<block type="comment" id="t+PYibF[=ydR@^C2nB_U">
-<field name="COMMENT">when you first test your robot, push the left joystick forward and observe the direction the wheels turn.</field>
-<next>
-<block type="comment" id="~S@0#C1W+Z]JT*3Ta|IE">
-<field name="COMMENT">Reverse the direction (flip FORWARD &lt;-&gt; REVERSE ) of any wheel that runs backward.</field>
-<next>
-<block type="comment" id="0P@1tm!?$eF`P!B.~;)w">
-<field name="COMMENT">Keep testing until ALL the wheels move the robot forward when you push the left joystick forward.</field>
+<field name="COMMENT">&lt;--- Click blue icon to see important note re. testing motor directions.</field>
+<comment pinned="false" h="331" w="755">########################################################################################
+!!!            IMPORTANT Drive Information. Test your motor directions.            !!!!!
+########################################################################################
+
+Most robots need the motors on one side to be reversed to drive forward.
+The motor reversals shown here are for a "direct drive" robot (the wheels turn the same direction as the motor shaft).
+
+If your robot has additional gear reductions or uses a right-angled drive, it's important to ensure
+that your motors are turning in the correct direction.  So, start out with the reversals here, BUT
+when you first test your robot, push the left joystick forward and observe the direction the wheels turn.
+
+Reverse the direction (flip FORWARD &lt;-&gt; REVERSE ) of any wheel that runs backward.
+Keep testing until ALL the wheels move the robot forward when you push the left joystick forward.</comment>
+<data>{"commentPositionLeft":217,"commentPositionTop":-259}</data>
 <next>
 <block type="dcMotor_setProperty_Direction" id="eq?6z=8[X(p{)!kj=ljm">
 <field name="IDENTIFIER">left_front_driveAsDcMotor</field>
@@ -570,9 +533,9 @@
 <next>
 <block type="procedures_callnoreturn" id="obr^-5%]`%%d{Q-r73^d" disabled="true">
 <mutation name="testMotorDirections"/>
-<comment pinned="false" h="68" w="509">Enable this block to test your motor directions.
+<comment pinned="true" h="68" w="509">Enable this block to test your motor directions.
 Once the correct motors move in the correct direction re-disable this block.</comment>
-<data>{"commentPositionLeft":-40,"commentPositionTop":-105}</data>
+<data>{"commentPositionLeft":263,"commentPositionTop":-13}</data>
 <next>
 <block type="comment" id="RlywCd8Exlr%x^L$Q*1U">
 <field name="COMMENT">Send calculated power to wheels.</field>
@@ -850,72 +813,21 @@ Once the correct motors move in the correct direction re-disable this block.</co
 </block>
 </next>
 </block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
 </statement>
 </block>
-<block type="procedures_defnoreturn" id="GO@@mLmns%q,a%Ka6,rV" x="0" y="2744">
+<block type="procedures_defnoreturn" id="GO@@mLmns%q,a%Ka6,rV" x="25" y="2787">
 <field name="NAME">testMotorDirections</field>
-<comment pinned="false" h="43" w="419">This function is used to test your motor directions.</comment>
-<data>{"commentPositionLeft":-39,"commentPositionTop":-65}</data>
+<comment pinned="true" h="210" w="509">This function is used to test your motor directions.
+
+Each button should make the corresponding motor run FORWARD.
+
+  1) First get all the motors to take to correct positions on the robot
+     by adjusting your Robot Configuration if necessary.
+
+  2) Then make sure they run in the correct direction by modifying the
+     the setDirection() calls above.</comment>
+<data>{"commentPositionLeft":-46,"commentPositionTop":-236}</data>
 <statement name="STACK">
-<block type="comment" id="Vw,8LZpYAJ/CDruelpt^">
-<field name="COMMENT">Each button should make the corresponding motor run FORWARD.</field>
-<next>
-<block type="comment" id="hf.,1m4z]fEL*eK??#e6">
-<field name="COMMENT">  1) First get all the motors to take to correct positions on the robot</field>
-<next>
-<block type="comment" id="b8alWUM[zIL~7|Q^T5pf">
-<field name="COMMENT">     by adjusting your Robot Configuration if necessary.</field>
-<next>
-<block type="comment" id="k/g0U7:(7e[[cV84s_[O">
-<field name="COMMENT">  2) Then make sure they run in the correct direction by modifying the</field>
-<next>
-<block type="comment" id="@QJ{b;%,dr49f{Dkiup_">
-<field name="COMMENT">     the setDirection() calls above.</field>
-<next>
 <block type="variables_set" id="GB`NLcBc$TP@Lnu9/b0b">
 <field name="VAR" id="+CP[0*{1J`c;3HTvP%W{">leftFrontPower</field>
 <value name="VALUE">
@@ -1011,16 +923,6 @@ Once the correct motors move in the correct direction re-disable this block.</co
 </value>
 </block>
 </value>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
 </block>
 </next>
 </block>

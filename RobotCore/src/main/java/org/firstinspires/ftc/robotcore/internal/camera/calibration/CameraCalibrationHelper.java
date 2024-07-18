@@ -166,4 +166,14 @@ public class CameraCalibrationHelper
 
         return calibrationManager.getCalibration(identity, new Size(width, height));
     }
+
+    /**
+     * Get all calibrated resolutions for a given identity
+     * @param ident identity of camera in question
+     * @return all calibrated resolutions
+     */
+    public List<CameraCalibration> getCalibrations(CameraCalibrationIdentity ident)
+    {
+        return calibrationManager.getCalibrations(ident);
+    }
 }

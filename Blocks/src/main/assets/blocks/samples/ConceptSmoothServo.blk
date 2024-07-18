@@ -1,17 +1,18 @@
 <xml xmlns="https://developers.google.com/blockly/xml">
 <variables>
-<variable type="" id="c::G;KT~vDU3W?qLiS5t">ServoPosition</variable>
-<variable type="" id="`^NMNM,9eBuc=VxXBMuy">ServoSpeed</variable>
+<variable id="c::G;KT~vDU3W?qLiS5t">ServoPosition</variable>
+<variable id="`^NMNM,9eBuc=VxXBMuy">ServoSpeed</variable>
 </variables>
-<block type="procedures_defnoreturn" id="OpN8!1beqW{8Bw6M/?m+" deletable="false" x="50" y="50">
+<block type="procedures_defnoreturn" id="OpN8!1beqW{8Bw6M/?m+" deletable="false" x="25" y="97">
 <field name="NAME">runOpMode</field>
-<comment pinned="false" h="45" w="532">This function is executed when this OpMode is selected from the Driver Station.</comment>
+<comment pinned="true" h="71" w="546">This sample OpMode shows how to operate a conventional servo at a smooth, controlled rate.</comment>
+<data>{"commentPositionLeft":-21,"commentPositionTop":-97}</data>
 <statement name="STACK">
 <block type="comment" id="58)EXia1!J_|7).;^Mbm">
 <field name="COMMENT">Set servo to mid position</field>
 <next>
 <block type="variables_set" id="ct:hh}7Si%.lsz==X^y2">
-<field name="VAR" id="c::G;KT~vDU3W?qLiS5t" variabletype="">ServoPosition</field>
+<field name="VAR" id="c::G;KT~vDU3W?qLiS5t">ServoPosition</field>
 <value name="VALUE">
 <block type="math_number" id="Bnm~@psjB+UWa/68o`tl">
 <field name="NUM">0.5</field>
@@ -19,7 +20,7 @@
 </value>
 <next>
 <block type="variables_set" id="cLEO8f/lC2cn^zSY/mW;">
-<field name="VAR" id="`^NMNM,9eBuc=VxXBMuy" variabletype="">ServoSpeed</field>
+<field name="VAR" id="`^NMNM,9eBuc=VxXBMuy">ServoSpeed</field>
 <value name="VALUE">
 <block type="math_number" id="xV`2i?|1G;qGlL^kl9o(">
 <field name="NUM">0.01</field>
@@ -31,8 +32,7 @@
 <block type="controls_whileUntil" id=";?u-rJ#FN3IEUo%rzP0!">
 <field name="MODE">WHILE</field>
 <value name="BOOL">
-<block type="linearOpMode_opModeIsActive" id="-(|WoGbw`fofYl;9=5+0">
-</block>
+<block type="linearOpMode_opModeIsActive" id="-(|WoGbw`fofYl;9=5+0"/>
 </value>
 <statement name="DO">
 <block type="comment" id="}%t.Rrj7FK/QeSo)9sF=">
@@ -48,13 +48,13 @@
 </value>
 <statement name="DO0">
 <block type="math_change" id="}8~egl3CQ0BE=LrKYK2/">
-<field name="VAR" id="c::G;KT~vDU3W?qLiS5t" variabletype="">ServoPosition</field>
+<field name="VAR" id="c::G;KT~vDU3W?qLiS5t">ServoPosition</field>
 <value name="DELTA">
 <shadow type="math_number" id="$4rAV:L.0FnnQZ(b[_wT">
 <field name="NUM">1</field>
 </shadow>
 <block type="variables_get" id="aF|.,N{$=8{bne%VQCWX">
-<field name="VAR" id="`^NMNM,9eBuc=VxXBMuy" variabletype="">ServoSpeed</field>
+<field name="VAR" id="`^NMNM,9eBuc=VxXBMuy">ServoSpeed</field>
 </block>
 </value>
 </block>
@@ -70,7 +70,7 @@
 </value>
 <statement name="DO0">
 <block type="math_change" id="JfpUm-~fxh?xuhZETO?}">
-<field name="VAR" id="c::G;KT~vDU3W?qLiS5t" variabletype="">ServoPosition</field>
+<field name="VAR" id="c::G;KT~vDU3W?qLiS5t">ServoPosition</field>
 <value name="DELTA">
 <shadow type="math_number" id="$4rAV:L.0FnnQZ(b[_wT">
 <field name="NUM">1</field>
@@ -82,7 +82,7 @@
 <field name="NUM">9</field>
 </shadow>
 <block type="variables_get" id="!GIk9%;^?|{#_~^OtTt4">
-<field name="VAR" id="`^NMNM,9eBuc=VxXBMuy" variabletype="">ServoSpeed</field>
+<field name="VAR" id="`^NMNM,9eBuc=VxXBMuy">ServoSpeed</field>
 </block>
 </value>
 </block>
@@ -94,7 +94,7 @@
 <field name="COMMENT">Keep Servo position in valid range</field>
 <next>
 <block type="variables_set" id="~/86=d?=NH5J3[`LNPiT">
-<field name="VAR" id="c::G;KT~vDU3W?qLiS5t" variabletype="">ServoPosition</field>
+<field name="VAR" id="c::G;KT~vDU3W?qLiS5t">ServoPosition</field>
 <value name="VALUE">
 <block type="math_constrain" id="l%(m!j2%~){WJ#$1`)Sv">
 <value name="VALUE">
@@ -102,7 +102,7 @@
 <field name="NUM">50</field>
 </shadow>
 <block type="variables_get" id="_R)UFl@4b81imZsJ#@25">
-<field name="VAR" id="c::G;KT~vDU3W?qLiS5t" variabletype="">ServoPosition</field>
+<field name="VAR" id="c::G;KT~vDU3W?qLiS5t">ServoPosition</field>
 </block>
 </value>
 <value name="LOW">
@@ -127,7 +127,7 @@
 <field name="NUM">0</field>
 </shadow>
 <block type="variables_get" id="bG2QRs91.%dyjAfm`:Vv">
-<field name="VAR" id="c::G;KT~vDU3W?qLiS5t" variabletype="">ServoPosition</field>
+<field name="VAR" id="c::G;KT~vDU3W?qLiS5t">ServoPosition</field>
 </block>
 </value>
 <next>
@@ -139,7 +139,7 @@
 </value>
 <value name="NUMBER">
 <block type="variables_get" id="vU2.mg%bFlu/YLqFO5kR">
-<field name="VAR" id="c::G;KT~vDU3W?qLiS5t" variabletype="">ServoPosition</field>
+<field name="VAR" id="c::G;KT~vDU3W?qLiS5t">ServoPosition</field>
 </block>
 </value>
 <next>
@@ -183,6 +183,6 @@
 </xml>
 <?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
 <Extra>
-<OpModeMeta flavor="TELEOP" group="" />
+<OpModeMeta flavor="TELEOP" group="" autoTransition="" />
 <Enabled value="true" />
 </Extra>

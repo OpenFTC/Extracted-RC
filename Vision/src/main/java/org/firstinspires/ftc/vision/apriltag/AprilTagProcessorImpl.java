@@ -46,6 +46,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
+import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibrationHelper;
+import org.firstinspires.ftc.robotcore.internal.camera.calibration.PlaceholderCalibratedAspectRatioMismatch;
 import org.opencv.calib3d.Calib3d;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -81,6 +83,7 @@ public class AprilTagProcessorImpl extends AprilTagProcessor
     private double fy;
     private double cx;
     private double cy;
+    private final boolean suppressCalibrationWarnings;
 
     private final AprilTagLibrary tagLibrary;
 
@@ -95,7 +98,8 @@ public class AprilTagProcessorImpl extends AprilTagProcessor
 
     private volatile PoseSolver poseSolver = PoseSolver.OPENCV_ITERATIVE;
 
-    public AprilTagProcessorImpl(double fx, double fy, double cx, double cy, DistanceUnit outputUnitsLength, AngleUnit outputUnitsAngle, AprilTagLibrary tagLibrary, boolean drawAxes, boolean drawCube, boolean drawOutline, boolean drawTagID, TagFamily tagFamily, int threads)
+    public AprilTagProcessorImpl(double fx, double fy, double cx, double cy, DistanceUnit outputUnitsLength, AngleUnit outputUnitsAngle, AprilTagLibrary tagLibrary,
+                                 boolean drawAxes, boolean drawCube, boolean drawOutline, boolean drawTagID, TagFamily tagFamily, int threads, boolean suppressCalibrationWarnings)
     {
         this.fx = fx;
         this.fy = fy;
@@ -105,6 +109,7 @@ public class AprilTagProcessorImpl extends AprilTagProcessor
         this.tagLibrary = tagLibrary;
         this.outputUnitsLength = outputUnitsLength;
         this.outputUnitsAngle = outputUnitsAngle;
+        this.suppressCalibrationWarnings = suppressCalibrationWarnings;
         this.drawAxes = drawAxes;
         this.drawCube = drawCube;
         this.drawOutline = drawOutline;
@@ -133,40 +138,86 @@ public class AprilTagProcessorImpl extends AprilTagProcessor
     @Override
     public void init(int width, int height, CameraCalibration calibration)
     {
-        // If the user didn't give us a calibration, but we have one built in,
-        // then go ahead and use it!!
-        if (calibration != null && fx == 0 && fy == 0 && cx == 0 && cy == 0
-            && !(calibration.focalLengthX == 0 && calibration.focalLengthY == 0 && calibration.principalPointX == 0 && calibration.principalPointY == 0)) // needed because we may get an all zero calibration to indicate none, instead of null
+        // ATTEMPT 1 - If the user provided their own calibration, use that
+        if (fx != 0 && fy != 0 && cx != 0 && cy != 0)
+        {
+            Log.d(TAG, String.format("User provided their own camera calibration fx=%7.3f fy=%7.3f cx=%7.3f cy=%7.3f",
+                    fx, fy, cx, cy));
+        }
+
+        // ATTEMPT 2 - If we have valid calibration we can use, use it
+        else if (calibration != null && !calibration.isDegenerate()) // needed because we may get an all zero calibration to indicate none, instead of null
         {
             fx = calibration.focalLengthX;
             fy = calibration.focalLengthY;
             cx = calibration.principalPointX;
             cy = calibration.principalPointY;
 
-            Log.d(TAG, String.format("User did not provide a camera calibration; but we DO have a built in calibration we can use.\n [%dx%d] (may be scaled) %s\nfx=%7.3f fy=%7.3f cx=%7.3f cy=%7.3f",
-                    calibration.getSize().getWidth(), calibration.getSize().getHeight(), calibration.getIdentity().toString(), fx, fy, cx, cy));
+            // Note that this might have been a scaled calibration - inform the user if so
+            if (calibration.resolutionScaledFrom != null)
+            {
+                String msg = String.format("Camera has not been calibrated for [%dx%d]; applying a scaled calibration from [%dx%d].", width, height, calibration.resolutionScaledFrom.getWidth(), calibration.resolutionScaledFrom.getHeight());
+
+                Log.d(TAG, msg);
+
+                if (!suppressCalibrationWarnings)
+                {
+                    RobotLog.addGlobalWarningMessage(msg);
+                }
+            }
+            // Nope, it was a full up proper calibration - no need to pester the user about anything
+            else
+            {
+                Log.d(TAG, String.format("User did not provide a camera calibration; but we DO have a built in calibration we can use.\n [%dx%d] (NOT scaled) %s\nfx=%7.3f fy=%7.3f cx=%7.3f cy=%7.3f",
+                        calibration.getSize().getWidth(), calibration.getSize().getHeight(), calibration.getIdentity().toString(), fx, fy, cx, cy));
+            }
         }
-        else if (fx == 0 && fy == 0 && cx == 0 && cy == 0)
+
+        // Okay, we aren't going to have any calibration data we can use, but there are 2 cases to check
+        else
         {
-            // set it to *something* so we don't crash the native code
+            // If we have a calibration on file, but with a wrong aspect ratio,
+            // we can't use it, but hey at least we can let the user know about it.
+            if (calibration instanceof PlaceholderCalibratedAspectRatioMismatch)
+            {
+                StringBuilder supportedResBuilder = new StringBuilder();
 
-            String warning = "User did not provide a camera calibration, nor was a built-in calibration found for this camera; 6DOF pose data will likely be inaccurate.";
-            Log.d(TAG, warning);
-            RobotLog.addGlobalWarningMessage(warning);
+                for (CameraCalibration cal : CameraCalibrationHelper.getInstance().getCalibrations(calibration.getIdentity()))
+                {
+                    supportedResBuilder.append(String.format("[%dx%d],", cal.getSize().getWidth(), cal.getSize().getHeight()));
+                }
 
+                String msg = String.format("Camera has not been calibrated for [%dx%d]. Pose estimates will likely be inaccurate. However, there are built in calibrations for resolutions: %s",
+                        width, height, supportedResBuilder.toString());
+
+                Log.d(TAG, msg);
+
+                if (!suppressCalibrationWarnings)
+                {
+                    RobotLog.addGlobalWarningMessage(msg);
+                }
+            }
+
+            // Nah, we got absolutely nothing
+            else
+            {
+                String warning = "User did not provide a camera calibration, nor was a built-in calibration found for this camera. Pose estimates will likely be inaccurate.";
+                Log.d(TAG, warning);
+
+                if (!suppressCalibrationWarnings)
+                {
+                    RobotLog.addGlobalWarningMessage(warning);
+                }
+            }
+
+            // IN EITHER CASE, set it to *something* so we don't crash the native code
             fx = 578.272;
             fy = 578.272;
             cx = width/2;
             cy = height/2;
         }
-        else
-        {
-            Log.d(TAG, String.format("User provided their own camera calibration fx=%7.3f fy=%7.3f cx=%7.3f cy=%7.3f",
-                    fx, fy, cx, cy));
-        }
 
         constructMatrix();
-
         canvasAnnotator = new AprilTagCanvasAnnotator(cameraMatrix);
     }
 

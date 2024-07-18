@@ -259,6 +259,40 @@ Blockly.FtcJava['aprilTagProcessorBuilder_setLensIntrinsics'] = function(block) 
   return aprilTagProcessorBuilder + '.setLensIntrinsics(' + fx + ', ' + fy + ', ' + cx + ', ' + cy + ');\n';
 };
 
+Blockly.Blocks['aprilTagProcessorBuilder_setSuppressCalibrationWarnings'] = {
+  init: function() {
+    this.appendDummyInput('FIELD_VARIABLE')
+        .appendField('call')
+        .appendField(new Blockly.FieldVariable('myAprilTagProcessorBuilder', null, ['AprilTagProcessor.Builder'], 'AprilTagProcessor.Builder'),
+            'APRIL_TAG_PROCESSOR_BUILDER')
+        .appendField('.')
+        .appendField(createNonEditableField('setSuppressCalibrationWarnings'));
+    this.appendValueInput('SUPPRESS_CALIBRATION_WARNINGS').setCheck('Boolean');
+    this.setInputsInline(true);
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setColour(builderColor);
+    this.setTooltip('Sets whether any warnings about camera calibration should be suppressed.');
+  }
+};
+
+Blockly.JavaScript['aprilTagProcessorBuilder_setSuppressCalibrationWarnings'] = function(block) {
+  var aprilTagProcessorBuilder = Blockly.JavaScript.variableDB_.getName(
+      block.getFieldValue('APRIL_TAG_PROCESSOR_BUILDER'), Blockly.Variables.NAME_TYPE);
+  var suppressCalibrationWarnings = Blockly.JavaScript.valueToCode(
+      block, 'SUPPRESS_CALIBRATION_WARNINGS', Blockly.JavaScript.ORDER_COMMA);
+  return aprilTagIdentifierForJavaScript + '.setSuppressCalibrationWarnings(' +
+      aprilTagProcessorBuilder + ', ' + suppressCalibrationWarnings + ');\n';
+};
+
+Blockly.FtcJava['aprilTagProcessorBuilder_setSuppressCalibrationWarnings'] = function(block) {
+  var aprilTagProcessorBuilder = Blockly.FtcJava.variableDB_.getName(
+      block.getFieldValue('APRIL_TAG_PROCESSOR_BUILDER'), Blockly.Variables.NAME_TYPE);
+  var suppressCalibrationWarnings = Blockly.FtcJava.valueToCode(
+      block, 'SUPPRESS_CALIBRATION_WARNINGS', Blockly.FtcJava.ORDER_NONE);
+  return aprilTagProcessorBuilder + '.setSuppressCalibrationWarnings(' + suppressCalibrationWarnings + ');\n';
+};
+
 Blockly.Blocks['aprilTagProcessorBuilder_setNumThreads'] = {
   init: function() {
     this.appendDummyInput('FIELD_VARIABLE')

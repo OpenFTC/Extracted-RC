@@ -1,9 +1,9 @@
 <xml xmlns="https://developers.google.com/blockly/xml">
 <variables>
+<variable id="3.)/eLHm(iRl1^Qsq;Hb">USE_WEBCAM</variable>
 <variable id="l)/,LjA`jR!1Nc@Z:`l!">myAprilTagDetections</variable>
 <variable id="OlJB[R?bruF2C6T]y:j,">myTfodRecognitions</variable>
 <variable id="?.?jAjDXaP~!^(jq/Ls_">myAprilTagProcessor</variable>
-<variable id="3.)/eLHm(iRl1^Qsq;Hb">USE_WEBCAM</variable>
 <variable id="vP~n9zf$lW%hYD/C.j_-">myAprilTagDetection</variable>
 <variable id="2(2G$#dr!gUmh_~QL5ZA">myTfodProcessor</variable>
 <variable id="0(Iv9ie]^GJxK3,fL}G(">myTfodRecognition</variable>
@@ -11,16 +11,12 @@
 <variable id="h_4q]^+cuMwY?7E#7$Pc">x</variable>
 <variable id="R{3+3{j6;,uRMizwTeH6">y</variable>
 </variables>
-<block type="procedures_defnoreturn" id="WtpyD@tEu+EoY=P9iY,D" deletable="false" x="0" y="0">
+<block type="procedures_defnoreturn" id="WtpyD@tEu+EoY=P9iY,D" deletable="false" x="25" y="98">
 <field name="NAME">runOpMode</field>
-<comment pinned="false" h="45" w="532">This function is executed when this OpMode is selected from the Driver Station.</comment>
+<comment pinned="true" h="78" w="566">This OpMode illustrates the basics of using both AprilTag recognition and TensorFlow
+Object Detection.</comment>
+<data>{"commentPositionLeft":-19,"commentPositionTop":-98}</data>
 <statement name="STACK">
-<block type="comment" id="vG1;7$#*;crH,9)V$Lbq">
-<field name="COMMENT">This 2023-2024 OpMode illustrates the basics of using both AprilTag recognition and TensorFlow </field>
-<next>
-<block type="comment" id="%awc1YFluB7Se?Z.:U--">
-<field name="COMMENT">Object Detection</field>
-<next>
 <block type="variables_set" id="+WOa|3hz0c^Rah6+[;U4">
 <field name="VAR" id="3.)/eLHm(iRl1^Qsq;Hb">USE_WEBCAM</field>
 <value name="VALUE">
@@ -344,15 +340,12 @@
 </block>
 </next>
 </block>
-</next>
-</block>
-</next>
-</block>
 </statement>
 </block>
-<block type="procedures_defnoreturn" id=":Un!nS!LS%^tq]:g4^?Z" x="0" y="1794">
+<block type="procedures_defnoreturn" id=":Un!nS!LS%^tq]:g4^?Z" x="25" y="1905">
 <field name="NAME">initDoubleVision</field>
-<comment pinned="false" h="80" w="160">Initialize AprilTag Detection.</comment>
+<comment pinned="true" h="45" w="449">Initialize AprilTag Detection and TensorFlow Object Detection.</comment>
+<data>{"commentPositionLeft":-46,"commentPositionTop":-65}</data>
 <statement name="STACK">
 <block type="comment" id="Z#tr,B$;l$RV0)j4q0n.">
 <field name="COMMENT">First, create an AprilTagProcessor.</field>
@@ -443,9 +436,10 @@
 </block>
 </statement>
 </block>
-<block type="procedures_defnoreturn" id="Eg%7GTPuhcoA]FCw9:]O" x="0" y="2249">
+<block type="procedures_defnoreturn" id="Eg%7GTPuhcoA]FCw9:]O" x="25" y="2427">
 <field name="NAME">telemetryAprilTag</field>
-<comment pinned="false" h="80" w="160">Display info (using telemetry) for a recognized AprilTag.</comment>
+<comment pinned="true" h="44" w="420">Display info (using telemetry) for a recognized AprilTag.</comment>
+<data>{"commentPositionLeft":-48,"commentPositionTop":-68}</data>
 <statement name="STACK">
 <block type="variables_set" id="c8~R@@~J_)0dhTTP,GP@">
 <field name="VAR" id="l)/,LjA`jR!1Nc@Z:`l!">myAprilTagDetections</field>
@@ -1017,9 +1011,10 @@
 </block>
 </statement>
 </block>
-<block type="procedures_defnoreturn" id="/s7LjfD#rDF}9WK/VZch" x="0" y="4842">
+<block type="procedures_defnoreturn" id="/s7LjfD#rDF}9WK/VZch" x="25" y="5085">
 <field name="NAME">telemetryTfod</field>
-<comment pinned="false" h="80" w="160">Display info (using telemetry) for a detected object</comment>
+<comment pinned="true" h="43" w="492">Add telemetry about TensorFlow Object Detection (TFOD) recognitions.</comment>
+<data>{"commentPositionLeft":-47,"commentPositionTop":-64}</data>
 <statement name="STACK">
 <block type="variables_set" id="7Fucjwj^^ab7:laBHtNa">
 <field name="VAR" id="OlJB[R?bruF2C6T]y:j,">myTfodRecognitions</field>

@@ -1,9 +1,8 @@
 <xml xmlns="https://developers.google.com/blockly/xml">
-<variables>
-</variables>
-<block type="procedures_defnoreturn" id="j8ZgQ%g4SuYqRpC%R1YD" deletable="false" x="50" y="50">
+<block type="procedures_defnoreturn" id="j8ZgQ%g4SuYqRpC%R1YD" deletable="false" x="25" y="63">
 <field name="NAME">runOpMode</field>
-<comment pinned="false" h="45" w="532">This function is executed when this OpMode is selected from the Driver Station.</comment>
+<comment pinned="true" h="42" w="379">This OpMode shows how to use a digital channel.</comment>
+<data>{"commentPositionLeft":-18,"commentPositionTop":-63}</data>
 <statement name="STACK">
 <block type="comment" id="c0~A:hTaV~N(_?^N%Gj7">
 <field name="COMMENT">Configure digital pin for input mode.</field>
@@ -36,8 +35,7 @@
 <next>
 <block type="controls_if" id="x|]Ev;PrXv+bb2^WiWT,">
 <value name="IF0">
-<block type="linearOpMode_opModeIsActive" id="@n$h]Fe:_AN$-MK1Nx|h">
-</block>
+<block type="linearOpMode_opModeIsActive" id="@n$h]Fe:_AN$-MK1Nx|h"/>
 </value>
 <statement name="DO0">
 <block type="comment" id="YL)uXK`goGn[?9caqBzB">
@@ -46,16 +44,14 @@
 <block type="controls_whileUntil" id="CSu;n5wvSKluH][%;R,`">
 <field name="MODE">WHILE</field>
 <value name="BOOL">
-<block type="linearOpMode_opModeIsActive" id="kz(;ttLuzp=.y7|:f/q#">
-</block>
+<block type="linearOpMode_opModeIsActive" id="kz(;ttLuzp=.y7|:f/q#"/>
 </value>
 <statement name="DO">
 <block type="comment" id="@S3wIhV}Uy/}xZi5:.:K">
 <field name="COMMENT">button is pressed if value returned is LOW or false.</field>
 <next>
 <block type="controls_if" id="6ji0;|;Br9C2Rm-u9*jx">
-<mutation else="1">
-</mutation>
+<mutation else="1"/>
 <value name="IF0">
 <block type="logic_compare" id="c}K/An}Dq4+Y8i5Py]Pu">
 <field name="OP">EQ</field>
@@ -102,8 +98,7 @@
 </block>
 </statement>
 <next>
-<block type="telemetry_update" id="[|-6W}36MJS~b*_Zz_~r">
-</block>
+<block type="telemetry_update" id="[|-6W}36MJS~b*_Zz_~r"/>
 </next>
 </block>
 </next>
@@ -129,6 +124,6 @@
 </xml>
 <?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
 <Extra>
-<OpModeMeta flavor="TELEOP" group="" />
+<OpModeMeta flavor="TELEOP" group="" autoTransition="" />
 <Enabled value="true" />
 </Extra>

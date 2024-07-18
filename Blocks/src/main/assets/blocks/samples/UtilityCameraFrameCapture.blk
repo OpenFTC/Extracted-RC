@@ -10,22 +10,14 @@
 <variable id="jUwjw-y$LINF^aWpe?s;">capReqTime</variable>
 <variable id="m@q;(Dtg`po9gtAL7_Az">x</variable>
 </variables>
-<block type="procedures_defnoreturn" id="WtpyD@tEu+EoY=P9iY,D" deletable="false" x="0" y="0">
+<block type="procedures_defnoreturn" id="WtpyD@tEu+EoY=P9iY,D" deletable="false" x="25" y="125">
 <field name="NAME">runOpMode</field>
-<comment pinned="false" h="45" w="532">This function is executed when this OpMode is selected from the Driver Station.</comment>
+<comment pinned="true" h="102" w="652">This OpMode helps calibrate a webcam or RC phone camera, useful for AprilTag pose estimation
+with the FTC VisionPortal. It captures a camera frame (image) and stores it on the Robot Controller
+(Control Hub or RC phone), with each press of the gamepad button X (or Square).
+Full calibration instructions are here: https://ftc-docs.firstinspires.org/camera-calibration</comment>
+<data>{"commentPositionLeft":-19,"commentPositionTop":-125}</data>
 <statement name="STACK">
-<block type="comment" id="vG1;7$#*;crH,9)V$Lbq">
-<field name="COMMENT">This Utility OpMode helps calibrate a webcam or RC phone camera, useful for AprilTag pose estimation</field>
-<next>
-<block type="comment" id="(o),uE!1R)lWmXbQcSB4">
-<field name="COMMENT">with the FTC VisionPortal.   It captures a camera frame (image) and stores it on the Robot </field>
-<next>
-<block type="comment" id="xfyje?|mmJh,KZ=+-[w0">
-<field name="COMMENT">Controller (Control Hub or RC phone), with each press of the gamepad button X (or Square).</field>
-<next>
-<block type="comment" id="xI/y2m$@nKDEVS!i,4]y">
-<field name="COMMENT">Full calibration instructions are here: https://ftc-docs.firstinspires.org/camera-calibration</field>
-<next>
 <block type="comment" id="n]6=bEV9C]K%rrq-9jxg">
 <field name="COMMENT">EDIT THESE PARAMETERS AS NEEDED</field>
 <next>
@@ -420,14 +412,6 @@
 </next>
 </block>
 </statement>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
-</block>
-</next>
 </block>
 </next>
 </block>

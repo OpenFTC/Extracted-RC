@@ -32,6 +32,6 @@ dependencies {
      * External
      */
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    api 'org.openftc:easyopencv:1.7.0'
+    api 'org.openftc:easyopencv:1.7.1'
     api 'org.openftc:apriltag:2.0.0'
 }

@@ -169,7 +169,7 @@ public class ToolboxUtil {
   public static void addProperties(
       StringBuilder xmlToolbox, HardwareType hardwareType, String identifier,
       Map<String, String> properties, Map<String, String[]> setterValues,
-      Map<String, String[]> enumBlocks) {
+      Map<String, String> enumBlocks) {
 
     for (Map.Entry<String, String> property : properties.entrySet()) {
       String propertyName = property.getKey();
@@ -180,11 +180,18 @@ public class ToolboxUtil {
               xmlToolbox, hardwareType, identifier, propertyName, propertyType, setterValue);
         }
       }
-      addPropertyGetter(xmlToolbox, hardwareType, identifier, propertyName, propertyType);
       if (enumBlocks != null && enumBlocks.containsKey(propertyName)) {
-        for (String enumBlock : enumBlocks.get(propertyName)) {
-          xmlToolbox.append(enumBlock);
-        }
+        // For an enum property, provide a logic_compare block that compares the property getter with the enum.
+        xmlToolbox
+            .append("<block type=\"logic_compare\"><field name=\"OP\">EQ</field><value name=\"A\">");
+        addPropertyGetter(xmlToolbox, hardwareType, identifier, propertyName, propertyType);
+        xmlToolbox
+            .append("</value><value name=\"B\">")
+            .append(enumBlocks.get(propertyName))
+            .append("</value></block>");
+      } else {
+        // For other properties, just provide the property getter block.
+        addPropertyGetter(xmlToolbox, hardwareType, identifier, propertyName, propertyType);
       }
     }
   }

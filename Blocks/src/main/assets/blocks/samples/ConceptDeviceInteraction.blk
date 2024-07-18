@@ -1,15 +1,12 @@
 <xml xmlns="https://developers.google.com/blockly/xml">
 <variables>
-<variable type="" id="Ivr#pnFgCLh`6~Jkb4fl">tgtPower</variable>
+<variable id="Ivr#pnFgCLh`6~Jkb4fl">tgtPower</variable>
 </variables>
-<block type="procedures_defnoreturn" id="^h|yUs(BfxI3Q4gJLPyE" deletable="false" x="40" y="18">
+<block type="procedures_defnoreturn" id="^h|yUs(BfxI3Q4gJLPyE" deletable="false" x="25" y="101">
 <field name="NAME">runOpMode</field>
-<comment pinned="false" h="45" w="532">This function is executed when this OpMode is selected from the Driver Station.</comment>
+<comment pinned="true" h="80" w="613">This example OpMode is used in the FTC Blocks Programming Tool training tutorial. It shows how to control a motor, a servo, and to read a couple of sensors.</comment>
+<data>{"commentPositionLeft":-19,"commentPositionTop":-101}</data>
 <statement name="STACK">
-<block type="comment" id="EF:o+CCvmWfm*_:7q[ff">
-<field name="COMMENT">This is an example OpMode.</field>
-<comment pinned="false" h="109" w="311">This example OpMode is used in the FTC Blocks Programming Tool training tutorial. It shows how to control a motor, a servo, and to read a couple of sensors.</comment>
-<next>
 <block type="digitalChannel_setProperty_DigitalChannelMode" id="jf~%z/q]FR]fmT+F^K0R">
 <field name="IDENTIFIER">digitalTouchAsDigitalChannel</field>
 <field name="PROP">Mode</field>
@@ -34,8 +31,7 @@
 <next>
 <block type="controls_if" id="gO!YDHikFW@^;bL=U_5.">
 <value name="IF0">
-<block type="linearOpMode_opModeIsActive" id="8Sb:CZk(aIDXx,9+:qAR">
-</block>
+<block type="linearOpMode_opModeIsActive" id="8Sb:CZk(aIDXx,9+:qAR"/>
 </value>
 <statement name="DO0">
 <block type="comment" id="?E~uw6.~Oa^:W`B$^biu">
@@ -44,16 +40,14 @@
 <block type="controls_whileUntil" id="4$@D9zIq}sl]_e8u$+6E">
 <field name="MODE">WHILE</field>
 <value name="BOOL">
-<block type="linearOpMode_opModeIsActive" id="4xhxcBEpm^bvQ!kFDo{3">
-</block>
+<block type="linearOpMode_opModeIsActive" id="4xhxcBEpm^bvQ!kFDo{3"/>
 </value>
 <statement name="DO">
 <block type="comment" id="F2^8Sr@ITQ!EJjqk@~]K">
 <field name="COMMENT">Put loop blocks here.</field>
 <next>
 <block type="controls_if" id="zx|Wm#DyzS86AvCv8T!{">
-<mutation elseif="2">
-</mutation>
+<mutation elseif="2"/>
 <value name="IF0">
 <block type="gamepad_getProperty_Boolean" id="5hRp7C*)=QqKr)lKSI{/">
 <field name="IDENTIFIER">gamepad1</field>
@@ -125,7 +119,7 @@
 </statement>
 <next>
 <block type="variables_set" id="j`mK$4nsmjpcs-z@bSqa">
-<field name="VAR" id="Ivr#pnFgCLh`6~Jkb4fl" variabletype="">tgtPower</field>
+<field name="VAR" id="Ivr#pnFgCLh`6~Jkb4fl">tgtPower</field>
 <value name="VALUE">
 <block type="gamepad_getProperty_Number" id="jx:2*hbNL%dF]RS3]80R">
 <field name="IDENTIFIER">gamepad1</field>
@@ -143,7 +137,7 @@
 <field name="NUM">1</field>
 </shadow>
 <block type="variables_get" id="_mc[sQCU]hj;5R,atTzC">
-<field name="VAR" id="Ivr#pnFgCLh`6~Jkb4fl" variabletype="">tgtPower</field>
+<field name="VAR" id="Ivr#pnFgCLh`6~Jkb4fl">tgtPower</field>
 </block>
 </value>
 <next>
@@ -158,7 +152,7 @@
 <field name="NUM">123</field>
 </shadow>
 <block type="variables_get" id="_{`]`fn6}(rW9C%FtEAe">
-<field name="VAR" id="Ivr#pnFgCLh`6~Jkb4fl" variabletype="">tgtPower</field>
+<field name="VAR" id="Ivr#pnFgCLh`6~Jkb4fl">tgtPower</field>
 </block>
 </value>
 <next>
@@ -218,8 +212,7 @@
 </value>
 <next>
 <block type="controls_if" id="}|D4x6EOr`OHSwZVg=A_">
-<mutation else="1">
-</mutation>
+<mutation else="1"/>
 <value name="IF0">
 <block type="digitalChannel_getProperty_Boolean" id="kP[|(lNx0J}@RjMo^ee1">
 <field name="IDENTIFIER">digitalTouchAsDigitalChannel</field>
@@ -256,8 +249,7 @@
 </block>
 </statement>
 <next>
-<block type="telemetry_update" id="$icUyacQB1}?t_YzvC3m">
-</block>
+<block type="telemetry_update" id="$icUyacQB1}?t_YzvC3m"/>
 </next>
 </block>
 </next>
@@ -281,8 +273,6 @@
 </next>
 </block>
 </statement>
-</block>
-</next>
 </block>
 </next>
 </block>
@@ -295,6 +285,6 @@
 </xml>
 <?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
 <Extra>
-<OpModeMeta flavor="TELEOP" group="" />
+<OpModeMeta flavor="TELEOP" group="" autoTransition="" />
 <Enabled value="true" />
 </Extra>

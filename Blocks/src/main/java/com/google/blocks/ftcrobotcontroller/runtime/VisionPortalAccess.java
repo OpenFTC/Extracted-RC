@@ -28,6 +28,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.FocusCo
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.PtzControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.WhiteBalanceControl;
+import org.firstinspires.ftc.robotcore.external.stream.CameraStreamServer;
 import org.firstinspires.ftc.robotcore.internal.camera.delegating.SwitchableCameraName;
 import org.firstinspires.ftc.robotcore.internal.collections.SimpleGson;
 import org.firstinspires.ftc.vision.VisionPortal;
@@ -158,6 +159,42 @@ class VisionPortalAccess extends Access {
       VisionPortal.Builder visionPortalBuilder = checkVisionPortalBuilder(visionPortalBuilderArg);
       if (visionPortalBuilder != null) {
         visionPortalBuilder.setAutoStopLiveView(autoStopLiveView);
+      }
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(classes = VisionPortal.Builder.class, methodName = "setAutoStartStreamOnBuild")
+  public void setAutoStartStreamOnBuild(Object visionPortalBuilderArg, boolean autoStartStreamOnBuild) {
+    try {
+      startBlockExecution(BlockType.FUNCTION, "VisionPortal.Builder", ".setAutoStartStreamOnBuild");
+      VisionPortal.Builder visionPortalBuilder = checkVisionPortalBuilder(visionPortalBuilderArg);
+      if (visionPortalBuilder != null) {
+        visionPortalBuilder.setAutoStartStreamOnBuild(autoStartStreamOnBuild);
+      }
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(classes = VisionPortal.Builder.class, methodName = "setShowStatsOverlay")
+  public void setShowStatsOverlay(Object visionPortalBuilderArg, boolean showStatsOverlay) {
+    try {
+      startBlockExecution(BlockType.FUNCTION, "VisionPortal.Builder", ".setShowStatsOverlay");
+      VisionPortal.Builder visionPortalBuilder = checkVisionPortalBuilder(visionPortalBuilderArg);
+      if (visionPortalBuilder != null) {
+        visionPortalBuilder.setShowStatsOverlay(showStatsOverlay);
       }
     } catch (Throwable e) {
       blocksOpMode.handleFatalException(e);
@@ -592,6 +629,24 @@ class VisionPortalAccess extends Access {
         return visionPortal.getActiveCamera();
       }
       return null;
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(exclusiveToBlocks = true)
+  public void cameraStreamServer_setSource(Object visionPortalArg) {
+    try {
+      startBlockExecution(BlockType.FUNCTION, "CameraStreamServer", ".setSource");
+      VisionPortal visionPortal = checkVisionPortal(visionPortalArg);
+      if (visionPortal != null) {
+        CameraStreamServer.getInstance().setSource(visionPortal);
+      }
     } catch (Throwable e) {
       blocksOpMode.handleFatalException(e);
       throw new AssertionError("impossible", e);

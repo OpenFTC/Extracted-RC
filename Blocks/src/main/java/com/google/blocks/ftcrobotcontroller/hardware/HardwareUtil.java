@@ -218,6 +218,14 @@ public class HardwareUtil {
       }
     }
 
+    jsHardware.append("var allHardwareIdentifiers = [\n");
+    for (HardwareItem hardwareItem : hardwareItemMap.getAllHardwareItems()) {
+      jsHardware
+          .append("'").append(hardwareItem.identifier).append("',\n");
+    }
+    jsHardware
+        .append("  ];\n\n");
+
     jsHardware.append("var IDENTIFIERS_USED_PREFIX = '").append(IDENTIFIERS_USED_PREFIX).append("';\n\n");
 
     jsHardware.append("var AUTO_TRANSITION_OPTIONS = [\n");
@@ -1638,8 +1646,8 @@ public class HardwareUtil {
     properties.put("SystemStatus", "SystemStatus");
     properties.put("Temperature", "Temperature");
     properties.put("Velocity", "Velocity");
-    Map<String, String[]> enumBlocks = new HashMap<String, String[]>();
-    enumBlocks.put("SystemStatus", new String[] { ToolboxUtil.makeTypedEnumBlock(hardwareType, "systemStatus") });
+    Map<String, String> enumBlocks = new HashMap<String, String>();
+    enumBlocks.put("SystemStatus", ToolboxUtil.makeTypedEnumBlock(hardwareType, "systemStatus"));
     ToolboxUtil.addProperties(xmlToolbox, hardwareType, identifier, properties,
         null /* setterValues */, enumBlocks);
 
@@ -1822,6 +1830,8 @@ public class HardwareUtil {
     SortedMap<String, String> properties = new TreeMap<String, String>();
     properties.put("Direction", "Direction");
     properties.put("Power", "Number");
+    Map<String, String> enumBlocks = new HashMap<String, String>();
+    enumBlocks.put("Direction", ToolboxUtil.makeTypedEnumBlock(hardwareType, "direction"));
     Map<String, String[]> setterValues = new HashMap<String, String[]>();
     setterValues.put(
         "Direction", new String[] { ToolboxUtil.makeTypedEnumShadow(hardwareType, "direction") });
@@ -1830,7 +1840,7 @@ public class HardwareUtil {
       ToolboxUtil.makeNumberShadow(0)
     });
     ToolboxUtil.addProperties(xmlToolbox, hardwareType, identifier, properties,
-        setterValues, null /* enumBlocks */);
+        setterValues, enumBlocks);
   }
 
   /**
@@ -1860,6 +1870,10 @@ public class HardwareUtil {
     properties.put("PowerFloat", "Boolean");
     properties.put("TargetPosition", "Number");
     properties.put("ZeroPowerBehavior", "ZeroPowerBehavior");
+    Map<String, String> enumBlocks = new HashMap<String, String>();
+    enumBlocks.put("Direction", ToolboxUtil.makeTypedEnumBlock(hardwareType, "direction"));
+    enumBlocks.put("Mode", ToolboxUtil.makeTypedEnumBlock(hardwareType, "runMode"));
+    enumBlocks.put("ZeroPowerBehavior", ToolboxUtil.makeTypedEnumBlock(hardwareType, "zeroPowerBehavior"));
     Map<String, String[]> setterValues = new HashMap<String, String[]>();
     setterValues.put("Direction", new String[] { direction });
     setterValues.put("Mode", new String[] { runMode });
@@ -1867,7 +1881,7 @@ public class HardwareUtil {
     setterValues.put("TargetPosition", new String[] { zero });
     setterValues.put("ZeroPowerBehavior", new String[] { zeroPowerBehavior });
     ToolboxUtil.addProperties(xmlToolbox, hardwareType, identifier, properties,
-        setterValues, null /* enumBlocks */);
+        setterValues, enumBlocks);
 
     // Functions
     Map<String, Map<String, String>> functions = new TreeMap<String, Map<String, String>>();
@@ -1996,11 +2010,13 @@ public class HardwareUtil {
     SortedMap<String, String> properties = new TreeMap<String, String>();
     properties.put("Mode", "DigitalChannelMode");
     properties.put("State", "Boolean");
+    Map<String, String> enumBlocks = new HashMap<String, String>();
+    enumBlocks.put("Mode", ToolboxUtil.makeTypedEnumBlock(hardwareType, "mode"));
     Map<String, String[]> setterValues = new HashMap<String, String[]>();
     setterValues.put("Mode", new String[] { mode });
     setterValues.put("State", new String[] { ToolboxUtil.makeBooleanShadow(true) });
     ToolboxUtil.addProperties(xmlToolbox, hardwareType, identifier, properties,
-        setterValues, null /* enumBlocks */);
+        setterValues, enumBlocks);
   }
 
   /**
@@ -2040,12 +2056,14 @@ public class HardwareUtil {
     properties.put("RotationFraction", "Number");
     properties.put("AngularVelocityAxes", "Array");
     properties.put("AngularOrientationAxes", "Array");
+    Map<String, String> enumBlocks = new HashMap<String, String>();
+    enumBlocks.put("HeadingMode", ToolboxUtil.makeTypedEnumBlock(hardwareType, "headingMode"));
     Map<String, String[]> setterValues = new HashMap<String, String[]>();
     setterValues.put("HeadingMode", new String[] { headingMode });
     setterValues.put("I2cAddress7Bit", new String[] { ToolboxUtil.makeNumberShadow(8) });
     setterValues.put("I2cAddress8Bit", new String[] { ToolboxUtil.makeNumberShadow(16) });
     ToolboxUtil.addProperties(xmlToolbox, hardwareType, identifier, properties,
-        setterValues, null /* enumBlocks */);
+        setterValues, enumBlocks);
 
     // Functions
     Map<String, Map<String, String>> functions = new TreeMap<String, Map<String, String>>();
@@ -2116,13 +2134,15 @@ public class HardwareUtil {
     properties.put("Strength", "Number");
     properties.put("I2cAddress7Bit", "Number");
     properties.put("I2cAddress8Bit", "Number");
+    Map<String, String> enumBlocks = new HashMap<String, String>();
+    enumBlocks.put("Mode", ToolboxUtil.makeTypedEnumBlock(hardwareType, "mode"));
     Map<String, String[]> setterValues = new HashMap<String, String[]>();
     setterValues.put("SignalDetectedThreshold", new String[] { threshold });
     setterValues.put("Mode", new String[] { mode });
     setterValues.put("I2cAddress7Bit", new String[] { ToolboxUtil.makeNumberShadow(8) });
     setterValues.put("I2cAddress8Bit", new String[] { ToolboxUtil.makeNumberShadow(16) });
     ToolboxUtil.addProperties(xmlToolbox, hardwareType, identifier, properties,
-        setterValues, null /* enumBlocks */);
+        setterValues, enumBlocks);
   }
 
   /**
@@ -2308,12 +2328,14 @@ public class HardwareUtil {
     SortedMap<String, String> properties = new TreeMap<String, String>();
     properties.put("Direction", "Direction");
     properties.put("Position", "Number");
+    Map<String, String> enumBlocks = new HashMap<String, String>();
+    enumBlocks.put("Direction", ToolboxUtil.makeTypedEnumBlock(hardwareType, "direction"));
     Map<String, String[]> setterValues = new HashMap<String, String[]>();
     setterValues.put(
         "Direction", new String[] { ToolboxUtil.makeTypedEnumShadow(hardwareType, "direction") });
     setterValues.put("Position", new String[] { ToolboxUtil.makeNumberShadow(0) });
     ToolboxUtil.addProperties(xmlToolbox, hardwareType, identifier, properties,
-        setterValues, null /* enumBlocks */);
+        setterValues, enumBlocks);
 
     // Functions
     Map<String, Map<String, String>> functions = new TreeMap<String, Map<String, String>>();
@@ -2565,10 +2587,12 @@ public class HardwareUtil {
     set.add("TempUnit");
     set.add("UnnormalizedAngleUnit");
     set.add("Velocity");
-    // org.firstinspires.ftc.robotcore.internal.system
-    set.add("AppUtil");
+    // org.firstinspires.ftc.robotcore.external.stream
+    set.add("CameraStreamServer");
     // org.firstinspires.ftc.robotcore.external.tfod
     set.add("Recognition");
+    // org.firstinspires.ftc.robotcore.internal.system
+    set.add("AppUtil");
     // LinearOpMode members
     set.add("waitForStart");
     set.add("idle");

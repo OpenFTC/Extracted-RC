@@ -1,0 +1,95 @@
+<xml xmlns="https://developers.google.com/blockly/xml">
+<block type="procedures_defnoreturn" id="WtpyD@tEu+EoY=P9iY,D" deletable="false" x="25" y="202">
+<field name="NAME">runOpMode</field>
+<comment pinned="true" h="177" w="585">This OpMode demonstrates how to use a REV Robotics Touch Sensor, REV Robotics
+Magnetic Limit Switch, or other device that implements the TouchSensor interface. Any
+touch sensor that connects its output to ground when pressed (known as "active low") can
+be configured as a "REV Touch Sensor". This includes REV's Magnetic Limit Switch.
+
+A REV Robotics Touch Sensor must be configured on digital port number 1, 3, 5, or 7.
+A Magnetic Limit Switch can be configured on any digital port.</comment>
+<data>{"commentPositionLeft":-20,"commentPositionTop":-202}</data>
+<statement name="STACK">
+<block type="comment" id="Lc#BFtj*NTB48YL;eBl.">
+<field name="COMMENT">Put initialization blocks here.</field>
+<next>
+<block type="linearOpMode_waitForStart" id=":`$wN_ci`O;o6P0~.(+g">
+<next>
+<block type="controls_if" id="}Q?5mbxSO8Di;i!__6[y">
+<value name="IF0">
+<block type="linearOpMode_opModeIsActive" id=")o%YFX/#9kvv^sgXr4~5"/>
+</value>
+<statement name="DO0">
+<block type="comment" id="(rU-p_T_/B|vExcs}liL">
+<field name="COMMENT">Put run blocks here.</field>
+<next>
+<block type="controls_whileUntil" id="^0Kagy/e+Ea{rbZPv2G6">
+<field name="MODE">WHILE</field>
+<value name="BOOL">
+<block type="linearOpMode_opModeIsActive" id="e)cr{!2VIET83s,JWC.="/>
+</value>
+<statement name="DO">
+<block type="comment" id="Jh/;L$n@JuX8AQJDFCul">
+<field name="COMMENT">Put loop blocks here.</field>
+<next>
+<block type="controls_if" id="rM-)]%%5YLDp:`#4TLfB">
+<mutation else="1"/>
+<value name="IF0">
+<block type="touchSensor_getProperty_Boolean" id="r7K%.-+{p$U#CrfUgWn%">
+<field name="IDENTIFIER">sensor_touchAsTouchSensor</field>
+<field name="PROP">IsPressed</field>
+<data>{"IDENTIFIER":"sensor_touch"}</data>
+</block>
+</value>
+<statement name="DO0">
+<block type="telemetry_addTextData_All" id="OETcXL?e;0i}gnj1gvAv">
+<value name="KEY">
+<shadow type="text" id="4UdJhVoSIf!v`I,-*3q,">
+<field name="TEXT">Touch Sensor</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id="hQ7Er/Y0W6%PjdyvX-bR">
+<field name="TEXT">Is Pressed</field>
+</shadow>
+</value>
+</block>
+</statement>
+<statement name="ELSE">
+<block type="telemetry_addTextData_All" id="S@g89|ol=r87:FoFn#6G">
+<value name="KEY">
+<shadow type="text" id="@{ei0isUDgVHRjxT]?eG">
+<field name="TEXT">Touch Sensor</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id="z%|AAmmeb#lykkBtl[+h">
+<field name="TEXT">Is Not Pressed</field>
+</shadow>
+</value>
+</block>
+</statement>
+<next>
+<block type="telemetry_update" id="exvivmft-pX$n!1,8Ea$"/>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</xml>
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<Extra>
+<OpModeMeta flavor="TELEOP" group="" autoTransition="" />
+<Enabled value="true" />
+</Extra>

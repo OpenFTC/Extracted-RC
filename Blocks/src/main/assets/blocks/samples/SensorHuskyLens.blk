@@ -4,7 +4,7 @@
 <variable id="cG)$JrG{06oj2s$K#/;g">myHuskyLensBlocks</variable>
 <variable id="U^di!!8ecgdQojP8h-gC">myHuskyLensBlock</variable>
 </variables>
-<block type="procedures_defnoreturn" id="WtpyD@tEu+EoY=P9iY,D" deletable="false" x="49" y="43">
+<block type="procedures_defnoreturn" id="WtpyD@tEu+EoY=P9iY,D" deletable="false" x="25" y="240">
 <field name="NAME">runOpMode</field>
 <comment pinned="true" h="221" w="668">This OpMode illustrates how to use the DFRobot HuskyLens.
 
@@ -16,7 +16,7 @@ documentation: https://wiki.dfrobot.com/HUSKYLENS_V1.0_SKU_SEN0305_SEN0336
 This sample illustrates how to detect AprilTags, but can be used to detect other types
 of objects by changing the algorithm. It assumes that the HuskyLens is configured with
 a name of "huskylens".</comment>
-<data>{"commentPositionLeft":208,"commentPositionTop":-32}</data>
+<data>{"commentPositionLeft":-18,"commentPositionTop":-240}</data>
 <statement name="STACK">
 <block type="comment" id="Lc#BFtj*NTB48YL;eBl.">
 <field name="COMMENT">Put initialization blocks here.</field>

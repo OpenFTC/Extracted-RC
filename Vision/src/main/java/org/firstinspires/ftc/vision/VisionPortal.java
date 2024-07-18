@@ -43,11 +43,12 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDir
 import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.CameraControl;
+import org.firstinspires.ftc.robotcore.external.stream.CameraStreamSource;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvWebcam;
 
-public abstract class VisionPortal
+public abstract class VisionPortal implements CameraStreamSource
 {
     public static final int DEFAULT_VIEW_CONTAINER_ID = AppUtil.getDefContext().getResources().getIdentifier("cameraMonitorViewId", "id", AppUtil.getDefContext().getPackageName());
 
@@ -102,9 +103,9 @@ public abstract class VisionPortal
     }
 
     /**
-     * Split up the screen for using multiple vision portals with live views simultaneously
+     * Split up the screen for using multiple vision portals with LiveViews simultaneously
      * @param numPortals the number of portals to create space for on the screen
-     * @param mpl the methodology for laying out the multiple live views on the screen
+     * @param mpl the methodology for laying out the multiple LiveViews on the screen
      * @return an array of view IDs, whose elements may be passed to {@link Builder#setLiveViewContainerId(int)}
      */
     public static int[] makeMultiPortalView(int numPortals, MultiPortalLayout mpl)
@@ -151,6 +152,8 @@ public abstract class VisionPortal
         private CameraName camera;
         private int liveViewContainerId = DEFAULT_VIEW_CONTAINER_ID; // 0 == none
         private boolean autoStopLiveView = true;
+        private boolean autoStartStreamOnBuild = true;
+        private boolean showStatsOverlay = true;
         private Size cameraResolution = new Size(640, 480);
         private StreamFormat streamFormat = null;
         private StreamFormat STREAM_FORMAT_DEFAULT = StreamFormat.YUY2;
@@ -192,6 +195,8 @@ public abstract class VisionPortal
 
         /**
          * Configure the vision portal to use (or not to use) a live camera preview
+         * NB: When using MultiPortal, you MUST use {@link #setLiveViewContainerId(int)} instead!
+         *
          * @param enableLiveView whether or not to use a live preview
          * @return the {@link Builder} object, to allow for method chaining
          */
@@ -224,7 +229,7 @@ public abstract class VisionPortal
         /**
          * A more advanced version of {@link #enableLiveView(boolean)}; allows you
          * to specify a specific view ID to use as a container, rather than just using the default one
-         * @param liveViewContainerId view ID of container for live view
+         * @param liveViewContainerId view ID of container for LiveView (pass ZERO for DISABLE)
          * @return the {@link Builder} object, to allow for method chaining
          */
         public Builder setLiveViewContainerId(int liveViewContainerId)
@@ -287,7 +292,30 @@ public abstract class VisionPortal
         }
 
         /**
-         * Actually create the {@link VisionPortal} i.e. spool up the camera and live view
+         * Set whether the VisionPortal should automatically start streaming
+         * when you issue a .build() call on the Builder object.
+         * @param autoStartStreamOnBuild whether to automatically start streaming
+         * @return the {@link Builder} object, to allow for method chaining
+         */
+        public Builder setAutoStartStreamOnBuild(boolean autoStartStreamOnBuild)
+        {
+            this.autoStartStreamOnBuild = autoStartStreamOnBuild;
+            return this;
+        }
+
+        /**
+         * Set whether the statistics overlay should be shown on the LiveView
+         * @param showStatsOverlay whether to show statistics overlay on LiveView
+         * @return the {@link Builder} object, to allow for method chaining
+         */
+        public Builder setShowStatsOverlay(boolean showStatsOverlay)
+        {
+            this.showStatsOverlay = showStatsOverlay;
+            return this;
+        }
+
+        /**
+         * Actually create the {@link VisionPortal} i.e. spool up the camera and LiveView
          * and begin sending image data to any attached {@link VisionProcessor}s
          * @return a configured, ready to use portal
          * @throws RuntimeException if you didn't specify what camera to use
@@ -314,7 +342,7 @@ public abstract class VisionPortal
             }
 
             VisionPortal portal = new VisionPortalImpl(
-                camera, liveViewContainerId, autoStopLiveView, cameraResolution, streamFormat,
+                camera, liveViewContainerId, autoStopLiveView, cameraResolution, streamFormat, autoStartStreamOnBuild, showStatsOverlay,
                 processors.toArray(new VisionProcessor[processors.size()]));
 
             // Clear this list to allow safe re-use of the builder object
@@ -427,20 +455,20 @@ public abstract class VisionPortal
     public abstract void resumeStreaming();
 
     /**
-     * Temporarily stop the live view on the RC screen. This DOES NOT affect the ability to get
+     * Temporarily stop the LiveView on the RC screen. This DOES NOT affect the ability to get
      * a camera frame on the Driver Station's "Camera Stream" feature.
      *
-     * This has no effect if you didn't set up a live view.
+     * This has no effect if you didn't set up a LiveView.
      *
-     * Stopping the live view is recommended during competition to save CPU resources when
-     * a live view is not required for debugging purposes.
+     * Stopping the LiveView is recommended during competition to save CPU resources when
+     * a LiveView is not required for debugging purposes.
      */
     public abstract void stopLiveView();
 
     /**
-     * Start the live view again, if it was previously stopped with {@link #stopLiveView()}
+     * Start the LiveView again, if it was previously stopped with {@link #stopLiveView()}
      *
-     * This has no effect if you didn't set up a live view.
+     * This has no effect if you didn't set up a LiveView.
      */
     public abstract void resumeLiveView();
 
@@ -480,7 +508,7 @@ public abstract class VisionPortal
      * Teardown everything prior to the end of the OpMode (perhaps to save resources) at which point
      * it will be torn down automagically anyway.
      *
-     * This will stop all vision related processing, shut down the camera, and remove the live view.
+     * This will stop all vision related processing, shut down the camera, and remove the LiveView.
      * A closed portal may not be re-opened: if you wish to use the camera again, you must make a new portal
      */
     public abstract void close();

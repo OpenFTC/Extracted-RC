@@ -118,6 +118,24 @@ class AprilTagAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = AprilTagProcessor.Builder.class, methodName = "setSuppressCalibrationWarnings")
+  public void setSuppressCalibrationWarnings(Object aprilTagProcessorBuilderArg, boolean suppressCalibrationWarnings) {
+    try {
+      startBlockExecution(BlockType.FUNCTION, "AprilTagProcessor.Builder", ".setSuppressCalibrationWarnings");
+      AprilTagProcessor.Builder aprilTagProcessorBuilder = checkAprilTagProcessorBuilder(aprilTagProcessorBuilderArg);
+      if (aprilTagProcessorBuilder != null) {
+        aprilTagProcessorBuilder.setSuppressCalibrationWarnings(suppressCalibrationWarnings);
+      }
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
   @Block(classes = AprilTagProcessor.Builder.class, methodName = "setTagFamily")
   public void setTagFamily(Object aprilTagProcessorBuilderArg, String tagFamilyString) {
     try {

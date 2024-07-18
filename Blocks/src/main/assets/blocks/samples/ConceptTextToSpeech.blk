@@ -1,16 +1,10 @@
 <xml xmlns="https://developers.google.com/blockly/xml">
-<variables>
-</variables>
-<block type="procedures_defnoreturn" id="H!go*_Z;1K?9#9))FEed" deletable="false" x="50" y="50">
+<block type="procedures_defnoreturn" id="H!go*_Z;1K?9#9))FEed" deletable="false" x="25" y="86">
 <field name="NAME">runOpMode</field>
-<comment pinned="false" h="45" w="532">This function is executed when this OpMode is selected from the Driver Station.</comment>
+<comment pinned="true" h="66" w="418">This OpMode uses the text to speech function.
+Make sure to turn up volume on Robot Controller phone.</comment>
+<data>{"commentPositionLeft":-24,"commentPositionTop":-86}</data>
 <statement name="STACK">
-<block type="comment" id="w(Nzkr97MLp17lL!xo|R">
-<field name="COMMENT">Example on using text to speech function.</field>
-<next>
-<block type="comment" id="VZI:ovXY]^e#w(L@A74B">
-<field name="COMMENT">Make sure to turn up volume on Robot Controller.</field>
-<next>
 <block type="comment" id="p~KtOMx9H#)F?sM3_Z^P">
 <field name="COMMENT">Initialize the text to speech function.</field>
 <next>
@@ -52,8 +46,7 @@
 <next>
 <block type="controls_if" id="HM)KnCAUCXiuoIRx4FxB">
 <value name="IF0">
-<block type="linearOpMode_opModeIsActive" id="#Y+4%6h3{Sqvzu]zkQ2u">
-</block>
+<block type="linearOpMode_opModeIsActive" id="#Y+4%6h3{Sqvzu]zkQ2u"/>
 </value>
 <statement name="DO0">
 <block type="comment" id="4=K4lhrc_NEZ^Ab7X!;G">
@@ -80,8 +73,7 @@
 </block>
 </value>
 <value name="B">
-<block type="linearOpMode_opModeIsActive" id="H}W0L1LwwW7*t2KJJa[W">
-</block>
+<block type="linearOpMode_opModeIsActive" id="H}W0L1LwwW7*t2KJJa[W"/>
 </value>
 </block>
 </value>
@@ -103,8 +95,7 @@
 <next>
 <block type="telemetry_update" id="2_mXG|]qhc)GHzC39PUx">
 <next>
-<block type="linearOpMode_idle" id="U]m~i728B9rk$zx.%H^*">
-</block>
+<block type="linearOpMode_idle" id="U]m~i728B9rk$zx.%H^*"/>
 </next>
 </block>
 </next>
@@ -142,15 +133,11 @@
 </block>
 </next>
 </block>
-</next>
-</block>
-</next>
-</block>
 </statement>
 </block>
 </xml>
 <?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
 <Extra>
-<OpModeMeta flavor="TELEOP" group="" />
+<OpModeMeta flavor="TELEOP" group="" autoTransition="" />
 <Enabled value="true" />
 </Extra>

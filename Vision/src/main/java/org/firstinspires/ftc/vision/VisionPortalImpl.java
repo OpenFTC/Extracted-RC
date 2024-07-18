@@ -33,11 +33,17 @@
 
 package org.firstinspires.ftc.vision;
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.util.Size;
 
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpModeManagerImpl;
+import com.qualcomm.robotcore.eventloop.opmode.OpModeManagerNotifier;
 import com.qualcomm.robotcore.util.RobotLog;
 
+import org.firstinspires.ftc.robotcore.external.function.Consumer;
+import org.firstinspires.ftc.robotcore.external.function.Continuation;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -47,6 +53,7 @@ import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibra
 import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibrationHelper;
 import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibrationIdentity;
 import org.firstinspires.ftc.robotcore.internal.camera.delegating.SwitchableCameraName;
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.opencv.core.Mat;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -56,24 +63,84 @@ import org.openftc.easyopencv.OpenCvSwitchableWebcam;
 import org.openftc.easyopencv.OpenCvWebcam;
 import org.openftc.easyopencv.TimestampedOpenCvPipeline;
 
+import java.util.ArrayList;
+import java.util.concurrent.Semaphore;
+
 public class VisionPortalImpl extends VisionPortal
 {
     protected OpenCvCamera camera;
+    protected final int cameraMonitorViewId;
     protected volatile CameraState cameraState = CameraState.CAMERA_DEVICE_CLOSED;
     protected VisionProcessor[] processors;
     protected volatile boolean[] processorsEnabled;
     protected volatile CameraCalibration calibration;
     protected final boolean autoPauseCameraMonitor;
-    protected final Object userStateMtx = new Object();
+    protected final boolean autoStartStream;
+    protected final boolean showStats;
+    protected final Semaphore userStateSemaphore = new Semaphore(1);
     protected final Size cameraResolution;
     protected final StreamFormat webcamStreamFormat;
     protected static final OpenCvCameraRotation CAMERA_ROTATION = OpenCvCameraRotation.SENSOR_NATIVE;
     protected String captureNextFrame;
     protected final Object captureFrameMtx = new Object();
+    protected OpModeNotificationsListener opModeNotificationsListener = new OpModeNotificationsListener();
 
-    public VisionPortalImpl(CameraName camera, int cameraMonitorViewId, boolean autoPauseCameraMonitor, Size cameraResolution, StreamFormat webcamStreamFormat, VisionProcessor[] processors)
+    // !! STATIC !! MUST PERSIST ACROSS INSTANCES
+    protected static final Object viewUseMtx = new Object();
+    protected static ArrayList<Integer> viewsInUse = new ArrayList<>();
+
+    protected class OpModeNotificationsListener implements OpModeManagerNotifier.Notifications
     {
+        @Override public void onOpModePreInit(OpMode opMode) {}
+        @Override public void onOpModePreStart(OpMode opMode) {}
+
+        @Override
+        public void onOpModePostStop(OpMode opMode)
+        {
+            synchronized (viewUseMtx)
+            {
+                if (cameraMonitorViewId != 0 && viewsInUse.contains(cameraMonitorViewId))
+                {
+                    viewsInUse.remove(Integer.valueOf(cameraMonitorViewId));
+                }
+            }
+        }
+    }
+
+    public VisionPortalImpl(CameraName camera, int cameraMonitorViewId, boolean autoPauseCameraMonitor,
+                            Size cameraResolution, StreamFormat webcamStreamFormat, boolean autoStartStream, boolean showStats,
+                            VisionProcessor[] processors)
+    {
+        synchronized (viewUseMtx)
+        {
+            if (cameraMonitorViewId != 0)
+            {
+                if (viewsInUse.contains(cameraMonitorViewId))
+                {
+                    if (cameraMonitorViewId == VisionPortal.DEFAULT_VIEW_CONTAINER_ID)
+                    {
+                        throw new IllegalStateException("When using multiple vision portals, you MUST use setLiveViewContainerId(int), NOT enableLiveView(bool)");
+                    }
+                    else
+                    {
+                        throw new IllegalStateException("User code attempted to set up multiple LiveViews with the same View ID. If you are using makeMultiPortalView(...), make sure you are using different index values on the returned array for each portal.");
+                    }
+                }
+                else
+                {
+                    if (viewsInUse.contains(DEFAULT_VIEW_CONTAINER_ID) || (viewsInUse.size() > 0 && cameraMonitorViewId == DEFAULT_VIEW_CONTAINER_ID))
+                    {
+                        throw new IllegalStateException("Misconfigured MultiPortal View IDs for LiveView. Make sure you are using setLiveViewContainerId(int) for ALL portals");
+                    }
+
+                    viewsInUse.add(cameraMonitorViewId);
+                    OpModeManagerImpl.getOpModeManagerOfActivity(AppUtil.getInstance().getActivity()).registerListener(opModeNotificationsListener);
+                }
+            }
+        }
+
         this.processors = processors;
+        this.cameraMonitorViewId = cameraMonitorViewId;
         this.cameraResolution = cameraResolution;
         this.webcamStreamFormat = webcamStreamFormat;
         processorsEnabled = new boolean[processors.length];
@@ -84,6 +151,8 @@ public class VisionPortalImpl extends VisionPortal
         }
 
         this.autoPauseCameraMonitor = autoPauseCameraMonitor;
+        this.showStats = showStats;
+        this.autoStartStream = autoStartStream;
 
         createCamera(camera, cameraMonitorViewId);
         startCamera();
@@ -101,6 +170,7 @@ public class VisionPortalImpl extends VisionPortal
             throw new IllegalArgumentException("parameters.cameraResolution == null");
         }
 
+        camera.showFpsMeterOnViewport(showStats);
         camera.setViewportRenderer(OpenCvCamera.ViewportRenderer.NATIVE_VIEW);
 
         if(!(camera instanceof OpenCvWebcam))
@@ -108,45 +178,67 @@ public class VisionPortalImpl extends VisionPortal
             camera.setViewportRenderingPolicy(OpenCvCamera.ViewportRenderingPolicy.OPTIMIZE_VIEW);
         }
 
+        userStateSemaphore.acquireUninterruptibly();
         cameraState = CameraState.OPENING_CAMERA_DEVICE;
-        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+
+        try
         {
-            @Override
-            public void onOpened()
+            camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
             {
-                cameraState = CameraState.CAMERA_DEVICE_READY;
-                cameraState = CameraState.STARTING_STREAM;
-
-                if (camera instanceof OpenCvWebcam)
+                @Override
+                public void onOpened()
                 {
-                    ((OpenCvWebcam)camera).startStreaming(cameraResolution.getWidth(), cameraResolution.getHeight(), CAMERA_ROTATION, webcamStreamFormat.eocvStreamFormat);
-                }
-                else
-                {
-                    camera.startStreaming(cameraResolution.getWidth(), cameraResolution.getHeight(), CAMERA_ROTATION);
-                }
-
-                if (camera instanceof OpenCvWebcam)
-                {
-                    CameraCalibrationIdentity identity = ((OpenCvWebcam) camera).getCalibrationIdentity();
-
-                    if (identity != null)
+                    try
                     {
-                        calibration = CameraCalibrationHelper.getInstance().getCalibration(identity, cameraResolution.getWidth(), cameraResolution.getHeight());
+                        cameraState = CameraState.CAMERA_DEVICE_READY;
+                        camera.setPipeline(new ProcessingPipeline());
+
+                        if (camera instanceof OpenCvWebcam)
+                        {
+                            CameraCalibrationIdentity identity = ((OpenCvWebcam) camera).getCalibrationIdentity();
+
+                            if (identity != null)
+                            {
+                                calibration = CameraCalibrationHelper.getInstance().getCalibration(identity, cameraResolution.getWidth(), cameraResolution.getHeight());
+                            }
+                        }
+
+                        if (autoStartStream)
+                        {
+                            cameraState = CameraState.STARTING_STREAM;
+
+                            if (camera instanceof OpenCvWebcam)
+                            {
+                                ((OpenCvWebcam)camera).startStreaming(cameraResolution.getWidth(), cameraResolution.getHeight(), CAMERA_ROTATION, webcamStreamFormat.eocvStreamFormat);
+                            }
+                            else
+                            {
+                                camera.startStreaming(cameraResolution.getWidth(), cameraResolution.getHeight(), CAMERA_ROTATION);
+                            }
+
+                            cameraState = CameraState.STREAMING;
+                        }
+                    }
+                    finally
+                    {
+                        userStateSemaphore.release();
                     }
                 }
 
-                camera.setPipeline(new ProcessingPipeline());
-                cameraState = CameraState.STREAMING;
-            }
-
-            @Override
-            public void onError(int errorCode)
-            {
-                cameraState = CameraState.ERROR;
-                RobotLog.ee("VisionPortalImpl", "Camera opening failed.");
-            }
-        });
+                @Override
+                public void onError(int errorCode)
+                {
+                    cameraState = CameraState.ERROR;
+                    RobotLog.ee("VisionPortalImpl", "Camera opening failed.");
+                    userStateSemaphore.release();
+                }
+            });
+        }
+        catch (Exception e)
+        {
+            userStateSemaphore.release();
+            throw e;
+        }
     }
 
     protected void createCamera(CameraName cameraName, int cameraMonitorViewId)
@@ -316,6 +408,17 @@ public class VisionPortalImpl extends VisionPortal
         }
     }
 
+    @Override
+    public void getFrameBitmap(Continuation<? extends Consumer<Bitmap>> continuation)
+    {
+        OpenCvCamera cameraSafe = camera;
+
+        if (cameraSafe != null)
+        {
+            cameraSafe.getFrameBitmap(continuation);
+        }
+    }
+
     class ProcessingPipeline extends TimestampedOpenCvPipeline
     {
         public ProcessingPipeline()
@@ -387,29 +490,44 @@ public class VisionPortalImpl extends VisionPortal
     @Override
     public void stopStreaming()
     {
-        synchronized (userStateMtx)
+        userStateSemaphore.acquireUninterruptibly();
+        boolean handedOffSemaphore = false;
+
+        try
         {
             if (cameraState == CameraState.STREAMING || cameraState == CameraState.STARTING_STREAM)
             {
                 cameraState = CameraState.STOPPING_STREAM;
                 new Thread(() ->
                 {
-                    synchronized (userStateMtx)
+                    try
                     {
                         camera.stopStreaming();
                         cameraState = CameraState.CAMERA_DEVICE_READY;
                     }
+                    finally
+                    {
+                        userStateSemaphore.release();
+                    }
                 }).start();
+                handedOffSemaphore = true;
             }
             else if (cameraState == CameraState.STOPPING_STREAM
                     || cameraState == CameraState.CAMERA_DEVICE_READY
                     || cameraState == CameraState.CLOSING_CAMERA_DEVICE)
             {
-                // be idempotent
+                // NO-OP: be idempotent
             }
             else
             {
-                throw new RuntimeException("Illegal CameraState when calling stopStreaming()");
+                throw new RuntimeException(String.format("Illegal CameraState %s when calling stopStreaming()", cameraState.toString()));
+            }
+        }
+        finally
+        {
+            if (!handedOffSemaphore)
+            {
+                userStateSemaphore.release();
             }
         }
     }
@@ -417,14 +535,17 @@ public class VisionPortalImpl extends VisionPortal
     @Override
     public void resumeStreaming()
     {
-        synchronized (userStateMtx)
+        userStateSemaphore.acquireUninterruptibly();
+        boolean handedOffSemaphore = false;
+
+        try
         {
             if (cameraState == CameraState.CAMERA_DEVICE_READY || cameraState == CameraState.STOPPING_STREAM)
             {
                 cameraState = CameraState.STARTING_STREAM;
                 new Thread(() ->
                 {
-                    synchronized (userStateMtx)
+                    try
                     {
                         if (camera instanceof OpenCvWebcam)
                         {
@@ -436,17 +557,28 @@ public class VisionPortalImpl extends VisionPortal
                         }
                         cameraState = CameraState.STREAMING;
                     }
+                    finally
+                    {
+                        userStateSemaphore.release();
+                    }
                 }).start();
+                handedOffSemaphore = true;
             }
             else if (cameraState == CameraState.STREAMING
-                    || cameraState == CameraState.STARTING_STREAM
-                    || cameraState == CameraState.OPENING_CAMERA_DEVICE) // we start streaming automatically after we open
+                    || cameraState == CameraState.STARTING_STREAM)
             {
-                // be idempotent
+                // NO-OP: be idempotent
             }
             else
             {
-                throw new RuntimeException("Illegal CameraState when calling stopStreaming()");
+                throw new RuntimeException(String.format("Illegal CameraState %s when calling resumeStreaming()", cameraState.toString()));
+            }
+        }
+        finally
+        {
+            if (!handedOffSemaphore)
+            {
+                userStateSemaphore.release();
             }
         }
     }
@@ -491,16 +623,46 @@ public class VisionPortalImpl extends VisionPortal
     @Override
     public void close()
     {
-        synchronized (userStateMtx)
-        {
-            cameraState = CameraState.CLOSING_CAMERA_DEVICE;
+        userStateSemaphore.acquireUninterruptibly();
+        boolean handedOffSemaphore = false;
 
+        try
+        {
             if (camera != null)
             {
-                camera.closeCameraDeviceAsync(() -> cameraState = CameraState.CAMERA_DEVICE_CLOSED);
+                cameraState = CameraState.CLOSING_CAMERA_DEVICE;
+
+                new Thread(() ->
+                {
+                    try
+                    {
+                        camera.closeCameraDevice();
+                        cameraState = CameraState.CAMERA_DEVICE_CLOSED;
+                        camera = null;
+                    }
+                    finally
+                    {
+                        userStateSemaphore.release();
+                    }
+                }).start();
+
+                handedOffSemaphore = true;
+            }
+        }
+        finally
+        {
+            if (!handedOffSemaphore)
+            {
+                userStateSemaphore.release();
             }
 
-            camera = null;
+            synchronized (viewUseMtx)
+            {
+                if (cameraMonitorViewId != 0 && viewsInUse.contains(cameraMonitorViewId))
+                {
+                    viewsInUse.remove(cameraMonitorViewId);
+                }
+            }
         }
     }
 }

@@ -7,9 +7,10 @@
 <variable id=")I]dz=noyY^l4xN(6_#@">X</variable>
 <variable id="IMcvM4H[]8RL!55crq,[">B</variable>
 </variables>
-<block type="procedures_defnoreturn" id="WtpyD@tEu+EoY=P9iY,D" deletable="false" x="66" y="68">
+<block type="procedures_defnoreturn" id="WtpyD@tEu+EoY=P9iY,D" deletable="false" x="25" y="82">
 <field name="NAME">runOpMode</field>
-<comment pinned="true" h="74.43705749511719" w="528.3203125">This OpMode shows how to use Gamepad.setLedColor and Gamepad.runLedEffect to change the color of the LED on supported gamepads.</comment>
+<comment pinned="true" h="63" w="528">This OpMode shows how to use Gamepad.setLedColor and Gamepad.runLedEffect to change the color of the LED on supported gamepads.</comment>
+<data>{"commentPositionLeft":-21,"commentPositionTop":-82}</data>
 <statement name="STACK">
 <block type="comment" id="Lc#BFtj*NTB48YL;eBl.">
 <field name="COMMENT">First we create an LedEffect.</field>
@@ -223,9 +224,10 @@
 </block>
 </statement>
 </block>
-<block type="procedures_defnoreturn" id="@LY4pjG6Pj|3t{3UO53_" x="677" y="207">
+<block type="procedures_defnoreturn" id="@LY4pjG6Pj|3t{3UO53_" x="25" y="1071">
 <field name="NAME">createLedEffect</field>
-<comment pinned="true" h="101.66667175292969" w="462.49993896484375">createLedEffect uses an LedEffect.Builder to create an LedEffect that alternates between red and green. setRepeating is used to make the LedEffect keep going.</comment>
+<comment pinned="true" h="82" w="465">createLedEffect uses an LedEffect.Builder to create an LedEffect that alternates between red and green. setRepeating is used to make the LedEffect keep going.</comment>
+<data>{"commentPositionLeft":-47,"commentPositionTop":-104}</data>
 <statement name="STACK">
 <block type="variables_set" id="mHyNbNC3_HHXL[b9/q|~">
 <field name="VAR" id="D)EI;6M(Z/9jD7LKnqm^">ledEffectBuilder</field>

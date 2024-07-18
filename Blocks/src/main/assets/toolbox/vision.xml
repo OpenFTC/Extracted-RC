@@ -21,13 +21,25 @@
       <value name="ENABLE_CAMERA_MONITORING"><shadow type="logic_boolean"><field name="BOOL">TRUE</field></shadow></value>
     </block>
     <block type="visionPortalBuilder_setAutoStopLiveView">
-      <comment pinned="false" h="150" w="325">Set whether to automatically stop the live view (RC preview) when all vision processors are disabled.
+      <comment pinned="false" h="150" w="325">Set whether to automatically stop the LiveView (RC preview) when all vision processors are disabled.
       </comment>
       <field name="VISION_PORTAL_BUILDER" variabletype="VisionPortal.Builder">myVisionPortalBuilder</field>
       <value name="AUTO_STOP_LIVE_VIEW"><shadow type="logic_boolean"><field name="BOOL">TRUE</field></shadow></value>
     </block>
+    <block type="visionPortalBuilder_setAutoStartStreamOnBuild">
+      <comment pinned="false" h="150" w="325">Set whether the VisionPortal should automatically start streaming when you issue a .build() call on this VisionPortal.Builder object.
+      </comment>
+      <field name="VISION_PORTAL_BUILDER" variabletype="VisionPortal.Builder">myVisionPortalBuilder</field>
+      <value name="AUTO_START_STREAM_ON_BUILD"><shadow type="logic_boolean"><field name="BOOL">TRUE</field></shadow></value>
+    </block>
+    <block type="visionPortalBuilder_setShowStatsOverlay">
+      <comment pinned="false" h="150" w="325">Set whether the statistics overlay should be shown on the LiveView.
+      </comment>
+      <field name="VISION_PORTAL_BUILDER" variabletype="VisionPortal.Builder">myVisionPortalBuilder</field>
+      <value name="SHOW_STATS_OVERLAY"><shadow type="logic_boolean"><field name="BOOL">TRUE</field></shadow></value>
+    </block>
     <block type="visionPortalBuilder_setLiveViewContainerId">
-      <comment pinned="false" h="150" w="325">Set the live view container id.
+      <comment pinned="false" h="150" w="325">Set the LiveView container id.
       </comment>
       <field name="VISION_PORTAL_BUILDER" variabletype="VisionPortal.Builder">myVisionPortalBuilder</field>
     </block>
@@ -114,12 +126,12 @@
       <value name="VISION_PORTAL"><block type="variables_get"><field name="VAR">myVisionPortal</field></block></value>
     </block>
     <block type="visionPortal_stopLiveView">
-      <comment pinned="false" h="150" w="325">Temporarily stop the live view (RC preview).
+      <comment pinned="false" h="150" w="325">Temporarily stop the LiveView (RC preview).
       </comment>
       <value name="VISION_PORTAL"><block type="variables_get"><field name="VAR">myVisionPortal</field></block></value>
     </block>
     <block type="visionPortal_resumeLiveView">
-      <comment pinned="false" h="150" w="325">Start the live view (RC preview) again.
+      <comment pinned="false" h="150" w="325">Start the LiveView (RC preview) again.
       </comment>
       <value name="VISION_PORTAL"><block type="variables_get"><field name="VAR">myVisionPortal</field></block></value>
     </block>
@@ -183,6 +195,13 @@
         </block>
       </value>
     </block>
+    <block type="visionPortal_CameraStreamServer_setSource">
+      <comment pinned="false" h="150" w="615">Set which Vision Portal is the source of the DS Camera Stream image. Default is the last built Vision Portal.
+
+This setSource() Block is useful under MultiPortal. The camera view of the designated Vision Portal will be routed to the Driver Station (DS) Camera Stream. An OpMode can change this while running, during the INIT stage.
+      </comment>
+      <value name="VISION_PORTAL"><block type="variables_get"><field name="VAR">myVisionPortal</field></block></value>
+    </block>
     <block type="visionPortal_close">
       <comment pinned="false" h="150" w="325">Save computing resources by closing the camera stream, if no longer needed.
       </comment>
@@ -228,6 +247,12 @@
         <value name="FY"><shadow type="math_number"><field name="NUM">578.272</field></shadow></value>
         <value name="CX"><shadow type="math_number"><field name="NUM">402.145</field></shadow></value>
         <value name="CY"><shadow type="math_number"><field name="NUM">221.506</field></shadow></value>
+      </block>
+      <block type="aprilTagProcessorBuilder_setSuppressCalibrationWarnings">
+        <comment pinned="false" h="150" w="325">Set whether any warnings about camera calibration should be suppressed.
+        </comment>
+        <field name="APRIL_TAG_PROCESSOR_BUILDER" variabletype="AprilTagProcessor.Builder">myAprilTagProcessorBuilder</field>
+        <value name="SUPPRESS_CALIBRATION_WARNINGS"><shadow type="logic_boolean"><field name="BOOL">TRUE</field></shadow></value>
       </block>
       <block type="aprilTagProcessorBuilder_setNumThreads">
         <comment pinned="false" h="150" w="325">Set the number of threads to use for detection.

@@ -12569,7 +12569,7 @@
       var Interval_1 = require_Interval();
       var Decorators_1 = require_Decorators();
       var Token_1 = require_Token();
-      var TerminalNode = class {
+      var TerminalNode2 = class {
         constructor(symbol) {
           this._symbol = symbol;
         }
@@ -12613,35 +12613,35 @@
       };
       __decorate([
         Decorators_1.Override
-      ], TerminalNode.prototype, "getChild", null);
+      ], TerminalNode2.prototype, "getChild", null);
       __decorate([
         Decorators_1.Override
-      ], TerminalNode.prototype, "parent", null);
+      ], TerminalNode2.prototype, "parent", null);
       __decorate([
         Decorators_1.Override
-      ], TerminalNode.prototype, "setParent", null);
+      ], TerminalNode2.prototype, "setParent", null);
       __decorate([
         Decorators_1.Override
-      ], TerminalNode.prototype, "payload", null);
+      ], TerminalNode2.prototype, "payload", null);
       __decorate([
         Decorators_1.Override
-      ], TerminalNode.prototype, "sourceInterval", null);
+      ], TerminalNode2.prototype, "sourceInterval", null);
       __decorate([
         Decorators_1.Override
-      ], TerminalNode.prototype, "childCount", null);
+      ], TerminalNode2.prototype, "childCount", null);
       __decorate([
         Decorators_1.Override
-      ], TerminalNode.prototype, "accept", null);
+      ], TerminalNode2.prototype, "accept", null);
       __decorate([
         Decorators_1.Override
-      ], TerminalNode.prototype, "text", null);
+      ], TerminalNode2.prototype, "text", null);
       __decorate([
         Decorators_1.Override
-      ], TerminalNode.prototype, "toStringTree", null);
+      ], TerminalNode2.prototype, "toStringTree", null);
       __decorate([
         Decorators_1.Override
-      ], TerminalNode.prototype, "toString", null);
-      exports.TerminalNode = TerminalNode;
+      ], TerminalNode2.prototype, "toString", null);
+      exports.TerminalNode = TerminalNode2;
     }
   });
 
@@ -43628,6 +43628,7 @@ d\rdd\u0390dddddeeeeeffgghhiijjkkllmmnnooppqq
   };
 
   // src/ace_worker/ace-java-listener.ts
+  var import_TerminalNode = __toModule(require_TerminalNode());
   var AceJavaListener = class {
     constructor() {
       this.imports = [];
@@ -43666,8 +43667,9 @@ d\rdd\u0390dddddeeeeeffgghhiijjkkllmmnnooppqq
       this.imports.push(cImport);
     }
     exitClassDeclaration(ctx) {
-      if (this.scope.current.level !== 0)
+      if (!(ctx.parent.parent instanceof CompilationUnitContext)) {
         return;
+      }
       const normalClass = ctx.normalClassDeclaration();
       if (!normalClass) {
         console.warn("top most class isn't a normal class, not yet implemented");
@@ -43695,11 +43697,8 @@ d\rdd\u0390dddddeeeeeffgghhiijjkkllmmnnooppqq
     exitInterfaceType(ctx) {
       this.typesRequired.push(ctx.text);
     }
-    exitAnnotationName(ctx) {
-      const text = ctx.text;
-      if (text === "Override" || text === "Deprecated")
-        return;
-      this.typesRequired.push(ctx.text);
+    exitAmbiguousName(ctx) {
+      this.typesRequired.push(ctx.ruleContext.text);
     }
     exitPrimary(ctx) {
       const child = ctx.getChild(0);
@@ -43711,6 +43710,23 @@ d\rdd\u0390dddddeeeeeffgghhiijjkkllmmnnooppqq
     }
     exitFieldDeclaration(ctx) {
       this.handleVariableDeclaration(ctx, "field");
+    }
+    exitClassInstanceCreationExpression(ctx) {
+      if (ctx.children[0] instanceof import_TerminalNode.TerminalNode) {
+        this.typesRequired.push(ctx.Identifier().join("."));
+      } else {
+        this.typesRequired.push(ctx.Identifier()[0]);
+      }
+    }
+    exitClassInstanceCreationExpression_lf_primary(ctx) {
+      this.typesRequired.push(ctx.Identifier().text);
+    }
+    exitClassInstanceCreationExpression_lfno_primary(ctx) {
+      if (ctx.children[0] instanceof import_TerminalNode.TerminalNode) {
+        this.typesRequired.push(ctx.Identifier().join("."));
+      } else {
+        this.typesRequired.push(ctx.Identifier()[0]);
+      }
     }
     handleVariableDeclaration(ctx, decType) {
       const ids = ctx.variableDeclaratorList().variableDeclarator().map((x) => x.variableDeclaratorId().text);
@@ -43741,13 +43757,13 @@ d\rdd\u0390dddddeeeeeffgghhiijjkkllmmnnooppqq
         const formalParameters = methodHeader.methodDeclarator().formalParameterList().formalParameters();
         if (formalParameters) {
           formalParameterTypes = formalParameters.formalParameter().map((x) => x.unannType().text);
-          formalParameterTypes.push(lastFormalParameter.unannType().text);
-        } else {
+        }
+        if (lastFormalParameter) {
           if (lastFormalParameter.formalParameter()) {
-            formalParameterTypes = [lastFormalParameter.formalParameter().unannType().text];
-          } else {
+            formalParameterTypes.push(lastFormalParameter.formalParameter().unannType().text);
+          } else if (lastFormalParameter.unannType()) {
             const unannTypeContext = lastFormalParameter.unannType();
-            formalParameterTypes = [unannTypeContext.text];
+            formalParameterTypes.push(unannTypeContext.text);
           }
         }
       }

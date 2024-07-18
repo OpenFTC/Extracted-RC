@@ -1,7 +1,7 @@
 <xml xmlns="https://developers.google.com/blockly/xml">
 <variables>
-<variable id="OlJB[R?bruF2C6T]y:j,">myTfodRecognitions</variable>
 <variable id="3.)/eLHm(iRl1^Qsq;Hb">USE_WEBCAM</variable>
+<variable id="OlJB[R?bruF2C6T]y:j,">myTfodRecognitions</variable>
 <variable type="TfodProcessor.Builder" id="nN$Hc]Yea=/(:3{Flx89">myTfodProcessorBuilder</variable>
 <variable id="2(2G$#dr!gUmh_~QL5ZA">myTfodProcessor</variable>
 <variable id="0(Iv9ie]^GJxK3,fL}G(">myTfodRecognition</variable>
@@ -10,13 +10,12 @@
 <variable id="R{3+3{j6;,uRMizwTeH6">y</variable>
 <variable id="Xk!_{IPng0#/P|7dx?3N">myVisionPortal</variable>
 </variables>
-<block type="procedures_defnoreturn" id="WtpyD@tEu+EoY=P9iY,D" deletable="false" x="0" y="0">
+<block type="procedures_defnoreturn" id="WtpyD@tEu+EoY=P9iY,D" deletable="false" x="25" y="99">
 <field name="NAME">runOpMode</field>
-<comment pinned="false" h="45" w="532">This function is executed when this OpMode is selected from the Driver Station.</comment>
+<comment pinned="true" h="71" w="513">This OpMode illustrates the basics of TensorFlow Object Detection, using the
+Builder pattern to allow custom settings.</comment>
+<data>{"commentPositionLeft":-20,"commentPositionTop":-99}</data>
 <statement name="STACK">
-<block type="comment" id="vG1;7$#*;crH,9)V$Lbq">
-<field name="COMMENT">This 2023-2024 OpMode illustrates the basics of TensorFlow Object Detection.</field>
-<next>
 <block type="variables_set" id="+WOa|3hz0c^Rah6+[;U4">
 <field name="VAR" id="3.)/eLHm(iRl1^Qsq;Hb">USE_WEBCAM</field>
 <value name="VALUE">
@@ -156,13 +155,12 @@
 </block>
 </next>
 </block>
-</next>
-</block>
 </statement>
 </block>
-<block type="procedures_defnoreturn" id=":Un!nS!LS%^tq]:g4^?Z" x="0" y="802">
+<block type="procedures_defnoreturn" id=":Un!nS!LS%^tq]:g4^?Z" x="25" y="944">
 <field name="NAME">initTfod</field>
-<comment pinned="false" h="80" w="160">Initialize TensorFlow Object Detection.</comment>
+<comment pinned="true" h="43" w="399">Initialize the TensorFlow Object Detection processor.</comment>
+<data>{"commentPositionLeft":-48,"commentPositionTop":-69}</data>
 <statement name="STACK">
 <block type="comment" id="d.6#F{^$gM[hYq-pIL_d">
 <field name="COMMENT">First, create a TfodProcessor.Builder.</field>
@@ -261,9 +259,10 @@
 </block>
 </statement>
 </block>
-<block type="procedures_defnoreturn" id="/s7LjfD#rDF}9WK/VZch" x="0" y="1266">
+<block type="procedures_defnoreturn" id="/s7LjfD#rDF}9WK/VZch" x="25" y="1481">
 <field name="NAME">telemetryTfod</field>
-<comment pinned="false" h="80" w="160">Display info (using telemetry) for a detected object</comment>
+<comment pinned="true" h="45" w="475">Add telemetry about TensorFlow Object Detection (TFOD) recognitions.</comment>
+<data>{"commentPositionLeft":-47,"commentPositionTop":-73}</data>
 <statement name="STACK">
 <block type="variables_set" id="7Fucjwj^^ab7:laBHtNa">
 <field name="VAR" id="OlJB[R?bruF2C6T]y:j,">myTfodRecognitions</field>

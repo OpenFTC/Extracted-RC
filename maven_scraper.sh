@@ -1,7 +1,7 @@
 #!/bin/bash
 
 BASE_MAVEN_URL=https://repo1.maven.org/maven2/org/firstinspires/ftc
-RELEASE_VERSION=9.0.1
+RELEASE_VERSION=9.1.0
 
 OUTPUT_DIR=ftcmaven_scraped_$RELEASE_VERSION
 

@@ -3,9 +3,20 @@
 <variable id="~LUL9~Z;enziZiH||`!?">orientation</variable>
 <variable id="uJjN|$P.}=4O:6Fa#2s)">angularVelocity</variable>
 </variables>
-<block type="procedures_defnoreturn" id=".C5qAWP%TVp.hOLyFe(w" deletable="false" x="50" y="50">
+<block type="procedures_defnoreturn" id=".C5qAWP%TVp.hOLyFe(w" deletable="false" x="25" y="282">
 <field name="NAME">runOpMode</field>
-<comment pinned="false" h="45" w="532">This function is executed when this OpMode is selected from the Driver Station.</comment>
+<comment pinned="true" h="262" w="670">This OpMode shows how to use the new universal IMU blocks. These blocks may be used with
+the BNO055 IMU or the BHI260 IMU. It assumes that an IMU is configured on the robot with the
+name "imu".
+
+The sample will display the current Yaw, Pitch and Roll of the robot.
+With the correct orientation parameters selected, pitch/roll/yaw should act as follows:
+  Pitch value should INCREASE as the robot is tipped UP at the front. (Rotation about X)
+  Roll value should INCREASE as the robot is tipped UP at the left side. (Rotation about Y)
+  Yaw value should INCREASE as the robot is rotated Counter Clockwise. (Rotation about Z)
+
+The yaw can be reset (to zero) by pressing the Y button on the gamepad (Triangle on a PS4 controller)</comment>
+<data>{"commentPositionLeft":-19,"commentPositionTop":-282}</data>
 <statement name="STACK">
 <block type="comment" id="}uxrcK{*_XRvt~Af0=Zh">
 <field name="COMMENT">Initialize the IMU.</field>
@@ -86,7 +97,7 @@
 <value name="IF0">
 <block type="gamepad_getProperty_Boolean" id="!ojSX8f+pSY2OU2b#5T(">
 <field name="IDENTIFIER">gamepad1</field>
-<field name="PROP">Circle</field>
+<field name="PROP">Y</field>
 <data>{"IDENTIFIER":"gamepad1"}</data>
 </block>
 </value>

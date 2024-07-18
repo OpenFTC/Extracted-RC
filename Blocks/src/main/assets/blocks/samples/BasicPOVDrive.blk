@@ -1,9 +1,10 @@
 <xml xmlns="https://developers.google.com/blockly/xml">
-<variables>
-</variables>
-<block type="procedures_defnoreturn" id="OpN8!1beqW{8Bw6M/?m+" deletable="false" x="50" y="50">
+<block type="procedures_defnoreturn" id="OpN8!1beqW{8Bw6M/?m+" deletable="false" x="25" y="151">
 <field name="NAME">runOpMode</field>
-<comment pinned="false" h="45" w="532">This function is executed when this OpMode is selected from the Driver Station.</comment>
+<comment pinned="true" h="127" w="554">This OpMode offers POV (point-of-view) style TeleOp control for a direct drive robot.
+
+In this POV mode, the left joystick (up and down) moves the robot forward and back, and the right joystick (left and right) spins the robot left (counterclockwise) and right (clockwise).</comment>
+<data>{"commentPositionLeft":-21,"commentPositionTop":-151}</data>
 <statement name="STACK">
 <block type="comment" id="2E)2A*`b^PiWrgwVLCzD">
 <field name="COMMENT">Reverse one of the drive motors.</field>
@@ -23,8 +24,7 @@
 <next>
 <block type="controls_if" id="V4vcz1^;$q.ACQvg4=Rg">
 <value name="IF0">
-<block type="linearOpMode_opModeIsActive" id="oU;fZnTXMMPG@9M!vA8m">
-</block>
+<block type="linearOpMode_opModeIsActive" id="oU;fZnTXMMPG@9M!vA8m"/>
 </value>
 <statement name="DO0">
 <block type="comment" id=":*~E^;jympAIAK*1RqqM">
@@ -33,8 +33,7 @@
 <block type="controls_whileUntil" id=";?u-rJ#FN3IEUo%rzP0!">
 <field name="MODE">WHILE</field>
 <value name="BOOL">
-<block type="linearOpMode_opModeIsActive" id="-(|WoGbw`fofYl;9=5+0">
-</block>
+<block type="linearOpMode_opModeIsActive" id="-(|WoGbw`fofYl;9=5+0"/>
 </value>
 <statement name="DO">
 <block type="comment" id="j%/]x0!:SV!7p5sYtU9W">
@@ -144,8 +143,7 @@
 </block>
 </value>
 <next>
-<block type="telemetry_update" id="Il/_Kv^vY42Foa}=N4Ix">
-</block>
+<block type="telemetry_update" id="Il/_Kv^vY42Foa}=N4Ix"/>
 </next>
 </block>
 </next>
@@ -173,6 +171,6 @@
 </xml>
 <?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
 <Extra>
-<OpModeMeta flavor="TELEOP" group="" />
+<OpModeMeta flavor="TELEOP" group="" autoTransition="" />
 <Enabled value="true" />
 </Extra>

@@ -181,7 +181,7 @@ Blockly.Blocks['visionPortalBuilder_setAutoStopLiveView'] = {
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.setColour(builderColor);
-    this.setTooltip('Sets whether to automatically stop the live view (RC preview) when all vision processors are disabled.');
+    this.setTooltip('Sets whether to automatically stop the LiveView (RC preview) when all vision processors are disabled.');
   }
 };
 
@@ -202,6 +202,74 @@ Blockly.FtcJava['visionPortalBuilder_setAutoStopLiveView'] = function(block) {
   return visionPortalBuilder + '.setAutoStopLiveView(' + autoStopLiveView + ');\n';
 };
 
+Blockly.Blocks['visionPortalBuilder_setAutoStartStreamOnBuild'] = {
+  init: function() {
+    this.appendDummyInput('FIELD_VARIABLE')
+        .appendField('call')
+        .appendField(new Blockly.FieldVariable('myVisionPortalBuilder', null, ['VisionPortal.Builder'], 'VisionPortal.Builder'),
+            'VISION_PORTAL_BUILDER')
+        .appendField('.')
+        .appendField(createNonEditableField('setAutoStartStreamOnBuild'));
+    this.appendValueInput('AUTO_START_STREAM_ON_BUILD').setCheck('Boolean');
+    this.setInputsInline(true);
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setColour(builderColor);
+    this.setTooltip('Sets whether the VisionPortal should automatically start streaming when you issue a .build() call on this VisionPortal.Builder object.');
+  }
+};
+
+Blockly.JavaScript['visionPortalBuilder_setAutoStartStreamOnBuild'] = function(block) {
+  var visionPortalBuilder = Blockly.JavaScript.variableDB_.getName(
+      block.getFieldValue('VISION_PORTAL_BUILDER'), Blockly.Variables.NAME_TYPE);
+  var autoStartStreamOnBuild = Blockly.JavaScript.valueToCode(
+      block, 'AUTO_START_STREAM_ON_BUILD', Blockly.JavaScript.ORDER_COMMA);
+  return visionPortalIdentifierForJavaScript + '.setAutoStartStreamOnBuild(' +
+      visionPortalBuilder + ', ' + autoStartStreamOnBuild + ');\n';
+};
+
+Blockly.FtcJava['visionPortalBuilder_setAutoStartStreamOnBuild'] = function(block) {
+  var visionPortalBuilder = Blockly.FtcJava.variableDB_.getName(
+      block.getFieldValue('VISION_PORTAL_BUILDER'), Blockly.Variables.NAME_TYPE);
+  var autoStartStreamOnBuild = Blockly.FtcJava.valueToCode(
+      block, 'AUTO_START_STREAM_ON_BUILD', Blockly.FtcJava.ORDER_NONE);
+  return visionPortalBuilder + '.setAutoStartStreamOnBuild(' + autoStartStreamOnBuild + ');\n';
+};
+
+Blockly.Blocks['visionPortalBuilder_setShowStatsOverlay'] = {
+  init: function() {
+    this.appendDummyInput('FIELD_VARIABLE')
+        .appendField('call')
+        .appendField(new Blockly.FieldVariable('myVisionPortalBuilder', null, ['VisionPortal.Builder'], 'VisionPortal.Builder'),
+            'VISION_PORTAL_BUILDER')
+        .appendField('.')
+        .appendField(createNonEditableField('setShowStatsOverlay'));
+    this.appendValueInput('SHOW_STATS_OVERLAY').setCheck('Boolean');
+    this.setInputsInline(true);
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setColour(builderColor);
+    this.setTooltip('Sets whether the statistics overlay should be shown on the LiveView.');
+  }
+};
+
+Blockly.JavaScript['visionPortalBuilder_setShowStatsOverlay'] = function(block) {
+  var visionPortalBuilder = Blockly.JavaScript.variableDB_.getName(
+      block.getFieldValue('VISION_PORTAL_BUILDER'), Blockly.Variables.NAME_TYPE);
+  var showStatsOverlay = Blockly.JavaScript.valueToCode(
+      block, 'SHOW_STATS_OVERLAY', Blockly.JavaScript.ORDER_COMMA);
+  return visionPortalIdentifierForJavaScript + '.setShowStatsOverlay(' +
+      visionPortalBuilder + ', ' + showStatsOverlay + ');\n';
+};
+
+Blockly.FtcJava['visionPortalBuilder_setShowStatsOverlay'] = function(block) {
+  var visionPortalBuilder = Blockly.FtcJava.variableDB_.getName(
+      block.getFieldValue('VISION_PORTAL_BUILDER'), Blockly.Variables.NAME_TYPE);
+  var showStatsOverlay = Blockly.FtcJava.valueToCode(
+      block, 'SHOW_STATS_OVERLAY', Blockly.FtcJava.ORDER_NONE);
+  return visionPortalBuilder + '.setShowStatsOverlay(' + showStatsOverlay + ');\n';
+};
+
 Blockly.Blocks['visionPortalBuilder_setLiveViewContainerId'] = {
   init: function() {
     this.appendDummyInput('FIELD_VARIABLE')
@@ -215,7 +283,7 @@ Blockly.Blocks['visionPortalBuilder_setLiveViewContainerId'] = {
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.setColour(builderColor);
-    this.setTooltip('Sets the live view container id.');
+    this.setTooltip('Sets the LiveView container id.');
     this.getFtcJavaInputType = function(inputName) {
       switch (inputName) {
         case 'VIEW_ID':
@@ -668,7 +736,7 @@ Blockly.Blocks['visionPortal_stopLiveView'] = {
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.setColour(functionColor);
-    this.setTooltip('Temporarily stops the live view (RC preview).');
+    this.setTooltip('Temporarily stops the LiveView (RC preview).');
   }
 };
 
@@ -698,7 +766,7 @@ Blockly.Blocks['visionPortal_resumeLiveView'] = {
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.setColour(functionColor);
-    this.setTooltip('Starts the live view (RC preview) again.');
+    this.setTooltip('Starts the LiveView (RC preview) again.');
   }
 };
 
@@ -974,6 +1042,37 @@ Blockly.FtcJava['visionPortal_getActiveCamera'] = function(block) {
       block, 'VISION_PORTAL', Blockly.FtcJava.ORDER_MEMBER);
   var code = visionPortal + '.getActiveCamera()';
   return [code, Blockly.FtcJava.ORDER_FUNCTION_CALL];
+};
+
+Blockly.Blocks['visionPortal_CameraStreamServer_setSource'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('call')
+        .appendField(createNonEditableField('CameraStreamServer'))
+        .appendField('.')
+        .appendField(createNonEditableField('setSource'));
+    this.appendValueInput('VISION_PORTAL').setCheck('VisionPortal')
+        .appendField('visionPortal')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setColour(functionColor);
+    this.setTooltip('Set which Vision Portal is the source of DS Camera Stream image.');
+  }
+};
+
+Blockly.JavaScript['visionPortal_CameraStreamServer_setSource'] = function(block) {
+  var visionPortal = Blockly.JavaScript.valueToCode(
+      block, 'VISION_PORTAL', Blockly.JavaScript.ORDER_COMMA);
+  return visionPortalIdentifierForJavaScript + '.cameraStreamServer_setSource(' +
+      visionPortal + ');\n';
+};
+
+Blockly.FtcJava['visionPortal_CameraStreamServer_setSource'] = function(block) {
+  var visionPortal = Blockly.FtcJava.valueToCode(
+      block, 'VISION_PORTAL', Blockly.FtcJava.ORDER_MEMBER);
+  Blockly.FtcJava.generateImport_('CameraStreamServer');
+  return 'CameraStreamServer.getInstance().setSource(' + visionPortal + ');\n';
 };
 
 Blockly.Blocks['visionPortal_close'] = {

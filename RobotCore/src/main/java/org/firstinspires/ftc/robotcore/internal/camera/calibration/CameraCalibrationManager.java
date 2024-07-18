@@ -379,6 +379,11 @@ public final class CameraCalibrationManager
     // Accessing
     //----------------------------------------------------------------------------------------------
 
+    protected List<CameraCalibration> getCalibrations(CameraCalibrationIdentity ident)
+        {
+        return calibrationMap.get(ident);
+        }
+
     protected CameraCalibration[] getCameraCalibrationsWithAspectRatio(CameraCalibrationIdentity identity, Size targetSize)
         {
         double targetAspectRatio = CameraCalibration.getAspectRatio(targetSize);
@@ -471,7 +476,10 @@ public final class CameraCalibrationManager
                     if (sameAspectRatios.length > 0)
                         {
                         result = sameAspectRatios[0].scaledTo(size);
-                        RobotLog.addGlobalWarningMessage("Camera has not been calibrated for this resolution; a calibration for a different resolution of the same aspect ratio has been scaled instead.");
+                        }
+                    else if (calibrationList.size() > 0)
+                        {
+                        result = new PlaceholderCalibratedAspectRatioMismatch(identity, size);
                         }
                     }
                 }
