@@ -82,6 +82,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public final class BlocksOpMode extends LinearOpMode {
   private static final String BLOCK_EXECUTION_ERROR = "Error: Error calling method on NPObject.";
   private static final String LOG_PREFIX = "BlocksOpMode - ";
+  private static final boolean DEBUG_BLOCKS_EXECUTION = false;
 
   private static final AtomicReference<RuntimeException> fatalExceptionHolder = new AtomicReference<RuntimeException>();
   private static final AtomicReference<String> fatalErrorMessageHolder = new AtomicReference<String>();
@@ -130,6 +131,9 @@ public final class BlocksOpMode extends LinearOpMode {
     currentBlockLastName = blockLastName;
     currentBlockFinished = false;
     checkIfStopRequested();
+    if (DEBUG_BLOCKS_EXECUTION) {
+      RobotLog.i(getLogPrefix() + "startBlockExecution - " + getFullBlockLabel());
+    }
   }
 
   void endBlockExecution() {

@@ -1,0 +1,27 @@
+    <block type="octoquad_constant_Number">
+        <field name="CONSTANT">OCTOQUAD_CHIP_ID</field>
+    </block>
+    <block type="octoquad_constant_Number">
+        <field name="CONSTANT">SUPPORTED_FW_VERSION_MAJ</field>
+    </block>
+    <block type="octoquad_constant_Number">
+        <field name="CONSTANT">ENCODER_FIRST</field>
+    </block>
+    <block type="octoquad_constant_Number">
+        <field name="CONSTANT">ENCODER_LAST</field>
+    </block>
+    <block type="octoquad_constant_Number">
+        <field name="CONSTANT">NUM_ENCODERS</field>
+    </block>
+    <block type="octoquad_constant_Number">
+        <field name="CONSTANT">MIN_VELOCITY_MEASUREMENT_INTERVAL_MS</field>
+    </block>
+    <block type="octoquad_constant_Number">
+        <field name="CONSTANT">MAX_VELOCITY_MEASUREMENT_INTERVAL_MS</field>
+    </block>
+    <block type="octoquad_constant_Number">
+        <field name="CONSTANT">MIN_PULSE_WIDTH_US</field>
+    </block>
+    <block type="octoquad_constant_Number">
+        <field name="CONSTANT">MAX_PULSE_WIDTH_US</field>
+    </block>

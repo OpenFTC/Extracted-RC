@@ -3,27 +3,27 @@ package org.firstinspires.inspection;
 import com.google.gson.annotations.SerializedName;
 
 public class InspectionStateValidation {
-    boolean rev;
-    boolean name;
-    boolean os;
+    InspectionProperty rev;
+    InspectionProperty name;
+    InspectionProperty os;
     @SerializedName("av")
-    boolean appVersion;
+    InspectionProperty appVersion;
     @SerializedName("bt")
-    boolean bluetooth;
-    boolean wifi;
+    InspectionProperty bluetooth;
+    InspectionProperty wifi;
     @SerializedName("fw")
-    boolean firmware;
+    InspectionProperty firmware;
     @SerializedName("pw")
-    boolean password;
+    InspectionProperty password;
     @SerializedName("am")
-    boolean airplaneMode;
+    InspectionProperty airplaneMode;
     @SerializedName("ln")
-    boolean localNetworks;
+    InspectionProperty localNetworks;
     // TODO This is in the checklist but no rule requires it...
     @SerializedName("rw")
-    boolean rememberedWifi;
+    InspectionProperty rememberedWifi;
     @SerializedName("oa")
-    boolean otherApp;
+    InspectionProperty otherApp;
     @SerializedName("vm")
-    boolean versionsMatch;
+    InspectionProperty versionsMatch;
 }

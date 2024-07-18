@@ -1,0 +1,26 @@
+  <category name="SparkFunOTOS.Status">
+    <block type="sparkFunOTOS_Status_getProperty_Boolean">
+      <comment pinned="false" h="150" w="325">Get the warnTiltAngle value from the given SparkFunOTOS.Status object.
+      </comment>
+      <field name="PROP">warnTiltAngle</field>
+      <value name="STATUS"><block type="variables_get"><field name="VAR">myStatus</field></block></value>
+    </block>
+    <block type="sparkFunOTOS_Status_getProperty_Boolean">
+      <comment pinned="false" h="150" w="325">Get the warnOpticalTracking value from the given SparkFunOTOS.Status object.
+      </comment>
+      <field name="PROP">warnOpticalTracking</field>
+      <value name="STATUS"><block type="variables_get"><field name="VAR">myStatus</field></block></value>
+    </block>
+    <block type="sparkFunOTOS_Status_getProperty_Boolean">
+      <comment pinned="false" h="150" w="325">Get the errorPaa value from the given SparkFunOTOS.Status object.
+      </comment>
+      <field name="PROP">errorPaa</field>
+      <value name="STATUS"><block type="variables_get"><field name="VAR">myStatus</field></block></value>
+    </block>
+    <block type="sparkFunOTOS_Status_getProperty_Boolean">
+      <comment pinned="false" h="150" w="325">Get the errorLsm value from the given SparkFunOTOS.Status object.
+      </comment>
+      <field name="PROP">errorLsm</field>
+      <value name="STATUS"><block type="variables_get"><field name="VAR">myStatus</field></block></value>
+    </block>
+  </category>

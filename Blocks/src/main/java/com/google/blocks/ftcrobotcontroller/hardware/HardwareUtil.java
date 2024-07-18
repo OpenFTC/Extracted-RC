@@ -39,10 +39,12 @@ import com.qualcomm.ftccommon.configuration.RobotConfigFile;
 import com.qualcomm.ftccommon.configuration.RobotConfigFileManager;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
-import com.qualcomm.hardware.lynx.LynxModule;
+import com.qualcomm.hardware.digitalchickenlabs.CachingOctoQuad;
+import com.qualcomm.hardware.digitalchickenlabs.OctoQuadBase;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver.BlinkinPattern;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeManagerImpl;
@@ -81,6 +83,7 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import org.firstinspires.ftc.robotcore.external.ExportAprilTagLibraryToBlocks;
 import org.firstinspires.ftc.robotcore.external.ExportToBlocks;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.android.AndroidSoundPool;
@@ -221,7 +224,7 @@ public class HardwareUtil {
     jsHardware.append("var allHardwareIdentifiers = [\n");
     for (HardwareItem hardwareItem : hardwareItemMap.getAllHardwareItems()) {
       jsHardware
-          .append("'").append(hardwareItem.identifier).append("',\n");
+          .append("    '").append(hardwareItem.identifier).append("',\n");
     }
     jsHardware
         .append("  ];\n\n");
@@ -247,6 +250,30 @@ public class HardwareUtil {
     jsHardware
         .append("];\n\n");
 
+    jsHardware
+        .append("function getOctoQuadConstant(constantIdentifier) {\n")
+        .append("  switch (constantIdentifier) {\n")
+	.append("    case 'OCTOQUAD_CHIP_ID':\n")
+        .append("      return '").append("0x").append(Integer.toHexString(OctoQuadBase.OCTOQUAD_CHIP_ID)).append("';\n")
+	.append("    case 'SUPPORTED_FW_VERSION_MAJ':\n")
+        .append("      return '").append(OctoQuadBase.SUPPORTED_FW_VERSION_MAJ).append("';\n")
+	.append("    case 'ENCODER_FIRST':\n")
+        .append("      return '").append(OctoQuadBase.ENCODER_FIRST).append("';\n")
+	.append("    case 'ENCODER_LAST':\n")
+        .append("      return '").append(OctoQuadBase.ENCODER_LAST).append("';\n")
+	.append("    case 'NUM_ENCODERS':\n")
+        .append("      return '").append(OctoQuadBase.NUM_ENCODERS).append("';\n")
+	.append("    case 'MIN_VELOCITY_MEASUREMENT_INTERVAL_MS':\n")
+        .append("      return '").append(OctoQuadBase.MIN_VELOCITY_MEASUREMENT_INTERVAL_MS).append("';\n")
+	.append("    case 'MAX_VELOCITY_MEASUREMENT_INTERVAL_MS':\n")
+        .append("      return '").append(OctoQuadBase.MAX_VELOCITY_MEASUREMENT_INTERVAL_MS).append("';\n")
+	.append("    case 'MIN_PULSE_WIDTH_US':\n")
+        .append("      return '").append(OctoQuadBase.MIN_PULSE_WIDTH_US).append("';\n")
+	.append("    case 'MAX_PULSE_WIDTH_US':\n")
+        .append("      return '").append("0x").append(Integer.toHexString(OctoQuadBase.MAX_PULSE_WIDTH_US).toUpperCase()).append("';\n")
+        .append("  }\n")
+        .append("  return '';\n")
+        .append("}\n\n");
 
     jsHardware
         .append("function isValidProjectName(projectName) {\n")
@@ -254,6 +281,17 @@ public class HardwareUtil {
         .append("    return /").append(ProjectsUtil.VALID_PROJECT_REGEX).append("/.test(projectName);\n")
         .append("  }\n")
         .append("  return false;\n")
+        .append("}\n\n");
+
+    jsHardware
+        .append("function getSparkFunOTOSConstant(constantIdentifier) {\n")
+        .append("  switch (constantIdentifier) {\n")
+	.append("    case 'MIN_SCALAR':\n")
+        .append("      return '").append(SparkFunOTOS.MIN_SCALAR).append("';\n")
+	.append("    case 'MAX_SCALAR':\n")
+        .append("      return '").append(SparkFunOTOS.MAX_SCALAR).append("';\n")
+        .append("  }\n")
+        .append("  return '';\n")
         .append("}\n\n");
 
     StringBuilder blinkinPatternTooltips = new StringBuilder();
@@ -751,12 +789,6 @@ public class HardwareUtil {
           if (hardwareType.toolboxCategoryName != null) {
             addHardwareCategoryToToolbox(
                 xmlToolbox, hardwareType, hardwareItemMap.getHardwareItems(hardwareType), assetManager);
-            if (hardwareType == HardwareType.BNO055IMU) {
-              if (assetManager != null) {
-                addAsset(
-                    xmlToolbox, assetManager, "toolbox/bno055imu_parameters.xml");
-              }
-            }
           }
         }
       }
@@ -770,7 +802,9 @@ public class HardwareUtil {
     addExportedStaticMethods(xmlToolbox, additionalReservedWordsForFtcJava, methodLookupStrings);
 
     if (assetManager != null) {
-      addAssetWithPlaceholders(xmlToolbox, assetManager, capabilities, hardwareItemMap, "toolbox/utilities.xml");
+      addAssetWithPlaceholders(xmlToolbox,
+          assetManager, additionalReservedWordsForFtcJava, methodLookupStrings,
+          capabilities, hardwareItemMap, "toolbox/utilities.xml");
 
       addAsset(xmlToolbox, assetManager, "toolbox/misc.xml");
     }
@@ -1082,6 +1116,11 @@ public class HardwareUtil {
           shadow = (defaultValue == null)
               ? ToolboxUtil.makeTypedEnumShadow("bno055imu", "systemStatus")
               : ToolboxUtil.makeTypedEnumShadow("bno055imu", "systemStatus", "SYSTEM_STATUS", defaultValue);
+      } else if (argType.equals(CachingOctoQuad.CachingMode.class.getName())) {
+        String defaultValue = parseEnumDefaultValue(parameterDefaultValues[i], CachingOctoQuad.CachingMode.class);
+        shadow = (defaultValue == null)
+            ? ToolboxUtil.makeTypedEnumShadow("octoquad", "cachingMode")
+            : ToolboxUtil.makeTypedEnumShadow("octoquad", "cachingMode", "CACHING_MODE", defaultValue);
       } else if (argType.equals(CompassSensor.CompassMode.class.getName())) {
         String defaultValue = parseEnumDefaultValue(parameterDefaultValues[i], CompassSensor.CompassMode.class);
         shadow = (defaultValue == null)
@@ -1142,6 +1181,21 @@ public class HardwareUtil {
         shadow = (defaultValue == null)
             ? ToolboxUtil.makeTypedEnumShadow("pidfCoefficients", "motorControlAlgorithm")
             : ToolboxUtil.makeTypedEnumShadow("pidfCoefficients", "motorControlAlgorithm", "MOTOR_CONTROL_ALGORITHM", defaultValue);
+      } else if (argType.equals(OctoQuadBase.ChannelBankConfig.class.getName())) {
+        String defaultValue = parseEnumDefaultValue(parameterDefaultValues[i], OctoQuadBase.ChannelBankConfig.class);
+        shadow = (defaultValue == null)
+            ? ToolboxUtil.makeTypedEnumShadow("octoquad", "channelBankConfig")
+            : ToolboxUtil.makeTypedEnumShadow("octoquad", "channelBankConfig", "CHANNEL_BANK_CONFIG", defaultValue);
+      } else if (argType.equals(OctoQuadBase.EncoderDirection.class.getName())) {
+        String defaultValue = parseEnumDefaultValue(parameterDefaultValues[i], OctoQuadBase.EncoderDirection.class);
+        shadow = (defaultValue == null)
+            ? ToolboxUtil.makeTypedEnumShadow("octoquad", "encoderDirection")
+            : ToolboxUtil.makeTypedEnumShadow("octoquad", "encoderDirection", "ENCODER_DIRECTION", defaultValue);
+      } else if (argType.equals(OctoQuadBase.I2cRecoveryMode.class.getName())) {
+        String defaultValue = parseEnumDefaultValue(parameterDefaultValues[i], OctoQuadBase.I2cRecoveryMode.class);
+        shadow = (defaultValue == null)
+            ? ToolboxUtil.makeTypedEnumShadow("octoquad", "i2cRecoveryMode")
+            : ToolboxUtil.makeTypedEnumShadow("octoquad", "i2cRecoveryMode", "I2C_RECOVERY_MODE", defaultValue);
       } else if (argType.equals(Servo.Direction.class.getName())) {
         String defaultValue = parseEnumDefaultValue(parameterDefaultValues[i], Servo.Direction.class);
         shadow = (defaultValue == null)
@@ -1377,7 +1431,8 @@ public class HardwareUtil {
     }
   }
 
-  private static void addAssetWithPlaceholders(StringBuilder xmlToolbox, AssetManager assetManager,
+  private static void addAssetWithPlaceholders(StringBuilder xmlToolbox,
+      AssetManager assetManager, Set<String> additionalReservedWordsForFtcJava, Set<String> methodLookupStrings,
       Map<Capability, Boolean> capabilities, HardwareItemMap hardwareItemMap, String assetName) throws IOException {
     try (BufferedReader reader =
         new BufferedReader(new InputStreamReader(assetManager.open(assetName)))) {
@@ -1387,6 +1442,8 @@ public class HardwareUtil {
 
         line = line.replace("<placeholder_webcam_webcamNames/>", getWebcamBlocks(hardwareItemMap));
         line = line.replace("<placeholder_vision_tfodCurrentGameLabels/>", getTfodCurrentGameLabelBlocks());
+        line = line.replace("<placeholder_apriltag_exportedAprilTagLibraries/>",
+            getExportedAprilTagLibraryBlocks(additionalReservedWordsForFtcJava, methodLookupStrings));
 
         String prefix = "<placeholder_";
         String suffix = "/>";
@@ -1400,7 +1457,9 @@ public class HardwareUtil {
             Boolean allowed = capabilities.get(Capability.fromPlaceholderType(type));
             if (allowed != null) {
               if (allowed) {
-                addAssetWithPlaceholders(xmlToolbox, assetManager, capabilities, hardwareItemMap, childAssetName);
+                addAssetWithPlaceholders(xmlToolbox,
+                    assetManager, additionalReservedWordsForFtcJava, methodLookupStrings,
+                    capabilities, hardwareItemMap, childAssetName);
               } else {
                 RobotLog.w("Skipping " + childAssetName + " because capability \"" + type + "\" " +
                     "is not supported by this device and/or hardware.");
@@ -1446,6 +1505,61 @@ public class HardwareUtil {
           .append("<block type=\"tfod_typedEnum_label\"></block>\n");
     }
     return tfodCurrentGameLabelBlocks.toString();
+  }
+
+  private static String getExportedAprilTagLibraryBlocks(Set<String> additionalReservedWordsForFtcJava, Set<String> methodLookupStrings) {
+    StringBuilder sb = new StringBuilder();
+    Map<Class, Set<Method>> methodsByClass = BlocksClassFilter.getInstance().getAprilTagLibraryMethodsByClass();
+    if (!methodsByClass.isEmpty()) {
+      for (Map.Entry<Class, Set<Method>> entry : methodsByClass.entrySet()) {
+        Class clazz = entry.getKey();
+        String fullClassName = clazz.getName();
+        String className = fullClassName;
+        if (className.startsWith("org.firstinspires.ftc.teamcode.") && className.lastIndexOf('.') == 30) {
+          className = className.substring(31);
+          additionalReservedWordsForFtcJava.add(className);
+        }
+        String userVisibleClassName = className.replace('$', '.');
+        Set<Method> methods = entry.getValue();
+        for (Method method : methods) {
+          ExportAprilTagLibraryToBlocks exportAprilTagLibraryToBlocks = method.getAnnotation(ExportAprilTagLibraryToBlocks.class);
+          if (exportAprilTagLibraryToBlocks == null) {
+            continue;
+          }
+          String returnType = method.getReturnType().getName();
+          String blockType = returnType.equals("void") ? "misc_callJava_noReturn" : "misc_callJava_return";
+          String methodName = method.getName();
+          Class[] parameterTypes = method.getParameterTypes();
+          int color = exportAprilTagLibraryToBlocks.color();
+          String heading = exportAprilTagLibraryToBlocks.heading();
+          String comment = exportAprilTagLibraryToBlocks.comment();
+          String tooltip = exportAprilTagLibraryToBlocks.tooltip();
+          String methodLookupString = BlocksClassFilter.getLookupString(method);
+          methodLookupStrings.add(methodLookupString);
+          sb
+              .append("<block type=\"variables_set\"><field name=\"VAR\">myAprilTagLibrary</field><value name=\"VALUE\">\n")
+              .append("<block type=\"").append(blockType).append("\">\n")
+              .append("<field name=\"CLASS_NAME\">").append(userVisibleClassName).append("</field>")
+              .append("<field name=\"METHOD_NAME\">").append(methodName).append("</field>")
+              .append("<mutation")
+              .append(" methodLookupString=\"").append(methodLookupString).append("\"")
+              .append(" fullClassName=\"").append(fullClassName).append("\"")
+              .append(" simpleName=\"").append(clazz.getSimpleName()).append("\"")
+              .append(" parameterCount=\"").append(parameterTypes.length).append("\"")
+              .append(" returnType=\"").append(returnType).append("\"")
+              .append(" color=\"").append(color).append("\"")
+              .append(" heading=\"").append(escapeForXml(heading)).append("\"")
+              .append(" comment=\"").append(escapeForXml(comment)).append("\"")
+              .append(" tooltip=\"").append(escapeForXml(tooltip)).append("\"")
+              .append(" accessMethod=\"").append(accessMethod(false, method.getReturnType())).append("\"")
+              .append(" convertReturnValue=\"").append(convertReturnValue(method.getReturnType())).append("\"");
+          processMethodArguments(sb, parameterTypes, getParameterLabels(method), getParameterDefaultValues(method));
+          // Note that processMethodArguments terminates the mutation and block tags.
+          sb.append("</value></block>"); // This terminates the variables_set block.
+        }
+      }
+    }
+    return sb.toString();
   }
 
   /**
@@ -1568,6 +1682,9 @@ public class HardwareUtil {
         case MR_I2C_RANGE_SENSOR:
           addMrI2cRangeSensorCategoryToToolbox(xmlToolbox, hardwareType, hardwareItems);;
           break;
+        case OCTOQUAD:
+          addOctoQuadCategoryToToolbox(xmlToolbox, hardwareType, hardwareItems, assetManager);
+          break;
         case OPTICAL_DISTANCE_SENSOR:
           addOpticalDistanceSensorCategoryToToolbox(xmlToolbox, hardwareType, hardwareItems);
           break;
@@ -1579,6 +1696,9 @@ public class HardwareUtil {
           break;
         case SERVO_CONTROLLER:
           addServoControllerCategoryToToolbox(xmlToolbox, hardwareType, hardwareItems);
+          break;
+        case SPARKFUN_OTOS:
+          addSparkFunOTOSCategoryToToolbox(xmlToolbox, hardwareType, hardwareItems, assetManager);
           break;
         case TOUCH_SENSOR:
           addTouchSensorCategoryToToolbox(xmlToolbox, hardwareType, hardwareItems);
@@ -1594,6 +1714,21 @@ public class HardwareUtil {
       }
 
       xmlToolbox.append("  </category>\n");
+
+      if (assetManager != null) {
+        switch (hardwareType) {
+          case BNO055IMU:
+            addAsset(
+                xmlToolbox, assetManager, "toolbox/bno055imu_parameters.xml");
+            break;
+          case SPARKFUN_OTOS:
+            addAsset(xmlToolbox, assetManager, "toolbox/sparkfun_otos_pose2d.xml");
+            addAsset(xmlToolbox, assetManager, "toolbox/sparkfun_otos_signalprocessconfig.xml");
+            addAsset(xmlToolbox, assetManager, "toolbox/sparkfun_otos_status.xml");
+            addAsset(xmlToolbox, assetManager, "toolbox/sparkfun_otos_version.xml");
+            break;
+        }
+      }
     }
   }
 
@@ -1699,7 +1834,8 @@ public class HardwareUtil {
         "Initialize the IMU with non-default settings. To use this block, plug one of the " +
         "\"new IMU.Parameters\" blocks into the parameters socket." +
         "</comment>");
-    ToolboxUtil.addFunctions(xmlToolbox, hardwareType, identifier, initFunctions, initFunctionComments, null);
+    ToolboxUtil.addFunctions(xmlToolbox, hardwareType, identifier, initFunctions, initFunctionComments,
+                             null /* variableSetters */, null /* enumBlocks */);
     if (assetManager != null) {
       addAsset(
           xmlToolbox, assetManager, "toolbox/imu_parameters.xml");
@@ -2108,7 +2244,8 @@ public class HardwareUtil {
     arrows_withIdArgs.put("ID", ToolboxUtil.makeNumberShadow(1));
     functions.put("arrows_withId", arrows_withIdArgs);
     variableSetters.put("arrows_withId", "myHuskyLensArrows");
-    ToolboxUtil.addFunctions(xmlToolbox, hardwareType, identifier, functions, null, variableSetters);
+    ToolboxUtil.addFunctions(xmlToolbox, hardwareType, identifier, functions,
+                             null /* functionComments */, variableSetters, null /* enumBlocks */);
 
     if (assetManager != null) {
       addAsset(xmlToolbox, assetManager, "toolbox/husky_lens_block.xml");
@@ -2287,6 +2424,93 @@ public class HardwareUtil {
   }
 
   /**
+   * Adds the category for OctoQuad to the toolbox.
+   */
+  private static void addOctoQuadCategoryToToolbox(
+      StringBuilder xmlToolbox, HardwareType hardwareType, List<HardwareItem> hardwareItems,
+      AssetManager assetManager) throws IOException {
+    String identifier = hardwareItems.get(0).identifier;
+    String channelBankConfig = ToolboxUtil.makeTypedEnumShadow(hardwareType, "channelBankConfig");
+    String i2cRecoveryMode = ToolboxUtil.makeTypedEnumShadow(hardwareType, "i2cRecoveryMode");
+
+    // Constants
+    if (assetManager != null) {
+      addAsset(xmlToolbox, assetManager, "toolbox/octoquad.xml");
+    }
+
+    // Properties
+    SortedMap<String, String> properties = new TreeMap<String, String>();
+    properties.put("ChipId", "Number");
+    properties.put("FirmwareVersionString", "String");
+    properties.put("ChannelBankConfig", "ChannelBankConfig");
+    properties.put("I2cRecoveryMode", "I2cRecoveryMode");
+    Map<String, String> enumBlocks = new HashMap<String, String>();
+    enumBlocks.put("ChannelBankConfig", ToolboxUtil.makeTypedEnumBlock(hardwareType, "channelBankConfig"));
+    enumBlocks.put("I2cRecoveryMode", ToolboxUtil.makeTypedEnumBlock(hardwareType, "i2cRecoveryMode"));
+    Map<String, String[]> setterValues = new HashMap<String, String[]>();
+    setterValues.put("ChannelBankConfig", new String[] { channelBankConfig });
+    setterValues.put("I2cRecoveryMode", new String[] { i2cRecoveryMode });
+    ToolboxUtil.addProperties(xmlToolbox, hardwareType, identifier, properties,
+        setterValues, enumBlocks);
+
+    // Functions
+    enumBlocks.clear();
+    Map<String, Map<String, String>> functions = new TreeMap<String, Map<String, String>>();
+    functions.put("resetAllPositions", null);
+    Map<String, String> resetSinglePositionArgs = new LinkedHashMap<String, String>();
+    resetSinglePositionArgs.put("INDEX", ToolboxUtil.makeNumberShadow(0));
+    functions.put("resetSinglePosition", resetSinglePositionArgs);
+
+    Map<String, String> setSingleEncoderDirectionArgs = new LinkedHashMap<String, String>();
+    setSingleEncoderDirectionArgs.put("INDEX", ToolboxUtil.makeNumberShadow(0));
+    setSingleEncoderDirectionArgs.put("DIRECTION", ToolboxUtil.makeTypedEnumShadow(hardwareType, "encoderDirection"));
+    functions.put("setSingleEncoderDirection", setSingleEncoderDirectionArgs);
+
+    Map<String, String> getSingleEncoderDirectionArgs = new LinkedHashMap<String, String>();
+    getSingleEncoderDirectionArgs.put("INDEX", ToolboxUtil.makeNumberShadow(0));
+    enumBlocks.put("getSingleEncoderDirection", ToolboxUtil.makeTypedEnumBlock(hardwareType, "encoderDirection"));
+    functions.put("getSingleEncoderDirection", getSingleEncoderDirectionArgs);
+
+    Map<String, String> setAllVelocitySampleIntervalsArgs = new LinkedHashMap<String, String>();
+    setAllVelocitySampleIntervalsArgs.put("INTERVAL_MS", ToolboxUtil.makeNumberShadow(24));
+    functions.put("setAllVelocitySampleIntervals", setAllVelocitySampleIntervalsArgs);
+
+    Map<String, String> setSingleVelocitySampleIntervalArgs = new LinkedHashMap<String, String>();
+    setSingleVelocitySampleIntervalArgs.put("INDEX", ToolboxUtil.makeNumberShadow(0));
+    setSingleVelocitySampleIntervalArgs.put("INTERVAL_MS", ToolboxUtil.makeNumberShadow(25));
+    functions.put("setSingleVelocitySampleInterval", setSingleVelocitySampleIntervalArgs);
+
+    Map<String, String> getSingleVelocitySampleIntervalArgs = new LinkedHashMap<String, String>();
+    getSingleVelocitySampleIntervalArgs.put("INDEX", ToolboxUtil.makeNumberShadow(0));
+    functions.put("getSingleVelocitySampleInterval", getSingleVelocitySampleIntervalArgs);
+
+    Map<String, String> setSingleChannelPulseWidthParamsArgs = new LinkedHashMap<String, String>();
+    setSingleChannelPulseWidthParamsArgs.put("INDEX", ToolboxUtil.makeNumberShadow(0));
+    setSingleChannelPulseWidthParamsArgs.put("MIN_WIDTH_US", ToolboxUtil.makeNumberShadow(1));
+    setSingleChannelPulseWidthParamsArgs.put("MAX_WIDTH_US", ToolboxUtil.makeNumberShadow(1024));
+    functions.put("setSingleChannelPulseWidthParams", setSingleChannelPulseWidthParamsArgs);
+
+    functions.put("resetEverything", null);
+    functions.put("saveParametersToFlash", null);
+
+    Map<String, String> setCachingModeArgs = new LinkedHashMap<String, String>();
+    setCachingModeArgs.put("MODE", ToolboxUtil.makeTypedEnumShadow(hardwareType, "cachingMode"));
+    functions.put("setCachingMode", setCachingModeArgs);
+
+    functions.put("refreshCache", null);
+
+    Map<String, String> readSinglePosition_CachingArgs = new LinkedHashMap<String, String>();
+    readSinglePosition_CachingArgs.put("INDEX", ToolboxUtil.makeNumberShadow(0));
+    functions.put("readSinglePosition_Caching", readSinglePosition_CachingArgs);
+
+    Map<String, String> readSingleVelocity_CachingArgs = new LinkedHashMap<String, String>();
+    readSingleVelocity_CachingArgs.put("INDEX", ToolboxUtil.makeNumberShadow(0));
+    functions.put("readSingleVelocity_Caching", readSingleVelocity_CachingArgs);
+    ToolboxUtil.addFunctions(xmlToolbox, hardwareType, identifier, functions,
+                 null /* functionComments */, null /* variableSetters */, enumBlocks);
+  }
+
+  /**
    * Adds the category for optical distance sensor to the toolbox.
    */
   private static void addOpticalDistanceSensorCategoryToToolbox(
@@ -2363,6 +2587,83 @@ public class HardwareUtil {
     Map<String, Map<String, String>> functions = new TreeMap<String, Map<String, String>>();
     functions.put("pwmEnable", null);
     functions.put("pwmDisable", null);
+    ToolboxUtil.addFunctions(xmlToolbox, hardwareType, identifier, functions);
+  }
+
+  /**
+   * Adds the category for SparkFunOTOS to the toolbox.
+   */
+  private static void addSparkFunOTOSCategoryToToolbox(
+      StringBuilder xmlToolbox, HardwareType hardwareType, List<HardwareItem> hardwareItems,
+      AssetManager assetManager) throws IOException {
+    String identifier = hardwareItems.get(0).identifier;
+    String one = ToolboxUtil.makeNumberShadow(1);
+
+    // Constants
+    if (assetManager != null) {
+      addAsset(xmlToolbox, assetManager, "toolbox/sparkfun_otos.xml");
+    }
+
+    // Properties
+    SortedMap<String, String> properties = new TreeMap<String, String>();
+    properties.put("Status", "Status");
+    properties.put("Offset", "Pose2D");
+    properties.put("Position", "Pose2D");
+    properties.put("Acceleration", "Pose2D");
+    properties.put("Velocity", "Pose2D");
+    properties.put("PositionStdDev", "Pose2D");
+    properties.put("AccelerationStdDev", "Pose2D");
+    properties.put("VelocityStdDev", "Pose2D");
+    properties.put("SignalProcessConfig", "SignalProcessConfig");
+    properties.put("ImuCalibrationProgress", "Number");
+    properties.put("LinearUnit", "DistanceUnit");
+    properties.put("LinearScalar", "Number_ReturnBoolean");
+    properties.put("AngularScalar", "Number_ReturnBoolean");
+    properties.put("AngularUnit", "AngleUnit");
+    Map<String, String[]> setterValues = new HashMap<String, String[]>();
+    setterValues.put("Offset", new String[] { ToolboxUtil.makeVariableGetBlock("myPose") });
+    setterValues.put("Position", new String[] { ToolboxUtil.makeVariableGetBlock("myPose") });
+    setterValues.put("SignalProcessConfig", new String[] { ToolboxUtil.makeVariableGetBlock("mySignalProcessConfig") });
+    setterValues.put("LinearScalar", new String[] { one });
+    setterValues.put("LinearUnit", new String[] { ToolboxUtil.makeTypedEnumShadow("navigation", "distanceUnit") });
+    setterValues.put("AngularScalar", new String[] { one });
+    setterValues.put("AngularUnit", new String[] { ToolboxUtil.makeTypedEnumShadow("navigation", "angleUnit") });
+    ToolboxUtil.addProperties(xmlToolbox, hardwareType, identifier, properties,
+        setterValues, null /* enumBlocks */);
+
+    // Functions
+    Map<String, Map<String, String>> functions = new TreeMap<String, Map<String, String>>();
+    Map<String, String> getPosVelAccArgs = new LinkedHashMap<String, String>();
+    getPosVelAccArgs.put("POS", ToolboxUtil.makeVariableGetBlock("pos"));
+    getPosVelAccArgs.put("VEL", ToolboxUtil.makeVariableGetBlock("vel"));
+    getPosVelAccArgs.put("ACC", ToolboxUtil.makeVariableGetBlock("acc"));
+    functions.put("getPosVelAcc", getPosVelAccArgs);
+    Map<String, String> getPosVelAccStdDevArgs = new LinkedHashMap<String, String>();
+    getPosVelAccStdDevArgs.put("POS_STD_DEV", ToolboxUtil.makeVariableGetBlock("posStdDev"));
+    getPosVelAccStdDevArgs.put("VEL_STD_DEV", ToolboxUtil.makeVariableGetBlock("velStdDev"));
+    getPosVelAccStdDevArgs.put("ACC_STD_DEV", ToolboxUtil.makeVariableGetBlock("accStdDev"));
+    functions.put("getPosVelAccStdDev", getPosVelAccStdDevArgs);
+    Map<String, String> getPosVelAccAndStdDevArgs = new LinkedHashMap<String, String>();
+    getPosVelAccAndStdDevArgs.put("POS", ToolboxUtil.makeVariableGetBlock("pos"));
+    getPosVelAccAndStdDevArgs.put("VEL", ToolboxUtil.makeVariableGetBlock("vel"));
+    getPosVelAccAndStdDevArgs.put("ACC", ToolboxUtil.makeVariableGetBlock("acc"));
+    getPosVelAccAndStdDevArgs.put("POS_STD_DEV", ToolboxUtil.makeVariableGetBlock("posStdDev"));
+    getPosVelAccAndStdDevArgs.put("VEL_STD_DEV", ToolboxUtil.makeVariableGetBlock("velStdDev"));
+    getPosVelAccAndStdDevArgs.put("ACC_STD_DEV", ToolboxUtil.makeVariableGetBlock("accStdDev"));
+    functions.put("getPosVelAccAndStdDev", getPosVelAccAndStdDevArgs);
+    Map<String, String> getVersionInfoArgs = new LinkedHashMap<String, String>();
+    getVersionInfoArgs.put("HW_VERSION", ToolboxUtil.makeVariableGetBlock("hwVersion"));
+    getVersionInfoArgs.put("FW_VERSION", ToolboxUtil.makeVariableGetBlock("fwVersion"));
+    functions.put("getVersionInfo", getVersionInfoArgs);
+    functions.put("begin", null);
+    functions.put("calibrateImu", null);
+    Map<String, String> calibrateImuArgs = new LinkedHashMap<String, String>();
+    calibrateImuArgs.put("NUM_SAMPLES", ToolboxUtil.makeNumberShadow(255));
+    calibrateImuArgs.put("WAIT_UNTIL_DONE", ToolboxUtil.makeBooleanShadow(true));
+    functions.put("calibrateImu_withArgs", calibrateImuArgs);
+    functions.put("isConnected", null);
+    functions.put("selfTest", null);
+    functions.put("resetTracking", null);
     ToolboxUtil.addFunctions(xmlToolbox, hardwareType, identifier, functions);
   }
 
@@ -2476,12 +2777,18 @@ public class HardwareUtil {
     set.add("JustLoggingAccelerationIntegrator");
     // com.qualcomm.hardware.dfrobot
     set.add("HuskyLens");
+    // com.qualcomm.hardware.digitalchickenlabs
+    set.add("CachingOctoQuad");
+    set.add("OctoQuadBase");
     // com.qualcomm.hardware.modernrobotics
     set.add("ModernRoboticsI2cCompassSensor");
     set.add("ModernRoboticsI2cGyro");
     set.add("ModernRoboticsI2cRangeSensor");
     // com.qualcomm.hardware.rev
     set.add("RevBlinkinLedDriver");
+    set.add("RevHubOrientationOnRobot");
+    // com.qualcomm.hardware.sparkfun
+    set.add("SparkFunOTOS");
     // com.qualcomm.robotcore.eventloop
     set.add("Autonomous");
     set.add("Disabled");

@@ -1,0 +1,6 @@
+    <block type="sparkFunOTOS_constant_Number">
+        <field name="CONSTANT">MIN_SCALAR</field>
+    </block>
+    <block type="sparkFunOTOS_constant_Number">
+        <field name="CONSTANT">MAX_SCALAR</field>
+    </block>

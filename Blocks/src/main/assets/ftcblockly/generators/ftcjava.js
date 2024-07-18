@@ -121,11 +121,15 @@ Blockly.FtcJava.init = function(workspace) {
   // to actual function names (to avoid collisions with user functions).
   Blockly.FtcJava.functionNames_ = Object.create(null);
 
-  if (!Blockly.FtcJava.variableDB_) {
-    Blockly.FtcJava.variableDB_ = new Blockly.Names(Blockly.FtcJava.RESERVED_WORDS_);
-  } else {
-    Blockly.FtcJava.variableDB_.reset();
+  // Include the missing hardware identifiers along with the reserved words so if there is a variable
+  // with the same name as a missing hardware identifier, it won't collide.
+  // Hardware identifiers from the hardware configuration are already in the reserved words because
+  // they are added in HardwareUtil.fetchJavaScriptForHardware when it generates addReservedWordsForFtcJava.
+  var missingHardwareIdentifiers = '';
+  for (var i = 0; i < missingHardwareNames.length; i++) {
+    missingHardwareIdentifiers += makeIdentifier(missingHardwareNames[i]) + ',';
   }
+  Blockly.FtcJava.variableDB_ = new Blockly.Names(Blockly.FtcJava.RESERVED_WORDS_ + missingHardwareIdentifiers);
   Blockly.FtcJava.variableDB_.setVariableMap(workspace.getVariableMap());
 
   Blockly.FtcJava.variableDeclarationsByScope_ = Object.create(null);
@@ -193,6 +197,16 @@ Blockly.FtcJava.init = function(workspace) {
                 argumentSetterBlocks[index].push(otherBlock);
               }
             }
+          } else if (otherBlock.type == 'misc_setAndGetVariable') {
+            var varField = otherBlock.getField('VAR');
+            if (varField) {
+              var rawVariableName = varField.getText();
+              var index = Blockly.FtcJava.getArgumentIndex_(rawVariableName, procedureBlock);
+              if (index != -1) {
+                argumentGetterBlocks[index].push(otherBlock);
+                argumentSetterBlocks[index].push(otherBlock);
+              }
+            }
           }
         }
         if (otherBlock.type == 'procedures_callreturn' || otherBlock.type == 'procedures_callnoreturn') {
@@ -256,6 +270,9 @@ Blockly.FtcJava.init = function(workspace) {
           if (block.type == 'variables_get') {
             variableGetterBlocks.push(block);
           } else if (block.type == 'variables_set') {
+            variableSetterBlocks.push(block);
+          } else if (block.type == 'misc_setAndGetVariable') {
+            variableGetterBlocks.push(block);
             variableSetterBlocks.push(block);
           }
         }
@@ -501,8 +518,9 @@ Blockly.FtcJava.getOutputType_ = function(block) {
       }
     }
 
-    if (block.type == 'variables_get') {
-      // If the block is a variable getter, see if we already know the type of that variable.
+    if (block.type == 'variables_get' || block.type == 'misc_setAndGetVariable') {
+      // If the block is a variable getter or a misc_setAndGetVariable block, see if we already know
+      // the type of that variable.
       var variableName = Blockly.FtcJava.getVariableName_(block);
       // Maybe it's a variable.
       var variableType = Blockly.FtcJava.variableTypes_[variableName];
@@ -588,8 +606,9 @@ Blockly.FtcJava.getExpectedType_ = function(block, connection) {
     return Blockly.FtcJava.convertBlocksTypeToFtcJavaType_('String');
   }
 
-  // If the block is a variable setter, see if we already know the type of that variable.
-  if (block.type == 'variables_set') {
+  // If the block is a variable setter or a misc_setAndGetVariable block, see if we already know the
+  // type of that variable.
+  if (block.type == 'variables_set' || block.type == 'misc_setAndGetVariable') {
     var variableName = Blockly.FtcJava.getVariableName_(block);
     var variableType = Blockly.FtcJava.variableTypes_[variableName];
     if (variableType != '') {
@@ -710,8 +729,8 @@ Blockly.FtcJava.getTypeValue_ = function(type) {
 };
 
 Blockly.FtcJava.getVariableName_ = function(block) {
-  if (block.type != 'variables_set' && block.type != 'variables_get') {
-    throw 'Unexpected block in getVariableName_ - should be variables_set or variables_get';
+  if (block.type != 'variables_set' && block.type != 'variables_get' && block.type != 'misc_setAndGetVariable') {
+    throw 'Unexpected block in getVariableName_ - should be variables_set or variables_get or misc_setAndGetVariable';
   }
   return Blockly.FtcJava.variableDB_.getName(block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
 };
@@ -1164,9 +1183,15 @@ Blockly.FtcJava.importDeclareAssign_ = function(block, identifierFieldName, java
         // HardwareUtil.fetchJavaScriptForHardware().
         identifierForFtcJava = getHardwareItemIdentifierForFtcJava(identifier);
       } catch (e) {
-        // getHardwareItemIdentifierForFtcJava throws an exception if the hardware device is
-        // missing. Use makeIdentifier (in vars.js) to generate a identifier;
-        identifierForFtcJava = makeIdentifier(identifier);
+        // getHardwareItemIdentifierForFtcJava throws an exception if the hardware device is missing.
+        // The visible identifier names are now stored using block.data.
+        var data = parseBlockDataJSON(block);
+        if (data && identifierFieldName in data) {
+          identifierForFtcJava = makeIdentifier(data[identifierFieldName]);
+        } else {
+          // Otherwise, use makeIdentifier (in vars.js) to generate a identifier;
+          identifierForFtcJava = makeIdentifier(removeHardwareIdentifierSuffix(identifier));
+        }
       }
 
       var hardwareName;

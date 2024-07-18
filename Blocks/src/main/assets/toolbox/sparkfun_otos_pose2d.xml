@@ -1,0 +1,57 @@
+  <category name="SparkFunOTOS.Pose2D">
+    <block type="variables_set">
+      <field name="VAR">myPose</field>
+      <value name="VALUE">
+        <block type="sparkFunOTOS_Pose2D_create"></block>
+      </value>
+    </block>
+    <block type="variables_set">
+      <field name="VAR">myPose</field>
+      <value name="VALUE">
+        <block type="sparkFunOTOS_Pose2D_create_withArgs">
+          <value name="X"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
+          <value name="Y"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
+          <value name="H"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
+        </block>
+      </value>
+    </block>
+    <block type="sparkFunOTOS_Pose2D_getProperty_Number">
+      <comment pinned="false" h="150" w="325">Get the x value from the given SparkFunOTOS.Pose2D object.
+      </comment>
+      <field name="PROP">x</field>
+      <value name="POSE"><block type="variables_get"><field name="VAR">myPose</field></block></value>
+    </block>
+    <block type="sparkFunOTOS_Pose2D_setProperty_Number">
+      <comment pinned="false" h="150" w="325">Set the x field in the given SparkFunOTOS.Pose2D object.
+      </comment>
+      <field name="PROP">x</field>
+      <value name="POSE"><block type="variables_get"><field name="VAR">myPose</field></block></value>
+      <value name="VALUE"><shadow type="math_number"><field name="NUM">5</field></shadow></value>
+    </block>
+    <block type="sparkFunOTOS_Pose2D_getProperty_Number">
+      <comment pinned="false" h="150" w="325">Get the y value from the given SparkFunOTOS.Pose2D object.
+      </comment>
+      <field name="PROP">y</field>
+      <value name="POSE"><block type="variables_get"><field name="VAR">myPose</field></block></value>
+    </block>
+    <block type="sparkFunOTOS_Pose2D_setProperty_Number">
+      <comment pinned="false" h="150" w="325">Set the y field in the given SparkFunOTOS.Pose2D object.
+      </comment>
+      <field name="PROP">y</field>
+      <value name="POSE"><block type="variables_get"><field name="VAR">myPose</field></block></value>
+      <value name="VALUE"><shadow type="math_number"><field name="NUM">10</field></shadow></value>
+    </block>
+    <block type="sparkFunOTOS_Pose2D_getProperty_Number">
+      <comment pinned="false" h="150" w="325">Get the h value from the given SparkFunOTOS.Pose2D object.
+      </comment>
+      <field name="PROP">h</field>
+      <value name="POSE"><block type="variables_get"><field name="VAR">myPose</field></block></value>
+    </block>
+    <block type="sparkFunOTOS_Pose2D_setProperty_Number">
+      <comment pinned="false" h="150" w="325">Set the h value in the given SparkFunOTOS.Pose2D object
+      </comment>
+      <field name="PROP">h</field>
+      <value name="POSE"><block type="variables_get"><field name="VAR">myPose</field></block></value>
+      <value name="VALUE"><shadow type="math_number"><field name="NUM">90</field></shadow></value>
+    </block>
+  </category>

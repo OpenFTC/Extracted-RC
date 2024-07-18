@@ -94,6 +94,10 @@
   background-image: url(images/ftcOpMode.png);
 }
 
+.OctoQuad-icon {
+  background-image: url(images/OctoQuad.png);
+}
+
 .OpticalDistanceSensor-icon {
   background-image: url(images/ftcOpticalDistanceSensor.png);
 }

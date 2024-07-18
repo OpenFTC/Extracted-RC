@@ -29,6 +29,6 @@
  */
 
 /**
- * Classes common to FTC aps
+ * Classes common to FTC apps
  */
 package com.qualcomm.ftccommon;

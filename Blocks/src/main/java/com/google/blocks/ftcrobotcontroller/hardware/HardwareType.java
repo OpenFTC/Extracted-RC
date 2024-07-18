@@ -22,6 +22,7 @@ import com.google.blocks.ftcrobotcontroller.util.ToolboxUtil;
 import com.qualcomm.hardware.adafruit.AdafruitBNO055IMU;
 import com.qualcomm.hardware.bosch.BNO055IMUImpl;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
+import com.qualcomm.hardware.digitalchickenlabs.OctoQuadImpl;
 import com.qualcomm.hardware.lynx.LynxEmbeddedIMU;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsAnalogOpticalDistanceSensor;
@@ -32,6 +33,7 @@ import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.hardware.rev.RevTouchSensor;
+import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.hardware.AccelerationSensor;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -179,6 +181,11 @@ public enum HardwareType {
       ToolboxFolder.SENSORS, "MrI2cRangeSensor", ToolboxIcon.OPTICAL_DISTANCE_SENSOR,
       ModernRoboticsI2cRangeSensor.class,
       ConfigurationTypeManager.getXmlTag(ModernRoboticsI2cRangeSensor.class)),
+  OCTOQUAD( // see octoquad.js
+      "createOctoQuadDropdown", "octoquad", "AsOctoQuad", "_OctoQuad",
+      ToolboxFolder.SENSORS, "OctoQuad", ToolboxIcon.OCTOQUAD,
+      OctoQuadImpl.class,
+      ConfigurationTypeManager.getXmlTag(OctoQuadImpl.class)),
   OPTICAL_DISTANCE_SENSOR( // see optical_distance_sensor.js
       "createOpticalDistanceSensorDropdown", "opticalDistanceSensor", "AsOpticalDistanceSensor", "_OpticalDistanceSensor",
       ToolboxFolder.SENSORS, "OpticalDistanceSensor", ToolboxIcon.OPTICAL_DISTANCE_SENSOR,
@@ -201,6 +208,11 @@ public enum HardwareType {
       ToolboxFolder.ACTUATORS, "ServoController", ToolboxIcon.SERVO_CONTROLLER,
       ServoController.class,
       BuiltInConfigurationType.LYNX_MODULE.getXmlTag()),
+  SPARKFUN_OTOS( // see sparkfun_otos.js
+      "createSparkFunOTOSDropdown", "sparkFunOTOS", "AsSparkFunOTOS", "_SparkFunOTOS",
+      ToolboxFolder.SENSORS, "SparkFunOTOS", null, // No toolbox icon.
+      SparkFunOTOS.class,
+      ConfigurationTypeManager.getXmlTag(SparkFunOTOS.class)),
   TOUCH_SENSOR( // see touch_sensor.js
       "createTouchSensorDropdown", "touchSensor", "AsTouchSensor", "_TouchSensor",
       ToolboxFolder.SENSORS, "TouchSensor", ToolboxIcon.TOUCH_SENSOR,

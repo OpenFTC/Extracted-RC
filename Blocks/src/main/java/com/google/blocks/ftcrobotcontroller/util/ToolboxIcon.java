@@ -36,6 +36,7 @@ public enum ToolboxIcon {
   LED("LED-icon"),
   LIGHT_SENSOR("LightSensor-icon"),
   LINEAR_OPMODE("LinearOpMode-icon"),
+  OCTOQUAD("OctoQuad-icon"),
   OPTICAL_DISTANCE_SENSOR("OpticalDistanceSensor-icon"),
   SERVO("Servo-icon"),
   SERVO_CONTROLLER("ServoController-icon"),

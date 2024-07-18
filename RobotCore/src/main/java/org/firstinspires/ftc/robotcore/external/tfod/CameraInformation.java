@@ -21,8 +21,11 @@ import java.util.Objects;
 /**
  * Class representing information about the camera needed for object detection.
  *
+ * <p>This class is deprecated and will be removed in v10.0.
+ *
  * @author lizlooney@google.com (Liz Looney)
  */
+@Deprecated
 public class CameraInformation {
   /**
    * The width of frames from the camera, in pixels.

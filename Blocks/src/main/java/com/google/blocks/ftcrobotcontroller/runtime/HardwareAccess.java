@@ -102,6 +102,8 @@ abstract class HardwareAccess<DEVICE_TYPE extends HardwareDevice> extends Access
         return new MrI2cCompassSensorAccess(blocksOpMode, hardwareItem, hardwareMap);
       case MR_I2C_RANGE_SENSOR:
         return new MrI2cRangeSensorAccess(blocksOpMode, hardwareItem, hardwareMap);
+      case OCTOQUAD:
+        return new OctoQuadAccess(blocksOpMode, hardwareItem, hardwareMap);
       case OPTICAL_DISTANCE_SENSOR:
         return new OpticalDistanceSensorAccess(blocksOpMode, hardwareItem, hardwareMap);
       case REV_BLINKIN_LED_DRIVER:
@@ -110,6 +112,8 @@ abstract class HardwareAccess<DEVICE_TYPE extends HardwareDevice> extends Access
         return new ServoAccess(blocksOpMode, hardwareItem, hardwareMap);
       case SERVO_CONTROLLER:
         return new ServoControllerAccess(blocksOpMode, hardwareItem, hardwareMap);
+      case SPARKFUN_OTOS:
+        return new SparkFunOTOSAccess(blocksOpMode, hardwareItem, hardwareMap);
       case TOUCH_SENSOR:
         return new TouchSensorAccess(blocksOpMode, hardwareItem, hardwareMap);
       case ULTRASONIC_SENSOR:

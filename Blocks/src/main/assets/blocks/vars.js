@@ -211,6 +211,9 @@ function knownTypeToClassName(type) {
       return 'com.qualcomm.hardware.bosch.' + type;
     case 'HuskyLens':
       return 'com.qualcomm.hardware.dfrobot.' + type;
+    case 'CachingOctoQuad':
+    case 'OctoQuadBase':
+      return 'com.qualcomm.hardware.digitalchickenlabs.' + type;
     case 'ModernRoboticsI2cCompassSensor':
     case 'ModernRoboticsI2cGyro':
     case 'ModernRoboticsI2cGyro.HeadingMode':
@@ -222,6 +225,13 @@ function knownTypeToClassName(type) {
     case 'RevHubOrientationOnRobot.LogoFacingDirection':
     case 'RevHubOrientationOnRobot.UsbFacingDirection':
       return 'com.qualcomm.hardware.rev.' + type;
+    case 'SparkFunOTOS':
+    case 'SparkFunOTOS.Pose2D':
+    case 'SparkFunOTOS.SelfTestConfig':
+    case 'SparkFunOTOS.SignalProcessConfig':
+    case 'SparkFunOTOS.Status':
+    case 'SparkFunOTOS.Version':
+      return 'com.qualcomm.hardware.sparkfun.' + type;
     case 'Autonomous':
     case 'Disabled':
     case 'LinearOpMode':

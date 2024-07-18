@@ -127,6 +127,18 @@ public class RcInspectionActivity extends InspectionActivity
                 return false;
                 }
             });
+
+        JsonSerializer<InspectionProperty> inspectionPropertyJsonSerializer = new JsonSerializer<InspectionProperty>()
+            {
+                @Override
+                public JsonElement serialize(InspectionProperty p, Type type, JsonSerializationContext jsonSerializationContext)
+                {
+                    // Throw away everything but the boolean and then map it to [0,1] to save space
+                    return new JsonPrimitive(p != null && p.valid ? 1 : 0);
+                }
+            };
+        builder.registerTypeAdapter(InspectionProperty.class, inspectionPropertyJsonSerializer);
+
         qrGson = builder.create();
         }
 

@@ -22,9 +22,12 @@ import java.util.List;
 /**
  * Interface for TensorFlow Object Detector.
  *
+ * <p>This class is deprecated and will be removed in v10.0.
+ *
  * @author Vasu Agrawal
  * @author lizlooney@google.com (Liz Looney)
  */
+@Deprecated
 public interface TFObjectDetector {
   /**
    * Activates this TFObjectDetector so it starts recognizing objects.

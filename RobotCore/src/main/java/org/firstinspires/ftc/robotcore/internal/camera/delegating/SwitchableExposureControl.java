@@ -32,121 +32,80 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.robotcore.internal.camera.delegating;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
-
 import java.util.concurrent.TimeUnit;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
+import org.firstinspires.ftc.robotcore.internal.collections.MutableReference;
 
-@SuppressWarnings("WeakerAccess")
-public class SwitchableExposureControl extends CachingExposureControl
-    {
-    //----------------------------------------------------------------------------------------------
-    // State
-    //----------------------------------------------------------------------------------------------
+class SwitchableExposureControl extends SwitchableCameraControl<ExposureControl> implements ExposureControl {
+  private static final int UNKNOWN_EXPOSURE = -1;
 
-    protected final RefCountedSwitchableCameraImpl switchableCamera;
+  SwitchableExposureControl() {
+    super(ExposureControl.class);
+  }
 
-    //----------------------------------------------------------------------------------------------
-    // Construction
-    //----------------------------------------------------------------------------------------------
+  @Override
+  public Mode getMode() {
+    ExposureControl exposureControl = getCameraControl();
+    return (exposureControl != null) ? exposureControl.getMode() : Mode.Unknown;
+  }
 
-    public SwitchableExposureControl(RefCountedSwitchableCameraImpl switchableCamera)
-        {
-        this.switchableCamera = switchableCamera;
-        }
+  @Override
+  public boolean setMode(Mode mode) {
+    ExposureControl exposureControl = getCameraControl();
+    return (exposureControl != null) ? exposureControl.setMode(mode) : false;
+  }
 
-    //----------------------------------------------------------------------------------------------
-    // ExposureControl
-    //----------------------------------------------------------------------------------------------
+  @Override
+  public boolean isModeSupported(Mode mode) {
+    ExposureControl exposureControl = getCameraControl();
+    return (exposureControl != null) ? exposureControl.isModeSupported(mode) : false;
+  }
 
-    @Override protected void initializeLimits()
-        {
-        for (Mode mode : Mode.values())
-            {
-            if (mode==Mode.Unknown) continue;
-            supportedModes.put(mode, aggregatedIsModeSupported(mode));
-            }
-        nsMinExposure = aggregatedMinExposure(TimeUnit.NANOSECONDS);
-        nsMaxExposure = aggregatedMaxExposure(TimeUnit.NANOSECONDS);
-        isExposureSupported = aggregatedIsExposureSupported();
-        }
+  @Override
+  public long getMinExposure(TimeUnit resultUnit) {
+    ExposureControl exposureControl = getCameraControl();
+    return (exposureControl != null) ? exposureControl.getMinExposure(resultUnit) : UNKNOWN_EXPOSURE;
+  }
 
-    protected long aggregatedMinExposure(TimeUnit timeUnit)
-        {
-        synchronized (lock)
-            {
-            long result = Long.MIN_VALUE;
-            for (SwitchableMemberInfo info : switchableCamera.cameraInfos.values())
-                {
-                ExposureControl exposureControl = info.getControl(ExposureControl.class);
-                if (exposureControl != null)
-                    {
-                    long theirs = exposureControl.getMinExposure(timeUnit);
-                    if (!isUnknownExposure(theirs))
-                        {
-                        result = Math.max(result, theirs);
-                        }
-                    }
-                }
-            return result==Long.MIN_VALUE ? unknownExposure : result;
-            }
-        }
+  @Override
+  public long getMaxExposure(TimeUnit resultUnit) {
+    ExposureControl exposureControl = getCameraControl();
+    return (exposureControl != null) ? exposureControl.getMaxExposure(resultUnit) : UNKNOWN_EXPOSURE;
+  }
 
-    protected long aggregatedMaxExposure(TimeUnit timeUnit)
-        {
-        synchronized (lock)
-            {
-            long result = Long.MAX_VALUE;
-            for (SwitchableMemberInfo info : switchableCamera.cameraInfos.values())
-                {
-                ExposureControl exposureControl = info.getControl(ExposureControl.class);
-                if (exposureControl != null)
-                    {
-                    long theirs = exposureControl.getMaxExposure(timeUnit);
-                    if (!isUnknownExposure(theirs))
-                        {
-                        result = Math.min(result, theirs);
-                        }
-                    }
-                }
-            return result==Long.MAX_VALUE ? unknownExposure : result;
-            }
-        }
+  @Override
+  public long getExposure(TimeUnit resultUnit) {
+    ExposureControl exposureControl = getCameraControl();
+    return (exposureControl != null) ? exposureControl.getExposure(resultUnit) : UNKNOWN_EXPOSURE;
+  }
 
-    protected boolean aggregatedIsModeSupported(Mode mode)
-        {
-        synchronized (lock)
-            {
-            for (SwitchableMemberInfo info : switchableCamera.cameraInfos.values())
-                {
-                ExposureControl exposureControl = info.getControl(ExposureControl.class);
-                if (exposureControl != null)
-                    {
-                    if (!exposureControl.isModeSupported(mode))
-                        {
-                        return false;
-                        }
-                    }
-                }
-            return true;
-            }
-        }
+  @Override
+  public long getCachedExposure(final TimeUnit resultUnit, final MutableReference<Boolean> refreshed, final long permittedStaleness, final TimeUnit permittedStnit) {
+    ExposureControl exposureControl = getCameraControl();
+    return (exposureControl != null) ? exposureControl.getCachedExposure(resultUnit, refreshed, permittedStaleness, permittedStnit) : UNKNOWN_EXPOSURE;
+  }
 
-    protected boolean aggregatedIsExposureSupported()
-        {
-        synchronized (lock)
-            {
-            for (SwitchableMemberInfo info : switchableCamera.cameraInfos.values())
-                {
-                ExposureControl exposureControl = info.getControl(ExposureControl.class);
-                if (exposureControl != null)
-                    {
-                    if (!exposureControl.isExposureSupported())
-                        {
-                        return false;
-                        }
-                    }
-                }
-            return true;
-            }
-        }
-    }
+  @Override
+  public boolean setExposure(long duration, TimeUnit durationUnit) {
+    ExposureControl exposureControl = getCameraControl();
+    return (exposureControl != null) ? exposureControl.setExposure(duration, durationUnit) : false;
+  }
+
+  @Override
+  public boolean isExposureSupported() {
+    ExposureControl exposureControl = getCameraControl();
+    return (exposureControl != null) ? exposureControl.isExposureSupported() : false;
+  }
+
+  @Override
+  public boolean getAePriority() {
+    ExposureControl exposureControl = getCameraControl();
+    return (exposureControl != null) ? exposureControl.getAePriority() : false;
+  }
+
+  @Override
+  public boolean setAePriority(boolean priority) {
+    ExposureControl exposureControl = getCameraControl();
+    return (exposureControl != null) ? exposureControl.setAePriority(priority) : false;
+  }
+}

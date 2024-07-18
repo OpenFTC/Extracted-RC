@@ -438,6 +438,11 @@ public class I2cDeviceSynchImplOnSimple extends I2cDeviceSynchReadHistoryImpl im
         return !this.isClosing;
         }
 
+    public I2cDeviceSynchSimple getSimple()
+        {
+        return i2cDeviceSynchSimple;
+        }
+
     @Override public void setI2cAddress(I2cAddr newAddress)
         {
         setI2cAddr(newAddress);

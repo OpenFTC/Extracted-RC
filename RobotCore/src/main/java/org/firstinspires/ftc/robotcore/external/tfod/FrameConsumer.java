@@ -22,7 +22,10 @@ import android.graphics.Bitmap;
 /**
  * FrameConsumer is an interface that is implemented by the FTC TensorFlow object detector engine
  * in order to consume frames from a FrameGenerator.
+ *
+ * <p>This class is deprecated and will be removed in v10.0.
  */
+@Deprecated
 public interface FrameConsumer {
   /**
    * init should be called from a FrameGenerator once, immediately after the bitmap has been

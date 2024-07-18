@@ -128,6 +128,7 @@ public class OfflineBlocksUtil {
     assetsToInclude.add("blocks/mr_i2c_compass_sensor.js");
     assetsToInclude.add("blocks/mr_i2c_range_sensor.js");
     assetsToInclude.add("blocks/navigation.js");
+    assetsToInclude.add("blocks/octoquad.js");
     assetsToInclude.add("blocks/open_gl_matrix.js");
     assetsToInclude.add("blocks/optical_distance_sensor.js");
     assetsToInclude.add("blocks/orientation.js");
@@ -143,6 +144,7 @@ public class OfflineBlocksUtil {
     assetsToInclude.add("blocks/servo.js");
     assetsToInclude.add("blocks/servo_controller.js");
     // sound_util.js is not needed
+    assetsToInclude.add("blocks/sparkfun_otos.js");
     assetsToInclude.add("blocks/system.js");
     assetsToInclude.add("blocks/telemetry.js");
     assetsToInclude.add("blocks/temperature.js");

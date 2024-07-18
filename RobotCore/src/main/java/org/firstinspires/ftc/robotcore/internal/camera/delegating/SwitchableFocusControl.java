@@ -34,117 +34,58 @@ package org.firstinspires.ftc.robotcore.internal.camera.delegating;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.FocusControl;
 
-@SuppressWarnings("WeakerAccess")
-public class SwitchableFocusControl extends CachingFocusControl
-    {
-    //----------------------------------------------------------------------------------------------
-    // State
-    //----------------------------------------------------------------------------------------------
+class SwitchableFocusControl extends SwitchableCameraControl<FocusControl> implements FocusControl {
+  private static final double UNKNOWN_FOCUS_LENGTH = -1;
 
-    protected final RefCountedSwitchableCameraImpl switchableCamera;
+  SwitchableFocusControl() {
+    super(FocusControl.class);
+  }
 
-    //----------------------------------------------------------------------------------------------
-    // Construction
-    //----------------------------------------------------------------------------------------------
+  @Override
+  public Mode getMode() {
+    FocusControl focusControl = getCameraControl();
+    return (focusControl != null) ? focusControl.getMode() : Mode.Unknown;
+  }
 
-    public SwitchableFocusControl(RefCountedSwitchableCameraImpl switchableCamera)
-        {
-        this.switchableCamera = switchableCamera;
-        }
+  @Override
+  public boolean setMode(Mode mode) {
+    FocusControl focusControl = getCameraControl();
+    return (focusControl != null) ? focusControl.setMode(mode) : false;
+  }
 
-    //----------------------------------------------------------------------------------------------
-    // FocusControl
-    //----------------------------------------------------------------------------------------------
+  @Override
+  public boolean isModeSupported(Mode mode) {
+    FocusControl focusControl = getCameraControl();
+    return (focusControl != null) ? focusControl.isModeSupported(mode) : false;
+  }
 
-    @Override protected void initializeLimits()
-        {
-        for (FocusControl.Mode mode : FocusControl.Mode.values())
-            {
-            if (mode==Mode.Unknown) continue;
-            supportedModes.put(mode, aggregatedIsModeSupported(mode));
-            }
-        minFocusLength = aggregatedMinFocus();
-        maxFocusLength = aggregatedMaxFocus();
-        isFocusLengthSupported = aggregatedIsFocusSupported();
-        }
+  @Override
+  public double getMinFocusLength() {
+    FocusControl focusControl = getCameraControl();
+    return (focusControl != null) ? focusControl.getMinFocusLength() : UNKNOWN_FOCUS_LENGTH;
+  }
 
-    protected double aggregatedMinFocus()
-        {
-        synchronized (lock)
-            {
-            double result = Double.MIN_VALUE;
-            for (SwitchableMemberInfo info : switchableCamera.cameraInfos.values())
-                {
-                FocusControl focusLengthControl = info.getControl(FocusControl.class);
-                if (focusLengthControl != null)
-                    {
-                    double theirs = focusLengthControl.getMinFocusLength();
-                    if (!isUnknownFocusLength(theirs))
-                        {
-                        result = Math.max(result, theirs);
-                        }
-                    }
-                }
-            return result==Double.MIN_VALUE ? unknownFocusLength : result;
-            }
-        }
+  @Override
+  public double getMaxFocusLength() {
+    FocusControl focusControl = getCameraControl();
+    return (focusControl != null) ? focusControl.getMaxFocusLength() : UNKNOWN_FOCUS_LENGTH;
+  }
 
-    protected double aggregatedMaxFocus()
-        {
-        synchronized (lock)
-            {
-            double result = Double.MAX_VALUE;
-            for (SwitchableMemberInfo info : switchableCamera.cameraInfos.values())
-                {
-                FocusControl focusLengthControl = info.getControl(FocusControl.class);
-                if (focusLengthControl != null)
-                    {
-                    double theirs = focusLengthControl.getMaxFocusLength();
-                    if (!isUnknownFocusLength(theirs))
-                        {
-                        result = Math.min(result, theirs);
-                        }
-                    }
-                }
-            return result==Double.MAX_VALUE ? unknownFocusLength : result;
-            }
-        }
+  @Override
+  public double getFocusLength() {
+    FocusControl focusControl = getCameraControl();
+    return (focusControl != null) ? focusControl.getFocusLength() : UNKNOWN_FOCUS_LENGTH;
+  }
 
-    protected boolean aggregatedIsModeSupported(FocusControl.Mode mode)
-        {
-        synchronized (lock)
-            {
-            for (SwitchableMemberInfo info : switchableCamera.cameraInfos.values())
-                {
-                FocusControl focusLengthControl = info.getControl(FocusControl.class);
-                if (focusLengthControl != null)
-                    {
-                    if (!focusLengthControl.isModeSupported(mode))
-                        {
-                        return false;
-                        }
-                    }
-                }
-            return true;
-            }
-        }
+  @Override
+  public boolean setFocusLength(double focusLength) {
+    FocusControl focusControl = getCameraControl();
+    return (focusControl != null) ? focusControl.setFocusLength(focusLength) : false;
+  }
 
-    protected boolean aggregatedIsFocusSupported()
-        {
-        synchronized (lock)
-            {
-            for (SwitchableMemberInfo info : switchableCamera.cameraInfos.values())
-                {
-                FocusControl focusLengthControl = info.getControl(FocusControl.class);
-                if (focusLengthControl != null)
-                    {
-                    if (!focusLengthControl.isFocusLengthSupported())
-                        {
-                        return false;
-                        }
-                    }
-                }
-            return true;
-            }
-        }
-    }
+  @Override
+  public boolean isFocusLengthSupported() {
+    FocusControl focusControl = getCameraControl();
+    return (focusControl != null) ? focusControl.isFocusLengthSupported() : false;
+  }
+}

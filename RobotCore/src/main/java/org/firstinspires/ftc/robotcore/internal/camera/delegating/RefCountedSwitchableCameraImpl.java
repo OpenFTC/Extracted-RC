@@ -263,8 +263,11 @@ public class RefCountedSwitchableCameraImpl extends DelegatingCamera implements 
 
     @Override protected void constructControls()
         {
-        delegatingCameraControls.add(new SwitchableFocusControl(this));
-        delegatingCameraControls.add(new SwitchableExposureControl(this));
+        delegatingCameraControls.add(new SwitchableFocusControl());
+        delegatingCameraControls.add(new SwitchableExposureControl());
+        delegatingCameraControls.add(new SwitchableGainControl());
+        delegatingCameraControls.add(new SwitchablePtzControl());
+        delegatingCameraControls.add(new SwitchableWhiteBalanceControl());
         }
 
     //----------------------------------------------------------------------------------------------

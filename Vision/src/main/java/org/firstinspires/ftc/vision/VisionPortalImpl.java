@@ -660,7 +660,7 @@ public class VisionPortalImpl extends VisionPortal
             {
                 if (cameraMonitorViewId != 0 && viewsInUse.contains(cameraMonitorViewId))
                 {
-                    viewsInUse.remove(cameraMonitorViewId);
+                    viewsInUse.remove(Integer.valueOf(cameraMonitorViewId));
                 }
             }
         }

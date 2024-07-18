@@ -30,6 +30,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.firstinspires.ftc.robotcore.external.ExportAprilTagLibraryToBlocks;
 import org.firstinspires.ftc.robotcore.external.ExportClassToBlocks;
 import org.firstinspires.ftc.robotcore.external.ExportToBlocks;
 
@@ -75,7 +76,11 @@ public class BlocksClassFilter implements ClassFilter {
     }
   };
 
+  // staticMethodsByClass is used for methods with the ExportToBlocks annotation.
   private final Map<Class, Set<Method>> staticMethodsByClass = new TreeMap<>(classComparator);
+  // aprilTagLibraryMethodsByClass is used for methods with the ExportAprilTagLibraryToBlocks annotation.
+  private final Map<Class, Set<Method>> aprilTagLibraryMethodsByClass = new TreeMap<>(classComparator);
+  // staticMethods is used for methods with either the ExportToBlocks annotation or the ExportAprilTagLibraryToBlocks annotation.
   private final Map<String, Method> staticMethods = new HashMap<>();
 
   private final Map<Class<? extends HardwareDevice>, Set<Method>> hardwareMethodsByClass = new TreeMap<>(classComparator);
@@ -99,6 +104,7 @@ public class BlocksClassFilter implements ClassFilter {
   @Override
   public void filterAllClassesStart() {
     staticMethodsByClass.clear();
+    aprilTagLibraryMethodsByClass.clear();
     staticMethods.clear();
     hardwareMethodsByClass.clear();
     hardwareMethods.clear();
@@ -108,6 +114,16 @@ public class BlocksClassFilter implements ClassFilter {
   public void filterOnBotJavaClassesStart() {
     // Remove old OnBotJava methods.
     Iterator<Map.Entry<Class, Set<Method>>> iter = staticMethodsByClass.entrySet().iterator();
+    while (iter.hasNext()) {
+      Map.Entry<Class, Set<Method>> entry = iter.next();
+      if (OnBotJavaDeterminer.isOnBotJava(entry.getKey())) {
+        for (Method method : entry.getValue()) {
+          staticMethods.remove(getLookupString(method));
+        }
+        iter.remove();
+      }
+    }
+    iter = aprilTagLibraryMethodsByClass.entrySet().iterator();
     while (iter.hasNext()) {
       Map.Entry<Class, Set<Method>> entry = iter.next();
       if (OnBotJavaDeterminer.isOnBotJava(entry.getKey())) {
@@ -134,6 +150,16 @@ public class BlocksClassFilter implements ClassFilter {
   public void filterExternalLibrariesClassesStart() {
     // Remove old ExternalLibraries methods.
     Iterator<Map.Entry<Class, Set<Method>>> iter = staticMethodsByClass.entrySet().iterator();
+    while (iter.hasNext()) {
+      Map.Entry<Class, Set<Method>> entry = iter.next();
+      if (OnBotJavaDeterminer.isExternalLibraries(entry.getKey())) {
+        for (Method method : entry.getValue()) {
+          staticMethods.remove(getLookupString(method));
+        }
+        iter.remove();
+      }
+    }
+    iter = aprilTagLibraryMethodsByClass.entrySet().iterator();
     while (iter.hasNext()) {
       Map.Entry<Class, Set<Method>> entry = iter.next();
       if (OnBotJavaDeterminer.isExternalLibraries(entry.getKey())) {
@@ -217,6 +243,7 @@ public class BlocksClassFilter implements ClassFilter {
 
   private void lookForStaticMethods(Class clazz) {
     Set<Method> methods = new TreeSet<>(methodComparator);
+    Set<Method> aprilTagLibraryMethods = new TreeSet<>(methodComparator);
     for (Method method : ClassUtil.getLocalDeclaredMethods(clazz)) {
       int modifiers = method.getModifiers();
       int requiredModifiers = Modifier.PUBLIC | Modifier.STATIC;
@@ -227,7 +254,8 @@ public class BlocksClassFilter implements ClassFilter {
       if ((method.getModifiers() & prohibitedModifiers) != 0) {
         continue;
       }
-      if (!method.isAnnotationPresent(ExportToBlocks.class)) {
+      if (!method.isAnnotationPresent(ExportToBlocks.class) &&
+          !method.isAnnotationPresent(ExportAprilTagLibraryToBlocks.class)) {
         continue;
       }
       // Note(lizlooney): We can't handle methods with over 21 parameters, which seems beyond
@@ -237,11 +265,23 @@ public class BlocksClassFilter implements ClassFilter {
       if (method.getParameterTypes().length > 21) {
         continue;
       }
-      methods.add(method);
+      if (method.isAnnotationPresent(ExportToBlocks.class)) {
+        methods.add(method);
+      } else if (method.isAnnotationPresent(ExportAprilTagLibraryToBlocks.class)) {
+        if (method.getReturnType().getName().equals("org.firstinspires.ftc.vision.apriltag.AprilTagLibrary")) {
+          aprilTagLibraryMethods.add(method);
+        }
+      }
     }
     if (!methods.isEmpty()) {
       staticMethodsByClass.put(clazz, methods);
       for (Method method : methods) {
+        staticMethods.put(getLookupString(method), method);
+      }
+    }
+    if (!aprilTagLibraryMethods.isEmpty()) {
+      aprilTagLibraryMethodsByClass.put(clazz, aprilTagLibraryMethods);
+      for (Method method : aprilTagLibraryMethods) {
         staticMethods.put(getLookupString(method), method);
       }
     }
@@ -286,6 +326,13 @@ public class BlocksClassFilter implements ClassFilter {
    */
   public Map<Class, Set<Method>> getStaticMethodsByClass() {
     return staticMethodsByClass;
+  }
+
+  /**
+   * Returns the methods, keyed by class. The caller should not modify the collection.
+   */
+  public Map<Class, Set<Method>> getAprilTagLibraryMethodsByClass() {
+    return aprilTagLibraryMethodsByClass;
   }
 
   /**

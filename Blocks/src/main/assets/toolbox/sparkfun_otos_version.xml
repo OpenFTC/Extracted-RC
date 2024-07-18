@@ -1,0 +1,26 @@
+  <category name="SparkFunOTOS.Version">
+    <block type="variables_set">
+      <field name="VAR">hwVersion</field>
+      <value name="VALUE">
+        <block type="sparkFunOTOS_Version_create"></block>
+      </value>
+    </block>
+    <block type="variables_set">
+      <field name="VAR">fwVersion</field>
+      <value name="VALUE">
+        <block type="sparkFunOTOS_Version_create"></block>
+      </value>
+    </block>
+    <block type="sparkFunOTOS_Version_getProperty_Number">
+      <comment pinned="false" h="150" w="325">Get the major value from the given SparkFunOTOS.Version object.
+      </comment>
+      <field name="PROP">major</field>
+      <value name="VERSION"><block type="variables_get"><field name="VAR">hwVersion</field></block></value>
+    </block>
+    <block type="sparkFunOTOS_Version_getProperty_Number">
+      <comment pinned="false" h="150" w="325">Get the minor value from the given SparkFunOTOS.Version object.
+      </comment>
+      <field name="PROP">minor</field>
+      <value name="VERSION"><block type="variables_get"><field name="VAR">hwVersion</field></block></value>
+    </block>
+  </category>

@@ -501,6 +501,7 @@ detections multiple times.
           </block>
         </value>
       </block>
+      <placeholder_apriltag_exportedAprilTagLibraries/>
       <block type="aprilTagLibraryBuilder_create_assign">
         <comment pinned="false" h="150" w="325">Create a new AprilTagLibrary.Builder objectand assigns it to a variable.
         </comment>
@@ -626,7 +627,7 @@ detections multiple times.
       </block>
     </category>
   </category>
-  <category name="TensorFlow">
+  <category name="TensorFlow (deprecated)">
     <category name="TfodProcessor.Builder">
       <block type="tfodProcessorBuilder_create_assign">
         <comment pinned="false" h="150" w="325">Create a new TfodProcessor.Builder object.

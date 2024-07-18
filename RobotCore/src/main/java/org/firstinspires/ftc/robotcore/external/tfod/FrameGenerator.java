@@ -23,9 +23,12 @@ package org.firstinspires.ftc.robotcore.external.tfod;
  * <p>Typically, consecutive frames will be different (as if generated from a video, camera, or
  * other time-dependent sequence), but this is not required by the interface.
  *
+ * <p>This class is deprecated and will be removed in v10.0.
+ *
  * @author Vasu Agrawal
  * @author lizlooney@google.com (Liz Looney)
  */
+@Deprecated
 public interface FrameGenerator {
 
   /**

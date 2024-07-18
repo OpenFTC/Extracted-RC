@@ -116,7 +116,7 @@ public class ToolboxUtil {
    * Creates a variable get block.
    */
   public static String makeVariableGetBlock(String t) {
-    return "<block type=\"variables_get\"><field name=\"VAR\">{" + t + "Variable}</field></block>\n";
+    return "<block type=\"variables_get\"><field name=\"VAR\">" + t + "</field></block>\n";
   }
 
   /**
@@ -202,7 +202,8 @@ public class ToolboxUtil {
   public static void addFunctions(
       StringBuilder xmlToolbox, HardwareType hardwareType, String identifier,
       Map<String, Map<String, String>> functions) {
-    addFunctions(xmlToolbox, hardwareType, identifier, functions, null, null);
+    addFunctions(xmlToolbox, hardwareType, identifier, functions,
+                 null /* functionComments */, null /* variableSetters */, null /* enumBlocks */);
   }
 
   /**
@@ -211,13 +212,20 @@ public class ToolboxUtil {
   public static void addFunctions(
       StringBuilder xmlToolbox, HardwareType hardwareType, String identifier,
       Map<String, Map<String, String>> functions,
-      Map<String, String> functionComments, Map<String, String> variableSetters) {
+      Map<String, String> functionComments, Map<String, String> variableSetters,
+      Map<String, String> enumBlocks) {
     for (Map.Entry<String, Map<String, String>> functionEntry : functions.entrySet()) {
       String functionName = functionEntry.getKey();
       Map<String, String> args = functionEntry.getValue();
 
+      String enumBlock = (enumBlocks != null) ? enumBlocks.get(functionName) :  null;
       String variableSetter = (variableSetters != null) ? variableSetters.get(functionName) : null;
-      if (variableSetter != null) {
+
+      if (enumBlock != null) {
+        // For a function that returns enum, provide a logic_compare block that compares the function with the enum.
+        xmlToolbox
+            .append("<block type=\"logic_compare\"><field name=\"OP\">EQ</field><value name=\"A\">");
+      } else if (variableSetter != null) {
         xmlToolbox
             .append("<block type=\"variables_set\">")
             .append("<field name=\"VAR\">").append(variableSetter).append("</field>")
@@ -250,7 +258,12 @@ public class ToolboxUtil {
       xmlToolbox
           .append("</block>\n");
 
-      if (variableSetter != null) {
+      if (enumBlock != null) {
+        xmlToolbox
+            .append("</value><value name=\"B\">")
+            .append(enumBlock)
+            .append("</value></block>");
+      } else if (variableSetter != null) {
         xmlToolbox
             .append("</value></block>");
       }

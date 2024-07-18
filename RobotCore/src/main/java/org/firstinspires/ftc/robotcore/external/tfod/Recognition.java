@@ -21,9 +21,12 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 /**
  * Interface representing a detection.
  *
+ * <p>This class is deprecated and will be removed in v10.0.
+ *
  * @author Vasu Agrawal
  * @author lizlooney@google.com (Liz Looney)
  */
+@Deprecated
 public interface Recognition {
   /**
    * Returns the label of the detected object.

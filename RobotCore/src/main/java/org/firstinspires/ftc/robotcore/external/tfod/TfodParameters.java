@@ -37,9 +37,12 @@ import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
  * from the defaults may in some cases make little to no performance impact, while others may
  * dramatically increase the CPU load of the system.
  *
+ * <p>This class is deprecated and will be removed in v10.0.
+ *
  * @author Vasu Agrawal
  * @author Liz Looney
  */
+@Deprecated
 public class TfodParameters {
   public static class CurrentGame {
     public static final String MODEL_ASSET = "CenterStage.tflite";

@@ -1,0 +1,814 @@
+<xml xmlns="https://developers.google.com/blockly/xml">
+<variables>
+<variable id="J:/m+=4]!;?bYsO+7Q*3">pos</variable>
+<variable id="?%;+WKq_y];lR]23Ks{Y">offset</variable>
+<variable id="+v#7e**chgFH1:P**B7+">currentPosition</variable>
+<variable id="+T1s.6j3qbM?=~KVk^Q,">hwVersion</variable>
+<variable id="_%0dwr^G)a0LFHb+r6,z">fwVersion</variable>
+</variables>
+<block type="procedures_defnoreturn" id="WtpyD@tEu+EoY=P9iY,D" deletable="false" x="25" y="169">
+<field name="NAME">runOpMode</field>
+<comment pinned="true" h="141" w="577">This OpMode illustrates how to use the SparkFun Qwiic Optical Tracking Odometry Sensor (OTOS)
+
+The OpMode assumes that the sensor is configured with a name of "sensor_otos".
+
+See the sensor's product page: https://www.sparkfun.com/products/24904</comment>
+<data>{"commentPositionLeft":-20,"commentPositionTop":-169}</data>
+<statement name="STACK">
+<block type="comment" id="Lc#BFtj*NTB48YL;eBl.">
+<field name="COMMENT">Put initialization blocks here.</field>
+<next>
+<block type="procedures_callnoreturn" id="/bw(nF]gz;YNUKm+jE$0">
+<mutation name="configureOTOS"/>
+<next>
+<block type="linearOpMode_waitForStart" id=":`$wN_ci`O;o6P0~.(+g">
+<next>
+<block type="controls_if" id="}Q?5mbxSO8Di;i!__6[y">
+<value name="IF0">
+<block type="linearOpMode_opModeIsActive" id=")o%YFX/#9kvv^sgXr4~5"/>
+</value>
+<statement name="DO0">
+<block type="comment" id="(rU-p_T_/B|vExcs}liL">
+<field name="COMMENT">Put run blocks here.</field>
+<next>
+<block type="controls_whileUntil" id="^0Kagy/e+Ea{rbZPv2G6">
+<field name="MODE">WHILE</field>
+<value name="BOOL">
+<block type="linearOpMode_opModeIsActive" id="e)cr{!2VIET83s,JWC.="/>
+</value>
+<statement name="DO">
+<block type="comment" id="Jh/;L$n@JuX8AQJDFCul">
+<field name="COMMENT">Put loop blocks here.</field>
+<next>
+<block type="comment" id="eDITGp[r!4yF#Q|cgT#.">
+<field name="COMMENT">Get the latest position, which includes the x and y coordinates, plus the</field>
+<next>
+<block type="comment" id="87,QDO?,rtW7V*Y4G:84">
+<field name="COMMENT">heading angle.</field>
+<next>
+<block type="variables_set" id="b}ab2r*BenB1#j93nGyk">
+<field name="VAR" id="J:/m+=4]!;?bYsO+7Q*3">pos</field>
+<value name="VALUE">
+<block type="sparkFunOTOS_getProperty_Pose2D" id="n{QQRp_48*m56BnHvS?-">
+<field name="IDENTIFIER">sensor_otosAsSparkFunOTOS</field>
+<field name="PROP">Position</field>
+<data>{"IDENTIFIER":"sensor_otos"}</data>
+</block>
+</value>
+<next>
+<block type="comment" id="Y}d~TeNatKX{?pWO+BU!">
+<field name="COMMENT">Reset the tracking if the user requests it.</field>
+<next>
+<block type="controls_if" id="(lf^sNiZT]q7bAsJTfC9">
+<value name="IF0">
+<block type="gamepad_getProperty_Boolean" id="g,,Q)S{L8|bbr64YHq!^">
+<field name="IDENTIFIER">gamepad1</field>
+<field name="PROP">Y</field>
+<data>{"IDENTIFIER":"gamepad1"}</data>
+</block>
+</value>
+<statement name="DO0">
+<block type="sparkFunOTOS_resetTracking" id="dZq_f)A?5oZBVI)SXpd3">
+<field name="IDENTIFIER">sensor_otosAsSparkFunOTOS</field>
+<data>{"IDENTIFIER":"sensor_otos"}</data>
+</block>
+</statement>
+<next>
+<block type="comment" id="|q3Ho}#$uE%.9`0:up`l">
+<field name="COMMENT">Re-calibrate the IMU if the user requests it.</field>
+<next>
+<block type="controls_if" id="QcDToR{((wUZi(M3CX!?">
+<value name="IF0">
+<block type="gamepad_getProperty_Boolean" id="Uq%X3m+$I#f}K;yM2nDy">
+<field name="IDENTIFIER">gamepad1</field>
+<field name="PROP">X</field>
+<data>{"IDENTIFIER":"gamepad1"}</data>
+</block>
+</value>
+<statement name="DO0">
+<block type="sparkFunOTOS_calibrateImu" id="S}w:,4#j|#2mT*c3sM_P">
+<mutation has_output="false"/>
+<field name="IDENTIFIER">sensor_otosAsSparkFunOTOS</field>
+<data>{"IDENTIFIER":"sensor_otos"}</data>
+</block>
+</statement>
+<next>
+<block type="comment" id="J+jn+7bkxhJ!hyZaq`F6">
+<field name="COMMENT">Inform user of available controls</field>
+<next>
+<block type="telemetry_addLine" id="2iz!Q)2Y@}knE?J`u5=_">
+<value name="TEXT">
+<shadow type="text" id="C-;B|1=GM;whSQ6pbhfH">
+<field name="TEXT">Press Y (triangle) on Gamepad to reset tracking</field>
+</shadow>
+</value>
+<next>
+<block type="telemetry_addLine" id="T7pEL=ncYIjN+2z%PFLj">
+<value name="TEXT">
+<shadow type="text" id="L(+rv.*gUZ_=-KOVYN/=">
+<field name="TEXT">Press X (square) on Gamepad to calibrate the IMU</field>
+</shadow>
+</value>
+<next>
+<block type="telemetry_addLine" id=".Ov29)#]KXp8.6zqY/lq">
+<value name="TEXT">
+<shadow type="text" id=",0p$O.H,}|dAb2}.1cTz">
+<field name="TEXT"/>
+</shadow>
+</value>
+<next>
+<block type="comment" id="FB2QOyW}lSejMKITo@/:">
+<field name="COMMENT">Log the position to the telemetry.</field>
+<next>
+<block type="telemetry_addTextData_All" id=".3tVv]K5,F@h6mDtrT=1">
+<value name="KEY">
+<shadow type="text" id="MlXHNBCq;VMoal[$vkz8">
+<field name="TEXT">X coordinate</field>
+</shadow>
+</value>
+<value name="TEXT">
+<block type="misc_formatNumber" id="E;avcv8M2EZfwHp=S(N5">
+<value name="NUMBER">
+<shadow type="math_number" id="HsrF%m2C#v$}FR?BG(.,">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="sparkFunOTOS_Pose2D_getProperty_Number" id="3lj{Y7E@d97N}C3mU4SI">
+<field name="PROP">x</field>
+<value name="POSE">
+<block type="variables_get" id="S3xEoD9vpugK^~W=O91)">
+<field name="VAR" id="J:/m+=4]!;?bYsO+7Q*3">pos</field>
+</block>
+</value>
+</block>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="nNif3TH/n/A#Pq2lmRaR">
+<field name="NUM">2</field>
+</shadow>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_addTextData_All" id="Nv,/{8N!8`)GzJNO_)oU">
+<value name="KEY">
+<shadow type="text" id="/oJM??j;y7WoiY`]%@0h">
+<field name="TEXT">Y coordinate</field>
+</shadow>
+</value>
+<value name="TEXT">
+<block type="misc_formatNumber" id="^_c/bE!etpeDEydDz1VM">
+<value name="NUMBER">
+<shadow type="math_number" id="PnFQwOUIl3yhEG@-pK_y">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="sparkFunOTOS_Pose2D_getProperty_Number" id="[i)u/%S}+Q;hpjot=@U4">
+<field name="PROP">y</field>
+<value name="POSE">
+<block type="variables_get" id="[;fi8[*8Xv-Jl2Cp(?e+">
+<field name="VAR" id="J:/m+=4]!;?bYsO+7Q*3">pos</field>
+</block>
+</value>
+</block>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="|0a-X[|4ET$xh(3!.b4_">
+<field name="NUM">2</field>
+</shadow>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_addTextData_All" id="X0]v3JU:+B?-07_*3JOF">
+<value name="KEY">
+<shadow type="text" id="UI/(f#BaGU0`Ftz}k?@2">
+<field name="TEXT">Heading angle</field>
+</shadow>
+</value>
+<value name="TEXT">
+<block type="misc_formatNumber" id="8+6qnUUsgM8SW!,oF!-b">
+<value name="NUMBER">
+<shadow type="math_number" id="3M2~7E%ck=y~Kuy:^$@C">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="sparkFunOTOS_Pose2D_getProperty_Number" id="TuAu0bWa{Q:AdKE.X9EB">
+<field name="PROP">h</field>
+<value name="POSE">
+<block type="variables_get" id="@%M;[qQZ4Ozc?O-gU`#j">
+<field name="VAR" id="J:/m+=4]!;?bYsO+7Q*3">pos</field>
+</block>
+</value>
+</block>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="wDFWkvo*WPg=-7TeFZC|">
+<field name="NUM">2</field>
+</shadow>
+</value>
+</block>
+</value>
+<next>
+<block type="comment" id="3JN^WwIZI#x!*liX=t$%">
+<field name="COMMENT">Update the telemetry on the driver station.</field>
+<next>
+<block type="telemetry_update" id="exvivmft-pX$n!1,8Ea$"/>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+<block type="procedures_defnoreturn" id="V#e`-?l9JAD{2(2!Q5Qh" x="25" y="1509">
+<field name="NAME">configureOTOS</field>
+<comment pinned="true" h="41" w="368">Configures the SparkFun OTOS.</comment>
+<data>{"commentPositionLeft":-46,"commentPositionTop":-66}</data>
+<statement name="STACK">
+<block type="telemetry_addLine" id="_N@/Uvp@{ui2hn41w25b">
+<value name="TEXT">
+<shadow type="text" id="xxGqy44t_^sD?XURR%-h">
+<field name="TEXT">Configuring OTOS...</field>
+</shadow>
+</value>
+<next>
+<block type="telemetry_update" id="iIIeX#;8t*t(wT;B}ym)">
+<next>
+<block type="comment" id="]ZM6INBC4V-gQlr{Z17D">
+<field name="COMMENT">Set the desired units for linear and angular measurements. Can be either</field>
+<next>
+<block type="comment" id="R!,#%%)rU*/JX0F--uYy">
+<field name="COMMENT">meters or inches for linear, and radians or degrees for angular. If not</field>
+<next>
+<block type="comment" id="uy?hP[_d$HH^#ekE{iIx">
+<field name="COMMENT">set, the default is inches and degrees. Note that this setting is not</field>
+<next>
+<block type="comment" id="rAOqN.do.6p^.PgASg7M">
+<field name="COMMENT">stored in the sensor, so you need to set at the start of all your OpModes.</field>
+<next>
+<block type="sparkFunOTOS_setProperty_DistanceUnit" id="V*}((n1nZxUF}2d|,@wJ">
+<field name="IDENTIFIER">sensor_otosAsSparkFunOTOS</field>
+<field name="PROP">LinearUnit</field>
+<data>{"IDENTIFIER":"sensor_otos"}</data>
+<value name="VALUE">
+<shadow type="navigation_typedEnum_distanceUnit" id="I9wbv)`Ev5CC]w6wh]:=">
+<field name="DISTANCE_UNIT">INCH</field>
+</shadow>
+</value>
+<next>
+<block type="sparkFunOTOS_setProperty_AngleUnit" id="zk#XM3.`Ql.i9/,`hjfr">
+<field name="IDENTIFIER">sensor_otosAsSparkFunOTOS</field>
+<field name="PROP">AngularUnit</field>
+<data>{"IDENTIFIER":"sensor_otos"}</data>
+<value name="VALUE">
+<shadow type="navigation_typedEnum_angleUnit" id="Mt[((yB!E%s!@.e*gnB7">
+<field name="ANGLE_UNIT">DEGREES</field>
+</shadow>
+</value>
+<next>
+<block type="comment" id="d`2-F3*LYTH23f3@lBpn">
+<field name="COMMENT">Assuming you've mounted your sensor to a robot and it's not centered,</field>
+<next>
+<block type="comment" id="@AJfvfFPa74iJM//sj*f">
+<field name="COMMENT">you can specify the offset for the sensor relative to the center of the</field>
+<next>
+<block type="comment" id="F{?M[,BfiD-gjeE02dr2">
+<field name="COMMENT">robot. The units default to inches and degrees, but if you want to use</field>
+<next>
+<block type="comment" id=",PY3~OO;6-DN8~UK@F?^">
+<field name="COMMENT">different units, specify them before setting the offset! Note that as of</field>
+<next>
+<block type="comment" id="=x~5(.:`c:oOA{,]SF~m">
+<field name="COMMENT">firmware version 1.0, these values will be lost after a power cycle, so</field>
+<next>
+<block type="comment" id="c4c;CW8UWyZ:5($y`g2M">
+<field name="COMMENT">you will need to set them each time you power up the sensor. For example, if</field>
+<next>
+<block type="comment" id="7;^+n9-4qPtTd0GD_~X7">
+<field name="COMMENT">the sensor is mounted 5 inches to the left (negative X) and 10 inches</field>
+<next>
+<block type="comment" id="rV|55.rNG)kq0PV67RHQ">
+<field name="COMMENT">forward (positive Y) of the center of the robot, and mounted 90 degrees</field>
+<next>
+<block type="comment" id="5]=s4whAP.PHpeUnj|u,">
+<field name="COMMENT">clockwise (negative rotation) from the robot's orientation, the offset</field>
+<next>
+<block type="comment" id="f[ag.CBA$G/@}Rw{sv6N">
+<field name="COMMENT">would be {-5, 10, -90}. These can be any value, even the angle can be</field>
+<next>
+<block type="comment" id="Z[zG3NxGnC3I9slGhFK2">
+<field name="COMMENT">tweaked slightly to compensate for imperfect mounting (eg. 1.3 degrees).</field>
+<next>
+<block type="variables_set" id="ALelJQ)XwnoXv]Pq%vA9">
+<field name="VAR" id="?%;+WKq_y];lR]23Ks{Y">offset</field>
+<value name="VALUE">
+<block type="sparkFunOTOS_Pose2D_create_withArgs" id="xww~[6-Vps+.KxW~e)}D">
+<value name="X">
+<shadow type="math_number" id="D?DUg/}gBVN-eNI8J,)d">
+<field name="NUM">0</field>
+</shadow>
+</value>
+<value name="Y">
+<shadow type="math_number" id="o[.@?)y(o2!#``j!s5mQ">
+<field name="NUM">0</field>
+</shadow>
+</value>
+<value name="H">
+<shadow type="math_number" id="0;Xqv~h+F5z}U{t`K2$J">
+<field name="NUM">0</field>
+</shadow>
+</value>
+</block>
+</value>
+<next>
+<block type="sparkFunOTOS_setProperty_Pose2D" id="RA]gpSNi}J%VVl@ATq99">
+<field name="IDENTIFIER">sensor_otosAsSparkFunOTOS</field>
+<field name="PROP">Offset</field>
+<data>{"IDENTIFIER":"sensor_otos"}</data>
+<value name="VALUE">
+<block type="variables_get" id="_o9}v8^EzjhiC4w}d%8{">
+<field name="VAR" id="?%;+WKq_y];lR]23Ks{Y">offset</field>
+</block>
+</value>
+<next>
+<block type="comment" id="f:o@8nm_ot42a8pAY~-{">
+<field name="COMMENT">Here we can set the linear and angular scalars, which can compensate for</field>
+<next>
+<block type="comment" id="qTT;z.3,`PNRR,Fd.90i">
+<field name="COMMENT">scaling issues with the sensor measurements. Note that as of firmware</field>
+<next>
+<block type="comment" id="9;K[7h*f8memPv0hgadh">
+<field name="COMMENT">version 1.0, these values will be lost after a power cycle, so you will</field>
+<next>
+<block type="comment" id=",aGN^8t{x(LDD9zMB{yb">
+<field name="COMMENT">need to set them each time you power up the sensor. They can be any value</field>
+<next>
+<block type="comment" id="=Lxm_?ep`ZD1$7xUMwRo">
+<field name="COMMENT">from 0.872 to 1.127 in increments of 0.001 (0.1%). It is recommended to</field>
+<next>
+<block type="comment" id="~P6P[7+Oy|oF{y45~dY)">
+<field name="COMMENT">first set both scalars to 1.0, then calibrate the angular scalar, then</field>
+<next>
+<block type="comment" id="qA90oB%PxLpi[tq@c@c]">
+<field name="COMMENT">the linear scalar. To calibrate the angular scalar, spin the robot by</field>
+<next>
+<block type="comment" id="D*1%tm-x;[R[(MGbWze[">
+<field name="COMMENT">multiple rotations (eg. 10) to get a precise error, then set the scalar</field>
+<next>
+<block type="comment" id="SZvf,@h-89O_:JXOO^hx">
+<field name="COMMENT">to the inverse of the error. Remember that the angle wraps from -180 to</field>
+<next>
+<block type="comment" id="9ZIy_dv)$QgyNdftBI^D">
+<field name="COMMENT">180 degrees, so for example, if after 10 rotations counterclockwise</field>
+<next>
+<block type="comment" id="t.t0bxN{~dhyDW?KR5un">
+<field name="COMMENT">(positive rotation), the sensor reports -15 degrees, the required scalar</field>
+<next>
+<block type="comment" id="m34#ZPD3iZ!wTHFA`1#J">
+<field name="COMMENT">would be 3600/3585 = 1.004. To calibrate the linear scalar, move the</field>
+<next>
+<block type="comment" id="e.._R:cM}}=zbgri.?7l">
+<field name="COMMENT">robot a known distance and measure the error; do this multiple times at</field>
+<next>
+<block type="comment" id="05VzbE(^|C7Q{buKe{V*">
+<field name="COMMENT">multiple speeds to get an average, then set the linear scalar to the</field>
+<next>
+<block type="comment" id="=}bq.JQ,)i;r@uPiDPmN">
+<field name="COMMENT">inverse of the error. For example, if you move the robot 100 inches and</field>
+<next>
+<block type="comment" id="]IdbyxF9m~F2.7O10Sbf">
+<field name="COMMENT">the sensor reports 103 inches, set the linear scalar to 100/103 = 0.971</field>
+<next>
+<block type="sparkFunOTOS_setProperty_Number_ReturnBoolean" id="N@BXq0MF2uERNN)qkS99">
+<mutation has_output="false"/>
+<field name="IDENTIFIER">sensor_otosAsSparkFunOTOS</field>
+<field name="PROP">LinearScalar</field>
+<data>{"IDENTIFIER":"sensor_otos"}</data>
+<value name="VALUE">
+<shadow type="math_number" id="ulGI2(|=yv@(O@Xb^on^">
+<field name="NUM">1</field>
+</shadow>
+</value>
+<next>
+<block type="sparkFunOTOS_setProperty_Number_ReturnBoolean" id="@(oe)~xI]6LWOxbqm6dH">
+<mutation has_output="false"/>
+<field name="IDENTIFIER">sensor_otosAsSparkFunOTOS</field>
+<field name="PROP">AngularScalar</field>
+<data>{"IDENTIFIER":"sensor_otos"}</data>
+<value name="VALUE">
+<shadow type="math_number" id="T@=!AgPoh;uR).i3v/!{">
+<field name="NUM">1</field>
+</shadow>
+</value>
+<next>
+<block type="comment" id="+rm@uP:0buR4.ZJ`;iB#">
+<field name="COMMENT">The IMU on the OTOS includes a gyroscope and accelerometer, which could</field>
+<next>
+<block type="comment" id="XAyFW1gGjEEC@6g?M|r:">
+<field name="COMMENT">have an offset. Note that as of firmware version 1.0, the calibration</field>
+<next>
+<block type="comment" id="?=aj$bRy+xI2CT4aI5yq">
+<field name="COMMENT">will be lost after a power cycle; the OTOS performs a quick calibration</field>
+<next>
+<block type="comment" id="APsaSZ014Fgh]*e@m;6V">
+<field name="COMMENT">when it powers up, but it is recommended to perform a more thorough</field>
+<next>
+<block type="comment" id=")uLY-,)D)jRwv?i2o=+7">
+<field name="COMMENT">calibration at the start of all your OpModes. Note that the sensor must</field>
+<next>
+<block type="comment" id="AU1I`{-uB*M1nhi_#a@(">
+<field name="COMMENT">be completely stationary and flat during calibration! When calling</field>
+<next>
+<block type="comment" id="CbA?og*o@GBy~+]BP=oz">
+<field name="COMMENT">calibrateImu, you can specify the number of samples to take and whether</field>
+<next>
+<block type="comment" id="nH5C8I7?aJbX^=xNKDeq">
+<field name="COMMENT">to wait until the calibration is complete. If no parameters are provided,</field>
+<next>
+<block type="comment" id="Dya=g^Ve}w59A2Z:.GTq">
+<field name="COMMENT">it will take 255 samples and wait until done; each sample takes about</field>
+<next>
+<block type="comment" id="b:Kf$`+#/GM6Dzs!ikWm">
+<field name="COMMENT">2.4ms, so about 612ms total.</field>
+<next>
+<block type="sparkFunOTOS_calibrateImu_withArgs" id="_OLDlRiCa.o-*!!kmZ`5" disabled="true">
+<mutation has_output="false"/>
+<field name="IDENTIFIER">sensor_otosAsSparkFunOTOS</field>
+<data>{"IDENTIFIER":"sensor_otos"}</data>
+<value name="NUM_SAMPLES">
+<shadow type="math_number" id=":~pEH[[_#c`e;R3tLjA-">
+<field name="NUM">255</field>
+</shadow>
+</value>
+<value name="WAIT_UNTIL_DONE">
+<shadow type="logic_boolean" id=".DgKxd.a^V78EotZE*-{">
+<field name="BOOL">TRUE</field>
+</shadow>
+</value>
+<next>
+<block type="sparkFunOTOS_calibrateImu" id="~dm|Wa]s[Nnlbz:2Y5bj">
+<mutation has_output="false"/>
+<field name="IDENTIFIER">sensor_otosAsSparkFunOTOS</field>
+<data>{"IDENTIFIER":"sensor_otos"}</data>
+<next>
+<block type="comment" id="5ovJ4J6Z/7EBs~w`6qk^">
+<field name="COMMENT">Reset the tracking algorithm - this resets the position to the origin,</field>
+<next>
+<block type="comment" id="U.hnED!Fg=+?[Ag.hwv-">
+<field name="COMMENT">but can also be used to recover from some rare tracking errors.</field>
+<next>
+<block type="sparkFunOTOS_resetTracking" id="AXm1Ij^MdS~OVx3t1T[;">
+<field name="IDENTIFIER">sensor_otosAsSparkFunOTOS</field>
+<data>{"IDENTIFIER":"sensor_otos"}</data>
+<next>
+<block type="comment" id="js|QU/(P/WQD8auvhM*o">
+<field name="COMMENT">After resetting the tracking, the OTOS will report that the robot is at</field>
+<next>
+<block type="comment" id="_L{2jx+P]JIx?,y]~.E=">
+<field name="COMMENT">the origin. If your robot does not start at the origin, or you have</field>
+<next>
+<block type="comment" id="1G+#7]NuSU7Cc3XXJ33Z">
+<field name="COMMENT">another source of location information (eg. vision odometry), you can set</field>
+<next>
+<block type="comment" id="nEj0lJoF*D1h1fB@Z@~e">
+<field name="COMMENT">the OTOS location to match and it will continue to track from there.</field>
+<next>
+<block type="variables_set" id="d;??2TvqMG4$`Bez}_m#">
+<field name="VAR" id="+v#7e**chgFH1:P**B7+">currentPosition</field>
+<value name="VALUE">
+<block type="sparkFunOTOS_Pose2D_create_withArgs" id="!ZtPV|sJl^,qB8KXLRcM">
+<value name="X">
+<shadow type="math_number" id="HRk:,?J:ykzzk]}BGl?m">
+<field name="NUM">0</field>
+</shadow>
+</value>
+<value name="Y">
+<shadow type="math_number" id="}3I-Ewa[gc)lvuw.G5H9">
+<field name="NUM">0</field>
+</shadow>
+</value>
+<value name="H">
+<shadow type="math_number" id="FVz/;J3nnj=q^O~dNLBo">
+<field name="NUM">0</field>
+</shadow>
+</value>
+</block>
+</value>
+<next>
+<block type="sparkFunOTOS_setProperty_Pose2D" id="xC=Km)dGhCnYE{dP:agH">
+<field name="IDENTIFIER">sensor_otosAsSparkFunOTOS</field>
+<field name="PROP">Position</field>
+<data>{"IDENTIFIER":"sensor_otos"}</data>
+<value name="VALUE">
+<block type="variables_get" id="T_-iqL=*n+dD0#pYi43A">
+<field name="VAR" id="+v#7e**chgFH1:P**B7+">currentPosition</field>
+</block>
+</value>
+<next>
+<block type="comment" id="$|eb(P}|(]VIwRzdD=8N">
+<field name="COMMENT">Get the hardware and firmware version</field>
+<next>
+<block type="variables_set" id=",]tSOOu]#0vOoye`5_]s">
+<field name="VAR" id="+T1s.6j3qbM?=~KVk^Q,">hwVersion</field>
+<value name="VALUE">
+<block type="sparkFunOTOS_Version_create" id="t.1WR5WNsr6Shr`!k*Ln"/>
+</value>
+<next>
+<block type="variables_set" id="5i{QnnEQQ6||RUqnb3|;">
+<field name="VAR" id="_%0dwr^G)a0LFHb+r6,z">fwVersion</field>
+<value name="VALUE">
+<block type="sparkFunOTOS_Version_create" id="gKh!=}nA`72{%aKZcnm{"/>
+</value>
+<next>
+<block type="sparkFunOTOS_getVersionInfo" id="V,.r4~^YAl,~C3dUhkiF">
+<field name="IDENTIFIER">sensor_otosAsSparkFunOTOS</field>
+<data>{"IDENTIFIER":"sensor_otos"}</data>
+<value name="HW_VERSION">
+<block type="variables_get" id="Qp?OQzN4i$la/NkK|I=(">
+<field name="VAR" id="+T1s.6j3qbM?=~KVk^Q,">hwVersion</field>
+</block>
+</value>
+<value name="FW_VERSION">
+<block type="variables_get" id="=z9Oh^ChqH!7u?Oef[G?">
+<field name="VAR" id="_%0dwr^G)a0LFHb+r6,z">fwVersion</field>
+</block>
+</value>
+<next>
+<block type="telemetry_addLine" id="Ia/:W2eFIJbwAc9mZd@@">
+<value name="TEXT">
+<shadow type="text" id="eZDs0;/irQzl@bPLE-sJ">
+<field name="TEXT">OTOS configured! Press start to get position data!</field>
+</shadow>
+</value>
+<next>
+<block type="telemetry_addLine" id="Ut,`o%PACjs|r=8W4Tg/">
+<value name="TEXT">
+<shadow type="text" id="6F@x;s3||Bf0Fn$o%e}l">
+<field name="TEXT"/>
+</shadow>
+</value>
+<next>
+<block type="telemetry_addLine" id="xo;#e]lpVz}Y:f3qeNF_">
+<value name="TEXT">
+<shadow type="text" id="@[i{m8z07$D%x1m(EBH8">
+<field name="TEXT">text</field>
+</shadow>
+<block type="text_join" id="bo@#szI2+@WVBI{7ibK9">
+<mutation items="4"/>
+<value name="ADD0">
+<block type="text" id="1tHWh)QT9k)by/?2pa8L">
+<field name="TEXT">OTOS Hardware Version: v</field>
+</block>
+</value>
+<value name="ADD1">
+<block type="sparkFunOTOS_Version_getProperty_Number" id="/-Bq-c5m3O#kI}CZ1yLy">
+<field name="PROP">major</field>
+<value name="VERSION">
+<block type="variables_get" id="!yt%3Uz,I!:ZIpQ|Cs{(">
+<field name="VAR" id="+T1s.6j3qbM?=~KVk^Q,">hwVersion</field>
+</block>
+</value>
+</block>
+</value>
+<value name="ADD2">
+<block type="text" id="P`n#QkQASUcJLycY^JHo">
+<field name="TEXT">.</field>
+</block>
+</value>
+<value name="ADD3">
+<block type="sparkFunOTOS_Version_getProperty_Number" id="TBLZEDYWpJyWbi$L=c)m">
+<field name="PROP">minor</field>
+<value name="VERSION">
+<block type="variables_get" id="/E0jYpb`^%sE1JEmp,|/">
+<field name="VAR" id="+T1s.6j3qbM?=~KVk^Q,">hwVersion</field>
+</block>
+</value>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_addLine" id="{^OdH-5b$w=y8?Q!5J%l">
+<value name="TEXT">
+<shadow type="text" id=":.48wxYyFD#1GM%a=H3o">
+<field name="TEXT">text</field>
+</shadow>
+<block type="text_join" id="lp$ef~+Ls!MFB+QTm}j|">
+<mutation items="4"/>
+<value name="ADD0">
+<block type="text" id="70(X!Ak)F*{s_;TB%o-c">
+<field name="TEXT">OTOS Firmware Version: v</field>
+</block>
+</value>
+<value name="ADD1">
+<block type="sparkFunOTOS_Version_getProperty_Number" id="sLLG+].g*R/--#gR8pWU">
+<field name="PROP">major</field>
+<value name="VERSION">
+<block type="variables_get" id="(Wl,{sV^;{{zCU{fAXZ3">
+<field name="VAR" id="_%0dwr^G)a0LFHb+r6,z">fwVersion</field>
+</block>
+</value>
+</block>
+</value>
+<value name="ADD2">
+<block type="text" id="MG2g1N6}?+weCW{eApXD">
+<field name="TEXT">.</field>
+</block>
+</value>
+<value name="ADD3">
+<block type="sparkFunOTOS_Version_getProperty_Number" id="?i]Q^(Pq_;ihZB2pHVC#">
+<field name="PROP">minor</field>
+<value name="VERSION">
+<block type="variables_get" id="k4:t*s+;VI_Mo{{e,US7">
+<field name="VAR" id="_%0dwr^G)a0LFHb+r6,z">fwVersion</field>
+</block>
+</value>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_update" id="fYDz(O*siRm5[B#/t$/?"/>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</xml>
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<Extra>
+<OpModeMeta flavor="TELEOP" group="" autoTransition="" />
+<Enabled value="true" />
+</Extra>

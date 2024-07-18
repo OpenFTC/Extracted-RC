@@ -1,0 +1,1333 @@
+<xml xmlns="https://developers.google.com/blockly/xml">
+<variables>
+<variable id="L$;M~)W~VtpxPR~YxQ/o">thisExpUp</variable>
+<variable id="hf07h2R.XEMsFAo~Zc1f">thisExpDn</variable>
+<variable id="?.?jAjDXaP~!^(jq/Ls_">myAprilTagProcessor</variable>
+<variable id="SUcu?xhQBt:]3uhff[;A">thisGainUp</variable>
+<variable id="y4krjhzgIle:hDRl.R9H">thisGainDn</variable>
+<variable id="Xk!_{IPng0#/P|7dx?3N">myVisionPortal</variable>
+<variable id="qg157l{j1mmnRRNmPL`l">lastExpUp</variable>
+<variable id=".uqD6]$?cUF@4ZsL~9X~">myExposureControl</variable>
+<variable id="|%DY?e_),GVct%`tEWS~">lastExpDn</variable>
+<variable id="@Lg~6i(K9x_hiCkU$yh1">minExposure</variable>
+<variable id="^Nz:Nx32OT3mGOeIrf?r">lastGainUp</variable>
+<variable id="I/k90t/bAqns2-HWyFWS">maxExposure</variable>
+<variable id="o9rIB!u+*M!f~`9$Saji">lastGainDn</variable>
+<variable id="{R(!J=f1GY:Vma;L@c=Q">myGainControl</variable>
+<variable id="{M.37mH^eK,EexmQD5IJ">myExposure</variable>
+<variable id="_J{{tA:xCQ7pne@+RT*,">minGain</variable>
+<variable id="xqcrSNcEcnCA]ah=|F5E">maxGain</variable>
+<variable id="vf#sX;|hj`g=So%A(-e:">myGain</variable>
+<variable id="l)/,LjA`jR!1Nc@Z:`l!">myAprilTagDetections</variable>
+<variable id="GKDG)(JW[uWT(60;;pdx">numTags</variable>
+</variables>
+<block type="procedures_defnoreturn" id="WtpyD@tEu+EoY=P9iY,D" deletable="false" x="25" y="314">
+<field name="NAME">runOpMode</field>
+<comment pinned="true" h="291" w="877">This OpMode determines the best Exposure for minimizing image motion-blur on a Webcam.
+Note that it is not possible to control the exposure for a Phone Camera, so if you are using a Phone for the Robot Controller
+this OpMode/Feature only applies to an externally connected Webcam.
+
+The goal is to determine the smallest (shortest) Exposure value that still provides reliable Tag Detection.
+Starting with the minimum Exposure and maximum Gain, the exposure is slowly increased until the Tag is detected reliably from the likely operational distance.
+
+The best way to run this optimization is to view the camera preview screen while changing the exposure and gains.
+
+To do this, you need to view the RobotController screen directly (not from Driver Station).
+This can be done directly from a RC phone screen (if you are using an external Webcam), but for a Control Hub you must either plug an HDMI monitor into the Control Hub HDMI port, or use an external viewer program like ScrCpy (https://scrcpy.org/)</comment>
+<data>{"commentPositionLeft":-19,"commentPositionTop":-314}</data>
+<statement name="STACK">
+<block type="variables_set" id="d4hb:HNb|t{vV(Oi5NVZ">
+<field name="VAR" id="L$;M~)W~VtpxPR~YxQ/o">thisExpUp</field>
+<value name="VALUE">
+<block type="logic_boolean" id="^@(}tT{%2McLDyT}JsKP">
+<field name="BOOL">FALSE</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id="~t5s#~|(RQky75gfIEH$">
+<field name="VAR" id="hf07h2R.XEMsFAo~Zc1f">thisExpDn</field>
+<value name="VALUE">
+<block type="logic_boolean" id="E]v@?+cb:e^!=}+gKkH1">
+<field name="BOOL">FALSE</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id="EyyUkuE1tGCzfpk^;)g1">
+<field name="VAR" id="SUcu?xhQBt:]3uhff[;A">thisGainUp</field>
+<value name="VALUE">
+<block type="logic_boolean" id="6$Fh=w[Oe$n2/4~qf3t-">
+<field name="BOOL">FALSE</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id=",4K_hCN#7IZ_zEGS4#kU">
+<field name="VAR" id="y4krjhzgIle:hDRl.R9H">thisGainDn</field>
+<value name="VALUE">
+<block type="logic_boolean" id="Tl}!]9!DLUea.H}uHpua">
+<field name="BOOL">FALSE</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id="CO?re+NY~0jg1=eSFri5">
+<field name="VAR" id="qg157l{j1mmnRRNmPL`l">lastExpUp</field>
+<value name="VALUE">
+<block type="logic_boolean" id="]?ZjM@`R_1dyG7(D-+#K">
+<field name="BOOL">FALSE</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id="JEj5*}:Z,LfsJh1w5;fh">
+<field name="VAR" id="|%DY?e_),GVct%`tEWS~">lastExpDn</field>
+<value name="VALUE">
+<block type="logic_boolean" id="|ZQPC,|bc7$4JVrRN~pE">
+<field name="BOOL">FALSE</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id="zebue|UFO$B=ADhPGZtY">
+<field name="VAR" id="^Nz:Nx32OT3mGOeIrf?r">lastGainUp</field>
+<value name="VALUE">
+<block type="logic_boolean" id="ON]za/8`}}e,bDVy(}zh">
+<field name="BOOL">FALSE</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id="Ed|}t;#JxA:4I#OICz[N">
+<field name="VAR" id="o9rIB!u+*M!f~`9$Saji">lastGainDn</field>
+<value name="VALUE">
+<block type="logic_boolean" id="Ti9+7BU~nn~utJ)*j-3v">
+<field name="BOOL">FALSE</field>
+</block>
+</value>
+<next>
+<block type="procedures_callnoreturn" id="f5VC4xOrYYZrGzpFY}@G">
+<mutation name="initAprilTag"/>
+<comment pinned="false" h="60" w="270">Initialize the AprilTag Detection process.</comment>
+<data>{"commentPositionLeft":-67,"commentPositionTop":-85}</data>
+<next>
+<block type="comment" id="?-.(*I_Upgo4U*foW.;G">
+<field name="COMMENT">Establish Min and Max Gains and Exposure.  Then set a low exposure with high gain.</field>
+<next>
+<block type="procedures_callnoreturn" id=";84,OF,X}qTZ/2,uYR}P">
+<mutation name="getCameraSetting"/>
+<next>
+<block type="variables_set" id="cJ5_iF.0pQxY)`VDy-f@">
+<field name="VAR" id="{M.37mH^eK,EexmQD5IJ">myExposure</field>
+<value name="VALUE">
+<block type="logic_ternary" id="]m/bz_cqP|m#WW.VA1$Y">
+<value name="IF">
+<block type="logic_compare" id="wx4:m9Ap0UR(#]4W:hlg">
+<field name="OP">LT</field>
+<value name="A">
+<block type="math_number" id="GMR8U+41Z7oZ2{$Q1TsO">
+<field name="NUM">5</field>
+</block>
+</value>
+<value name="B">
+<block type="variables_get" id="aSUmUz[tP73cFkG,*knv">
+<field name="VAR" id="@Lg~6i(K9x_hiCkU$yh1">minExposure</field>
+</block>
+</value>
+</block>
+</value>
+<value name="THEN">
+<block type="math_number" id="pfJT[vGO5TG`J1QW33t#">
+<field name="NUM">5</field>
+</block>
+</value>
+<value name="ELSE">
+<block type="variables_get" id="R5/uJL9Yl2eYU6]mJ(xZ">
+<field name="VAR" id="@Lg~6i(K9x_hiCkU$yh1">minExposure</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="variables_set" id="0#Y-`+bvr,c(@3WbI#o:">
+<field name="VAR" id="vf#sX;|hj`g=So%A(-e:">myGain</field>
+<value name="VALUE">
+<block type="variables_get" id="bx-yf=ch)bw9InP+x3)N">
+<field name="VAR" id="xqcrSNcEcnCA]ah=|F5E">maxGain</field>
+</block>
+</value>
+<next>
+<block type="procedures_callnoreturn" id="PMat/vu)mNOlqG86{5Sg">
+<mutation name="setManualExposure"/>
+<next>
+<block type="comment" id="/TX8,^RvHuP6X%R,Py^^">
+<field name="COMMENT">Wait for the match to begin.</field>
+<next>
+<block type="telemetry_addTextData_All" id="Y/b(p3p_Ls7l_.)bQt%8">
+<value name="KEY">
+<shadow type="text" id="]K/@Q[7z:EBSoy.ggFCo">
+<field name="TEXT">Camera preview on/off</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id="eV-62@bA|1V9{)n7lim2">
+<field name="TEXT">3 dots, Camera Stream</field>
+</shadow>
+</value>
+<next>
+<block type="telemetry_addTextData_All" id="/Zm[n8^)(`(S}Ab9j!;|">
+<value name="KEY">
+<shadow type="text" id="E)4aB(Zb2,Da/0v0AiN=">
+<field name="TEXT">&gt;</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id="^u5_oh+s(.Vs1Kk;$yw9">
+<field name="TEXT">Touch Play to start OpMode</field>
+</shadow>
+</value>
+<next>
+<block type="telemetry_update" id="CcM7+$syN,5p}u1NCi8q">
+<next>
+<block type="linearOpMode_waitForStart" id=":`$wN_ci`O;o6P0~.(+g">
+<next>
+<block type="controls_if" id="}Q?5mbxSO8Di;i!__6[y">
+<value name="IF0">
+<block type="linearOpMode_opModeIsActive" id=")o%YFX/#9kvv^sgXr4~5"/>
+</value>
+<statement name="DO0">
+<block type="comment" id="(rU-p_T_/B|vExcs}liL">
+<field name="COMMENT">Put run blocks here.</field>
+<next>
+<block type="controls_whileUntil" id="^0Kagy/e+Ea{rbZPv2G6">
+<field name="MODE">WHILE</field>
+<value name="BOOL">
+<block type="linearOpMode_opModeIsActive" id="e)cr{!2VIET83s,JWC.="/>
+</value>
+<statement name="DO">
+<block type="comment" id="Jh/;L$n@JuX8AQJDFCul">
+<field name="COMMENT">Put loop blocks here.</field>
+<next>
+<block type="telemetry_addLine" id="*%8;6xn+0Z%:bJ8h7k%!">
+<value name="TEXT">
+<shadow type="text" id="k+/xA|Bc[k+W8yKu,dje">
+<field name="TEXT">Find lowest Exposure that gives reliable detection.</field>
+</shadow>
+</value>
+<next>
+<block type="telemetry_addLine" id="of#9tglUk;nV#dyuLe|%">
+<value name="TEXT">
+<shadow type="text" id="b1zXJ]/9M4_/BBdj[_Ld">
+<field name="TEXT">Use Left bump/trig to adjust Exposure.</field>
+</shadow>
+</value>
+<next>
+<block type="telemetry_addLine" id="X)N7=gA]27Dd57xe/Ldn">
+<value name="TEXT">
+<shadow type="text" id="}ez?dCs)l^*M7o!0t%@C">
+<field name="TEXT">Use Right bump/trig to adjust Gain.</field>
+</shadow>
+</value>
+<next>
+<block type="telemetry_addLine" id="W{l02eSzdnSD.B}KL7(+">
+<value name="TEXT">
+<shadow type="text" id="|2mkp}V(UG8P@/ouhDAT">
+<field name="TEXT"/>
+</shadow>
+</value>
+<next>
+<block type="comment" id="(b`R%R^oXZ)4CZyw7Fc3">
+<field name="COMMENT">Display how many Tags Detected</field>
+<next>
+<block type="variables_set" id="c8~R@@~J_)0dhTTP,GP@">
+<field name="VAR" id="l)/,LjA`jR!1Nc@Z:`l!">myAprilTagDetections</field>
+<value name="VALUE">
+<block type="aprilTagProcessor_getDetections" id="^Sth`xX=n79Q8`P*Z#qt">
+<value name="APRIL_TAG_PROCESSOR">
+<block type="variables_get" id="Icn).;@XjTI7SR.j$UY#">
+<field name="VAR" id="?.?jAjDXaP~!^(jq/Ls_">myAprilTagProcessor</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="variables_set" id="?0R:U)M~@+qG|K[AVS;-">
+<field name="VAR" id="GKDG)(JW[uWT(60;;pdx">numTags</field>
+<value name="VALUE">
+<block type="lists_length" id="g2)#R=m4gS1zH*UrceId">
+<value name="VALUE">
+<block type="variables_get" id="0igI3ugERAFrlLK6M@XX">
+<field name="VAR" id="l)/,LjA`jR!1Nc@Z:`l!">myAprilTagDetections</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_addTextData_All" id="3m5}jTks8BeMJ]|.h*Kp">
+<value name="KEY">
+<shadow type="text" id="MNA3Pe{~9.uc1dSMmO=j">
+<field name="TEXT">Tag</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id="DRWu-r*O-0eJ4pG2n$_l">
+<field name="TEXT"/>
+</shadow>
+<block type="logic_ternary" id="Mc?xeiW:Rp5|c%$Zr9P|">
+<value name="IF">
+<block type="logic_compare" id="V*z?g0djV7~:Xt]Rq8fQ">
+<field name="OP">GT</field>
+<value name="A">
+<block type="variables_get" id="BVW+%3PsC(1QCx__K-Gg">
+<field name="VAR" id="GKDG)(JW[uWT(60;;pdx">numTags</field>
+</block>
+</value>
+<value name="B">
+<block type="math_number" id="?1FJ?xB5r8oV*~|BVtw^">
+<field name="NUM">0</field>
+</block>
+</value>
+</block>
+</value>
+<value name="THEN">
+<block type="text_join" id="vS,X*M+jIbN^q3Ji[!FR">
+<mutation items="3"/>
+<value name="ADD0">
+<block type="text" id="4Zpn*-Y]ehVh}5,ci$|%">
+<field name="TEXT">####### </field>
+</block>
+</value>
+<value name="ADD1">
+<block type="variables_get" id="GKEH#U?^OmP{JRziFlMg">
+<field name="VAR" id="GKDG)(JW[uWT(60;;pdx">numTags</field>
+</block>
+</value>
+<value name="ADD2">
+<block type="text" id="~PQnwra6N$15W7.I^7NW">
+<field name="TEXT"> Detected  ######</field>
+</block>
+</value>
+</block>
+</value>
+<value name="ELSE">
+<block type="text" id="RiCdh)O6)DRw]f8g}umN">
+<field name="TEXT">----------- none - ----------</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_addTextData_All" id="JXLfEynC7_cI{7(}_lX(">
+<value name="KEY">
+<shadow type="text" id="zUyelSZKY4rrxym7fA_$">
+<field name="TEXT">Exposure</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id="E1Lg16+4aD)r+a{09B89">
+<field name="TEXT">text</field>
+</shadow>
+<block type="text_join" id="AK+=yWG#:*Kn}A{%m924">
+<mutation items="6"/>
+<value name="ADD0">
+<block type="variables_get" id="Jx6l#P3Lqrzna)YIiJ)8">
+<field name="VAR" id="{M.37mH^eK,EexmQD5IJ">myExposure</field>
+</block>
+</value>
+<value name="ADD1">
+<block type="text" id="5f:6AMn8gY)!2O*Zsdk9">
+<field name="TEXT">  (</field>
+</block>
+</value>
+<value name="ADD2">
+<block type="variables_get" id="u.dd,ZRNFR^pMizHRHt@">
+<field name="VAR" id="@Lg~6i(K9x_hiCkU$yh1">minExposure</field>
+</block>
+</value>
+<value name="ADD3">
+<block type="text" id="$WRz(YhE!z%XYEn.F.lg">
+<field name="TEXT"> - </field>
+</block>
+</value>
+<value name="ADD4">
+<block type="variables_get" id="GA_Q.%0_Ix}U:kzm@7%h">
+<field name="VAR" id="I/k90t/bAqns2-HWyFWS">maxExposure</field>
+</block>
+</value>
+<value name="ADD5">
+<block type="text" id="T)88~F[9d)$V1[p0X,sD">
+<field name="TEXT">)</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_addTextData_All" id="ncnB1I8I3EUfBl`dr/yw">
+<value name="KEY">
+<shadow type="text" id="jPk*vq_YwW*(A)QHmC%2">
+<field name="TEXT">Gain</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id="4cR+Ma#jnc$Sg!)RFc;{">
+<field name="TEXT">text</field>
+</shadow>
+<block type="text_join" id="VvCgomE^=]i9pgd=GXGv">
+<mutation items="6"/>
+<value name="ADD0">
+<block type="variables_get" id="uEX/8b@[9iMs*[j|p,Ni">
+<field name="VAR" id="vf#sX;|hj`g=So%A(-e:">myGain</field>
+</block>
+</value>
+<value name="ADD1">
+<block type="text" id="wXaj5X`Kd?qKRri4?EIw">
+<field name="TEXT">  (</field>
+</block>
+</value>
+<value name="ADD2">
+<block type="variables_get" id="som}hOA8]k(*h#PV}Vo_">
+<field name="VAR" id="_J{{tA:xCQ7pne@+RT*,">minGain</field>
+</block>
+</value>
+<value name="ADD3">
+<block type="text" id=".,9pt|vC0gHUy0AqfJ]u">
+<field name="TEXT"> - </field>
+</block>
+</value>
+<value name="ADD4">
+<block type="variables_get" id="a_WbhcILM/1H%{R:*^[L">
+<field name="VAR" id="xqcrSNcEcnCA]ah=|F5E">maxGain</field>
+</block>
+</value>
+<value name="ADD5">
+<block type="text" id="RO_IzvOJtcA?jN|OOmh~">
+<field name="TEXT">)</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_update" id="exvivmft-pX$n!1,8Ea$">
+<next>
+<block type="comment" id="2S5Ch*Kn2:;9@}1y)td~">
+<field name="COMMENT">Check to see if we need to change exposure or gain.</field>
+<next>
+<block type="variables_set" id="sh`D;uEXZ5eokpGF1_O{">
+<field name="VAR" id="L$;M~)W~VtpxPR~YxQ/o">thisExpUp</field>
+<value name="VALUE">
+<block type="gamepad_getProperty_Boolean" id="O|iBBKH[]bxC7yM#u{e?">
+<field name="IDENTIFIER">gamepad1</field>
+<field name="PROP">LeftBumper</field>
+<data>{"IDENTIFIER":"gamepad1"}</data>
+</block>
+</value>
+<next>
+<block type="variables_set" id="[nL@4/mI4+OIKY#=y{V?">
+<field name="VAR" id="hf07h2R.XEMsFAo~Zc1f">thisExpDn</field>
+<value name="VALUE">
+<block type="logic_compare" id="[{ft43:TN2Ba(#ZllXH-">
+<field name="OP">GT</field>
+<value name="A">
+<block type="gamepad_getProperty_Number" id="~7Ct@e#j@*le{~^eYs.q">
+<field name="IDENTIFIER">gamepad1</field>
+<field name="PROP">LeftTrigger</field>
+<data>{"IDENTIFIER":"gamepad1"}</data>
+</block>
+</value>
+<value name="B">
+<block type="math_number" id="%Bv)U#u{Gj]lmw[.5)Fj">
+<field name="NUM">0.25</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="variables_set" id="L6=SlDaZh_;tx#hxvf7u">
+<field name="VAR" id="SUcu?xhQBt:]3uhff[;A">thisGainUp</field>
+<value name="VALUE">
+<block type="gamepad_getProperty_Boolean" id="vjveiF5LojlQp`RO:$}?">
+<field name="IDENTIFIER">gamepad1</field>
+<field name="PROP">RightBumper</field>
+<data>{"IDENTIFIER":"gamepad1"}</data>
+</block>
+</value>
+<next>
+<block type="variables_set" id="dP80ob$=rS$b,Ux)JUBI">
+<field name="VAR" id="y4krjhzgIle:hDRl.R9H">thisGainDn</field>
+<value name="VALUE">
+<block type="logic_compare" id="5MUzE+S^Pw@HuJ`p.|ed">
+<field name="OP">GT</field>
+<value name="A">
+<block type="gamepad_getProperty_Number" id=".Z!UkPYWJL2)#f(_!V)U">
+<field name="IDENTIFIER">gamepad1</field>
+<field name="PROP">RightTrigger</field>
+<data>{"IDENTIFIER":"gamepad1"}</data>
+</block>
+</value>
+<value name="B">
+<block type="math_number" id="Sat2!)%qSrL)RwKWE=+S">
+<field name="NUM">0.25</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="comment" id="jLJk(/d`ExOyihvzpt.:">
+<field name="COMMENT">Look for clicks to change the exposure.</field>
+<next>
+<block type="controls_if" id="^O[B-%17y*-cp[J|gWHu">
+<mutation elseif="1"/>
+<value name="IF0">
+<block type="logic_operation" id="m.!owy:]$YQ7tJV/DbeY">
+<field name="OP">AND</field>
+<value name="A">
+<block type="variables_get" id="8(}BabfHA=$2{;g;!r@U">
+<field name="VAR" id="L$;M~)W~VtpxPR~YxQ/o">thisExpUp</field>
+</block>
+</value>
+<value name="B">
+<block type="logic_negate" id="^(V%JSrRp6+KrK@uADnA">
+<value name="BOOL">
+<block type="variables_get" id="=)X=mG/r`tqChg$Sk!v1">
+<field name="VAR" id="qg157l{j1mmnRRNmPL`l">lastExpUp</field>
+</block>
+</value>
+</block>
+</value>
+</block>
+</value>
+<statement name="DO0">
+<block type="variables_set" id="lh=^Ah]e_pgrQ/PG%./{">
+<field name="VAR" id="{M.37mH^eK,EexmQD5IJ">myExposure</field>
+<value name="VALUE">
+<block type="range_clip" id="A%T[#/7;@1jUqbnHrgb^">
+<value name="NUMBER">
+<block type="math_arithmetic" id="?d#.qhxTTs]aAYyW(_CR">
+<field name="OP">ADD</field>
+<value name="A">
+<shadow type="math_number" id="h7eMmx?ZX9n]};9r4bo0">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="xtmlSbDk%IEIns|IcSIh">
+<field name="VAR" id="{M.37mH^eK,EexmQD5IJ">myExposure</field>
+</block>
+</value>
+<value name="B">
+<shadow type="math_number" id="@m#3J0dA^a:.f3fvzI/G">
+<field name="NUM">1</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="MIN">
+<shadow type="math_number" id="^n$~k]bY;LvpeI4LNqy=">
+<field name="NUM">-1</field>
+</shadow>
+<block type="variables_get" id="}#7o.rSA=evygE-Wo,_h">
+<field name="VAR" id="@Lg~6i(K9x_hiCkU$yh1">minExposure</field>
+</block>
+</value>
+<value name="MAX">
+<shadow type="math_number" id="@2LZ85@Kvp,!m%p~}loj">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="!5n!wv9l@kdBV7O/I~84">
+<field name="VAR" id="I/k90t/bAqns2-HWyFWS">maxExposure</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="procedures_callnoreturn" id="9Ahq)0C(JP.YD)M+g+JX">
+<mutation name="setManualExposure"/>
+</block>
+</next>
+</block>
+</statement>
+<value name="IF1">
+<block type="logic_operation" id="tO|4Wqpe{g70U?24gb,p">
+<field name="OP">AND</field>
+<value name="A">
+<block type="variables_get" id="Idj97y27tsG3F?*ArUyO">
+<field name="VAR" id="hf07h2R.XEMsFAo~Zc1f">thisExpDn</field>
+</block>
+</value>
+<value name="B">
+<block type="logic_negate" id="_0]dHV5dARFB4o:?2VpP">
+<value name="BOOL">
+<block type="variables_get" id="~pG787XPEuD}Z71)+J+i">
+<field name="VAR" id="|%DY?e_),GVct%`tEWS~">lastExpDn</field>
+</block>
+</value>
+</block>
+</value>
+</block>
+</value>
+<statement name="DO1">
+<block type="variables_set" id="w#q*AlaYjdYM.=P:qEq0">
+<field name="VAR" id="{M.37mH^eK,EexmQD5IJ">myExposure</field>
+<value name="VALUE">
+<block type="range_clip" id="Uav~R3[t;Qr=gRWwu:|S">
+<value name="NUMBER">
+<block type="math_arithmetic" id="NVXi/*QmjQ!cQ9KCKWRz">
+<field name="OP">MINUS</field>
+<value name="A">
+<shadow type="math_number">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="F^Yq~qQTR-ftEI@emnBX">
+<field name="VAR" id="{M.37mH^eK,EexmQD5IJ">myExposure</field>
+</block>
+</value>
+<value name="B">
+<shadow type="math_number" id="wAclzHfG*rW./PhH9hO,">
+<field name="NUM">1</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="MIN">
+<shadow type="math_number">
+<field name="NUM">-1</field>
+</shadow>
+<block type="variables_get" id="lLFRsR65:XJ@3U8hgm#Y">
+<field name="VAR" id="@Lg~6i(K9x_hiCkU$yh1">minExposure</field>
+</block>
+</value>
+<value name="MAX">
+<shadow type="math_number">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="cVWQM|Uuc1x`fn*n-ca/">
+<field name="VAR" id="I/k90t/bAqns2-HWyFWS">maxExposure</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="procedures_callnoreturn" id="imQ,;6V8r3t~|==*!=fX">
+<mutation name="setManualExposure"/>
+</block>
+</next>
+</block>
+</statement>
+<next>
+<block type="comment" id="x)ob3#-90oc(2UNCA]L$">
+<field name="COMMENT">Look for clicks to change the gain.</field>
+<next>
+<block type="controls_if" id=")AF)_zqY=}9yQyr6w$/W">
+<mutation elseif="1"/>
+<value name="IF0">
+<block type="logic_operation" id="C$Uv1$ypzlC=sq4?~1HP">
+<field name="OP">AND</field>
+<value name="A">
+<block type="variables_get" id="Qg.0(_dQ8^S4n-jMvq-w">
+<field name="VAR" id="SUcu?xhQBt:]3uhff[;A">thisGainUp</field>
+</block>
+</value>
+<value name="B">
+<block type="logic_negate" id="NWrgv`O:d~tc:SmocvGv">
+<value name="BOOL">
+<block type="variables_get" id="?9Hf2e!]G]-p_oMLoRw|">
+<field name="VAR" id="^Nz:Nx32OT3mGOeIrf?r">lastGainUp</field>
+</block>
+</value>
+</block>
+</value>
+</block>
+</value>
+<statement name="DO0">
+<block type="variables_set" id="37r(T0Uk1NgzG+I{x0CB">
+<field name="VAR" id="vf#sX;|hj`g=So%A(-e:">myGain</field>
+<value name="VALUE">
+<block type="range_clip" id="vzYbqu+SsgrlGr_0d*A/">
+<value name="NUMBER">
+<block type="math_arithmetic" id="a%}`@6ny*mWs1R?XpkoH">
+<field name="OP">ADD</field>
+<value name="A">
+<shadow type="math_number">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="K+.(^LvHVA)}`|K|@D![">
+<field name="VAR" id="vf#sX;|hj`g=So%A(-e:">myGain</field>
+</block>
+</value>
+<value name="B">
+<shadow type="math_number" id="SFpsAi`2t$eBT)bTMuD}">
+<field name="NUM">1</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="MIN">
+<shadow type="math_number">
+<field name="NUM">-1</field>
+</shadow>
+<block type="variables_get" id="p[gOpsbwF28mm[s|up0L">
+<field name="VAR" id="_J{{tA:xCQ7pne@+RT*,">minGain</field>
+</block>
+</value>
+<value name="MAX">
+<shadow type="math_number">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="tB%RP,ca|]|?fgehnhUa">
+<field name="VAR" id="xqcrSNcEcnCA]ah=|F5E">maxGain</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="procedures_callnoreturn" id="gaj[;oBa/q/dw2f7F82S">
+<mutation name="setManualExposure"/>
+</block>
+</next>
+</block>
+</statement>
+<value name="IF1">
+<block type="logic_operation" id="DGvLIP0GMv0X)zeNiy};">
+<field name="OP">AND</field>
+<value name="A">
+<block type="variables_get" id="ne]$L~?kVo)(yuA7$,i{">
+<field name="VAR" id="y4krjhzgIle:hDRl.R9H">thisGainDn</field>
+</block>
+</value>
+<value name="B">
+<block type="logic_negate" id="q1({t7VY}@Evhs()+k;k">
+<value name="BOOL">
+<block type="variables_get" id="OFXlMo%EeN3/8wY}--n5">
+<field name="VAR" id="o9rIB!u+*M!f~`9$Saji">lastGainDn</field>
+</block>
+</value>
+</block>
+</value>
+</block>
+</value>
+<statement name="DO1">
+<block type="variables_set" id="bHvF#(U$$kefWKAu$]_G">
+<field name="VAR" id="vf#sX;|hj`g=So%A(-e:">myGain</field>
+<value name="VALUE">
+<block type="range_clip" id="rw-;F*Q.GA5Y{%0WYC$u">
+<value name="NUMBER">
+<block type="math_arithmetic" id="G(v5H;x.()0`2}JWc*s2">
+<field name="OP">MINUS</field>
+<value name="A">
+<shadow type="math_number">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="9@{XcWoP2d}/0!/b?C*,">
+<field name="VAR" id="vf#sX;|hj`g=So%A(-e:">myGain</field>
+</block>
+</value>
+<value name="B">
+<shadow type="math_number" id="7y]F6h[ptnJ[)1TBP51L">
+<field name="NUM">1</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="MIN">
+<shadow type="math_number">
+<field name="NUM">-1</field>
+</shadow>
+<block type="variables_get" id="u@q[91Uy[|co,qkL,JV0">
+<field name="VAR" id="_J{{tA:xCQ7pne@+RT*,">minGain</field>
+</block>
+</value>
+<value name="MAX">
+<shadow type="math_number">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="CI[8G9@f#[0nj@f4mI*z">
+<field name="VAR" id="xqcrSNcEcnCA]ah=|F5E">maxGain</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="procedures_callnoreturn" id="d6mpX7ab-f}{WzHxWe](">
+<mutation name="setManualExposure"/>
+</block>
+</next>
+</block>
+</statement>
+<next>
+<block type="variables_set" id="ss!l/`{+)s*uvM9}Go(R">
+<field name="VAR" id="qg157l{j1mmnRRNmPL`l">lastExpUp</field>
+<value name="VALUE">
+<block type="variables_get" id="/,X*mNZ02g5lIuoQLS($">
+<field name="VAR" id="L$;M~)W~VtpxPR~YxQ/o">thisExpUp</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id="{K-n*,7L,?=388Hb|,~y">
+<field name="VAR" id="|%DY?e_),GVct%`tEWS~">lastExpDn</field>
+<value name="VALUE">
+<block type="variables_get" id="+=;-{Be^Ns|B^_@*:8M{">
+<field name="VAR" id="hf07h2R.XEMsFAo~Zc1f">thisExpDn</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id="ncOwCZDC.r1z2YLJJF)w">
+<field name="VAR" id="^Nz:Nx32OT3mGOeIrf?r">lastGainUp</field>
+<value name="VALUE">
+<block type="variables_get" id="C`RVf#y!7#B]87C+Vf[C">
+<field name="VAR" id="SUcu?xhQBt:]3uhff[;A">thisGainUp</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id="6tXK_u.I/J6}Xsz61UoD">
+<field name="VAR" id="o9rIB!u+*M!f~`9$Saji">lastGainDn</field>
+<value name="VALUE">
+<block type="variables_get" id="bj=z8`ij.mBGoecK_IlF">
+<field name="VAR" id="y4krjhzgIle:hDRl.R9H">thisGainDn</field>
+</block>
+</value>
+<next>
+<block type="linearOpMode_sleep_Number" id="wY+U/FmJ?tn=BPfLM^W8">
+<value name="MILLISECONDS">
+<shadow type="math_number" id="Wgxc8#6wv4_uRAX=OVst">
+<field name="NUM">20</field>
+</shadow>
+</value>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+<block type="procedures_defnoreturn" id=":Un!nS!LS%^tq]:g4^?Z" x="25" y="3287">
+<field name="NAME">initAprilTag</field>
+<comment pinned="true" h="40" w="277">Initialize the AprilTag processor.</comment>
+<data>{"commentPositionLeft":-48,"commentPositionTop":-62}</data>
+<statement name="STACK">
+<block type="comment" id="Z#tr,B$;l$RV0)j4q0n.">
+<field name="COMMENT">Create the AprilTag processor the easy way.</field>
+<next>
+<block type="variables_set" id="rHaSeDW/U_T?bmQ`rK4q">
+<field name="VAR" id="?.?jAjDXaP~!^(jq/Ls_">myAprilTagProcessor</field>
+<value name="VALUE">
+<block type="aprilTagProcessor_easyCreateWithDefaults" id="5}=!auE#h8)@Ey%D=6K|"/>
+</value>
+<next>
+<block type="comment" id="w{nzs#L5ZbP.GKW2S`x_">
+<field name="COMMENT">Create the vision portal the easy way.</field>
+<next>
+<block type="variables_set" id="@?LKBk4Wj~Kdkn=no2mu">
+<field name="VAR" id="Xk!_{IPng0#/P|7dx?3N">myVisionPortal</field>
+<value name="VALUE">
+<block type="visionPortal_easyCreateWithDefaults_oneProcessor" id="uFa(oc,H}O5mf{`,=uYW">
+<value name="CAMERA">
+<shadow type="navigation_webcamName" id="mn2YOySu2Ma|,,o?*V~n">
+<field name="WEBCAM_NAME">Webcam 1</field>
+</shadow>
+</value>
+<value name="VISION_PROCESSOR">
+<block type="variables_get" id=",al0Z{M=v^:mE[9_M._5">
+<field name="VAR" id="?.?jAjDXaP~!^(jq/Ls_">myAprilTagProcessor</field>
+</block>
+</value>
+</block>
+</value>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+<block type="procedures_defnoreturn" id="8O:v-Dnb65nfFhfE@pMD" x="25" y="3597">
+<field name="NAME">getCameraSetting</field>
+<comment pinned="true" h="68" w="480">Read this camera's minimum and maximum Exposure and Gain settings.
+Can only be called AFTER calling initAprilTag.</comment>
+<data>{"commentPositionLeft":-46,"commentPositionTop":-89}</data>
+<statement name="STACK">
+<block type="comment" id="yAu(.j]F7vt;GJVE^V0g">
+<field name="COMMENT">Wait for the camera to be open.</field>
+<next>
+<block type="procedures_callnoreturn" id="H+,g(3!;_5je2BE5pH7q">
+<mutation name="waitForCamera"/>
+<next>
+<block type="comment" id="9#.yaAiLc,Ini5hf-{*o">
+<field name="COMMENT">Get camera control values unless we are stopping.</field>
+<next>
+<block type="controls_if" id="Cm-}oHNgcMA]U.,.h8nD">
+<value name="IF0">
+<block type="logic_negate" id=")O34$JlXOfkPMP6.CU7n">
+<value name="BOOL">
+<block type="linearOpMode_isStopRequested" id="dm)]uVbqY}V(Rty@h%uN"/>
+</value>
+</block>
+</value>
+<statement name="DO0">
+<block type="variables_set" id="%XBc9G{k$:3(I8WDbM#.">
+<field name="VAR" id=".uqD6]$?cUF@4ZsL~9X~">myExposureControl</field>
+<value name="VALUE">
+<block type="visionPortal_getExposureControl" id=".uALlbFqmRKs7/xJtMD?">
+<comment pinned="false" h="73.07942199707031" w="319.13739013671875">Get the ExposureControl object, to allow adjusting the camera's exposure.</comment>
+<data>{"commentPositionLeft":-25,"commentPositionTop":-103}</data>
+<value name="VISION_PORTAL">
+<block type="variables_get" id="=^ja.@i/3{NbiOsH]=5;">
+<field name="VAR" id="Xk!_{IPng0#/P|7dx?3N">myVisionPortal</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="variables_set" id="q@8_q!nYhmC80s;cHCoS">
+<field name="VAR" id="@Lg~6i(K9x_hiCkU$yh1">minExposure</field>
+<value name="VALUE">
+<block type="math_arithmetic" id="E,+tcTnC9B;ScyAUfmoj">
+<field name="OP">ADD</field>
+<value name="A">
+<shadow type="math_number" id="%|`Mi0m,$EJV^[HG72l^">
+<field name="NUM">1</field>
+</shadow>
+<block type="exposureControl_getExposure" id="C[H8Xhm.Tu$NmhDqR!],">
+<field name="FUNC">getMinExposure</field>
+<value name="EXPOSURE_CONTROL">
+<block type="variables_get" id="WJrKPBdzX,IsWv./bU:K">
+<field name="VAR" id=".uqD6]$?cUF@4ZsL~9X~">myExposureControl</field>
+</block>
+</value>
+<value name="TIME_UNIT">
+<shadow type="misc_typedEnum_TimeUnit" id="62B8f.#Iq+n?qUJ4J$)$">
+<field name="TIME_UNIT">MILLISECONDS</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="B">
+<shadow type="math_number" id="|H;!ix}@?,c(#sH,6Imy">
+<field name="NUM">1</field>
+</shadow>
+</value>
+</block>
+</value>
+<next>
+<block type="variables_set" id="@3gy4Z:)6k},~pR5][!r">
+<field name="VAR" id="I/k90t/bAqns2-HWyFWS">maxExposure</field>
+<value name="VALUE">
+<block type="exposureControl_getExposure" id=")${t%]+8f{D})qZ26TBq">
+<field name="FUNC">getMaxExposure</field>
+<value name="EXPOSURE_CONTROL">
+<block type="variables_get" id="bJQ4.z6WzCz@*CJgAw/o">
+<field name="VAR" id=".uqD6]$?cUF@4ZsL~9X~">myExposureControl</field>
+</block>
+</value>
+<value name="TIME_UNIT">
+<shadow type="misc_typedEnum_TimeUnit" id="=#mQ,#+9:a4K}v|d8?Xe">
+<field name="TIME_UNIT">MILLISECONDS</field>
+</shadow>
+</value>
+</block>
+</value>
+<next>
+<block type="variables_set" id="]AZMPyD!O@C7e.P{0+r%">
+<field name="VAR" id="{R(!J=f1GY:Vma;L@c=Q">myGainControl</field>
+<value name="VALUE">
+<block type="visionPortal_getGainControl" id="=fTX(z%~D[bK.x-P_qlM">
+<comment pinned="false" h="150" w="325">Get the GainControl object, to allow adjusting the camera's gain.</comment>
+<value name="VISION_PORTAL">
+<block type="variables_get" id="h9y$bue4(CBw:MqbqdiX">
+<field name="VAR" id="Xk!_{IPng0#/P|7dx?3N">myVisionPortal</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="variables_set" id="M|Kr~,.F[[o%T0359vvo">
+<field name="VAR" id="_J{{tA:xCQ7pne@+RT*,">minGain</field>
+<value name="VALUE">
+<block type="gainControl_getGain" id="?A^+sNY9#qee[6wJCpHn">
+<field name="FUNC">getMinGain</field>
+<value name="GAIN_CONTROL">
+<block type="variables_get" id="{Nk7T-yPkOIC3*8R=V/(">
+<field name="VAR" id="{R(!J=f1GY:Vma;L@c=Q">myGainControl</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="variables_set" id="CX{8#c-7)iqR_,~8t`JY">
+<field name="VAR" id="xqcrSNcEcnCA]ah=|F5E">maxGain</field>
+<value name="VALUE">
+<block type="gainControl_getGain" id="dV^{|3#h,^kw0F(e^2^3">
+<field name="FUNC">getMaxGain</field>
+<value name="GAIN_CONTROL">
+<block type="variables_get" id="QsHJ3(]kl6sS7SW;y.[9">
+<field name="VAR" id="{R(!J=f1GY:Vma;L@c=Q">myGainControl</field>
+</block>
+</value>
+</block>
+</value>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+<block type="procedures_defnoreturn" id="NyV0c~Vt4|BR;SCnN*^$" x="25" y="4215">
+<field name="NAME">waitForCamera</field>
+<comment pinned="true" h="43" w="347">Wait for the camera to be open.</comment>
+<data>{"commentPositionLeft":-47,"commentPositionTop":-67}</data>
+<statement name="STACK">
+<block type="controls_if" id="!qWH,D%O#[##]-f`BLBt">
+<value name="IF0">
+<block type="logic_compare" id="j,^K4W#Jw;}$-q~(8I|#">
+<field name="OP">NEQ</field>
+<value name="A">
+<block type="visionPortal_getCameraState" id="%v6;/e}/?kr`TZ)N{he?">
+<value name="VISION_PORTAL">
+<block type="variables_get" id="ZZ1e=_AimzN69Uy8*Ax`">
+<field name="VAR" id="Xk!_{IPng0#/P|7dx?3N">myVisionPortal</field>
+</block>
+</value>
+</block>
+</value>
+<value name="B">
+<block type="visionPortal_typedEnum_cameraState" id="0IVsPA1US9HW$FnZN+(l">
+<field name="CAMERA_STATE">STREAMING</field>
+</block>
+</value>
+</block>
+</value>
+<statement name="DO0">
+<block type="telemetry_addTextData_All" id="+8G4#!C%%fK/lNA$^d]%">
+<value name="KEY">
+<shadow type="text" id="8KyEDV7OC?nSgOF$r)tW">
+<field name="TEXT">Camera</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id="Q(DyjrAPNuw,+2Dg(.aM">
+<field name="TEXT">Waiting</field>
+</shadow>
+</value>
+<next>
+<block type="telemetry_update" id="18_lrv[zbykY9`J*B]KT">
+<next>
+<block type="controls_whileUntil" id="610w:FH].,s:`;-$2*(K">
+<field name="MODE">WHILE</field>
+<value name="BOOL">
+<block type="logic_operation" id=":Rhx-F%EGYHv0LzS/{b}" inline="false">
+<field name="OP">AND</field>
+<value name="A">
+<block type="logic_negate" id="%[8N-TZtwqQ%fgiM|W9E">
+<value name="BOOL">
+<block type="linearOpMode_isStopRequested" id="vc#:~uw2Xf8u~l^,wil0"/>
+</value>
+</block>
+</value>
+<value name="B">
+<block type="logic_compare" id="+N0CCOp`z$}ZKNbx57W1">
+<field name="OP">NEQ</field>
+<value name="A">
+<block type="visionPortal_getCameraState" id="lzdR}]ogc#[-()r!(8{-">
+<value name="VISION_PORTAL">
+<block type="variables_get" id="WO0xd!U)*F22Uo_9r`Dh">
+<field name="VAR" id="Xk!_{IPng0#/P|7dx?3N">myVisionPortal</field>
+</block>
+</value>
+</block>
+</value>
+<value name="B">
+<block type="visionPortal_typedEnum_cameraState" id="aRAlkoq_jq!uYuPsO3bB">
+<field name="CAMERA_STATE">STREAMING</field>
+</block>
+</value>
+</block>
+</value>
+</block>
+</value>
+<statement name="DO">
+<block type="linearOpMode_sleep_Number" id="1FWmLBAqCS^mfK*e=s];">
+<value name="MILLISECONDS">
+<shadow type="math_number" id="STIWWeDc~vA5;d!)eKw-">
+<field name="NUM">20</field>
+</shadow>
+</value>
+</block>
+</statement>
+<next>
+<block type="telemetry_addTextData_All" id="z9Pd%BrejfU^dB;mB`Z9">
+<value name="KEY">
+<shadow type="text" id="Z{s4.0w1wcA[I#P95XoU">
+<field name="TEXT">Camera</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id="!#2=+93*=vB|*~NGOV|x">
+<field name="TEXT">Ready</field>
+</shadow>
+</value>
+<next>
+<block type="telemetry_update" id="!eT@h[U*q[-B:hP-_sNm"/>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</statement>
+</block>
+<block type="procedures_defnoreturn" id="dJ{De%SeW-lf_d2|-UzX" x="25" y="4806">
+<field name="NAME">setManualExposure</field>
+<comment pinned="true" h="69" w="332">Manually set the camera gain and exposure.
+Can only be called AFTER calling initAprilTag.</comment>
+<data>{"commentPositionLeft":-48,"commentPositionTop":-92}</data>
+<statement name="STACK">
+<block type="comment" id="aHjkONgkQnX-EO@W8OK:">
+<field name="COMMENT">Wait for the camera to be open.</field>
+<next>
+<block type="procedures_callnoreturn" id="pKbiamQy,d|`?iH*;xG5">
+<mutation name="waitForCamera"/>
+<next>
+<block type="comment" id="W6JgZG,+av)bY(gcDa5z">
+<field name="COMMENT">Set camera controls unless we are stopping.</field>
+<next>
+<block type="controls_if" id="gH},U?@@E`Q+FAY;Zj6K">
+<value name="IF0">
+<block type="logic_negate" id="P#T.Wj,-JxA@=N7`F?-V">
+<value name="BOOL">
+<block type="linearOpMode_isStopRequested" id="r@]+%@{)%Ep7t,n^d$s2"/>
+</value>
+</block>
+</value>
+<statement name="DO0">
+<block type="comment" id="{9:omePy9/u9,PUg`Ab{">
+<field name="COMMENT">Set exposure.  Make sure we are in Manual Mode for these values to take effect.</field>
+<next>
+<block type="controls_if" id="DuIIGUKrrOmt[N.P?idu">
+<value name="IF0">
+<block type="logic_compare" id="Z8Lh;h9$7SyucOE#yMPT">
+<field name="OP">NEQ</field>
+<value name="A">
+<block type="exposureControl_getMode" id="gZ(:*0;oW@8AfYt!-=vt">
+<value name="EXPOSURE_CONTROL">
+<block type="variables_get" id="Lru}ab$2Lqrs!q-L$u[B">
+<field name="VAR" id=".uqD6]$?cUF@4ZsL~9X~">myExposureControl</field>
+</block>
+</value>
+</block>
+</value>
+<value name="B">
+<block type="exposureControl_typedEnum_mode" id="nk2NTAEe*cZ$$l}VY{!G">
+<field name="MODE">Manual</field>
+</block>
+</value>
+</block>
+</value>
+<statement name="DO0">
+<block type="exposureControl_setMode" id="{*A(5nAy=Z*7`agcI!Vq">
+<mutation has_output="false"/>
+<value name="EXPOSURE_CONTROL">
+<block type="variables_get" id="xRk,e/f@X~{C0EV/`C34">
+<field name="VAR" id=".uqD6]$?cUF@4ZsL~9X~">myExposureControl</field>
+</block>
+</value>
+<value name="MODE">
+<shadow type="exposureControl_typedEnum_mode" id="z_I@5c{A1PcXRMZz6bkS">
+<field name="MODE">Manual</field>
+</shadow>
+</value>
+<next>
+<block type="linearOpMode_sleep_Number" id="y40vb6*pUU_riS!9@[0Z">
+<value name="MILLISECONDS">
+<shadow type="math_number" id="N?$5R+8}n*;!_Zqk|}ul">
+<field name="NUM">50</field>
+</shadow>
+</value>
+</block>
+</next>
+</block>
+</statement>
+<next>
+<block type="exposureControl_setExposure" id="#*~`m`6b:hY4#OhrV@oI">
+<mutation has_output="false"/>
+<value name="EXPOSURE_CONTROL">
+<block type="variables_get" id="=q/;VVJKwfZnBKyW:@NV">
+<field name="VAR" id=".uqD6]$?cUF@4ZsL~9X~">myExposureControl</field>
+</block>
+</value>
+<value name="DURATION">
+<shadow type="math_number" id="u=!1RwV_yrJ6}3r{;O3}">
+<field name="NUM">30</field>
+</shadow>
+<block type="variables_get" id="Sg{YB2~bx1rQ8:m^[!^)">
+<field name="VAR" id="{M.37mH^eK,EexmQD5IJ">myExposure</field>
+</block>
+</value>
+<value name="TIME_UNIT">
+<shadow type="misc_typedEnum_TimeUnit" id="tyDe5Pfq~SFa,/Wv46a1">
+<field name="TIME_UNIT">MILLISECONDS</field>
+</shadow>
+</value>
+<next>
+<block type="linearOpMode_sleep_Number" id="XP]D}E{@{*U~DMfA3A6J">
+<value name="MILLISECONDS">
+<shadow type="math_number" id="73#!Q$G`{+On3EU*=l8u">
+<field name="NUM">20</field>
+</shadow>
+</value>
+<next>
+<block type="comment" id="]%yt8x2H`w+sfI29DDH!">
+<field name="COMMENT">Set Gain.</field>
+<next>
+<block type="gainControl_setGain" id="PHE$nYTWG(FIu)l5SYW0">
+<mutation has_output="false"/>
+<value name="GAIN_CONTROL">
+<block type="variables_get" id="-NS333T:uXo5A}B;D*o(">
+<field name="VAR" id="{R(!J=f1GY:Vma;L@c=Q">myGainControl</field>
+</block>
+</value>
+<value name="GAIN">
+<shadow type="math_number" id="n1hm50Y1ym[N7ToA@i48">
+<field name="NUM">25</field>
+</shadow>
+<block type="variables_get" id="Ad!zi./Y8}k1KA:X,)?Z">
+<field name="VAR" id="vf#sX;|hj`g=So%A(-e:">myGain</field>
+</block>
+</value>
+<next>
+<block type="linearOpMode_sleep_Number" id="3e[A*Pv`}m.]aLFvp(GH">
+<value name="MILLISECONDS">
+<shadow type="math_number" id="srs27hxA_7!D$Fp`(87;">
+<field name="NUM">20</field>
+</shadow>
+</value>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</xml>
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<Extra>
+<OpModeMeta flavor="TELEOP" group="" autoTransition="" />
+<Enabled value="true" />
+</Extra>

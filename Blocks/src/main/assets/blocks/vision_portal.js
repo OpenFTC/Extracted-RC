@@ -1006,11 +1006,11 @@ Blockly.JavaScript['visionPortal_setActiveCamera'] = function(block) {
 };
 
 Blockly.FtcJava['visionPortal_setActiveCamera'] = function(block) {
-  var switchableCamera = Blockly.FtcJava.valueToCode(
-      block, 'SWITCHABLE_CAMERA', Blockly.FtcJava.ORDER_MEMBER);
+  var visionPortal = Blockly.FtcJava.valueToCode(
+      block, 'VISION_PORTAL', Blockly.FtcJava.ORDER_MEMBER);
   var webcamName = Blockly.FtcJava.valueToCode(
       block, 'WEBCAM_NAME', Blockly.FtcJava.ORDER_NONE);
-  return switchableCamera + '.setActiveCamera(' + webcamName + ');\n';
+  return visionPortal + '.setActiveCamera(' + webcamName + ');\n';
 };
 
 Blockly.Blocks['visionPortal_getActiveCamera'] = {

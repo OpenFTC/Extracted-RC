@@ -26,26 +26,26 @@ import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.configuration.annotations.DeviceProperties;
 
 /**
- * {@link ExportToBlocks} indicates that a method is exported to the Blocks programming environment
- * and provides a way for the Java coder to specify some UI attributes of the "call Java method"
- * block.
+ * {@link ExportToBlocks} indicates that a method is exported to the Blocks programming environment.
+ * This annotation provides a way for the Java coder to specify some UI attributes of the
+ * "call Java method" block.
  *
- * A static method can be exported to blocks if it satisfies all of these requirements:
+ * If the method is not in a hardware device class, it must satisfy all of these requirements:
  * <ul>
  * <li> it has the ExportToBlocks annotation
  * <li> it is public and static
  * <li> it is not abstract
- * <li> it in a class that is in the org.firstinspires.ftc.teamcode package<br>
+ * <li> it is in a class that is in the org.firstinspires.ftc.teamcode package<br>
  *      or<br>
  *      it is in a class that has the {@link ExportClassToBlocks} annotation
  * </ul>
  *
- * A method in a hardware device class can be exported to blocks if it satisfies all of these requirements:
+ * If the method is in a hardware device class, it must satisfy all of these requirements:
  * <ul>
  * <li> it has the ExportToBlocks annotation
  * <li> it is public
- * <li> it is not abstract
  * <li> it is not static
+ * <li> it is not abstract
  * <li> it is in a class that implements {@link HardwareDevice} and has the {@link DeviceProperties} annotation
  * </ul>
  *

@@ -1,0 +1,60 @@
+  <category name="SparkFunOTOS.SignalProcessConfig">
+    <block type="variables_set">
+      <field name="VAR">mySignalProcessConfig</field>
+      <value name="VALUE">
+        <block type="sparkFunOTOS_SignalProcessConfig_create"></block>
+      </value>
+    </block>
+    <block type="sparkFunOTOS_SignalProcessConfig_getProperty_Boolean">
+      <comment pinned="false" h="150" w="325">Get the enLut value from the given SparkFunOTOS.SignalProcessConfig object.
+      </comment>
+      <field name="PROP">enLut</field>
+      <value name="SIGNAL_PROCESS_CONFIG"><block type="variables_get"><field name="VAR">mySignalProcessConfig</field></block></value>
+    </block>
+    <block type="sparkFunOTOS_SignalProcessConfig_setProperty_Boolean">
+      <comment pinned="false" h="150" w="325">Set the enLut field in the given SparkFunOTOS.SignalProcessConfig object.
+      </comment>
+      <field name="PROP">enLut</field>
+      <value name="SIGNAL_PROCESS_CONFIG"><block type="variables_get"><field name="VAR">mySignalProcessConfig</field></block></value>
+      <value name="VALUE"><shadow type="logic_boolean"><field name="BOOL">TRUE</field></shadow></value>
+    </block>
+    <block type="sparkFunOTOS_SignalProcessConfig_getProperty_Boolean">
+      <comment pinned="false" h="150" w="325">Get the enAcc value from the given SparkFunOTOS.SignalProcessConfig object.
+      </comment>
+      <field name="PROP">enAcc</field>
+      <value name="SIGNAL_PROCESS_CONFIG"><block type="variables_get"><field name="VAR">mySignalProcessConfig</field></block></value>
+    </block>
+    <block type="sparkFunOTOS_SignalProcessConfig_setProperty_Boolean">
+      <comment pinned="false" h="150" w="325">Set the enAcc field in the given SparkFunOTOS.SignalProcessConfig object.
+      </comment>
+      <field name="PROP">enAcc</field>
+      <value name="SIGNAL_PROCESS_CONFIG"><block type="variables_get"><field name="VAR">mySignalProcessConfig</field></block></value>
+      <value name="VALUE"><shadow type="logic_boolean"><field name="BOOL">TRUE</field></shadow></value>
+    </block>
+    <block type="sparkFunOTOS_SignalProcessConfig_getProperty_Boolean">
+      <comment pinned="false" h="150" w="325">Get the enRot value from the given SparkFunOTOS.SignalProcessConfig object.
+      </comment>
+      <field name="PROP">enRot</field>
+      <value name="SIGNAL_PROCESS_CONFIG"><block type="variables_get"><field name="VAR">mySignalProcessConfig</field></block></value>
+    </block>
+    <block type="sparkFunOTOS_SignalProcessConfig_setProperty_Boolean">
+      <comment pinned="false" h="150" w="325">Set the enRot value in the given SparkFunOTOS.SignalProcessConfig object
+      </comment>
+      <field name="PROP">enRot</field>
+      <value name="SIGNAL_PROCESS_CONFIG"><block type="variables_get"><field name="VAR">mySignalProcessConfig</field></block></value>
+      <value name="VALUE"><shadow type="logic_boolean"><field name="BOOL">TRUE</field></shadow></value>
+    </block>
+    <block type="sparkFunOTOS_SignalProcessConfig_getProperty_Boolean">
+      <comment pinned="false" h="150" w="325">Get the enVar value from the given SparkFunOTOS.SignalProcessConfig object.
+      </comment>
+      <field name="PROP">enVar</field>
+      <value name="SIGNAL_PROCESS_CONFIG"><block type="variables_get"><field name="VAR">mySignalProcessConfig</field></block></value>
+    </block>
+    <block type="sparkFunOTOS_SignalProcessConfig_setProperty_Boolean">
+      <comment pinned="false" h="150" w="325">Set the enVar value in the given SparkFunOTOS.SignalProcessConfig object
+      </comment>
+      <field name="PROP">enVar</field>
+      <value name="SIGNAL_PROCESS_CONFIG"><block type="variables_get"><field name="VAR">mySignalProcessConfig</field></block></value>
+      <value name="VALUE"><shadow type="logic_boolean"><field name="BOOL">TRUE</field></shadow></value>
+    </block>
+  </category>
