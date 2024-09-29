@@ -1,0 +1,788 @@
+<xml xmlns="https://developers.google.com/blockly/xml">
+<variables>
+<variable id="d1@G|PA@~w[[t]o*H|iJ">gain</variable>
+<variable id="RimP`^/k{d.eD;pY%rbg">xButtonCurrentlyPressed</variable>
+<variable id="M1neJhXY@G/1^6LGTxH_">xButtonPreviouslyPressed</variable>
+<variable id=")N2eXkJl#6#+a4V%]X8b">myNormalizedColors</variable>
+<variable id="n{u}93j:TpMxd!3n+X)I">myColor</variable>
+<variable id="PQO:;BBdBb281HOw,5`)">hue</variable>
+<variable id="qr8Gl0As$SIjMOzXXEgo">saturation</variable>
+<variable id="x};{VwPrFo-RRCA/X~u:">value</variable>
+</variables>
+<block type="procedures_defnoreturn" id="WtpyD@tEu+EoY=P9iY,D" deletable="false" x="68" y="258">
+<field name="NAME">runOpMode</field>
+<comment pinned="true" h="368" w="765">This OpMode shows how to use a color sensor in a generic way, regardless of which particular make or model of color sensor is used. The OpMode assumes that the color sensor is configured with a name of "sensor_color".
+
+There will be some variation in the values measured depending on the specific sensor you are using.
+
+You can increase the gain (a multiplier to make the sensor report higher values) by holding down the A button on the gamepad, and decrease the gain by holding down the B button on the gamepad.
+
+If the color sensor has a light which is controllable from software, you can use the X button on the gamepad to toggle the light on and off. The REV sensors don't support this, but instead have a physical switch on them to turn the light on and off, beginning with REV Color Sensor V2.
+
+If the color sensor also supports short-range distance measurements (usually via an infrared proximity sensor), the reported distance will be written to telemetry. As of September 2020, the only color sensors that support this are the ones from REV Robotics. These infrared proximity sensor measurements are only useful at very small distances, and are sensitive to ambient light and surface reflectivity. You should use a different sensor if you need precise distance measurements.</comment>
+<data>{"commentPositionLeft":-22,"commentPositionTop":-404}</data>
+<statement name="STACK">
+<block type="comment" id="Lc#BFtj*NTB48YL;eBl.">
+<field name="COMMENT">Put initialization blocks here.</field>
+<next>
+<block type="variables_set" id="(48tZT*Yv+}*!ur#.3=T">
+<field name="VAR" id="d1@G|PA@~w[[t]o*H|iJ">gain</field>
+<comment pinned="true" h="156" w="772">You can give the sensor a gain value, will be multiplied by the sensor's raw value before the normalized color values are calculated. Color sensors (especially the REV Color Sensor V3) can give very low values (depending on the lighting conditions), which only use a small part of the 0-1 range that is available for the red, green, and blue values. In brighter conditions, you should use a smaller gain than in dark conditions. If your gain is too high, all of the colors will report at or near 1, and you won't be able to determine what color you are actually looking at. For this reason, it's better to err on the side of a lower gain (but always greater than  or equal to 1).</comment>
+<data>{"commentPositionLeft":-833,"commentPositionTop":-340}</data>
+<value name="VALUE">
+<block type="math_number" id="*#dwshAG4^Gi9Ljo06rI">
+<field name="NUM">2</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id="DPw`{:j3e_)g4J:.]$AV">
+<field name="VAR" id="RimP`^/k{d.eD;pY%rbg">xButtonCurrentlyPressed</field>
+<value name="VALUE">
+<block type="logic_boolean" id="@(Zy`g%tt=s);kei~H6j">
+<field name="BOOL">FALSE</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id="@{WM$T-L}Dp512oyWq@Y">
+<field name="VAR" id="M1neJhXY@G/1^6LGTxH_">xButtonPreviouslyPressed</field>
+<comment pinned="true" h="70" w="709">xButtonPreviouslyPressed and xButtonCurrentlyPressed keep track of the previous and current state of the X button on the gamepad.</comment>
+<data>{"commentPositionLeft":-886,"commentPositionTop":-106}</data>
+<value name="VALUE">
+<block type="logic_boolean" id=")IU9@CTFH|#u(4YTAp_S">
+<field name="BOOL">FALSE</field>
+</block>
+</value>
+<next>
+<block type="colorSensor_enableLed_Boolean" id="Brc;d4~u?6TvU{5Qjf]~">
+<field name="IDENTIFIER">sensor_colorAsColorSensor</field>
+<comment pinned="true" h="73" w="545">If supported by the sensor, turn the light on in the beginning (it might already be on anyway, we just make sure it is if we can).</comment>
+<data>{"IDENTIFIER":"sensor_color","commentPositionLeft":-603,"commentPositionTop":36}</data>
+<value name="ENABLE">
+<shadow type="logic_boolean" id="])_*=-)g}kLk^rOgY(+p">
+<field name="BOOL">TRUE</field>
+</shadow>
+</value>
+<next>
+<block type="linearOpMode_waitForStart" id=":`$wN_ci`O;o6P0~.(+g">
+<next>
+<block type="controls_if" id="}Q?5mbxSO8Di;i!__6[y">
+<value name="IF0">
+<block type="linearOpMode_opModeIsActive" id=")o%YFX/#9kvv^sgXr4~5"/>
+</value>
+<statement name="DO0">
+<block type="comment" id="(rU-p_T_/B|vExcs}liL">
+<field name="COMMENT">Put run blocks here.</field>
+<next>
+<block type="controls_whileUntil" id="^0Kagy/e+Ea{rbZPv2G6">
+<field name="MODE">WHILE</field>
+<comment pinned="true" h="103" w="514">Once per loop we read the color sensor data, calculate the HSV colors (Hue, Saturation and Value), and report all these values via telemetry.</comment>
+<data>{"commentPositionLeft":-633,"commentPositionTop":1}</data>
+<value name="BOOL">
+<block type="linearOpMode_opModeIsActive" id="e)cr{!2VIET83s,JWC.="/>
+</value>
+<statement name="DO">
+<block type="comment" id="Jh/;L$n@JuX8AQJDFCul">
+<field name="COMMENT">Put loop blocks here.</field>
+<next>
+<block type="telemetry_addLine" id="$eP+=b:1@jB)+y*!wxTK">
+<value name="TEXT">
+<shadow type="text" id="Wg(?qR}z)f^rm3BOk/5c">
+<field name="TEXT">Hold the A button on gamepad 1 to increase gain, or B to decrease it.</field>
+</shadow>
+</value>
+<next>
+<block type="telemetry_addLine" id="TKn~0D4@y0X7#hR}dPHp">
+<value name="TEXT">
+<shadow type="text" id=";*R8$=@@Y[!pa$o][f06">
+<field name="TEXT"> </field>
+</shadow>
+</value>
+<next>
+<block type="telemetry_addLine" id="DvHnLC!Q4L7A:@#y=W@Z">
+<value name="TEXT">
+<shadow type="text" id="F8y`n)ZSe8Vx_Xk$*J^I">
+<field name="TEXT">Higher gain values mean that the sensor will report larger numbers for Red, Green, and Blue, and Value.</field>
+</shadow>
+</value>
+<next>
+<block type="telemetry_addLine" id="dKXKSF30=Re?2?YTe-ku">
+<value name="TEXT">
+<shadow type="text" id="e3fj0c^QGGGLrO#Nr]Qq">
+<field name="TEXT"> </field>
+</shadow>
+</value>
+<next>
+<block type="telemetry_addLine" id="7F;UGFx92h)AG$-JfUYW">
+<value name="TEXT">
+<shadow type="text" id="5(.lmfRGNn`Lsg0aLm?p">
+<field name="TEXT">Press the X button to turn the color sensor's LED on or off (if supported).</field>
+</shadow>
+</value>
+<next>
+<block type="telemetry_addLine" id="2)1S[D_nlY}w0vz+jh;G">
+<value name="TEXT">
+<shadow type="text" id="fXuaSu.#syCLXZ.vHqrq">
+<field name="TEXT"> </field>
+</shadow>
+</value>
+<next>
+<block type="controls_if" id="#VKIp0;dt7]k`,H9*FYg">
+<mutation elseif="1"/>
+<comment pinned="true" h="70" w="546">Update the gain value if either of the A or B gamepad buttons is being held</comment>
+<data>{"commentPositionLeft":-728,"commentPositionTop":-11}</data>
+<value name="IF0">
+<block type="gamepad_getProperty_Boolean" id="MmJjP2il(Qls^m9[72Cs">
+<field name="IDENTIFIER">gamepad1</field>
+<field name="PROP">A</field>
+<data>{"IDENTIFIER":"gamepad1"}</data>
+</block>
+</value>
+<statement name="DO0">
+<block type="comment" id="Q#XhKnQag2w)Q9q73dPB">
+<field name="COMMENT">Only increase the gain by a small amount, since this loop will occur multiple times per second.</field>
+<next>
+<block type="variables_set" id=";7SVtn3{Y[]8MhP5uPS]">
+<field name="VAR" id="d1@G|PA@~w[[t]o*H|iJ">gain</field>
+<value name="VALUE">
+<block type="math_arithmetic" id="|KAb4co9BIHRz}mb3kd?">
+<field name="OP">ADD</field>
+<value name="A">
+<shadow type="math_number" id="d/xdEUk=T-d2hi?eyN2.">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="/t4S`fxo@9b4O90-mZRG">
+<field name="VAR" id="d1@G|PA@~w[[t]o*H|iJ">gain</field>
+</block>
+</value>
+<value name="B">
+<shadow type="math_number" id="=]8v*dg].$qJHY:XA!R5">
+<field name="NUM">0.005</field>
+</shadow>
+</value>
+</block>
+</value>
+</block>
+</next>
+</block>
+</statement>
+<value name="IF1">
+<block type="logic_operation" id="aUNf.|1e,[+V,CQ15?[M">
+<field name="OP">AND</field>
+<value name="A">
+<block type="gamepad_getProperty_Boolean" id="l4k3E1v^gIoeoEG+aZp;">
+<field name="IDENTIFIER">gamepad1</field>
+<field name="PROP">B</field>
+<data>{"IDENTIFIER":"gamepad1"}</data>
+</block>
+</value>
+<value name="B">
+<block type="logic_compare" id="}~=#oaW%g0FY0irE!)yk">
+<field name="OP">GT</field>
+<comment pinned="true" h="43" w="572">A gain of less than 1 will make the values smaller, which is not helpful.</comment>
+<data>{"commentPositionLeft":218,"commentPositionTop":-48}</data>
+<value name="A">
+<block type="variables_get" id="AO]HzAd-f6cq1qT$gluh">
+<field name="VAR" id="d1@G|PA@~w[[t]o*H|iJ">gain</field>
+</block>
+</value>
+<value name="B">
+<block type="math_number" id="5mppK$u#8j9g_=Y}[I0f">
+<field name="NUM">1</field>
+</block>
+</value>
+</block>
+</value>
+</block>
+</value>
+<statement name="DO1">
+<block type="variables_set" id="hy};(I~(hWxy(K:Cc96b">
+<field name="VAR" id="d1@G|PA@~w[[t]o*H|iJ">gain</field>
+<value name="VALUE">
+<block type="math_arithmetic" id="6SIMlkFP-uT5?3phraIz">
+<field name="OP">MINUS</field>
+<value name="A">
+<shadow type="math_number">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="TqD[rU]~IYjQ6O^Xw:,R">
+<field name="VAR" id="d1@G|PA@~w[[t]o*H|iJ">gain</field>
+</block>
+</value>
+<value name="B">
+<shadow type="math_number" id="6o!KlrOH#X{9}psOQDl1">
+<field name="NUM">0.005</field>
+</shadow>
+</value>
+</block>
+</value>
+</block>
+</statement>
+<next>
+<block type="telemetry_addNumericData_Number" id="R|0jU/JQNJszlHG*!7/h">
+<value name="KEY">
+<shadow type="text" id="J+?xu3Fly`zr{Pz[OQ.4">
+<field name="TEXT">Gain</field>
+</shadow>
+</value>
+<value name="NUMBER">
+<shadow type="math_number" id="+Igy1?;$}@OOpq5}QL!2">
+<field name="NUM">123</field>
+</shadow>
+<block type="variables_get" id="M27-muAsMkJKKh4P#W~:">
+<field name="VAR" id="d1@G|PA@~w[[t]o*H|iJ">gain</field>
+</block>
+</value>
+<next>
+<block type="colorSensor_setProperty_Number" id="%T-fA]qCCid9Q#pdq!@1">
+<field name="IDENTIFIER">sensor_colorAsColorSensor</field>
+<field name="PROP">Gain</field>
+<comment pinned="true" h="73" w="528">Tell the sensor our desired gain value (normally you would do this during initialization, not during the loop)</comment>
+<data>{"IDENTIFIER":"sensor_color","commentPositionLeft":-659,"commentPositionTop":-45}</data>
+<value name="VALUE">
+<shadow type="math_number" id="MPSzjRTw-neLo;E^}Dv/">
+<field name="NUM">2</field>
+</shadow>
+<block type="variables_get" id="+6;[;i(IpBB.SHy!#Pet">
+<field name="VAR" id="d1@G|PA@~w[[t]o*H|iJ">gain</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id="z.//X-J?NBUF.N91SD{z">
+<field name="VAR" id="RimP`^/k{d.eD;pY%rbg">xButtonCurrentlyPressed</field>
+<value name="VALUE">
+<block type="gamepad_getProperty_Boolean" id="czDMd1H/L1K#sBGF1*/J">
+<field name="IDENTIFIER">gamepad1</field>
+<field name="PROP">X</field>
+<data>{"IDENTIFIER":"gamepad1"}</data>
+</block>
+</value>
+<next>
+<block type="controls_if" id="=MkPW=2RlQ8Pmj$perg+">
+<comment pinned="true" h="56" w="553">If the button state is different than what it was, then act to turn the color sensor's light on or off (if supported).</comment>
+<data>{"commentPositionLeft":-697,"commentPositionTop":-4}</data>
+<value name="IF0">
+<block type="logic_compare" id="}%$OM~+s%#;TU%tJvcb@">
+<field name="OP">NEQ</field>
+<value name="A">
+<block type="variables_get" id="H*{[-f^euQ0}lYUf$?#+">
+<field name="VAR" id="RimP`^/k{d.eD;pY%rbg">xButtonCurrentlyPressed</field>
+</block>
+</value>
+<value name="B">
+<block type="variables_get" id="-BMR]A{i3:9bW7-55eJ2">
+<field name="VAR" id="M1neJhXY@G/1^6LGTxH_">xButtonPreviouslyPressed</field>
+</block>
+</value>
+</block>
+</value>
+<statement name="DO0">
+<block type="controls_if" id=",m#2Zno9MBukza3Reqh#">
+<value name="IF0">
+<block type="variables_get" id="vR2JJ}n|G878z;hK8dj~">
+<field name="VAR" id="RimP`^/k{d.eD;pY%rbg">xButtonCurrentlyPressed</field>
+</block>
+</value>
+<statement name="DO0">
+<block type="comment" id="SjcxL/8lgb+EVM@WiG=0">
+<field name="COMMENT">If the button is (now) down, then toggle the light</field>
+<next>
+<block type="colorSensor_enableLed_Boolean" id="=_LT={(*w*1E0^:7vjnT">
+<field name="IDENTIFIER">sensor_colorAsColorSensor</field>
+<data>{"IDENTIFIER":"sensor_color"}</data>
+<value name="ENABLE">
+<shadow type="logic_boolean" id="00VwxAFCwldwZ7$8W;-0">
+<field name="BOOL">TRUE</field>
+</shadow>
+<block type="logic_negate" id=".a+d4L$mxa@^nWnQg[4]">
+<value name="BOOL">
+<block type="colorSensor_isLightOn" id="c]dp:]4^76cMAF:gi(ch">
+<field name="IDENTIFIER">sensor_colorAsColorSensor</field>
+<data>{"IDENTIFIER":"sensor_color"}</data>
+</block>
+</value>
+</block>
+</value>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</statement>
+<next>
+<block type="variables_set" id=")F%6!U:5l4fBt0Tbf=s-">
+<field name="VAR" id="M1neJhXY@G/1^6LGTxH_">xButtonPreviouslyPressed</field>
+<value name="VALUE">
+<block type="variables_get" id="RP{?9.dd{5cLA_ix[d,i">
+<field name="VAR" id="RimP`^/k{d.eD;pY%rbg">xButtonCurrentlyPressed</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id="+,Ct-x`i;q*/i#AE@]s:">
+<field name="VAR" id=")N2eXkJl#6#+a4V%]X8b">myNormalizedColors</field>
+<comment pinned="true" h="101" w="601">Save the color sensor data as a normalized color value. It's recommended to use Normalized Colors over color sensor colors is because Normalized Colors consistently gives values between 0 and 1, while the direct Color Sensor colors are dependent on the specific sensor you're using.</comment>
+<data>{"commentPositionLeft":-726,"commentPositionTop":-74}</data>
+<value name="VALUE">
+<block type="colorSensor_getNormalizedColors" id="8.alu#?cgR72+y@5$z,1">
+<field name="IDENTIFIER">sensor_colorAsColorSensor</field>
+<data>{"IDENTIFIER":"sensor_color"}</data>
+</block>
+</value>
+<next>
+<block type="variables_set" id="F1!P-8O[o,xKj36Zvx2q">
+<field name="VAR" id="n{u}93j:TpMxd!3n+X)I">myColor</field>
+<comment pinned="true" h="44" w="431">Convert the normalized color values to an Android color value.</comment>
+<data>{"commentPositionLeft":-553,"commentPositionTop":14}</data>
+<value name="VALUE">
+<block type="normalizedColors_getProperty_Number" id="?SxRI(gd)eO}oeanDN24">
+<field name="PROP">Color</field>
+<value name="NORMALIZED_COLORS">
+<block type="variables_get" id="T5%$Us9qhD6]QSR7iZ^o">
+<field name="VAR" id=")N2eXkJl#6#+a4V%]X8b">myNormalizedColors</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="variables_set" id="GU:Ly|kRSiF+YPlr[yrf">
+<field name="VAR" id="PQO:;BBdBb281HOw,5`)">hue</field>
+<comment pinned="true" h="92" w="735">Use the Android color value to calculate the Hue, Saturation and Value color variables.
+See http://web.archive.org/web/20190311170843/https://infohost.nmt.edu/tcc/help/pubs/colortheory/web/hsv.html for an explanation of HSV color.</comment>
+<data>{"commentPositionLeft":-860,"commentPositionTop":27}</data>
+<value name="VALUE">
+<block type="color_rgbToHue" id="4V$Dt*1(68S@$I?8Z6O-">
+<value name="RED">
+<shadow type="math_number">
+<field name="NUM">255</field>
+</shadow>
+<block type="color_getProperty_Number" id="53N8j;5PUR_:su!sx#^{">
+<field name="PROP">Red</field>
+<value name="COLOR">
+<block type="variables_get" id="S(kq+6Ae09^0tSs_rTZ5">
+<field name="VAR" id="n{u}93j:TpMxd!3n+X)I">myColor</field>
+</block>
+</value>
+</block>
+</value>
+<value name="GREEN">
+<shadow type="math_number">
+<field name="NUM">0</field>
+</shadow>
+<block type="color_getProperty_Number" id="J?E2gyd:N%X}~R=Xg,kn">
+<field name="PROP">Green</field>
+<value name="COLOR">
+<block type="variables_get" id="2vN~[OTuO_Gt%)a-$;c0">
+<field name="VAR" id="n{u}93j:TpMxd!3n+X)I">myColor</field>
+</block>
+</value>
+</block>
+</value>
+<value name="BLUE">
+<shadow type="math_number">
+<field name="NUM">0</field>
+</shadow>
+<block type="color_getProperty_Number" id="Ac*NxTE2X+^H2ZVX,Z-P">
+<field name="PROP">Blue</field>
+<value name="COLOR">
+<block type="variables_get" id="(rs}mONc$sLBDiWV?5)9">
+<field name="VAR" id="n{u}93j:TpMxd!3n+X)I">myColor</field>
+</block>
+</value>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="variables_set" id="U,d:Kw03[nCdW#^cJDOo">
+<field name="VAR" id="qr8Gl0As$SIjMOzXXEgo">saturation</field>
+<value name="VALUE">
+<block type="color_rgbToSaturation" id="`s#E%X@)[I*|VATM`fK5">
+<value name="RED">
+<shadow type="math_number" id="nNl(|b#9vnh0/^X!$(!m">
+<field name="NUM">255</field>
+</shadow>
+<block type="color_getProperty_Number" id="yc4:_0QL)z-vV7W^PmBB">
+<field name="PROP">Red</field>
+<value name="COLOR">
+<block type="variables_get" id="~M_K.C7M7c{u+W~S]Rrp">
+<field name="VAR" id="n{u}93j:TpMxd!3n+X)I">myColor</field>
+</block>
+</value>
+</block>
+</value>
+<value name="GREEN">
+<shadow type="math_number" id="V=+A/Rl*HvZR=Rzs,5Dg">
+<field name="NUM">0</field>
+</shadow>
+<block type="color_getProperty_Number" id="c`JV{stk7K%+Vj*Ak~cA">
+<field name="PROP">Green</field>
+<value name="COLOR">
+<block type="variables_get" id="q!tU[QWPNAem6IQCUF?M">
+<field name="VAR" id="n{u}93j:TpMxd!3n+X)I">myColor</field>
+</block>
+</value>
+</block>
+</value>
+<value name="BLUE">
+<shadow type="math_number" id="PVmkp)dD4`k#5?Y:{(0A">
+<field name="NUM">0</field>
+</shadow>
+<block type="color_getProperty_Number" id="5-+o-T!+xF:q~xdUX$IL">
+<field name="PROP">Blue</field>
+<value name="COLOR">
+<block type="variables_get" id="2w^AgiNhAL^6fK8_Iv@,">
+<field name="VAR" id="n{u}93j:TpMxd!3n+X)I">myColor</field>
+</block>
+</value>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="variables_set" id="(]J-D32yMO90))l}lZO=">
+<field name="VAR" id="x};{VwPrFo-RRCA/X~u:">value</field>
+<value name="VALUE">
+<block type="color_rgbToValue" id="YE)#Go$vuAJ.E^#U=v%-">
+<value name="RED">
+<shadow type="math_number" id="r;C_P0ym*uH|os,)}niK">
+<field name="NUM">255</field>
+</shadow>
+<block type="color_getProperty_Number" id="y{Q.W}C1Y6)Y=w1As[.Q">
+<field name="PROP">Red</field>
+<value name="COLOR">
+<block type="variables_get" id="zvnO8)aEMQL.efbnr*rC">
+<field name="VAR" id="n{u}93j:TpMxd!3n+X)I">myColor</field>
+</block>
+</value>
+</block>
+</value>
+<value name="GREEN">
+<shadow type="math_number" id="|uN_+LOz=,y5m^`eyvi+">
+<field name="NUM">0</field>
+</shadow>
+<block type="color_getProperty_Number" id="@xU7bYhDHarE(pdBHX]W">
+<field name="PROP">Green</field>
+<value name="COLOR">
+<block type="variables_get" id="Tjb!nM9.?F2|8(Y@Ha]O">
+<field name="VAR" id="n{u}93j:TpMxd!3n+X)I">myColor</field>
+</block>
+</value>
+</block>
+</value>
+<value name="BLUE">
+<shadow type="math_number" id="WYL|PUaIu*+qauAM)^[z">
+<field name="NUM">0</field>
+</shadow>
+<block type="color_getProperty_Number" id="aej}K0T)(|}Mgr:x_7Ae">
+<field name="PROP">Blue</field>
+<value name="COLOR">
+<block type="variables_get" id="dr};nGea9LqkMedAhQvW">
+<field name="VAR" id="n{u}93j:TpMxd!3n+X)I">myColor</field>
+</block>
+</value>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_addLine" id="=h^==Fyz0V@7MD^+%)dY">
+<comment pinned="true" h="73" w="771">Use telemetry to display feedback on the driver station. We show the red, green, and blue normalized values from the sensor (in the range of 0 to 1), as well as the equivalent HSV (hue, saturation and value) values.</comment>
+<data>{"commentPositionLeft":-962,"commentPositionTop":-5}</data>
+<value name="TEXT">
+<shadow type="text" id="^[Al|@11V}eB3oF7[hi;">
+<field name="TEXT">text</field>
+</shadow>
+<block type="text_join" id="({8r7,gw@GL+27-Rf$RF">
+<mutation items="6"/>
+<value name="ADD0">
+<block type="text" id="?]Y+|@*5sD0hJi^8%SsI">
+<field name="TEXT">Red </field>
+</block>
+</value>
+<value name="ADD1">
+<block type="misc_formatNumber" id="+6}31*AuefFB~*@y[YMQ">
+<value name="NUMBER">
+<shadow type="math_number" id="7T$DM!|]aN=uy[W:UJd;">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="normalizedColors_getProperty_Number" id="QtVf`Uxj})wKgsq*o*YR">
+<field name="PROP">Red</field>
+<value name="NORMALIZED_COLORS">
+<block type="variables_get" id="l@Gki(7vhsXw+3(?4ZxK">
+<field name="VAR" id=")N2eXkJl#6#+a4V%]X8b">myNormalizedColors</field>
+</block>
+</value>
+</block>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="g#+fn-}Gv+}Rlk.sY#k5">
+<field name="NUM">3</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="ADD2">
+<block type="text" id="8;:0^x3*a=,OKQw@m67N">
+<field name="TEXT"> | Green </field>
+</block>
+</value>
+<value name="ADD3">
+<block type="misc_formatNumber" id="T@gASWT0R?|@,$5rFGHx">
+<value name="NUMBER">
+<shadow type="math_number">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="normalizedColors_getProperty_Number" id="KvZ!%TD47A|%pi)I,Do,">
+<field name="PROP">Green</field>
+<value name="NORMALIZED_COLORS">
+<block type="variables_get" id=";y5/rYryw0_s7F#IC-)u">
+<field name="VAR" id=")N2eXkJl#6#+a4V%]X8b">myNormalizedColors</field>
+</block>
+</value>
+</block>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="F.DxQ3WzmDu,AkzhFy}^">
+<field name="NUM">3</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="ADD4">
+<block type="text" id="td~1if@CTHoW~c/g}xn$">
+<field name="TEXT"> | Blue </field>
+</block>
+</value>
+<value name="ADD5">
+<block type="misc_formatNumber" id="p68NouAQrBmTNR#JSMPM">
+<value name="NUMBER">
+<shadow type="math_number">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="normalizedColors_getProperty_Number" id="LeO;.MQDU3(SNe+p}W_v">
+<field name="PROP">Blue</field>
+<value name="NORMALIZED_COLORS">
+<block type="variables_get" id="I#z0LHC8s$Ps+vrfM7(m">
+<field name="VAR" id=")N2eXkJl#6#+a4V%]X8b">myNormalizedColors</field>
+</block>
+</value>
+</block>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id=".HH}@k[huIIFb_,o5WjB">
+<field name="NUM">3</field>
+</shadow>
+</value>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_addLine" id="X0E6;%csS:Vn(Cy8YXL5">
+<value name="TEXT">
+<shadow type="text">
+<field name="TEXT">text</field>
+</shadow>
+<block type="text_join" id="rSeY#r}{Hg+DC~)g=2-G">
+<mutation items="6"/>
+<value name="ADD0">
+<block type="text" id="so1|11k=t.Px0*X/s|:U">
+<field name="TEXT">Hue </field>
+</block>
+</value>
+<value name="ADD1">
+<block type="misc_formatNumber" id="H)R}ZB;dzZ/Ovz11=EfP">
+<value name="NUMBER">
+<shadow type="math_number" id="n%~eP(7q@%^7K%PcvZjd">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="variables_get" id="RDNcseW@J3??$oPGJ}d@">
+<field name="VAR" id="PQO:;BBdBb281HOw,5`)">hue</field>
+</block>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="TuQ?cf;xBrbj*M3pjI2X">
+<field name="NUM">3</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="ADD2">
+<block type="text" id="Dc4|ZFF_k*s#NMR]r}Mq">
+<field name="TEXT"> | Saturation </field>
+</block>
+</value>
+<value name="ADD3">
+<block type="misc_formatNumber" id="ykAOBnj_|(kABVA9X+1S">
+<value name="NUMBER">
+<shadow type="math_number" id="W=$n.%~oE^N!Xv8/r#T2">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="variables_get" id="hC~VhY-V.F.cLDf2%HdN">
+<field name="VAR" id="qr8Gl0As$SIjMOzXXEgo">saturation</field>
+</block>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="l=R/`I7E~1cFBWM%Y78E">
+<field name="NUM">3</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="ADD4">
+<block type="text" id="ARz%%j9xbs%K}@,}iK_|">
+<field name="TEXT"> | Value </field>
+</block>
+</value>
+<value name="ADD5">
+<block type="misc_formatNumber" id="8)iR~}sz?(F{B:N]7^*n">
+<value name="NUMBER">
+<shadow type="math_number" id="k7UUYsf4!-W^(LNML#-:">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="variables_get" id="$9A)PAM-)oETa+A?JcK}">
+<field name="VAR" id="x};{VwPrFo-RRCA/X~u:">value</field>
+</block>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="$D0Omv5Aonn)QlH3PE]w">
+<field name="NUM">3</field>
+</shadow>
+</value>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_addNumericData_Number" id="+z:sQJ_%3+L/UU3w1#t=">
+<value name="KEY">
+<shadow type="text" id=";v:i1cr87xRRTbuX5(92">
+<field name="TEXT">Alpha</field>
+</shadow>
+</value>
+<value name="NUMBER">
+<block type="misc_roundDecimal" id="7{WIk]G=H[_z*O`#4qCc">
+<value name="NUMBER">
+<shadow type="math_number" id="muJ%EpM{Frk#4,;$6;(W">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="normalizedColors_getProperty_Number" id="pR1Y,kt#J`ZktqN,!~+j">
+<field name="PROP">Alpha</field>
+<value name="NORMALIZED_COLORS">
+<block type="variables_get" id=";Y+kdBe@p0O5?]vy1F_I">
+<field name="VAR" id=")N2eXkJl#6#+a4V%]X8b">myNormalizedColors</field>
+</block>
+</value>
+</block>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="3g5h^0C-]0m4hENf3@ez">
+<field name="NUM">3</field>
+</shadow>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_addNumericData_Number" id="Gdj603_`=?.U`L!Ce!14">
+<comment pinned="true" h="87" w="718">If this color sensor also has a distance sensor, display the measured distance.
+Note that the reported distance is only useful at very close range, and is impacted by ambient light and surface reflectivity.</comment>
+<data>{"commentPositionLeft":-866,"commentPositionTop":-9}</data>
+<value name="KEY">
+<shadow type="text" id="T%S;X^9Fpw)bHZ!ZR?aw">
+<field name="TEXT">Distance (cm)</field>
+</shadow>
+</value>
+<value name="NUMBER">
+<block type="misc_roundDecimal" id="2jw!#714*yM+Z-`*k_(y">
+<value name="NUMBER">
+<shadow type="math_number" id="|M6CeYuk*nz%!CT$nn?`">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="distanceSensor_getDistance" id="]}[[}c3%F8WEdi-U8i{W">
+<field name="IDENTIFIER">sensor_colorAsDistanceSensor</field>
+<data>{"IDENTIFIER":"sensor_color"}</data>
+<value name="DISTANCE_UNIT">
+<shadow type="navigation_typedEnum_distanceUnit" id="vs%BGJyb4@BE])$TUt/s">
+<field name="DISTANCE_UNIT">CM</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="sP`h;iRuPJ{=|VrIZ/rq">
+<field name="NUM">3</field>
+</shadow>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_update" id="eEfSG{H0on[O0ldjp7#q"/>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</xml>
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<Extra>
+<OpModeMeta flavor="TELEOP" group="Sensor" autoTransition="" />
+<Enabled value="true" />
+</Extra>

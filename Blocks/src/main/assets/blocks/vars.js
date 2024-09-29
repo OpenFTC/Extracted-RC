@@ -308,6 +308,7 @@ function knownTypeToClassName(type) {
     case 'Range':
     case 'ReadWriteFile':
     case 'RobotLog':
+    case 'SortOrder':
       return 'com.qualcomm.robotcore.util.' + type;
     case 'Boolean':
     case 'Byte':
@@ -338,6 +339,12 @@ function knownTypeToClassName(type) {
     case 'AprilTagPoseRaw':
     case 'AprilTagProcessor':
       return 'org.firstinspires.ftc.vision.apriltag.' + type;
+    case 'ColorBlobLocatorProcessor':
+    case 'ColorRange':
+    case 'ColorSpace':
+    case 'ImageRegion':
+    case 'PredominantColorProcessor':
+      return 'org.firstinspires.ftc.vision.opencv.' + type;
     case 'ClassFactory':
     case 'JavaUtil':
     case 'Telemetry':
@@ -393,6 +400,13 @@ function knownTypeToClassName(type) {
       return 'org.firstinspires.ftc.robotcore.external.stream.' + type;
     case 'AppUtil':
       return 'org.firstinspires.ftc.robotcore.internal.system.' + type;
+    case 'RotatedRect':
+    case 'Scalar':
+      return 'org.opencv.core.' + type;
+    case 'org.opencv.core.Point':
+    case 'org.opencv.core.Rect':
+    case 'org.opencv.core.Size':
+      return type;
   }
   return knownTypeToClassNameObsolete(type);
 }

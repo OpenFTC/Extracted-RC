@@ -372,6 +372,7 @@ class MiscAccess extends Access {
       }
       return gamepads.remove(0);
     }
+
     if (objectArg == null) {
       // objectArg is null. Therefore, argument is either null, primitive, or string.
       if (jsonArg == null) {

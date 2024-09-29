@@ -117,9 +117,9 @@ public class AngularVelocity
             UnnormalizedAngleUnit unnormalizedAngleUnit = unit.getUnnormalized();
 
             return new AngularVelocity(unit,
-                    unnormalizedAngleUnit.fromUnit(unit, xRotationRate),
-                    unnormalizedAngleUnit.fromUnit(unit, yRotationRate),
-                    unnormalizedAngleUnit.fromUnit(unit, zRotationRate),
+                    unnormalizedAngleUnit.fromUnit(this.angleUnit, xRotationRate),
+                    unnormalizedAngleUnit.fromUnit(this.angleUnit, yRotationRate),
+                    unnormalizedAngleUnit.fromUnit(this.angleUnit, zRotationRate),
                     this.acquisitionTime);
             }
         else

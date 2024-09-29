@@ -2971,6 +2971,7 @@ public class HardwareUtil {
     set.add("Range");
     set.add("ReadWriteFile");
     set.add("RobotLog");
+    set.add("SortOrder");
     // java.util
     set.add("ArrayList");
     set.add("Collections");
@@ -2988,6 +2989,12 @@ public class HardwareUtil {
     set.add("AprilTagPoseFtc");
     set.add("AprilTagPoseRaw");
     set.add("AprilTagProcessor");
+    // org.firstinspires.ftc.vision.opencv
+    set.add("ColorBlobLocatorProcessor");
+    set.add("ColorRange");
+    set.add("ColorSpace");
+    set.add("ImageRegion");
+    set.add("PredominantColorProcessor");
     // org.firstinspires.ftc.robotcore.external
     set.add("ClassFactory");
     set.add("JavaUtil");
@@ -3034,6 +3041,9 @@ public class HardwareUtil {
     set.add("CameraStreamServer");
     // org.firstinspires.ftc.robotcore.internal.system
     set.add("AppUtil");
+    // org.opencv.core
+    set.add("RotatedRect");
+    set.add("Scalar");
     // LinearOpMode members
     set.add("waitForStart");
     set.add("idle");

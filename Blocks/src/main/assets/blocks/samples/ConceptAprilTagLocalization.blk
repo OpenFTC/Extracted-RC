@@ -19,7 +19,10 @@ https://ftc-docs.firstinspires.org/en/latest/apriltag/vision_portal/apriltag_int
 
 In this sample, any visible tag ID will be detected and displayed, but only tags that are included in the default "TagLibrary" will be used to compute the robot's location and orientation.  This default TagLibrary contains the current Season's AprilTags and a small set of "test Tags" in the high number range.
 
-When an AprilTag in the TagLibrary is detected, the SDK provides location and orientation of the robot, relative to the field origin. This information is provided in the "robotPose" member of the returned "detection".</comment>
+When an AprilTag in the TagLibrary is detected, the SDK provides location and orientation of the robot, relative to the field origin. This information is provided in the "robotPose" member of the returned "detection".
+
+To learn about the Field Coordinate System that is defined for FTC (and used by this OpMode), see the FTC-DOCS link below:
+https://ftc-docs.firstinspires.org/en/latest/game_specific_resources/field_coordinate_system/field-coordinate-system.html</comment>
 <data>{"commentPositionLeft":-19,"commentPositionTop":-275}</data>
 <statement name="STACK">
 <block type="variables_set" id="+WOa|3hz0c^Rah6+[;U4">

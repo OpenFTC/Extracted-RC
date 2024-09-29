@@ -237,7 +237,7 @@
     <string name="summaryWarnAbout2_4GhzBand">Show warning when the Robot Controller access point is on the 2.4 GHz Wi-Fi band, and both the Robot Controller and Driver Station support 5 GHz</string>
     <string name="summaryWarnAboutIncorrectClocks">Show warning when the Robot Controller and/or Driver Station clocks are known to be incorrect</string>
     <string name="summaryWarnAboutMismatchedAppVersions">Show warning when the Robot Controller and Driver Station are not the same version, which is not allowed at a competition</string>
-    <string name="summaryWarnAboutObsoleteSoftware">Show warning when software that is no longer legal for use in the current FTC competition season is detected</string>
+    <string name="summaryWarnAboutObsoleteSoftware">Show warning when software that is no longer recommended for use in the current FTC competition season is detected</string>
     <string name="swapPrompt">Choose the USB controller you want to swap \'%s\' with, or press \'Cancel\'</string>
     <string name="templateConfigurationInstructions">To configure your robot using %1$s, attach the following devices, then press the \'Config\' button:\n%2$s</string>
     <string name="templateConfigureConfigurationInstructionsTitle">Configuration Instructions</string>

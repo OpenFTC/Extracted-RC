@@ -39,7 +39,7 @@
     <string name="robotControllerIsNotInstalledContext">The Robot Controller app is not installed on the Control Hub.</string>
     <string name="robotControllerIsObsoleteContext">The Robot Controller app is obsolete.  Ensure your device has the correct date.  If the date is correct, install the latest Robot Controller for the current season.</string>
     <string name="robotControllerLabel">Robot Controller:</string>
-    <string name="sdkVersionMismatchContext">The Robot Controller SDK %1$s and the Driver Station %2$s do not match. Reinstall clean, latest versions of both.</string>
+    <string name="sdkVersionMismatchContext">The Robot Controller SDK %1$s and the Driver Station %2$s do not match. For best results install matching, latest, versions of both.</string>
     <string name="stringManufacturer">Manufacturer:</string>
     <string name="stringModel">Model:</string>
     <string name="titleInspectionReportDS">Driver Station\nInspection Report</string>

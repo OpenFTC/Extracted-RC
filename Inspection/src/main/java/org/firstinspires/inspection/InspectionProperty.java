@@ -34,13 +34,24 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.firstinspires.inspection;
 
 public class InspectionProperty {
+    public enum InvalidAs {
+        ERROR,
+        WARNING
+    }
     public boolean valid;
+    public InvalidAs invalidAs;
     public int contextResourceId;
 
-    public InspectionProperty(boolean valid, int contextResourceId)
+    public InspectionProperty(boolean valid, int contextResourceId, InvalidAs invalidAs)
     {
         this.valid = valid;
         this.contextResourceId = contextResourceId;
+        this.invalidAs = invalidAs;
+    }
+
+    public InspectionProperty(boolean valid, int contextResourceId)
+    {
+        this(valid, contextResourceId, InvalidAs.ERROR);
     }
 
 }

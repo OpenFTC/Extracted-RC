@@ -56,6 +56,18 @@
       <field name="VISION_PORTAL_BUILDER" variabletype="VisionPortal.Builder">myVisionPortalBuilder</field>
       <value name="VISION_PROCESSOR"><block type="variables_get"><field name="VAR">myAprilTagProcessor</field></block></value>
     </block>
+    <block type="visionPortalBuilder_addProcessor">
+      <comment pinned="false" h="150" w="325">Add the color blob locator processor.
+      </comment>
+      <field name="VISION_PORTAL_BUILDER" variabletype="VisionPortal.Builder">myVisionPortalBuilder</field>
+      <value name="VISION_PROCESSOR"><block type="variables_get"><field name="VAR">myColorBlobLocatorProcessor</field></block></value>
+    </block>
+    <block type="visionPortalBuilder_addProcessor">
+      <comment pinned="false" h="150" w="325">Add the predominant color processor.
+      </comment>
+      <field name="VISION_PORTAL_BUILDER" variabletype="VisionPortal.Builder">myVisionPortalBuilder</field>
+      <value name="VISION_PROCESSOR"><block type="variables_get"><field name="VAR">myPredominantColorProcessor</field></block></value>
+    </block>
     <block type="variables_set">
       <comment pinned="false" h="150" w="325">Build the VisionPortal object and assign it to a variable.
       </comment>
@@ -640,6 +652,435 @@ detections multiple times.
         <value name="APRIL_TAG_METADATA"><block type="variables_get"><field name="VAR">myAprilTagMetadata</field></block></value>
       </block>
     </category>
+  </category>
+  <category name="ColorBlobLocator">
+    <category name="Processor.Builder">
+      <block type="colorBlobLocatorProcessorBuilder_create_assign">
+        <comment pinned="false" h="150" w="325">Create a new ColorBlobLocatorProcessor.Builder object and assign it to a variable.
+        </comment>
+        <field name="COLOR_BLOB_LOCATOR_PROCESSOR_BUILDER" variabletype="ColorBlobLocatorProcessor.Builder">myColorBlobLocatorProcessorBuilder</field>
+      </block>
+      <block type="colorBlobLocatorProcessorBuilder_setDrawContours">
+        <field name="COLOR_BLOB_LOCATOR_PROCESSOR_BUILDER" variabletype="ColorBlobLocatorProcessor.Builder">myColorBlobLocatorProcessorBuilder</field>
+        <value name="DRAW_CONTOURS"><shadow type="logic_boolean"><field name="BOOL">TRUE</field></shadow></value>
+      </block>
+      <block type="colorBlobLocatorProcessorBuilder_setBoxFitColor">
+        <field name="COLOR_BLOB_LOCATOR_PROCESSOR_BUILDER" variabletype="ColorBlobLocatorProcessor.Builder">myColorBlobLocatorProcessorBuilder</field>
+        <value name="COLOR">
+          <shadow type="color_constant_Number"><field name="CONSTANT">WHITE</field></shadow>
+          <block type="color_rgbToColor_Number">
+            <value name="RED"><shadow type="math_number"><field name="NUM">255</field></shadow></value>
+            <value name="GREEN"><shadow type="math_number"><field name="NUM">120</field></shadow></value>
+            <value name="BLUE"><shadow type="math_number"><field name="NUM">31</field></shadow></value>
+          </block>
+        </value>
+      </block>
+      <block type="colorBlobLocatorProcessorBuilder_setRoiColor">
+        <field name="COLOR_BLOB_LOCATOR_PROCESSOR_BUILDER" variabletype="ColorBlobLocatorProcessor.Builder">myColorBlobLocatorProcessorBuilder</field>
+        <value name="COLOR">
+          <shadow type="color_constant_Number"><field name="CONSTANT">WHITE</field></shadow>
+          <block type="color_rgbToColor_Number">
+            <value name="RED"><shadow type="math_number"><field name="NUM">255</field></shadow></value>
+            <value name="GREEN"><shadow type="math_number"><field name="NUM">255</field></shadow></value>
+            <value name="BLUE"><shadow type="math_number"><field name="NUM">255</field></shadow></value>
+          </block>
+        </value>
+      </block>
+      <block type="colorBlobLocatorProcessorBuilder_setContourColor">
+        <field name="COLOR_BLOB_LOCATOR_PROCESSOR_BUILDER" variabletype="ColorBlobLocatorProcessor.Builder">myColorBlobLocatorProcessorBuilder</field>
+        <value name="COLOR">
+          <shadow type="color_constant_Number"><field name="CONSTANT">WHITE</field></shadow>
+          <block type="color_rgbToColor_Number">
+            <value name="RED"><shadow type="math_number"><field name="NUM">3</field></shadow></value>
+            <value name="GREEN"><shadow type="math_number"><field name="NUM">227</field></shadow></value>
+            <value name="BLUE"><shadow type="math_number"><field name="NUM">252</field></shadow></value>
+          </block>
+        </value>
+      </block>
+      <block type="colorBlobLocatorProcessorBuilder_setTargetColorRange">
+        <field name="COLOR_BLOB_LOCATOR_PROCESSOR_BUILDER" variabletype="ColorBlobLocatorProcessor.Builder">myColorBlobLocatorProcessorBuilder</field>
+        <value name="COLOR_RANGE">
+          <shadow type="colorRange_constant_ColorRange"><field name="CONSTANT">BLUE</field></shadow>
+        </value>
+      </block>
+      <block type="colorBlobLocatorProcessorBuilder_setTargetColorRange">
+        <field name="COLOR_BLOB_LOCATOR_PROCESSOR_BUILDER" variabletype="ColorBlobLocatorProcessor.Builder">myColorBlobLocatorProcessorBuilder</field>
+        <value name="COLOR_RANGE">
+          <shadow type="colorRange_constant_ColorRange"><field name="CONSTANT">BLUE</field></shadow>
+          <block type="colorRange_create">
+            <value name="COLOR_SPACE"><shadow type="colorSpace_typedEnum_colorSpace"><field name="COLOR_SPACE">YCrCb</field></shadow></value>
+            <value name="MIN">
+              <block type="scalar_create_with3">
+                <value name="V0"><shadow type="math_number"><field name="NUM">16</field></shadow></value>
+                <value name="V1"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
+                <value name="V2"><shadow type="math_number"><field name="NUM">155</field></shadow></value>
+              </block>
+            </value>
+            <value name="MAX">
+              <block type="scalar_create_with3">
+                <value name="V0"><shadow type="math_number"><field name="NUM">255</field></shadow></value>
+                <value name="V1"><shadow type="math_number"><field name="NUM">127</field></shadow></value>
+                <value name="V2"><shadow type="math_number"><field name="NUM">255</field></shadow></value>
+              </block>
+            </value>
+          </block>
+        </value>
+      </block>
+      <block type="colorBlobLocatorProcessorBuilder_setContourMode">
+        <field name="COLOR_BLOB_LOCATOR_PROCESSOR_BUILDER" variabletype="ColorBlobLocatorProcessor.Builder">myColorBlobLocatorProcessorBuilder</field>
+        <value name="CONTOUR_MODE"><shadow type="colorBlobLocator_typedEnum_contourMode"><field name="CONTOUR_MODE">EXTERNAL_ONLY</field></shadow></value>
+      </block>
+      <block type="colorBlobLocatorProcessorBuilder_setRoi">
+        <field name="COLOR_BLOB_LOCATOR_PROCESSOR_BUILDER" variabletype="ColorBlobLocatorProcessor.Builder">myColorBlobLocatorProcessorBuilder</field>
+        <value name="ROI"><shadow type="imageRegion_entireFrame"></shadow></value>
+      </block>
+      <block type="colorBlobLocatorProcessorBuilder_setBlurSize">
+        <field name="COLOR_BLOB_LOCATOR_PROCESSOR_BUILDER" variabletype="ColorBlobLocatorProcessor.Builder">myColorBlobLocatorProcessorBuilder</field>
+        <value name="BLUR_SIZE"><shadow type="math_number"><field name="NUM">5</field></shadow></value>
+      </block>
+      <block type="colorBlobLocatorProcessorBuilder_setErodeSize">
+        <field name="COLOR_BLOB_LOCATOR_PROCESSOR_BUILDER" variabletype="ColorBlobLocatorProcessor.Builder">myColorBlobLocatorProcessorBuilder</field>
+        <value name="ERODE_SIZE"><shadow type="math_number"><field name="NUM">5</field></shadow></value>
+      </block>
+      <block type="colorBlobLocatorProcessorBuilder_setDilateSize">
+        <field name="COLOR_BLOB_LOCATOR_PROCESSOR_BUILDER" variabletype="ColorBlobLocatorProcessor.Builder">myColorBlobLocatorProcessorBuilder</field>
+        <value name="DILATE_SIZE"><shadow type="math_number"><field name="NUM">5</field></shadow></value>
+      </block>
+      <block type="variables_set">
+        <comment pinned="false" h="150" w="325">Build the ColorBlobLocatorProcessor and assign it to a variable.
+        </comment>
+        <field name="VAR">myColorBlobLocatorProcessor</field>
+        <value name="VALUE">
+          <block type="colorBlobLocatorProcessorBuilder_build">
+            <field name="COLOR_BLOB_LOCATOR_PROCESSOR_BUILDER" variabletype="ColorBlobLocatorProcessor.Builder">myColorBlobLocatorProcessorBuilder</field>
+          </block>
+        </value>
+      </block>
+    </category>
+    <category name="Processor">
+      <block type="colorBlobLocatorProcessor_addFilter">
+        <value name="COLOR_BLOB_LOCATOR_PROCESSOR"><block type="variables_get"><field name="VAR">myColorBlobLocatorProcessor</field></block></value>
+        <value name="FILTER"><block type="variables_get"><field name="VAR">myFilter</field></block></value>
+      </block>
+      <block type="colorBlobLocatorProcessor_removeFilter">
+        <value name="COLOR_BLOB_LOCATOR_PROCESSOR"><block type="variables_get"><field name="VAR">myColorBlobLocatorProcessor</field></block></value>
+        <value name="FILTER"><block type="variables_get"><field name="VAR">myFilter</field></block></value>
+      </block>
+      <block type="colorBlobLocatorProcessor_removeAllFilters">
+        <value name="COLOR_BLOB_LOCATOR_PROCESSOR"><block type="variables_get"><field name="VAR">myColorBlobLocatorProcessor</field></block></value>
+      </block>
+      <block type="colorBlobLocatorProcessor_setSort">
+        <value name="COLOR_BLOB_LOCATOR_PROCESSOR"><block type="variables_get"><field name="VAR">myColorBlobLocatorProcessor</field></block></value>
+        <value name="SORT"><block type="variables_get"><field name="VAR">mySort</field></block></value>
+      </block>
+      <block type="variables_set">
+        <field name="VAR">myBlobs</field>
+        <value name="VALUE">
+          <block type="colorBlobLocatorProcessor_getBlobs">
+            <value name="COLOR_BLOB_LOCATOR_PROCESSOR"><block type="variables_get"><field name="VAR">myColorBlobLocatorProcessor</field></block></value>
+          </block>
+        </value>
+      </block>
+    </category>
+    <category name="Pre-processing">
+      <block type="variables_set">
+        <field name="VAR">myFilter</field>
+        <value name="VALUE">
+          <block type="colorBlobLocatorProcessorBlobFilter_create">
+            <value name="CRITERIA"><shadow type="colorBlobLocator_typedEnum_blobCriteria"><field name="CRITERIA">BY_CONTOUR_AREA</field></shadow></value>
+            <value name="MIN_VALUE"><shadow type="math_number"><field name="NUM">50</field></shadow></value>
+            <value name="MAX_VALUE"><shadow type="math_number"><field name="NUM">20000</field></shadow></value>
+          </block>
+        </value>
+      </block>
+      <block type="variables_set">
+        <field name="VAR">myFilter</field>
+        <value name="VALUE">
+          <block type="colorBlobLocatorProcessorBlobFilter_create">
+            <value name="CRITERIA"><shadow type="colorBlobLocator_typedEnum_blobCriteria"><field name="CRITERIA">BY_DENSITY</field></shadow></value>
+            <value name="MIN_VALUE"><shadow type="math_number"><field name="NUM">0.5</field></shadow></value>
+            <value name="MAX_VALUE"><shadow type="math_number"><field name="NUM">1.0</field></shadow></value>
+          </block>
+        </value>
+      </block>
+      <block type="variables_set">
+        <field name="VAR">myFilter</field>
+        <value name="VALUE">
+          <block type="colorBlobLocatorProcessorBlobFilter_create">
+            <value name="CRITERIA"><shadow type="colorBlobLocator_typedEnum_blobCriteria"><field name="CRITERIA">BY_ASPECT_RATIO</field></shadow></value>
+            <value name="MIN_VALUE"><shadow type="math_number"><field name="NUM">1.0</field></shadow></value>
+            <value name="MAX_VALUE"><shadow type="math_number"><field name="NUM">3.0</field></shadow></value>
+          </block>
+        </value>
+      </block>
+      <sep gap="32"></sep>
+      <block type="variables_set">
+        <field name="VAR">mySort</field>
+        <value name="VALUE">
+          <block type="colorBlobLocatorProcessorBlobSort_create">
+            <value name="CRITERIA"><shadow type="colorBlobLocator_typedEnum_blobCriteria"><field name="CRITERIA">BY_CONTOUR_AREA</field></shadow></value>
+            <value name="SORT_ORDER"><shadow type="util_typedEnum_sortOrder"><field name="SORT_ORDER">DESCENDING</field></shadow></value>
+          </block>
+        </value>
+      </block>
+      <block type="variables_set">
+        <field name="VAR">mySort</field>
+        <value name="VALUE">
+          <block type="colorBlobLocatorProcessorBlobSort_create">
+            <value name="CRITERIA"><shadow type="colorBlobLocator_typedEnum_blobCriteria"><field name="CRITERIA">BY_DENSITY</field></shadow></value>
+            <value name="SORT_ORDER"><shadow type="util_typedEnum_sortOrder"><field name="SORT_ORDER">DESCENDING</field></shadow></value>
+          </block>
+        </value>
+      </block>
+      <block type="variables_set">
+        <field name="VAR">mySort</field>
+        <value name="VALUE">
+          <block type="colorBlobLocatorProcessorBlobSort_create">
+            <value name="CRITERIA"><shadow type="colorBlobLocator_typedEnum_blobCriteria"><field name="CRITERIA">BY_ASPECT_RATIO</field></shadow></value>
+            <value name="SORT_ORDER"><shadow type="util_typedEnum_sortOrder"><field name="SORT_ORDER">DESCENDING</field></shadow></value>
+          </block>
+        </value>
+      </block>
+    </category>
+    <category name="Post-processing">
+      <block type="colorBlobLocatorProcessorUtil_filterByArea">
+        <value name="MIN_AREA"><shadow type="math_number"><field name="NUM">50</field></shadow></value>
+        <value name="MAX_AREA"><shadow type="math_number"><field name="NUM">20000</field></shadow></value>
+        <value name="BLOBS"><block type="variables_get"><field name="VAR">myBlobs</field></block></value>
+      </block>
+      <block type="colorBlobLocatorProcessorUtil_sortByArea">
+        <value name="SORT_ORDER"><shadow type="util_typedEnum_sortOrder"><field name="SORT_ORDER">DESCENDING</field></shadow></value>
+        <value name="BLOBS"><block type="variables_get"><field name="VAR">myBlobs</field></block></value>
+      </block>
+      <block type="colorBlobLocatorProcessorUtil_filterByDensity">
+        <value name="MIN_DENSITY"><shadow type="math_number"><field name="NUM">0.5</field></shadow></value>
+        <value name="MAX_DENSITY"><shadow type="math_number"><field name="NUM">1.0</field></shadow></value>
+        <value name="BLOBS"><block type="variables_get"><field name="VAR">myBlobs</field></block></value>
+      </block>
+      <block type="colorBlobLocatorProcessorUtil_sortByDensity">
+        <value name="SORT_ORDER"><shadow type="util_typedEnum_sortOrder"><field name="SORT_ORDER">DESCENDING</field></shadow></value>
+        <value name="BLOBS"><block type="variables_get"><field name="VAR">myBlobs</field></block></value>
+      </block>
+      <block type="colorBlobLocatorProcessorUtil_filterByAspectRatio">
+        <value name="MIN_ASPECT_RATIO"><shadow type="math_number"><field name="NUM">1.0</field></shadow></value>
+        <value name="MAX_ASPECT_RATIO"><shadow type="math_number"><field name="NUM">3.0</field></shadow></value>
+        <value name="BLOBS"><block type="variables_get"><field name="VAR">myBlobs</field></block></value>
+      </block>
+      <block type="colorBlobLocatorProcessorUtil_sortByAspectRatio">
+        <value name="SORT_ORDER"><shadow type="util_typedEnum_sortOrder"><field name="SORT_ORDER">DESCENDING</field></shadow></value>
+        <value name="BLOBS"><block type="variables_get"><field name="VAR">myBlobs</field></block></value>
+      </block>
+    </category>
+    <category name="Blob data">
+      <block type="colorBlobLocatorProcessorBlob_getProperty_Array">
+        <field name="PROP">ContourPoints</field>
+        <value name="BLOB"><block type="variables_get"><field name="VAR">myBlob</field></block></value>
+      </block>
+      <block type="colorBlobLocatorProcessorBlob_getProperty_Number">
+        <field name="PROP">ContourArea</field>
+        <value name="BLOB"><block type="variables_get"><field name="VAR">myBlob</field></block></value>
+      </block>
+      <block type="colorBlobLocatorProcessorBlob_getProperty_Number">
+        <field name="PROP">Density</field>
+        <value name="BLOB"><block type="variables_get"><field name="VAR">myBlob</field></block></value>
+      </block>
+      <block type="colorBlobLocatorProcessorBlob_getProperty_Number">
+        <field name="PROP">AspectRatio</field>
+        <comment pinned="false" h="63" w="419">Get the aspect ratio of this blob, i.e. the ratio of the longer side of the "boxFit" bounding box to the shorter side.</comment>
+        <data>{"commentPositionLeft":-18,"commentPositionTop":-84}</data>
+        <value name="BLOB"><block type="variables_get"><field name="VAR">myBlob</field></block></value>
+      </block>
+      <block type="colorBlobLocatorProcessorBlob_getProperty_RotatedRect">
+        <field name="PROP">BoxFit</field>
+        <comment pinned="false" h="55" w="424">Get a "best-fit" bounding box (called "boxFit", of type RotatedRect) for this blob.</comment>
+        <data>{"commentPositionLeft":-19,"commentPositionTop":-75}</data>
+        <value name="BLOB"><block type="variables_get"><field name="VAR">myBlob</field></block></value>
+      </block>
+      <sep gap="32"></sep>
+      <block type="point_getProperty_Number">
+        <field name="PROP">x</field>
+        <value name="POINT"><block type="variables_get"><field name="VAR">myPoint</field></block></value>
+      </block>
+      <block type="point_getProperty_Number">
+        <field name="PROP">y</field>
+        <value name="POINT"><block type="variables_get"><field name="VAR">myPoint</field></block></value>
+      </block>
+      <sep gap="32"></sep>
+      <block type="rotatedRect_getProperty_Number">
+        <field name="PROP">angle</field>
+        <value name="ROTATED_RECT"><block type="variables_get"><field name="VAR">myBoxFit</field></block></value>
+      </block>
+      <block type="rotatedRect_getProperty_Point">
+        <field name="PROP">center</field>
+        <value name="ROTATED_RECT"><block type="variables_get"><field name="VAR">myBoxFit</field></block></value>
+      </block>
+      <block type="rotatedRect_getProperty_Size">
+        <field name="PROP">size</field>
+        <value name="ROTATED_RECT"><block type="variables_get"><field name="VAR">myBoxFit</field></block></value>
+      </block>
+      <block type="rotatedRect_boundingRect">
+        <value name="ROTATED_RECT"><block type="variables_get"><field name="VAR">myBoxFit</field></block></value>
+      </block>
+      <block type="rotatedRect_points">
+        <comment pinned="false" h="62" w="425">Store the 4 corners of "myBoxFit" (rotatedRect) as a List of Points in the "myPoints" variable, clockwise from top left corner.</comment>
+        <data>{"commentPositionLeft":-19,"commentPositionTop":-86}</data>
+        <value name="ROTATED_RECT"><block type="variables_get"><field name="VAR">myBoxFit</field></block></value>
+        <value name="POINTS"><block type="variables_get"><field name="VAR">myPoints</field></block></value>
+      </block>
+      <sep gap="32"></sep>
+      <block type="size_getProperty_Number">
+        <field name="PROP">width</field>
+        <value name="SIZE"><block type="variables_get"><field name="VAR">mySize</field></block></value>
+      </block>
+      <block type="size_getProperty_Number">
+        <field name="PROP">height</field>
+        <value name="SIZE"><block type="variables_get"><field name="VAR">mySize</field></block></value>
+      </block>
+      <sep gap="32"></sep>
+      <block type="rect_getProperty_Number">
+        <field name="PROP">x</field>
+        <comment pinned="false" h="61" w="321">Get the x value of myHorizontalBoxFit (top left corner).</comment>
+        <data>{"commentPositionLeft":-18,"commentPositionTop":-79}</data>
+        <value name="RECT"><block type="variables_get"><field name="VAR">myHorizontalBoxFit</field></block></value>
+      </block>
+      <block type="rect_getProperty_Number">
+        <field name="PROP">y</field>
+        <comment pinned="false" h="60" w="338">Get the y value of myHorizontalBoxFit (top left corner).</comment>
+        <data>{"commentPositionLeft":-21,"commentPositionTop":-76}</data>
+        <value name="RECT"><block type="variables_get"><field name="VAR">myHorizontalBoxFit</field></block></value>
+      </block>
+      <block type="rect_getProperty_Number">
+        <field name="PROP">width</field>
+        <comment pinned="false" h="41" w="307">Get the width value of myHorizontalBoxFit.</comment>
+        <data>{"commentPositionLeft":-20,"commentPositionTop":-61}</data>
+        <value name="RECT"><block type="variables_get"><field name="VAR">myHorizontalBoxFit</field></block></value>
+      </block>
+      <block type="rect_getProperty_Number">
+        <field name="PROP">height</field>
+        <comment pinned="false" h="41" w="311">Get the height value of myHorizontalBoxFit.</comment>
+        <data>{"commentPositionLeft":-19,"commentPositionTop":-60}</data>
+        <value name="RECT"><block type="variables_get"><field name="VAR">myHorizontalBoxFit</field></block></value>
+      </block>
+    </category>
+  </category>
+  <category name="PredominantColor">
+    <category name="Processor.Builder">
+      <block type="predominantColorProcessorBuilder_create_assign">
+        <comment pinned="false" h="150" w="325">Create a new PredominantColorProcessor.Builder object and assign it to a variable.
+        </comment>
+        <field name="PREDOMINANT_COLOR_PROCESSOR_BUILDER" variabletype="PredominantColorProcessor.Builder">myPredominantColorProcessorBuilder</field>
+      </block>
+      <block type="predominantColorProcessorBuilder_setRoi">
+        <field name="PREDOMINANT_COLOR_PROCESSOR_BUILDER" variabletype="PredominantColorProcessor.Builder">myPredominantColorProcessorBuilder</field>
+        <value name="ROI"><shadow type="imageRegion_entireFrame"></shadow></value>
+      </block>
+      <block type="predominantColorProcessorBuilder_setSwatches" inline="false">
+        <mutation items="3"/>
+        <field name="PREDOMINANT_COLOR_PROCESSOR_BUILDER" variabletype="PredominantColorProcessor.Builder">myPredominantColorProcessorBuilder</field>
+        <value name="SWATCH0">
+          <block type="predominantColor_typedEnum_swatch">
+            <field name="SWATCH">RED</field>
+          </block>
+        </value>
+        <value name="SWATCH1">
+          <block type="predominantColor_typedEnum_swatch">
+            <field name="SWATCH">WHITE</field>
+          </block>
+        </value>
+        <value name="SWATCH2">
+          <block type="predominantColor_typedEnum_swatch">
+            <field name="SWATCH">BLUE</field>
+          </block>
+        </value>
+      </block>
+      <block type="predominantColor_typedEnum_swatch">
+        <field name="SWATCH">RED</field>
+      </block>
+      <block type="predominantColor_typedEnum_swatch">
+        <field name="SWATCH">ORANGE</field>
+      </block>
+      <block type="predominantColor_typedEnum_swatch">
+        <field name="SWATCH">YELLOW</field>
+      </block>
+      <block type="predominantColor_typedEnum_swatch">
+        <field name="SWATCH">GREEN</field>
+      </block>
+      <block type="predominantColor_typedEnum_swatch">
+        <field name="SWATCH">CYAN</field>
+      </block>
+      <block type="predominantColor_typedEnum_swatch">
+        <field name="SWATCH">BLUE</field>
+      </block>
+      <block type="predominantColor_typedEnum_swatch">
+        <field name="SWATCH">PURPLE</field>
+      </block>
+      <block type="predominantColor_typedEnum_swatch">
+        <field name="SWATCH">MAGENTA</field>
+      </block>
+      <block type="predominantColor_typedEnum_swatch">
+        <field name="SWATCH">BLACK</field>
+      </block>
+      <block type="predominantColor_typedEnum_swatch">
+        <field name="SWATCH">WHITE</field>
+      </block>
+      <block type="variables_set">
+        <comment pinned="false" h="150" w="325">Build the PredominantColorProcessor and assign it to a variable.
+        </comment>
+        <field name="VAR">myPredominantColorProcessor</field>
+        <value name="VALUE">
+          <block type="predominantColorProcessorBuilder_build">
+            <field name="PREDOMINANT_COLOR_PROCESSOR_BUILDER" variabletype="PredominantColorProcessor.Builder">myPredominantColorProcessorBuilder</field>
+          </block>
+        </value>
+      </block>
+    </category>
+    <category name="Processor">
+      <block type="variables_set">
+        <field name="VAR">myResult</field>
+        <value name="VALUE">
+          <block type="predominantColorProcessor_getAnalysis">
+            <value name="PREDOMINANT_COLOR_PROCESSOR"><block type="variables_get"><field name="VAR">myPredominantColorProcessor</field></block></value>
+          </block>
+        </value>
+      </block>
+      <sep gap="32"></sep>
+      <block type="predominantColorProcessorResult_getProperty_Number">
+        <field name="PROP">rgb</field>
+        <value name="RESULT"><block type="variables_get"><field name="VAR">myResult</field></block></value>
+      </block>
+      <block type="predominantColorProcessorResult_getProperty_Swatch">
+        <field name="PROP">closestSwatch</field>
+        <value name="RESULT"><block type="variables_get"><field name="VAR">myResult</field></block></value>
+      </block>
+      <block type="logic_compare">
+        <field name="OP">EQ</field>
+        <value name="A">
+          <block type="predominantColorProcessorResult_getProperty_Swatch">
+            <field name="PROP">closestSwatch</field>
+            <value name="RESULT"><block type="variables_get"><field name="VAR">myResult</field></block></value>
+          </block>
+        </value>
+        <value name="B">
+          <block type="predominantColor_typedEnum_swatch"></block>
+        </value>
+      </block>
+    </category>
+  </category>
+  <category name="ImageRegion">
+    <block type="imageRegion_asImageCoordinates">
+      <value name="LEFT"><shadow type="math_number"><field name="NUM">50</field></shadow></value>
+      <value name="TOP"><shadow type="math_number"><field name="NUM">50</field></shadow></value>
+      <value name="RIGHT"><shadow type="math_number"><field name="NUM">150</field></shadow></value>
+      <value name="BOTTOM"><shadow type="math_number"><field name="NUM">150</field></shadow></value>
+    </block>
+    <block type="imageRegion_asUnityCenterCoordinates">
+      <value name="LEFT"><shadow type="math_number"><field name="NUM">-0.5</field></shadow></value>
+      <value name="TOP"><shadow type="math_number"><field name="NUM">0.5</field></shadow></value>
+      <value name="RIGHT"><shadow type="math_number"><field name="NUM">0.5</field></shadow></value>
+      <value name="BOTTOM"><shadow type="math_number"><field name="NUM">-0.5</field></shadow></value>
+    </block>
+    <block type="imageRegion_entireFrame">
+    </block>
   </category>
   <category name="Webcam Controls">
     <category name="ExposureControl">

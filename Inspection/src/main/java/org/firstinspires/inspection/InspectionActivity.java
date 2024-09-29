@@ -50,7 +50,6 @@ import android.widget.Toast;
 import com.qualcomm.robotcore.BuildConfig;
 import com.qualcomm.robotcore.hardware.configuration.LynxConstants;
 import com.qualcomm.robotcore.robocol.Command;
-import com.qualcomm.robotcore.util.Device;
 import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.util.ThreadPool;
 import com.qualcomm.robotcore.wifi.NetworkType;
@@ -382,7 +381,9 @@ public abstract class InspectionActivity extends ThemedActivity
                 item.img.setOnClickListener(null);
             }
         item.txt.setText(message);
-        item.img.setImageResource(property.valid ? R.drawable.ic_check_circle : R.drawable.ic_error);
+        item.img.setImageResource(property.valid ? R.drawable.ic_check_circle :
+                                  property.invalidAs == InspectionProperty.InvalidAs.WARNING ?  R.drawable.ic_warning :
+                                  R.drawable.ic_error);
         }
 
     private void refreshTrafficCount(TextView view, long rxData, long txData)
@@ -459,7 +460,6 @@ public abstract class InspectionActivity extends ThemedActivity
         if (inspectingRc)
             {
             int resId;
-            boolean valid = false;
             if (!state.robotControllerInstalled) {
                 resId = R.string.robotControllerIsNotInstalledContext;
             } else if (!(state.majorSdkVersion >= BuildConfig.SDK_MAJOR_VERSION)) {
@@ -468,23 +468,22 @@ public abstract class InspectionActivity extends ThemedActivity
                 resId = R.string.robotControllerIsObsoleteContext;
             } else {
                 resId = R.string.noContext;
-                valid = true;
             }
             validation.appVersion = new InspectionProperty(state.robotControllerInstalled &&
                     state.majorSdkVersion >= BuildConfig.SDK_MAJOR_VERSION &&
-                    !appIsObsolete, resId);
+                    !appIsObsolete, resId, InspectionProperty.InvalidAs.WARNING);
             validation.otherApp = new InspectionProperty(!state.driverStationInstalled, R.string.driverStationInstalledOnRobotControllerContext);
             if (inspectingRemoteDevice())
                 {
                 validation.versionsMatch = new InspectionProperty(state.majorSdkVersion == BuildConfig.SDK_MAJOR_VERSION &&
-                                           state.minorSdkVersion == BuildConfig.SDK_MINOR_VERSION, R.string.sdkVersionMismatchContext);
+                                           state.minorSdkVersion == BuildConfig.SDK_MINOR_VERSION, R.string.sdkVersionMismatchContext, InspectionProperty.InvalidAs.WARNING);
                 }
             }
         else
             {
             validation.appVersion = new InspectionProperty(state.driverStationInstalled &&
                     state.majorSdkVersion >= BuildConfig.SDK_MAJOR_VERSION &&
-                    !appIsObsolete, R.string.driverStationIsObsoleteContext);
+                    !appIsObsolete, R.string.driverStationIsObsoleteContext, InspectionProperty.InvalidAs.WARNING);
             validation.otherApp = new InspectionProperty(!state.robotControllerInstalled, R.string.robotControllerInstalledOnDriverStationContext);
             }
         return validation;
@@ -585,7 +584,8 @@ public abstract class InspectionActivity extends ThemedActivity
         // check the installed apps.
         if (inspectingRobotController())
             {
-            refresh(isRCInstalled, validated.appVersion, AppUtil.getSdkVersionString(state.majorSdkVersion, state.minorSdkVersion, state.pointSdkVersion));
+            refresh(isRCInstalled, validated.appVersion, AppUtil.getSdkVersionString(state.majorSdkVersion, state.minorSdkVersion, state.pointSdkVersion),
+                                            String.format("%d.%d", state.majorSdkVersion, state.minorSdkVersion), String.format("%d.%d", BuildConfig.SDK_MAJOR_VERSION, BuildConfig.SDK_MINOR_VERSION));
             refresh(isDSInstalled,
                     validated.otherApp,
                     state.driverStationInstalled ? installed : notInstalled);

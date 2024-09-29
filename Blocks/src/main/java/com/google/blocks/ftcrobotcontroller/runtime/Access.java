@@ -22,7 +22,6 @@ import com.qualcomm.robotcore.util.RobotLog;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
-import org.firstinspires.ftc.robotcore.internal.collections.SimpleGson;
 import org.firstinspires.ftc.robotcore.external.matrices.MatrixF;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
@@ -34,6 +33,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Quaternion;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+import org.firstinspires.ftc.robotcore.internal.collections.SimpleGson;
+import org.firstinspires.ftc.vision.opencv.ImageRegion;
 
 /**
  * An abstract class for classes that provides JavaScript access to an object.
@@ -107,6 +108,10 @@ public abstract class Access {
 
   protected BNO055IMU.Parameters checkBNO055IMUParameters(Object parametersArg) {
     return checkArg(parametersArg, BNO055IMU.Parameters.class, "parameters");
+  }
+
+  protected ImageRegion checkImageRegion(Object imageRegionArg) {
+    return checkArg(imageRegionArg, ImageRegion.class, "roi");
   }
 
   protected Orientation checkOrientation(Object orientationArg) {

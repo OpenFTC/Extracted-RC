@@ -409,6 +409,11 @@ public class ProjectsUtil {
    * Upgrades the given blocks content based on the given {@link HardwareItemMap}.
    */
   private static String upgradeBlocks(String blkContent, HardwareItemMap hardwareItemMap) {
+    // clearFilters was renamed removeAllFilters (before PR 3267 was merged into ftc_sdk master).
+    blkContent = blkContent.replace(
+        "<block type=\"colorBlobLocatorProcessor_clearFilters",
+        "<block type=\"colorBlobLocatorProcessor_removeAllFilters");
+
     // resetStartTime is deprecated. Use resetRuntime instead.
     blkContent = blkContent.replace(
         "<block type=\"linearOpMode_resetStartTime",

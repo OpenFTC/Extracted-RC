@@ -599,4 +599,260 @@ public class JavaUtil {
     }
     return unboxed;
   }
+
+  // Helpers for list blocks for an array
+
+  public static double sumOfList(Object[] list) {
+    double sum = 0;
+    if (list != null) {
+      for (Object o : list) {
+        if (o instanceof Number) {
+          double n = ((Number) o).doubleValue();
+          sum += n;
+        }
+      }
+    }
+    return sum;
+  }
+
+  public static double minOfList(Object[] list) {
+    double min = Long.MAX_VALUE;
+    if (list != null) {
+      for (Object o : list) {
+        if (o instanceof Number) {
+          double n = ((Number) o).doubleValue();
+          if (n < min) {
+            min = n;
+          }
+        }
+      }
+    }
+    return min;
+  }
+
+  public static double maxOfList(Object[] list) {
+    double max = Long.MIN_VALUE;
+    if (list != null) {
+      for (Object o : list) {
+        if (o instanceof Number) {
+          double n = ((Number) o).doubleValue();
+          if (n > max) {
+            max = n;
+          }
+        }
+      }
+    }
+    return max;
+  }
+
+  public static double averageOfList(Object[] list) {
+    double mean = 0;
+    if (list != null && list.length != 0) {
+      for (Object o : list) {
+        if (o instanceof Number) {
+          double n = ((Number) o).doubleValue();
+          mean += n;
+        }
+      }
+      mean /= list.length;
+    }
+    return mean;
+  }
+
+  public static double medianOfList(Object[] list) {
+    if (list == null) {
+      return 0;
+    }
+    List<Double> localList = new ArrayList<>();
+    for (Object o : list) {
+      if (o instanceof Number) {
+        double n = ((Number) o).doubleValue();
+        localList.add(n);
+      }
+    }
+    if (localList.isEmpty()) {
+      return 0;
+    }
+    Collections.sort(localList);
+    int size = localList.size();
+    if (size % 2 == 0) {
+      return (localList.get(size / 2 - 1) + localList.get(size / 2)) / 2;
+    } else {
+      return localList.get((size - 1) / 2);
+    }
+  }
+
+  public static List modesOfList(Object[] list) {
+    List modes = new ArrayList<>();
+    if (list != null && list.length != 0) {
+      Map<Object, Integer> counts = new HashMap<>();
+      int maxCount = 0;
+      for (Object o : list) {
+        Integer boxedCount = counts.get(o);
+        int count = (boxedCount != null)
+            ? boxedCount + 1
+            : 1;
+        counts.put(o, count);
+        if (count > maxCount) {
+          maxCount = count;
+        }
+      }
+      for (Map.Entry<Object, Integer> entry : counts.entrySet()) {
+        if (entry.getValue() == maxCount) {
+            modes.add(entry.getKey());
+        }
+      }
+    }
+    return modes;
+  }
+
+  public static double standardDeviationOfList(Object[] list) {
+    double variance = 0;
+    if (list != null && list.length != 0) {
+      double mean = averageOfList(list);
+      for (Object o : list) {
+        if (o instanceof Number) {
+          double n = ((Number) o).doubleValue();
+          variance += Math.pow(n - mean, 2);
+        }
+      }
+      variance /= list.length;
+    }
+    return Math.sqrt(variance);
+  }
+
+  public static Object randomItemOfList(Object[] list) {
+    if (list == null || list.length == 0) {
+      return null;
+    }
+    int i = (int) Math.floor(Math.random() * list.length);
+    return list[i];
+  }
+
+  private static int getIndex(Object[] list, AtMode atMode, int i) {
+    switch (atMode) {
+      case FIRST:
+        return 0;
+      case LAST:
+        return list.length - 1;
+      case FROM_START:
+        return i;
+      case FROM_END:
+        return list.length - 1 - i;
+      case RANDOM:
+        return (int) Math.floor(Math.random() * list.length);
+    }
+    throw new IllegalArgumentException("Unknown AtMode " + atMode);
+  }
+
+  public static Object inListGet(Object[] list, AtMode atMode, int i, boolean remove) {
+    if (list == null) {
+      return null;
+    }
+    i = getIndex(list, atMode, i);
+    if (remove) {
+      throw new UnsupportedOperationException("Cannot remove an item from an Array in Java");
+    } else {
+      return list[i];
+    }
+  }
+
+  public static void inListSet(Object[] list, AtMode atMode, int i, boolean insert,
+      Object value) {
+    if (list == null) {
+      return;
+    }
+    i = getIndex(list, atMode, i);
+    if (insert) {
+      throw new UnsupportedOperationException("Cannot insert an item into an Array in Java");
+    } else {
+      list[i] = value;
+    }
+  }
+
+  public static List inListGetSublist(Object[] list, AtMode atMode1, int i1, AtMode atMode2, int i2) {
+    if (list == null) {
+      return null;
+    }
+    throw new UnsupportedOperationException("Cannot get a sublist of an Array in Java");
+  }
+
+  public static Object[] sort(Object[] list, SortType sortType, final SortDirection sortDirection) {
+    if (list == null) {
+      return null;
+    }
+    Object[] copy = Arrays.copyOf(list, list.length);
+    Comparator comparator;
+    switch (sortType) {
+      default:
+      case NUMERIC:
+        comparator = new Comparator() {
+          @Override
+          public int compare (Object o1, Object o2) {
+            double d1 = 0;
+            if (o1 instanceof Number) {
+              d1 = ((Number) o1).doubleValue();
+            } else if (o1 != null) {
+              try {
+                d1 = Double.parseDouble(o1.toString());
+              } catch (NumberFormatException e) {
+                // ignored, d1 is still zero.
+              }
+            }
+            double d2 = 0;
+            if (o2 instanceof Number) {
+              d2 = ((Number) o2).doubleValue();
+            } else if (o2 != null) {
+              try {
+                d2 = Double.parseDouble(o2.toString());
+              } catch (NumberFormatException e) {
+                // ignored, d2 is still zero.
+              }
+            }
+            return (sortDirection == SortDirection.ASCENDING)
+                ? (int) Math.signum(d1 - d2)
+                : (int) Math.signum(d2 - d1);
+          }
+        };
+        break;
+      case TEXT:
+        comparator = new Comparator() {
+          @Override
+          public int compare (Object o1, Object o2) {
+            String s1 = o1.toString();
+            String s2 = o2.toString();
+            return (sortDirection == SortDirection.ASCENDING)
+                ? s1.compareTo(s2)
+                : s2.compareTo(s1);
+          }
+        };
+        break;
+      case IGNORE_CASE:
+        comparator = new Comparator() {
+          @Override
+          public int compare (Object o1, Object o2) {
+            String s1 = o1.toString();
+            String s2 = o2.toString();
+            return (sortDirection == SortDirection.ASCENDING)
+                ? s1.compareToIgnoreCase(s2)
+                : s2.compareToIgnoreCase(s1);
+          }
+        };
+        break;
+    }
+    Arrays.sort(copy, comparator);
+    return copy;
+  }
+
+  public static String makeTextFromList(Object[] list, String delimiter) {
+    StringBuilder sb = new StringBuilder();
+    if (list != null && delimiter != null) {
+      String d = ""; // No delimiter before first item.
+      for (Object o : list) {
+        sb.append(d).append(o);
+        d = delimiter;
+      }
+    }
+    return sb.toString();
+  }
 }

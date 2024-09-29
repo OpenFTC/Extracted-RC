@@ -1164,4 +1164,3 @@ Blockly.JavaScript['misc_callHardware_noReturn'] = function(block) {
 Blockly.FtcJava['misc_callHardware_noReturn'] = function(block) {
   return generateFtcJavaCallHardware(block) + ';\n';
 };
-

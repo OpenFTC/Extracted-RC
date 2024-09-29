@@ -100,7 +100,11 @@ function callJava(miscIdentifierForJavaScript, returnType, accessMethod, convert
   var numNamedArgs = callJava.length;
   var extraParameters = [];
   for (var i = numNamedArgs; i < arguments.length; i++) {
-    extraParameters[i - numNamedArgs] = arguments[i]
+    if (typeof arguments[i] == 'object') {
+      extraParameters[i - numNamedArgs] = getJavaObject(arguments[i]);
+    } else {
+      extraParameters[i - numNamedArgs] = arguments[i];
+    }
   }
 
   var newRest = Array.prototype.slice.call(extraParameters);
@@ -134,7 +138,11 @@ function callHardware(miscIdentifierForJavaScript, returnType, accessMethod, con
   var numNamedArgs = callHardware.length;
   var extraParameters = [];
   for (var i = numNamedArgs; i < arguments.length; i++) {
-    extraParameters[i - numNamedArgs] = arguments[i]
+    if (typeof arguments[i] == 'object') {
+      extraParameters[i - numNamedArgs] = getJavaObject(arguments[i]);
+    } else {
+      extraParameters[i - numNamedArgs] = arguments[i];
+    }
   }
 
   var newRest = Array.prototype.slice.call(extraParameters);
@@ -200,17 +208,112 @@ function evalIfTruthy(o, code, otherwise) {
   return o ? eval(code) : otherwise;
 }
 
-var objectCache = new Map();
+var mapJavaToJavaScript = new WeakMap(); // Maps a Java object/array to a JavaScript object/list
+var mapJavaScriptToJava = new WeakMap(); // Maps a JavaScript object/list to a Java object/array
 
 function getObjectViaJson(miscIdentifierForJavaScript, oJava) {
-  var oJavaScript = objectCache.get(oJava);
+  var oJavaScript = mapJavaToJavaScript.get(oJava);
   if (oJavaScript) {
     return oJavaScript;
   }
   var json = miscIdentifierForJavaScript.objectToJson(oJava);
   oJavaScript = JSON.parse(json);
-  objectCache.set(oJava, oJavaScript);
+  mapJavaToJavaScript.set(oJava, oJavaScript);
+  mapJavaScriptToJava.set(oJavaScript, oJava);
   return oJavaScript;
+}
+
+function updateObjectViaJson(miscIdentifierForJavaScript, oJava) {
+  // Remove the old values from the maps.
+  var oJavaScript = mapJavaToJavaScript.get(oJava);
+  if (oJavaScript) {
+    mapJavaScriptToJava.delete(oJavaScript);
+  }
+  if (mapJavaToJavaScript.has(oJava)) {
+    mapJavaToJavaScript.delete(oJava);
+  }
+
+  // Get the new values and put them in the maps.
+  return getObjectViaJson(miscIdentifierForJavaScript, oJava);
+}
+
+function getJavaObject(oJavaScript) {
+  var oJava = mapJavaScriptToJava.get(oJavaScript);
+  if (oJava) {
+    return oJava;
+  }
+  // If oJavaScript isn't in the map, it might be that oJavaScript came from a
+  // MyBlocks block, which means it is really a Java Object.
+  return oJavaScript;
+}
+
+function colorBlobsFilterByArea(minArea, maxArea, blobs) {
+  var toRemove = [];
+  for (var i = 0; i < blobs.length; i++) {
+    var b = blobs[i];
+    if (b.ContourArea > maxArea || b.ContourArea < minArea) {
+      toRemove.push(i);
+    }
+  }
+  for (var i = toRemove.length - 1; i >= 0; i--) {
+    blobs.splice(toRemove[i], 1);
+  }
+}
+
+function colorBlobsSortByArea(sortOrder, blobs) {
+  blobs.sort(function(c1, c2) {
+    var tmp = Math.sign(c2.ContourArea - c1.ContourArea);
+    if (sortOrder == "ASCENDING") {
+      tmp = -tmp;
+    }
+    return tmp;
+  });
+}
+
+function colorBlobsFilterByDensity(minDensity, maxDensity, blobs) {
+  var toRemove = [];
+  for (var i = 0; i < blobs.length; i++) {
+    var b = blobs[i];
+    if (b.Density > maxDensity || b.Density < minDensity) {
+      toRemove.push(i);
+    }
+  }
+  for (var i = toRemove.length - 1; i >= 0; i--) {
+    blobs.splice(toRemove[i], 1);
+  }
+}
+
+function colorBlobsSortByDensity(sortOrder, blobs) {
+  blobs.sort(function(c1, c2) {
+    var tmp = Math.sign(c2.Density - c1.Density);
+    if (sortOrder == "ASCENDING") {
+      tmp = -tmp;
+    }
+    return tmp;
+  });
+}
+
+function colorBlobsFilterByAspectRatio(minAspectRatio, maxAspectRatio, blobs) {
+  var toRemove = [];
+  for (var i = 0; i < blobs.length; i++) {
+    var b = blobs[i];
+    if (b.AspectRatio > maxAspectRatio || b.AspectRatio < minAspectRatio) {
+      toRemove.push(i);
+    }
+  }
+  for (var i = toRemove.length - 1; i >= 0; i--) {
+    blobs.splice(toRemove[i], 1);
+  }
+}
+
+function colorBlobsSortByAspectRatio(sortOrder, blobs) {
+  blobs.sort(function(c1, c2) {
+    var tmp = Math.sign(c2.AspectRatio - c1.AspectRatio);
+    if (sortOrder == "ASCENDING") {
+      tmp = -tmp;
+    }
+    return tmp;
+  });
 }
 
 // IMPORTANT!!! All identifiers in this file must be added as reserved words for the JavaScript runtime.

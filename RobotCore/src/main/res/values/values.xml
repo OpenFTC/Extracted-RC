@@ -501,7 +501,7 @@
     <string name="warningDsClockBehind">The Driver Station\'s clock is behind. Please set the clock to the correct time.</string>
     <string name="warningDuplicateOpMode">An OpMode with the name \'%s\' is already registered; renaming the duplicate OpMode.</string>
     <string name="warningI2cCommError">Error communicating with I2C device(s) </string>
-    <string name="warningMismatchedAppVersions">The Robot Controller and Driver Station app versions do not match, which is required for competition. You should update the %s app.</string>
+    <string name="warningMismatchedAppVersions">The Robot Controller and Driver Station app versions do not match, which is recommended for competition. You should update the %s app.</string>
     <string name="warningProblemCommunicatingWithUSBDevice">Problem communicating with %s.</string>
     <string name="warningRcAppObsolete">The Robot Controller app is obsolete. You should install the new version for this FTC season.</string>
     <string name="warningRcClockBehind">The Robot Controller\'s clock is behind. Please set the clock to the correct time.</string>

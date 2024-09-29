@@ -1,0 +1,574 @@
+<xml xmlns="https://developers.google.com/blockly/xml">
+<variables>
+<variable type="PredominantColorProcessor.Builder" id="yUI1R)p(2e_`in3b*gyP">myPredominantColorProcessorBuilder</variable>
+<variable id="oXfq4X*2AA30,hv{wiOi">myPredominantColorProcessor</variable>
+<variable type="VisionPortal.Builder" id="fEcd2%a%vlv16FPP]i9M">myVisionPortalBuilder</variable>
+<variable id="mD?J*1RmB`;jxOHI}|G~">myVisionPortal</variable>
+<variable id="W[iT:FTG%qgB)]18(;)L">myResult</variable>
+</variables>
+<block type="procedures_defnoreturn" id="WtpyD@tEu+EoY=P9iY,D" deletable="false" x="25" y="373">
+<field name="NAME">runOpMode</field>
+<comment pinned="true" h="346" w="784">This OpMode illustrates how to use a video source (camera) as a color sensor
+
+A "color sensor" will typically determine the color of the object that it is pointed at.
+
+This sample performs the same function, except it uses a video camera to inspect an object or scene.
+The user may choose to inspect all, or just a Region of Interest (ROI), of the active camera view.
+The user must also provide a list of "acceptable colors" (Swatches) from which the closest matching color will be selected.
+
+To perform this function, a VisionPortal runs a PredominantColorProcessor process.
+  The PredominantColorProcessor process is created first, and then the VisionPortal is built to use this process.
+  The PredominantColorProcessor analyses the ROI and splits the colored pixels into several color-clusters.
+  The largest of these clusters is then considered to be the "Predominant Color"
+  The process then matches the Predominant Color with the closest Swatch and returns that match.
+
+To aid the user, a colored rectangle is drawn on the camera preview to show the RegionOfInterest,
+The Predominant Color is used to paint the rectangle border, so the user can verify that the color is reasonable.</comment>
+<data>{"commentPositionLeft":-21,"commentPositionTop":-373}</data>
+<statement name="STACK">
+<block type="comment" id="Lc#BFtj*NTB48YL;eBl.">
+<field name="COMMENT">Build a "Color Sensor" vision processor based on the PredominantColorProcessor class.</field>
+<next>
+<block type="predominantColorProcessorBuilder_create_assign" id="K{qu4kfh)t[pSn9OG/m-">
+<field name="PREDOMINANT_COLOR_PROCESSOR_BUILDER" id="yUI1R)p(2e_`in3b*gyP" variabletype="PredominantColorProcessor.Builder">myPredominantColorProcessorBuilder</field>
+<next>
+<block type="comment" id="@6+y8tz_sbeMO}trL:y(">
+<field name="COMMENT">- Focus the color sensor by defining a RegionOfInterest (ROI) which you want to inspect.</field>
+<next>
+<block type="comment" id="A+K?Lh+/m.Y[BLh~NkZS">
+<field name="COMMENT">    This can be the entire frame, or a sub-region defined using:</field>
+<next>
+<block type="comment" id="}cE^X;+J#^#%tnq]`5xa">
+<field name="COMMENT">    1) standard image coordinates or 2) a normalized +/- 1.0 coordinate system.</field>
+<next>
+<block type="comment" id="aQ^xh((BFcuqOQfA`aaO">
+<field name="COMMENT">    Use one form of the ImageRegion class to define the ROI.</field>
+<next>
+<block type="predominantColorProcessorBuilder_setRoi" id="@2e`[vP=]KA;nV0-Ut2=" disabled="true">
+<field name="PREDOMINANT_COLOR_PROCESSOR_BUILDER" id="yUI1R)p(2e_`in3b*gyP" variabletype="PredominantColorProcessor.Builder">myPredominantColorProcessorBuilder</field>
+<value name="ROI">
+<shadow type="imageRegion_entireFrame" id="*nhC`-Nu58q4Nk+}UyjX"/>
+</value>
+<next>
+<block type="predominantColorProcessorBuilder_setRoi" id=":ZeK/.ss/X@1l@d!i5vL" disabled="true">
+<field name="PREDOMINANT_COLOR_PROCESSOR_BUILDER" id="yUI1R)p(2e_`in3b*gyP" variabletype="PredominantColorProcessor.Builder">myPredominantColorProcessorBuilder</field>
+<value name="ROI">
+<shadow type="imageRegion_entireFrame" id="~!se5w-9]p5NjOk2[k=f"/>
+<block type="imageRegion_asImageCoordinates" id="+Bj^=o7vP-ELSM@-`y.$">
+<comment pinned="true" h="72" w="193">100x100 pixel square near the upper left corner</comment>
+<data>{"commentPositionLeft":-5,"commentPositionTop":28}</data>
+<value name="LEFT">
+<shadow type="math_number" id="BQUG]C$YDpqj?Q8d!Pbq">
+<field name="NUM">50</field>
+</shadow>
+</value>
+<value name="TOP">
+<shadow type="math_number" id="!.6Nvr]]+ip1CW}T+0lz">
+<field name="NUM">50</field>
+</shadow>
+</value>
+<value name="RIGHT">
+<shadow type="math_number" id="650b;rlU8w|{i(P*yG5{">
+<field name="NUM">150</field>
+</shadow>
+</value>
+<value name="BOTTOM">
+<shadow type="math_number" id="x8Sy~*)*BBcs}0)+f7nX">
+<field name="NUM">150</field>
+</shadow>
+</value>
+</block>
+</value>
+<next>
+<block type="predominantColorProcessorBuilder_setRoi" id="x=}nZBc/)`H]YO#d(a9.">
+<field name="PREDOMINANT_COLOR_PROCESSOR_BUILDER" id="yUI1R)p(2e_`in3b*gyP" variabletype="PredominantColorProcessor.Builder">myPredominantColorProcessorBuilder</field>
+<value name="ROI">
+<shadow type="imageRegion_entireFrame" id="wY0s3b3o[,#PuC6gL-c)"/>
+<block type="imageRegion_asUnityCenterCoordinates" id="d|EwJ7,fN4y1|NIGcde|">
+<comment pinned="true" h="68" w="187">10% width/height square centered on screen</comment>
+<data>{"commentPositionLeft":-2,"commentPositionTop":23}</data>
+<value name="LEFT">
+<shadow type="math_number" id="!}@m-CxgJ$po5_{IiA;P">
+<field name="NUM">-0.1</field>
+</shadow>
+</value>
+<value name="TOP">
+<shadow type="math_number" id="CHeN4wKb8N62DQ3aCagI">
+<field name="NUM">0.1</field>
+</shadow>
+</value>
+<value name="RIGHT">
+<shadow type="math_number" id="Pq`TZdl2SrC5~2QTDnB9">
+<field name="NUM">0.1</field>
+</shadow>
+</value>
+<value name="BOTTOM">
+<shadow type="math_number" id="OC;6Q/~)d#sD*I^1lxT3">
+<field name="NUM">-0.1</field>
+</shadow>
+</value>
+</block>
+</value>
+<next>
+<block type="comment" id="UelI/l=7p4qePZMhEPUl">
+<field name="COMMENT">- Set the list of "acceptable" color swatches (matches).</field>
+<next>
+<block type="comment" id="v]sn?.p:]veu{2A4SQw^">
+<field name="COMMENT">    Only colors that you assign here will be returned.</field>
+<next>
+<block type="comment" id="txhv-0lC__!6]l#/VY9#">
+<field name="COMMENT">    If you know the sensor will be pointing to one of a few specific colors, enter them here.</field>
+<next>
+<block type="comment" id="w~as?Gb]iXCbxd!k0wF@">
+<field name="COMMENT">    Or, if the sensor may be pointed randomly, provide some additional colors that may match the surrounding.</field>
+<next>
+<block type="comment" id="+40h{s/ggzSU#^jK!L:*">
+<field name="COMMENT">    Note that in the example shown below, only some of the available colors are included.</field>
+<next>
+<block type="comment" id="_`}$;7Wsmr2N#[y5J{W~">
+<field name="COMMENT">    This will force any other colored region into one of these colors.</field>
+<next>
+<block type="comment" id="z/Ripe~W|jH+`cR4{XA4">
+<field name="COMMENT">    eg: Green may be reported as YELLOW, as this may be the "closest" match.</field>
+<next>
+<block type="predominantColorProcessorBuilder_setSwatches" id="AXWIQV(4@|7Du1X_]*,A" inline="false">
+<mutation items="5"/>
+<field name="PREDOMINANT_COLOR_PROCESSOR_BUILDER" id="yUI1R)p(2e_`in3b*gyP" variabletype="PredominantColorProcessor.Builder">myPredominantColorProcessorBuilder</field>
+<value name="SWATCH0">
+<block type="predominantColor_typedEnum_swatch" id="GM.kOr-cXg`KdA^]%=R4">
+<field name="SWATCH">RED</field>
+</block>
+</value>
+<value name="SWATCH1">
+<block type="predominantColor_typedEnum_swatch" id="x,W~}]@y:X.M6K;a;yA8">
+<field name="SWATCH">BLUE</field>
+</block>
+</value>
+<value name="SWATCH2">
+<block type="predominantColor_typedEnum_swatch" id="]4k1C}2mfk^1)xX.;NQn">
+<field name="SWATCH">YELLOW</field>
+</block>
+</value>
+<value name="SWATCH3">
+<block type="predominantColor_typedEnum_swatch" id="GaANUl.YbPo1}|j0~)Wc">
+<field name="SWATCH">BLACK</field>
+</block>
+</value>
+<value name="SWATCH4">
+<block type="predominantColor_typedEnum_swatch" id=":eOfAm7K2@C)/^[TL$;j">
+<field name="SWATCH">WHITE</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id="J$VyAwbRCfu({Y)2D/)V">
+<field name="VAR" id="oXfq4X*2AA30,hv{wiOi">myPredominantColorProcessor</field>
+<value name="VALUE">
+<block type="predominantColorProcessorBuilder_build" id="/$*#f*4odeoa,;*M6a~U">
+<field name="PREDOMINANT_COLOR_PROCESSOR_BUILDER" id="yUI1R)p(2e_`in3b*gyP" variabletype="PredominantColorProcessor.Builder">myPredominantColorProcessorBuilder</field>
+</block>
+</value>
+<next>
+<block type="comment" id="aJ[)Zn+=F?LV3=WwKtEs">
+<field name="COMMENT">Build a vision portal to run the Color Sensor process.</field>
+<next>
+<block type="visionPortalBuilder_create_assign" id=";cgJUIihv,.[mDcvNh.f">
+<field name="VISION_PORTAL_BUILDER" id="fEcd2%a%vlv16FPP]i9M" variabletype="VisionPortal.Builder">myVisionPortalBuilder</field>
+<next>
+<block type="comment" id="Ik[4n:FzdriuRF8qX2J`">
+<field name="COMMENT"> - Add the colorSensor process created above.</field>
+<next>
+<block type="visionPortalBuilder_addProcessor" id="A{QNgq:{yiVnEq0/L!Et">
+<field name="VISION_PORTAL_BUILDER" id="fEcd2%a%vlv16FPP]i9M" variabletype="VisionPortal.Builder">myVisionPortalBuilder</field>
+<value name="VISION_PROCESSOR">
+<block type="variables_get" id="SiSQ}2os5~Iws}a~!m%n">
+<field name="VAR" id="oXfq4X*2AA30,hv{wiOi">myPredominantColorProcessor</field>
+</block>
+</value>
+<next>
+<block type="comment" id="09:,r]~!l)%ey3K~M;8M">
+<field name="COMMENT"> - Set the desired video resolution.</field>
+<next>
+<block type="comment" id="1kh=++|v/hnd?e-|{|i0">
+<field name="COMMENT">     Since a high resolution will not improve this process, choose a lower resolution that is</field>
+<next>
+<block type="comment" id="Li91h-aB4n60zrnMz|Q_">
+<field name="COMMENT">     supported by your camera. This will improve overall performance and reduce latency.</field>
+<next>
+<block type="visionPortalBuilder_setCameraResolution" id="5rr~8ZFq,(aBjbm)edh:">
+<field name="VISION_PORTAL_BUILDER" id="fEcd2%a%vlv16FPP]i9M" variabletype="VisionPortal.Builder">myVisionPortalBuilder</field>
+<value name="CAMERA_WIDTH">
+<shadow type="math_number" id="F-sN/zE*T+e-g)psaL61">
+<field name="NUM">320</field>
+</shadow>
+</value>
+<value name="CAMERA_HEIGHT">
+<shadow type="math_number" id="S.}Vx`}rZKmGtrYH*x1[">
+<field name="NUM">240</field>
+</shadow>
+</value>
+<next>
+<block type="comment" id="zmV;t}`8]ciw;#9*O]+$">
+<field name="COMMENT"> - Choose your video source. This may be for a webcam or for a Phone Camera.</field>
+<next>
+<block type="visionPortalBuilder_setCamera" id="UfPArg(Y4Kxftyq{D:w(">
+<field name="VISION_PORTAL_BUILDER" id="fEcd2%a%vlv16FPP]i9M" variabletype="VisionPortal.Builder">myVisionPortalBuilder</field>
+<value name="CAMERA">
+<shadow type="navigation_webcamName" id="huxZsW1Nd?jd1wyMGgS|">
+<field name="WEBCAM_NAME">Webcam 1</field>
+</shadow>
+</value>
+<next>
+<block type="variables_set" id="GZ(82:Lg*8J3.@CVNB4u">
+<field name="VAR" id="mD?J*1RmB`;jxOHI}|G~">myVisionPortal</field>
+<value name="VALUE">
+<block type="visionPortalBuilder_build" id="to-6UO?8Pe{@/mJ/y2[Q">
+<field name="VISION_PORTAL_BUILDER" id="fEcd2%a%vlv16FPP]i9M" variabletype="VisionPortal.Builder">myVisionPortalBuilder</field>
+</block>
+</value>
+<next>
+<block type="telemetry_setProperty_Number" id="%;AmEHyo?xR5*yfcR|W1">
+<field name="PROP">MsTransmissionInterval</field>
+<comment pinned="false" h="43" w="364">Speed up telemetry updates, Just use for debugging.</comment>
+<data>{"commentPositionLeft":392,"commentPositionTop":-15}</data>
+<value name="VALUE">
+<shadow type="math_number" id="F3;4BnN[ZdER)f)?SOUN">
+<field name="NUM">50</field>
+</shadow>
+</value>
+<next>
+<block type="comment" id="x^FU*UT:ZiFEqk$};0te">
+<field name="COMMENT">WARNING:  To be able to view the stream preview on the Driver Station, this code runs in INIT mode.</field>
+<next>
+<block type="controls_whileUntil" id="^0Kagy/e+Ea{rbZPv2G6">
+<field name="MODE">WHILE</field>
+<value name="BOOL">
+<block type="logic_operation" id="{ij5/9p9eY])BB.rv5N+" inline="false">
+<field name="OP">OR</field>
+<value name="A">
+<block type="linearOpMode_opModeIsActive" id="e)cr{!2VIET83s,JWC.="/>
+</value>
+<value name="B">
+<block type="linearOpMode_opModeInInit" id="~|2XINenosOfbfMu(W9y"/>
+</value>
+</block>
+</value>
+<statement name="DO">
+<block type="telemetry_addTextData_All" id="$Doe_ZP|U:jUQ)^i9Pt3">
+<value name="KEY">
+<shadow type="text" id="_2M4hC^kD:h@Eo3/6P63">
+<field name="TEXT">DS preview on/off</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id="vp|^8+-fn4FT=@%sPP_Q">
+<field name="TEXT">3 dots, Camera Stream</field>
+</shadow>
+</value>
+<next>
+<block type="telemetry_addLine" id="m$01?l5EaRGqm`q1LnuS">
+<value name="TEXT">
+<shadow type="text" id="|*7+0ykpZuv8zgNBk(Sz">
+<field name="TEXT"/>
+</shadow>
+</value>
+<next>
+<block type="comment" id="SJZ78PJzY6xL_0e]4w1{">
+<field name="COMMENT">Request the most recent color analysis.</field>
+<next>
+<block type="comment" id="Jh/;L$n@JuX8AQJDFCul">
+<field name="COMMENT">This will return the closest matching colorSwatch and the predominant RGB color.</field>
+<next>
+<block type="variables_set" id="MB(NmOK;$*omB?G^0ZSe">
+<field name="VAR" id="W[iT:FTG%qgB)]18(;)L">myResult</field>
+<value name="VALUE">
+<block type="predominantColorProcessor_getAnalysis" id="$?4Z+}{nGMf@bE[4Dp_s">
+<value name="PREDOMINANT_COLOR_PROCESSOR">
+<block type="variables_get" id="-A/JJzZBer@VDp=B@Zg|">
+<field name="VAR" id="oXfq4X*2AA30,hv{wiOi">myPredominantColorProcessor</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="comment" id="r*it@Y2Dki3i^W7I)k7a">
+<field name="COMMENT">Note: to take actions based on the detected color, simply use the colorSwatch in a comparison or switch.</field>
+<next>
+<block type="comment" id="XYi:O3,R)!T:SZqcLHbQ">
+<field name="COMMENT"> eg:</field>
+<next>
+<block type="controls_if" id="`fHYbK*7_.j:Sowv+?Qz" disabled="true">
+<value name="IF0">
+<block type="logic_compare" id="Kk*9|6lXrFQ$JH%$}XS8">
+<field name="OP">EQ</field>
+<value name="A">
+<block type="predominantColorProcessorResult_getProperty_Swatch" id="pxm7pdNW=ze_Z+O/.Uze">
+<field name="PROP">closestSwatch</field>
+<value name="RESULT">
+<block type="variables_get" id="w|77%#T/^VWtXR..1[zS">
+<field name="VAR" id="W[iT:FTG%qgB)]18(;)L">myResult</field>
+</block>
+</value>
+</block>
+</value>
+<value name="B">
+<block type="predominantColor_typedEnum_swatch" id="nWt8b;[W5870~1;(1XK[">
+<field name="SWATCH">RED</field>
+</block>
+</value>
+</block>
+</value>
+<statement name="DO0">
+<block type="comment" id="K~jI|,,xfvF_ZN-!;AiP">
+<field name="COMMENT">... some code  ...</field>
+</block>
+</statement>
+<next>
+<block type="comment" id="LNQ/aOAz6Uln~y#^$6{F">
+<field name="COMMENT">Display the Color Sensor result.</field>
+<next>
+<block type="telemetry_addTextData_All" id="hotG$i|Dfe(W7m-bfbYM">
+<value name="KEY">
+<shadow type="text" id="SGl:KbG~FF``yZ1LS:l6">
+<field name="TEXT">Best Match:</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id="D@Ku2Dw5]vtr6IhQC9t,">
+<field name="TEXT">text</field>
+</shadow>
+<block type="predominantColorProcessorResult_getProperty_Swatch" id="ciT@UG)8sxap{W1dp#6D">
+<field name="PROP">closestSwatch</field>
+<value name="RESULT">
+<block type="variables_get" id="0Pn#0eBXQ+)L|/wCz:F!">
+<field name="VAR" id="W[iT:FTG%qgB)]18(;)L">myResult</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_addLine" id="hjFc60GM|r@k1|0j|H6o">
+<value name="TEXT">
+<shadow type="text" id="3f*XdKRbLsU6p,j2Bp6D">
+<field name="TEXT">text</field>
+</shadow>
+<block type="text_join" id="PAOiw7OmcUODU}jNl:;,">
+<mutation items="6"/>
+<value name="ADD0">
+<block type="text" id="2/8]VG@YQ(GIW.]4nuM^">
+<field name="TEXT">R </field>
+</block>
+</value>
+<value name="ADD1">
+<block type="misc_formatNumber_withWidth" id="O+{y)GNU=OPbc|Sbg;4c">
+<value name="NUMBER">
+<shadow type="math_number" id="5emvV5:i*{Jw^b8M@[Wj">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="color_getProperty_Number" id="qz?5u^^ZQAjhslrwJK9Q">
+<field name="PROP">Red</field>
+<value name="COLOR">
+<block type="predominantColorProcessorResult_getProperty_Number" id="])7_hx%~?=Ttk12+)]d(">
+<field name="PROP">rgb</field>
+<value name="RESULT">
+<block type="variables_get" id="jRwrlG7v_+qUb^j0~r;q">
+<field name="VAR" id="W[iT:FTG%qgB)]18(;)L">myResult</field>
+</block>
+</value>
+</block>
+</value>
+</block>
+</value>
+<value name="WIDTH">
+<shadow type="math_number" id="Q~4!#2{Eriv?lDn}l|48">
+<field name="NUM">3</field>
+</shadow>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id=",IYejkQ0A4wLNuX76,*^">
+<field name="NUM">0</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="ADD2">
+<block type="text" id="INEN%mfCI=`v}X|E.51Q">
+<field name="TEXT">, G </field>
+</block>
+</value>
+<value name="ADD3">
+<block type="misc_formatNumber_withWidth" id="-9ww;!nwG{^*geoa}/.q">
+<value name="NUMBER">
+<shadow type="math_number" id="ky^^69+iA$9MEb:_ayaj">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="color_getProperty_Number" id="RMymPQx5==G4qWCUkI^u">
+<field name="PROP">Green</field>
+<value name="COLOR">
+<block type="predominantColorProcessorResult_getProperty_Number" id="OQA`@1!^VLpG@OV=OQ5~">
+<field name="PROP">rgb</field>
+<value name="RESULT">
+<block type="variables_get" id="Y;?SY[QPsPPHJiN4{Pv$">
+<field name="VAR" id="W[iT:FTG%qgB)]18(;)L">myResult</field>
+</block>
+</value>
+</block>
+</value>
+</block>
+</value>
+<value name="WIDTH">
+<shadow type="math_number" id="?s59,7mlt[Hal@aaoC0.">
+<field name="NUM">3</field>
+</shadow>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="xr;=znL.7hB9O@v#K$#%">
+<field name="NUM">0</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="ADD4">
+<block type="text" id="kRkk~g=Ml;QzTd16YpeS">
+<field name="TEXT">, B </field>
+</block>
+</value>
+<value name="ADD5">
+<block type="misc_formatNumber_withWidth" id="4a4KB|IFJZwYf4^RNp,m">
+<value name="NUMBER">
+<shadow type="math_number" id="0CWwIby~8]aLGRw|NbP|">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="color_getProperty_Number" id="S9oVOmuJp1XCG}CLqL[G">
+<field name="PROP">Blue</field>
+<value name="COLOR">
+<block type="predominantColorProcessorResult_getProperty_Number" id="PJQs3(Jjp{/dIt*KSUpG">
+<field name="PROP">rgb</field>
+<value name="RESULT">
+<block type="variables_get" id="v;awZ#Ext_}%fE4V80Ip">
+<field name="VAR" id="W[iT:FTG%qgB)]18(;)L">myResult</field>
+</block>
+</value>
+</block>
+</value>
+</block>
+</value>
+<value name="WIDTH">
+<shadow type="math_number" id="o*?dwUtquKnj266=7W1$">
+<field name="NUM">3</field>
+</shadow>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="@91=-JyUxJBH0gNy1CPZ">
+<field name="NUM">0</field>
+</shadow>
+</value>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_update" id="exvivmft-pX$n!1,8Ea$">
+<next>
+<block type="linearOpMode_sleep_Number" id="x:lmnCvYWX/.NOk2_UX~">
+<value name="MILLISECONDS">
+<shadow type="math_number" id="?eguI3VW*wMe[Szq;nCR">
+<field name="NUM">20</field>
+</shadow>
+</value>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</xml>
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<Extra>
+<OpModeMeta flavor="TELEOP" group="" autoTransition="" />
+<Enabled value="true" />
+</Extra>

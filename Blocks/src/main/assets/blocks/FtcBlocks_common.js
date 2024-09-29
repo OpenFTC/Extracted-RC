@@ -548,6 +548,14 @@ function addReservedWordsForJavaScriptRuntime() {
   Blockly.JavaScript.addReservedWords('evalIfTruthy');
   Blockly.JavaScript.addReservedWords('objectCache');
   Blockly.JavaScript.addReservedWords('getObjectViaJson');
+  Blockly.JavaScript.addReservedWords('updateObjectViaJson');
+  Blockly.JavaScript.addReservedWords('getJavaObject');
+  Blockly.JavaScript.addReservedWords('colorBlobsFilterByArea');
+  Blockly.JavaScript.addReservedWords('colorBlobsSortByArea');
+  Blockly.JavaScript.addReservedWords('colorBlobsFilterByDensity');
+  Blockly.JavaScript.addReservedWords('colorBlobsSortByDensity');
+  Blockly.JavaScript.addReservedWords('colorBlobsFilterByAspectRatio');
+  Blockly.JavaScript.addReservedWords('colorBlobsSortByAspectRatio');
 }
 
 function resizeBlocklyArea() {

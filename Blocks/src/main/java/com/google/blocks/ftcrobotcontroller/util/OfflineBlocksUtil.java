@@ -98,6 +98,7 @@ public class OfflineBlocksUtil {
     assetsToInclude.add("blocks/bno055imu_parameters.js");
     assetsToInclude.add("blocks/clipboard_util.js");
     assetsToInclude.add("blocks/color.js");
+    assetsToInclude.add("blocks/color_blob_locator.js");
     assetsToInclude.add("blocks/color_range_sensor.js");
     assetsToInclude.add("blocks/color_sensor.js");
     assetsToInclude.add("blocks/compass_sensor.js");
@@ -132,10 +133,12 @@ public class OfflineBlocksUtil {
     assetsToInclude.add("blocks/navigation.js");
     assetsToInclude.add("blocks/octoquad.js");
     assetsToInclude.add("blocks/open_gl_matrix.js");
+    assetsToInclude.add("blocks/opencv.js");
     assetsToInclude.add("blocks/optical_distance_sensor.js");
     assetsToInclude.add("blocks/orientation.js");
     assetsToInclude.add("blocks/pidf_coefficients.js");
     assetsToInclude.add("blocks/position.js");
+    assetsToInclude.add("blocks/predominant_color.js");
     assetsToInclude.add("blocks/project_util.js");
     assetsToInclude.add("blocks/ptz_control.js");
     assetsToInclude.add("blocks/quaternion.js");
@@ -145,6 +148,7 @@ public class OfflineBlocksUtil {
     assetsToInclude.add("blocks/rumble_effect.js");
     assetsToInclude.add("blocks/servo.js");
     assetsToInclude.add("blocks/servo_controller.js");
+    assetsToInclude.add("blocks/sort_order.js");
     // sound_util.js is not needed
     assetsToInclude.add("blocks/sparkfun_led_stick.js");
     assetsToInclude.add("blocks/sparkfun_otos.js");

@@ -1111,6 +1111,12 @@ Blockly.FtcJava.generateImport_ = function(type) {
   if (type.endsWith('[]')) {
     type = type.substring(0, type.length - 2); // 2 is length of []
   }
+  // Some classes are fully specified (not imported) because the class name conflicts with other classes.
+  if (type == "org.opencv.core.Size" ||   // conflicts with android.util.Size
+      type == "org.opencv.core.Point" ||  // conflicts with android.graphics.Point
+      type == "org.opencv.core.Rect") {   // conflicts with android.graphics.Rect
+    return;
+  }
   var matches = type.match(/^List<(.*)>$/);
   if (matches) {
     Blockly.FtcJava.generateImport_('List');

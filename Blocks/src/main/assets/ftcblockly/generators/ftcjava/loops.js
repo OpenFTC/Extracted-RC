@@ -155,6 +155,8 @@ Blockly.FtcJava['controls_forEach'] = function(block) {
     var matches = listType.match(/^List<(.*)>$/);
     if (matches) {
       variable0Type = matches[1];
+    } else if (listType.endsWith('[]')) {
+      variable0Type = listType.substring(0, listType.length - 2);
     }
   } else {
     Blockly.FtcJava.generateImport_('Collections');

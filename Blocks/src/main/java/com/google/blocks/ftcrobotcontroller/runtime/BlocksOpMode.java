@@ -461,6 +461,8 @@ public final class BlocksOpMode extends LinearOpMode {
         new BNO055IMUParametersAccess(this, Identifier.BNO055IMU_PARAMETERS.identifierForJavaScript));
     addJavascriptInterface(Identifier.COLOR.identifierForJavaScript,
         new ColorAccess(this, Identifier.COLOR.identifierForJavaScript, activity));
+    addJavascriptInterface(Identifier.COLOR_BLOB_LOCATOR.identifierForJavaScript,
+        new ColorBlobLocatorAccess(this, Identifier.COLOR_BLOB_LOCATOR.identifierForJavaScript));
     addJavascriptInterface(Identifier.DBG_LOG.identifierForJavaScript,
         new DbgLogAccess(this, Identifier.DBG_LOG.identifierForJavaScript));
     addJavascriptInterface(Identifier.ELAPSED_TIME.identifierForJavaScript,
@@ -493,6 +495,8 @@ public final class BlocksOpMode extends LinearOpMode {
         new MiscAccess(this, Identifier.MISC.identifierForJavaScript, hardwareMap));
     addJavascriptInterface(Identifier.NAVIGATION.identifierForJavaScript,
         new NavigationAccess(this, Identifier.NAVIGATION.identifierForJavaScript, hardwareMap));
+    addJavascriptInterface(Identifier.OPENCV.identifierForJavaScript,
+        new OpencvAccess(this, Identifier.OPENCV.identifierForJavaScript));
     addJavascriptInterface(Identifier.OPEN_GL_MATRIX.identifierForJavaScript,
         new OpenGLMatrixAccess(this, Identifier.OPEN_GL_MATRIX.identifierForJavaScript));
     addJavascriptInterface(Identifier.ORIENTATION.identifierForJavaScript,
@@ -501,6 +505,8 @@ public final class BlocksOpMode extends LinearOpMode {
         new PIDFCoefficientsAccess(this, Identifier.PIDF_COEFFICIENTS.identifierForJavaScript));
     addJavascriptInterface(Identifier.POSITION.identifierForJavaScript,
         new PositionAccess(this, Identifier.POSITION.identifierForJavaScript));
+    addJavascriptInterface(Identifier.PREDOMINANT_COLOR.identifierForJavaScript,
+        new PredominantColorAccess(this, Identifier.PREDOMINANT_COLOR.identifierForJavaScript));
     addJavascriptInterface(Identifier.PTZ_CONTROL.identifierForJavaScript,
         new PtzControlAccess(this, Identifier.PTZ_CONTROL.identifierForJavaScript));
     addJavascriptInterface(Identifier.QUATERNION.identifierForJavaScript,
