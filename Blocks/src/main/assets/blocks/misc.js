@@ -167,6 +167,71 @@ Blockly.FtcJava['misc_atan2'] = function(block) {
   return [code, Blockly.FtcJava.ORDER_MULTIPLICATION];
 };
 
+Blockly.Blocks['misc_minmax'] = {
+  init: function() {
+    var FUNC_CHOICES = [
+        ['max', 'max'],
+        ['min', 'min'],
+    ];
+    this.setOutput(true, 'Number');
+    this.appendDummyInput()
+        .appendField(new Blockly.FieldDropdown(FUNC_CHOICES), 'FUNC');
+    this.appendValueInput('A').setCheck('Number')
+        .appendField('a')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('B').setCheck('Number')
+        .appendField('b')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.setColour(Blockly.Msg.MATH_HUE);
+    // Assign 'this' to a variable for use in the tooltip closure below.
+    var thisBlock = this;
+    var TOOLTIPS = [
+        ['max', 'Returns the greater of two numerical values.'],
+        ['min', 'Returns the smaller of two numerical values.'],
+        ];
+    this.setTooltip(function() {
+      var key = thisBlock.getFieldValue('FUNC');
+      for (var i = 0; i < TOOLTIPS.length; i++) {
+        if (TOOLTIPS[i][0] == key) {
+          return TOOLTIPS[i][1];
+        }
+      }
+      return '';
+    });
+    this.getFtcJavaInputType = function(inputName) {
+      switch (inputName) {
+        case 'A':
+        case 'B':
+          return 'double';
+      }
+      return '';
+    };
+    this.getFtcJavaOutputType = function() {
+      return 'double';
+    };
+  }
+};
+
+Blockly.JavaScript['misc_minmax'] = function(block) {
+  var func = block.getFieldValue('FUNC')
+  var a = Blockly.JavaScript.valueToCode(
+      block, 'A', Blockly.JavaScript.ORDER_COMMA);
+  var b = Blockly.JavaScript.valueToCode(
+      block, 'B', Blockly.JavaScript.ORDER_COMMA);
+  var code = 'Math.' + func + '(' + a + ', ' + b + ')';
+  return [code, Blockly.JavaScript.ORDER_FUNCTION_CALL];
+};
+
+Blockly.FtcJava['misc_minmax'] = function(block) {
+  var func = block.getFieldValue('FUNC')
+  var a = Blockly.FtcJava.valueToCode(
+      block, 'A', Blockly.FtcJava.ORDER_COMMA);
+  var b = Blockly.FtcJava.valueToCode(
+      block, 'B', Blockly.FtcJava.ORDER_COMMA);
+  var code = 'Math.' + func + '(' + a + ', ' + b + ')';
+  return [code, Blockly.FtcJava.ORDER_FUNCTION_CALL];
+};
+
 Blockly.Blocks['misc_formatNumber'] = {
   init: function() {
     this.setOutput(true, 'String');
@@ -292,6 +357,9 @@ Blockly.Blocks['misc_roundDecimal'] = {
           return 'int';
       }
       return '';
+    };
+    this.getFtcJavaOutputType = function() {
+      return 'double';
     };
   }
 };
@@ -466,6 +534,30 @@ Blockly.FtcJava['misc_setAndGetVariable'] = function(block) {
   return [code, Blockly.FtcJava.ORDER_ATOMIC];
 };
 
+Blockly.Blocks['misc_evaluateButIgnoreResult'] = {
+  init: function() {
+    this.appendValueInput('VALUE')
+        .appendField('evaluate but ignore result')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setColour(functionColor);
+    this.setTooltip('Executes the connected block and ignores the result. ' +
+		    'Allows you to call a function and ignore the return value.');
+  }
+};
+
+Blockly.JavaScript['misc_evaluateButIgnoreResult'] = function(block) {
+  var value = Blockly.JavaScript.valueToCode(
+      block, 'VALUE', Blockly.JavaScript.ORDER_NONE);
+  return value + ';\n';
+};
+
+Blockly.FtcJava['misc_evaluateButIgnoreResult'] = function(block) {
+  var value = Blockly.FtcJava.valueToCode(
+      block, 'VALUE', Blockly.FtcJava.ORDER_NONE);
+  return value + ';\n';
+};
 
 //................................................................................
 // MyBlocks

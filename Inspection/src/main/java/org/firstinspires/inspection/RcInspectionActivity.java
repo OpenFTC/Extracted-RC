@@ -54,11 +54,11 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 import com.qualcomm.robotcore.exception.RobotCoreException;
-import com.qualcomm.robotcore.hardware.configuration.ConfigurationType;
 import com.qualcomm.robotcore.hardware.configuration.ControllerConfiguration;
 import com.qualcomm.robotcore.hardware.configuration.DeviceConfiguration;
 import com.qualcomm.robotcore.hardware.configuration.LynxModuleConfiguration;
 import com.qualcomm.robotcore.hardware.configuration.ReadXMLFileHandler;
+import com.qualcomm.robotcore.hardware.configuration.ServoHubConfiguration;
 import com.qualcomm.robotcore.hardware.configuration.WebcamConfiguration;
 import com.qualcomm.robotcore.robocol.Command;
 import com.qualcomm.robotcore.util.RobotLog;
@@ -421,6 +421,11 @@ public class RcInspectionActivity extends InspectionActivity
             addDevicesToSurvey(surveyData, lynx.getAnalogInputs());
             addDevicesToSurvey(surveyData, lynx.getDigitalDevices());
             addDevicesToSurvey(surveyData, lynx.getI2cDevices());
+            }
+        else if (controller instanceof ServoHubConfiguration)
+            {
+            ServoHubConfiguration servoHub = (ServoHubConfiguration) controller;
+            addDevicesToSurvey(surveyData, servoHub.getServos());
             }
         }
 

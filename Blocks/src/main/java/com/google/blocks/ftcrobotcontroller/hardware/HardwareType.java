@@ -23,8 +23,10 @@ import com.qualcomm.hardware.adafruit.AdafruitBNO055IMU;
 import com.qualcomm.hardware.bosch.BNO055IMUImpl;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.hardware.digitalchickenlabs.OctoQuadImpl;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.lynx.LynxEmbeddedIMU;
 import com.qualcomm.hardware.lynx.LynxModule;
+import com.qualcomm.hardware.maxbotix.MaxSonarI2CXL;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsAnalogOpticalDistanceSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsTouchSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cCompassSensor;
@@ -33,6 +35,7 @@ import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.hardware.rev.RevTouchSensor;
+import com.qualcomm.hardware.sparkfun.SparkFunLEDStick;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.hardware.AccelerationSensor;
 import com.qualcomm.robotcore.hardware.AnalogInput;
@@ -166,11 +169,21 @@ public enum HardwareType {
       ToolboxFolder.SENSORS, "LightSensor", ToolboxIcon.LIGHT_SENSOR,
       LightSensor.class,
       BuiltInConfigurationType.LIGHT_SENSOR.getXmlTag()),
+  LIMELIGHT_3A( // see limelight_3a.js
+      "createLimelight3ADropdown", "limelight3A", "AsLimelight3A", "_Limelight3A",
+      ToolboxFolder.SENSORS, "Limelight3A", null, // No toolbox icon.
+      Limelight3A.class,
+      BuiltInConfigurationType.ETHERNET_OVER_USB_DEVICE.getXmlTag()),
   LYNX_MODULE( // No blocks provided.
       null, null, "AsREVModule", "_REV_Module",
       null, null, null,
       LynxModule.class,
       BuiltInConfigurationType.LYNX_MODULE.getXmlTag()),
+  MAX_SONAR_I2CXL( // see max_sonar_i2cxl.js
+      "createMaxSonarI2CXLDropdown", "maxSonarI2CXL", "AsMaxSonarI2CXL", "_MaxSonarI2CXL",
+      ToolboxFolder.SENSORS, "MaxSonarI2CXL", null, // No toolbox icon.
+      MaxSonarI2CXL.class,
+      ConfigurationTypeManager.getXmlTag(MaxSonarI2CXL.class)),
   MR_I2C_COMPASS_SENSOR( // see mr_i2c_compass_sensor.js
       "createMrI2cCompassSensorDropdown", "mrI2cCompassSensor", "AsMrI2cCompassSensor", "_MR_I2cCompassSensor",
       ToolboxFolder.SENSORS, "MrI2cCompassSensor", ToolboxIcon.COMPASS_SENSOR,
@@ -195,7 +208,7 @@ public enum HardwareType {
       ConfigurationTypeManager.getXmlTag(RevColorSensorV3.class)),
   REV_BLINKIN_LED_DRIVER( // see rev_blinkin_led_driver.js
       "createRevBlinkinLedDriverDropdown", "revBlinkinLedDriver", "AsRevBlinkinLedDriver", "_RevBlinkinLedDriver",
-      ToolboxFolder.ACTUATORS, "RevBlinkinLedDriver", ToolboxIcon.LED,
+      ToolboxFolder.OTHER, "RevBlinkinLedDriver", ToolboxIcon.LED,
       RevBlinkinLedDriver.class,
       ConfigurationTypeManager.getXmlTag(RevBlinkinLedDriver.class)),
   SERVO( // see servo.js
@@ -208,6 +221,11 @@ public enum HardwareType {
       ToolboxFolder.ACTUATORS, "ServoController", ToolboxIcon.SERVO_CONTROLLER,
       ServoController.class,
       BuiltInConfigurationType.LYNX_MODULE.getXmlTag()),
+  SPARKFUN_LED_STICK( // see sparkfun_led_stick.js
+      "createSparkFunLEDStickDropdown", "sparkFunLEDStick", "AsSparkFunLEDStick", "_SparkFunLEDStick",
+      ToolboxFolder.OTHER, "SparkFunLEDStick", null, // No toolbox icon.
+      SparkFunLEDStick.class,
+      ConfigurationTypeManager.getXmlTag(SparkFunLEDStick.class)),
   SPARKFUN_OTOS( // see sparkfun_otos.js
       "createSparkFunOTOSDropdown", "sparkFunOTOS", "AsSparkFunOTOS", "_SparkFunOTOS",
       ToolboxFolder.SENSORS, "SparkFunOTOS", null, // No toolbox icon.

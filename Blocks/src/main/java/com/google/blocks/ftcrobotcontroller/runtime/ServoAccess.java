@@ -19,19 +19,21 @@ package com.google.blocks.ftcrobotcontroller.runtime;
 import android.webkit.JavascriptInterface;
 import com.google.blocks.ftcrobotcontroller.hardware.HardwareItem;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.Servo.Direction;
+import com.qualcomm.robotcore.hardware.ServoImplEx;
 
 /**
  * A class that provides JavaScript access to a {@link Servo}.
  *
  * @author lizlooney@google.com (Liz Looney)
  */
-class ServoAccess extends HardwareAccess<Servo> {
-  private final Servo servo;
+class ServoAccess extends HardwareAccess<ServoImplEx> {
+  private final ServoImplEx servo;
 
   ServoAccess(BlocksOpMode blocksOpMode, HardwareItem hardwareItem, HardwareMap hardwareMap) {
-    super(blocksOpMode, hardwareItem, hardwareMap, Servo.class);
+    super(blocksOpMode, hardwareItem, hardwareMap, ServoImplEx.class);
     this.servo = hardwareDevice;
   }
 
@@ -111,6 +113,51 @@ class ServoAccess extends HardwareAccess<Servo> {
     try {
       startBlockExecution(BlockType.FUNCTION, ".scaleRange");
       servo.scaleRange(min, max);
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(classes = {PwmControl.class}, methodName = "setPwmEnable")
+  public void setPwmEnable() {
+    try {
+      startBlockExecution(BlockType.FUNCTION, ".setPwmEnable");
+      servo.setPwmEnable();
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(classes = {PwmControl.class}, methodName = "setPwmDisable")
+  public void setPwmDisable() {
+    try {
+      startBlockExecution(BlockType.FUNCTION, ".setPwmDisable");
+      servo.setPwmDisable();
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(classes = {PwmControl.class}, methodName = "isPwmEnabled")
+  public boolean isPwmEnabled() {
+    try {
+      startBlockExecution(BlockType.FUNCTION, ".isPwmEnabled");
+      return servo.isPwmEnabled();
     } catch (Throwable e) {
       blocksOpMode.handleFatalException(e);
       throw new AssertionError("impossible", e);

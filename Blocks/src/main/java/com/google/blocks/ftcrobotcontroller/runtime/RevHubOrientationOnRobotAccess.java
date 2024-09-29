@@ -91,4 +91,34 @@ class RevHubOrientationOnRobotAccess extends Access {
       endBlockExecution();
     }
   }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(classes = RevHubOrientationOnRobot.class, methodName = "zyxOrientation")
+  public Orientation zyxOrientation(double z, double y, double x) {
+    try {
+      startBlockExecution(BlockType.FUNCTION, ".zyxOrientation");
+      return RevHubOrientationOnRobot.zyxOrientation(z, y, x);
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(classes = RevHubOrientationOnRobot.class, methodName = "xyzOrientation")
+  public Orientation xyzOrientation(double x, double y, double z) {
+    try {
+      startBlockExecution(BlockType.FUNCTION, ".zyxOrientation");
+      return RevHubOrientationOnRobot.xyzOrientation(x, y, z);
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
 }

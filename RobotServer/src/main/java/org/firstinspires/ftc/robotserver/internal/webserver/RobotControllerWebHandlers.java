@@ -112,7 +112,6 @@ public class RobotControllerWebHandlers
     public static final String URI_PERFORM_REV_FIRMWARE_UPDATE = "/performRevFirmwareUpdate";
     public static final String URI_UPDATE_CONTROL_HUB_APK = "/updateControlHubAPK";
     public static final String URI_UPLOAD_WEBCAM_CALIBRATION_FILE = "/uploadWebcamCalibrationFile";
-    public static final String URI_UPLOAD_TFLITE_MODEL_FILE = "/uploadTfliteModelFile";
     public static final String URI_UPLOAD_CONTROL_HUB_OTA = "/uploadControlHubOta";
     public static final String URI_REBOOT = "/reboot";
     public static final String URI_RC_INFO = "/js/rcInfo.json";
@@ -162,7 +161,6 @@ public class RobotControllerWebHandlers
         manager.register(URI_REV_HUBS_AVAILABLE_FOR_UPDATE, new RevHubsAvailableForUpdate());
         manager.register(URI_PERFORM_REV_FIRMWARE_UPDATE, decorateWithParms(new PerformRevFirmwareUpdate()));
         manager.register(URI_UPLOAD_WEBCAM_CALIBRATION_FILE, new StandardUpload(AppUtil.WEBCAM_CALIBRATIONS_DIR.getAbsolutePath()));
-        manager.register(URI_UPLOAD_TFLITE_MODEL_FILE, new StandardUpload(AppUtil.TFLITE_MODELS_DIR.getAbsolutePath()));
         manager.register(URI_UPLOAD_CONTROL_HUB_OTA, new OtaUpdate(chUpdaterCommManager));
         manager.register(URI_RC_CONFIG,             new RobotControllerConfiguration());
         manager.register(URI_RC_INFO,               new RobotControllerInfoHandler(manager.getWebServer()));
@@ -972,7 +970,6 @@ public class RobotControllerWebHandlers
             appendVariable(js, "URI_PERFORM_REV_FIRMWARE_UPDATE", URI_PERFORM_REV_FIRMWARE_UPDATE);
             appendVariable(js, "URI_UPDATE_CONTROL_HUB_APK", URI_UPDATE_CONTROL_HUB_APK);
             appendVariable(js, "URI_UPLOAD_WEBCAM_CALIBRATION_FILE", URI_UPLOAD_WEBCAM_CALIBRATION_FILE);
-            appendVariable(js, "URI_UPLOAD_TFLITE_MODEL_FILE", URI_UPLOAD_TFLITE_MODEL_FILE);
             appendVariable(js, "URI_UPLOAD_CONTROL_HUB_OTA", URI_UPLOAD_CONTROL_HUB_OTA);
             appendVariable(js, "URI_NAV_HOME", URI_NAV_HOME);
             appendVariable(js, "URI_NAV_MANAGE", URI_NAV_MANAGE);

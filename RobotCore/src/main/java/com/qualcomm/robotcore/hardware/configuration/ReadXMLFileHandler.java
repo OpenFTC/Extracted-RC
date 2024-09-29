@@ -145,11 +145,11 @@ public class ReadXMLFileHandler extends ConfigurationUtility {
 
         if (configurationType == BuiltInConfigurationType.LYNX_USB_DEVICE) {
           controllerConfiguration = new LynxUsbDeviceConfiguration();
-        }
-        else if (configurationType == BuiltInConfigurationType.WEBCAM) {
+        } else if (configurationType == BuiltInConfigurationType.WEBCAM) {
           controllerConfiguration = new WebcamConfiguration();
-        }
-        else {
+        } else if (configurationType == BuiltInConfigurationType.ETHERNET_OVER_USB_DEVICE) {
+            controllerConfiguration = new EthernetOverUsbConfiguration();
+        } else {
           parseIgnoreElementChildren();  // It's a start tag we don't know about; ignore that element entirely
         }
         if (controllerConfiguration != null) {
@@ -185,8 +185,8 @@ public class ReadXMLFileHandler extends ConfigurationUtility {
       } else {
         // The lynx USB device was found, but we need to make sure it has an associated lynx module
         // or else the light won't turn green and the device will look dead.
-        LynxModuleConfiguration embeddedLynxModuleConfiguration = null;
-        for (LynxModuleConfiguration lynxModuleConfiguration: embeddedLynxUsbDeviceConfiguration.getModules()) {
+        RhspModuleConfiguration embeddedLynxModuleConfiguration = null;
+        for (RhspModuleConfiguration lynxModuleConfiguration: embeddedLynxUsbDeviceConfiguration.getModules()) {
           if (lynxModuleConfiguration.getModuleAddress() == LynxConstants.CH_EMBEDDED_MODULE_ADDRESS) {
             embeddedLynxModuleConfiguration = lynxModuleConfiguration;
             break;
@@ -227,8 +227,8 @@ public class ReadXMLFileHandler extends ConfigurationUtility {
   public void onDeviceParsed(DeviceConfiguration device) {
     noteExistingName(device.getConfigurationType(), device.getName());
     handleDeprecation(device);
-    if (device instanceof LynxModuleConfiguration) {
-      LynxModuleConfiguration lynxModule = (LynxModuleConfiguration) device;
+    if (device instanceof RhspModuleConfiguration) {
+      RhspModuleConfiguration lynxModule = (RhspModuleConfiguration) device;
       if (lynxModule.getModuleAddress() > LynxConstants.MAX_UNRESERVED_MODULE_ADDRESS) {
         if (lynxModule.getModuleAddress() != LynxConstants.CH_EMBEDDED_MODULE_ADDRESS) { // We check elsewhere if the wrong module has the embedded address
           // TODO(i18n): Convert to XML string

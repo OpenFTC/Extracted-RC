@@ -19,12 +19,12 @@ package com.google.blocks.ftcrobotcontroller.hardware;
 import com.qualcomm.ftccommon.configuration.RobotConfigFile;
 import com.qualcomm.ftccommon.configuration.RobotConfigFileManager;
 import com.qualcomm.robotcore.exception.RobotCoreException;
-import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.configuration.ControllerConfiguration;
 import com.qualcomm.robotcore.hardware.configuration.DeviceConfiguration;
 import com.qualcomm.robotcore.hardware.configuration.LynxModuleConfiguration;
 import com.qualcomm.robotcore.hardware.configuration.ReadXMLFileHandler;
+import com.qualcomm.robotcore.hardware.configuration.ServoHubConfiguration;
 import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeManagerImpl;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
@@ -164,6 +164,13 @@ public class HardwareItemMap {
         addDevice(deviceConfiguration);
       }
       for (DeviceConfiguration deviceConfiguration : lynxModuleConfiguration.getDigitalDevices()) {
+        addDevice(deviceConfiguration);
+      }
+    } else if (controllerConfiguration instanceof ServoHubConfiguration) {
+      ServoHubConfiguration servoHubConfiguration =
+              (ServoHubConfiguration) controllerConfiguration;
+
+      for (DeviceConfiguration deviceConfiguration : servoHubConfiguration.getServos()) {
         addDevice(deviceConfiguration);
       }
     }

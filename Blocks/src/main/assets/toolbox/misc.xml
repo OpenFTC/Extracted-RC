@@ -95,6 +95,7 @@
   <block type="math_round">
     <value name="NUM"><shadow type="math_number"><field name="NUM">3.1</field></shadow></value>
   </block>
+  <block type="misc_minmax"></block>
   <block type="math_on_list"></block>
   <block type="math_modulo">
     <value name="DIVIDEND"><shadow type="math_number"><field name="NUM">64</field></shadow></value>
@@ -196,4 +197,5 @@
   <block type="misc_null"></block>
   <block type="misc_isNull"></block>
   <block type="misc_isNotNull"></block>
+  <block type="misc_evaluateButIgnoreResult"></block>
 </category>

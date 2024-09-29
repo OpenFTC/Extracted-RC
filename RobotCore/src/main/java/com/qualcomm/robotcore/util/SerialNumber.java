@@ -46,6 +46,7 @@ import com.qualcomm.robotcore.hardware.configuration.ControllerConfiguration;
 
 import org.firstinspires.ftc.robotcore.internal.system.Misc;
 import org.firstinspires.ftc.robotcore.internal.usb.EmbeddedSerialNumber;
+import org.firstinspires.ftc.robotcore.internal.usb.EthernetOverUsbSerialNumber;
 import org.firstinspires.ftc.robotcore.internal.usb.FakeSerialNumber;
 import org.firstinspires.ftc.robotcore.internal.usb.LynxModuleSerialNumber;
 import org.firstinspires.ftc.robotcore.internal.usb.UsbSerialNumber;
@@ -88,6 +89,7 @@ public abstract class SerialNumber implements Serializable {
   protected static final String vendorProductPrefix = "VendorProduct:";
   protected static final String lynxModulePrefix = "ExpHub:";
   protected static final String embedded = "(embedded)";
+  protected static final String ethernetOverUsbPrefix = "EthernetOverUsb:";
 
   protected final String serialNumberString;
 
@@ -118,6 +120,8 @@ public abstract class SerialNumber implements Serializable {
       return createFake();
     } else if (serialNumberString.startsWith(fakePrefix)) {
       return new FakeSerialNumber(serialNumberString);
+    } else if (serialNumberString.startsWith(ethernetOverUsbPrefix)) {
+      return EthernetOverUsbSerialNumber.fromSerialNumber(serialNumberString);
     } else if (serialNumberString.startsWith(vendorProductPrefix)) {
       return new VendorProductSerialNumber(serialNumberString);
     } else if (serialNumberString.startsWith(lynxModulePrefix)) {

@@ -98,7 +98,9 @@ public enum BuiltInConfigurationType implements ConfigurationType
         LYNX_COLOR_SENSOR("LynxColorSensor", DeviceFlavor.I2C),
         LYNX_USB_DEVICE("LynxUsbDevice", null),
         LYNX_MODULE("LynxModule", null),
+        SERVO_HUB("ServoHub", null),
         WEBCAM("Webcam", null),
+        ETHERNET_OVER_USB_DEVICE("EthernetDevice", null),
         ROBOT("Robot", null),                 // not an actual config type, but is an XML tag we know about
         NOTHING("Nothing", null),             // in the config UI, NOTHING means no device is attached
         UNKNOWN("<unknown>", null);           // UNKNOWN is never actually used in XML

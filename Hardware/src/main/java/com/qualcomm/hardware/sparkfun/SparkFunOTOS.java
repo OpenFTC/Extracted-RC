@@ -783,9 +783,9 @@ public class SparkFunOTOS extends I2cDeviceSynchDevice<I2cDeviceSynch> {
     // Function to convert a pose structure to raw pose registers
     protected void poseToRegs(byte[] rawData, Pose2D pose, double xyToRaw, double hToRaw) {
         // Convert pose units to raw data
-        short rawX = (short) _distanceUnit.toMeters(pose.x * xyToRaw);
-        short rawY = (short) _distanceUnit.toMeters(pose.y * xyToRaw);
-        short rawH = (short) _angularUnit.toRadians(pose.h * hToRaw);
+        short rawX = (short) (_distanceUnit.toMeters(pose.x) * xyToRaw);
+        short rawY = (short) (_distanceUnit.toMeters(pose.y) * xyToRaw);
+        short rawH = (short) (_angularUnit.toRadians(pose.h) * hToRaw);
 
         // Store raw data in buffer
         rawData[0] = (byte) (rawX & 0xFF);

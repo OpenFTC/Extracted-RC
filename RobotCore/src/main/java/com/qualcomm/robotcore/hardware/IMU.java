@@ -131,15 +131,15 @@ public interface IMU extends HardwareDevice {
 
     /**
      * @return A {@link YawPitchRollAngles} object representing the current orientation of the robot
-     *         relative to the robot's position the last time that {@link #resetYaw()} was called,
-     *         as if the robot was perfectly level at that time.
+     *         in the Robot Coordinate System, relative to the robot's position the last time that
+     *         {@link #resetYaw()} was called, as if the robot was perfectly level at that time.
      */
     YawPitchRollAngles getRobotYawPitchRollAngles();
 
     /**
      * @return An {@link Orientation} object representing the current orientation of the robot
-     *         relative to the robot's position the last time that {@link #resetYaw()} was called,
-     *         as if the robot was perfectly level at that time.
+     *         in the Robot Coordinate System, relative to the robot's position the last time
+     *         that {@link #resetYaw()} was called, as if the robot was perfectly level at that time.
      *         <p><p>
      *         The {@link Orientation} class provides many ways to represent the robot's orientation,
      *         which is helpful for advanced use cases. Most teams should use {@link #getRobotYawPitchRollAngles()}.
@@ -148,8 +148,8 @@ public interface IMU extends HardwareDevice {
 
     /**
      * @return A {@link Quaternion} object representing the current orientation of the robot
-     *         relative to the robot's position the last time that {@link #resetYaw()} was called,
-     *         as if the robot was perfectly level at that time.
+     *         in the Robot Coordinate System, relative to the robot's position the last time
+     *         that {@link #resetYaw()} was called, as if the robot was perfectly level at that time.
      *         <p><p>
      *         Quaternions provide an advanced way to access orientation data that will work well
      *         for any orientation of the robot, even where other types of orientation data would

@@ -34,13 +34,13 @@
       <value name="X_ACCEL"><shadow type="math_number"><field name="NUM">10</field></shadow></value>
       <value name="Y_ACCEL"><shadow type="math_number"><field name="NUM">20</field></shadow></value>
       <value name="Z_ACCEL"><shadow type="math_number"><field name="NUM">30</field></shadow></value>
-      <value name="ACQUISITION_TIME"><block type="system_nanoTime"></block></value>
+      <value name="ACQUISITION_TIME"><shadow type="math_number"><field name="NUM">0</field></shadow><block type="system_nanoTime"></block></value>
     </block>
     <block type="acceleration_fromGravity">
       <value name="GX"><shadow type="math_number"><field name="NUM">10</field></shadow></value>
       <value name="GY"><shadow type="math_number"><field name="NUM">20</field></shadow></value>
       <value name="GZ"><shadow type="math_number"><field name="NUM">30</field></shadow></value>
-      <value name="ACQUISITION_TIME"><block type="system_nanoTime"></block></value>
+      <value name="ACQUISITION_TIME"><shadow type="math_number"><field name="NUM">0</field></shadow><block type="system_nanoTime"></block></value>
     </block>
   </category>
   <category name="AngleUnit">
@@ -92,7 +92,7 @@
       <value name="X_ROTATION_RATE"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
       <value name="Y_ROTATION_RATE"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
       <value name="Z_ROTATION_RATE"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
-      <value name="ACQUISITION_TIME"><block type="system_nanoTime"></block></value>
+      <value name="ACQUISITION_TIME"><shadow type="math_number"><field name="NUM">0</field></shadow><block type="system_nanoTime"></block></value>
     </block>
   </category>
   <category name="Axis">
@@ -201,6 +201,39 @@
       <field name="PROP">Color</field>
       <value name="NORMALIZED_COLORS"><block type="variables_get"><field name="VAR">myNormalizedColors</field></block></value>
     </block>
+    <block type="color_constant_Number">
+        <field name="CONSTANT">BLACK</field>
+    </block>
+    <block type="color_constant_Number">
+        <field name="CONSTANT">BLUE</field>
+    </block>
+    <block type="color_constant_Number">
+        <field name="CONSTANT">CYAN</field>
+    </block>
+    <block type="color_constant_Number">
+        <field name="CONSTANT">DKGRAY</field>
+    </block>
+    <block type="color_constant_Number">
+        <field name="CONSTANT">GRAY</field>
+    </block>
+    <block type="color_constant_Number">
+        <field name="CONSTANT">GREEN</field>
+    </block>
+    <block type="color_constant_Number">
+        <field name="CONSTANT">LTGRAY</field>
+    </block>
+    <block type="color_constant_Number">
+        <field name="CONSTANT">MAGENTA</field>
+    </block>
+    <block type="color_constant_Number">
+        <field name="CONSTANT">RED</field>
+    </block>
+    <block type="color_constant_Number">
+        <field name="CONSTANT">WHITE</field>
+    </block>
+    <block type="color_constant_Number">
+        <field name="CONSTANT">YELLOW</field>
+    </block>
   </category>
   <category name="DbgLog">
     <block type="dbgLog_msg">
@@ -235,6 +268,9 @@
     <block type="elapsedTime2_reset">
       <value name="ELAPSED_TIME"><block type="variables_get"><field name="VAR">myElapsedTime</field></block></value>
     </block>
+    <block type="elapsedTime2_toText">
+      <value name="ELAPSED_TIME"><block type="variables_get"><field name="VAR">myElapsedTime</field></block></value>
+    </block>
   </category>
   <category name="MagneticFlux">
     <block type="magneticFlux_getProperty_Number">
@@ -261,7 +297,7 @@
       <value name="X"><shadow type="math_number"><field name="NUM">10</field></shadow></value>
       <value name="Y"><shadow type="math_number"><field name="NUM">20</field></shadow></value>
       <value name="Z"><shadow type="math_number"><field name="NUM">30</field></shadow></value>
-      <value name="ACQUISITION_TIME"><block type="system_nanoTime"></block></value>
+      <value name="ACQUISITION_TIME"><shadow type="math_number"><field name="NUM">0</field></shadow><block type="system_nanoTime"></block></value>
     </block>
   </category>
   <category name="Matrix">
@@ -556,7 +592,7 @@
       <value name="FIRST_ANGLE"><shadow type="math_number"><field name="NUM">90</field></shadow></value>
       <value name="SECOND_ANGLE"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
       <value name="THIRD_ANGLE"><shadow type="math_number"><field name="NUM">-45</field></shadow></value>
-      <value name="ACQUISITION_TIME"><block type="system_nanoTime"></block></value>
+      <value name="ACQUISITION_TIME"><shadow type="math_number"><field name="NUM">0</field></shadow><block type="system_nanoTime"></block></value>
     </block>
     <block type="orientation_getOrientation">
       <value name="AXES_REFERENCE"><shadow type="navigation_typedEnum_axesReference"></shadow></value>
@@ -667,7 +703,7 @@
       <value name="X"><shadow type="math_number"><field name="NUM">10</field></shadow></value>
       <value name="Y"><shadow type="math_number"><field name="NUM">20</field></shadow></value>
       <value name="Z"><shadow type="math_number"><field name="NUM">30</field></shadow></value>
-      <value name="ACQUISITION_TIME"><block type="system_nanoTime"></block></value>
+      <value name="ACQUISITION_TIME"><shadow type="math_number"><field name="NUM">0</field></shadow><block type="system_nanoTime"></block></value>
     </block>
   </category>
   <category name="Quaternion">
@@ -706,7 +742,7 @@
       <value name="X"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
       <value name="Y"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
       <value name="Z"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
-      <value name="ACQUISITION_TIME"><block type="system_nanoTime"></block></value>
+      <value name="ACQUISITION_TIME"><shadow type="math_number"><field name="NUM">0</field></shadow><block type="system_nanoTime"></block></value>
     </block>
   </category>
   <category name="Range">
@@ -760,6 +796,17 @@
     <block type="telemetry_setDisplayFormat">
       <value name="DISPLAY_FORMAT"><shadow type="telemetry_typedEnum_displayFormat"></shadow></value>
     </block>
+    <block type="telemetry_setNumDecimalPlaces">
+      <value name="MIN"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
+      <value name="MAX"><shadow type="math_number"><field name="NUM">4</field></shadow></value>
+    </block>
+    <block type="telemetry_setProperty_Number">
+      <field name="PROP">MsTransmissionInterval</field>
+      <value name="VALUE"><shadow type="math_number"><field name="NUM">11</field></shadow></value>
+    </block>
+    <block type="telemetry_getProperty_Number">
+      <field name="PROP">MsTransmissionInterval</field>
+    </block>
   </category>
   <category name="Temperature">
     <block type="temperature_getProperty_TempUnit">
@@ -778,7 +825,7 @@
     <block type="temperature_create_withArgs">
       <value name="TEMP_UNIT"><shadow type="navigation_typedEnum_tempUnit"></shadow></value>
       <value name="TEMPERATURE"><shadow type="math_number"><field name="NUM">20</field></shadow></value>
-      <value name="ACQUISITION_TIME"><block type="system_nanoTime"></block></value>
+      <value name="ACQUISITION_TIME"><shadow type="math_number"><field name="NUM">0</field></shadow><block type="system_nanoTime"></block></value>
     </block>
     <block type="temperature_toTempUnit">
       <value name="TEMPERATURE"><block type="variables_get"><field name="VAR">myTemperature</field></block></value>
@@ -897,7 +944,7 @@
       <value name="X_VELOC"><shadow type="math_number"><field name="NUM">10</field></shadow></value>
       <value name="Y_VELOC"><shadow type="math_number"><field name="NUM">20</field></shadow></value>
       <value name="Z_VELOC"><shadow type="math_number"><field name="NUM">30</field></shadow></value>
-      <value name="ACQUISITION_TIME"><block type="system_nanoTime"></block></value>
+      <value name="ACQUISITION_TIME"><shadow type="math_number"><field name="NUM">0</field></shadow><block type="system_nanoTime"></block></value>
     </block>
   </category>
   <category name="YawPitchRollAngles">
@@ -928,7 +975,7 @@
       <value name="YAW"><shadow type="math_number"><field name="NUM">90</field></shadow></value>
       <value name="PITCH"><shadow type="math_number"><field name="NUM">-45</field></shadow></value>
       <value name="ROLL"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
-      <value name="ACQUISITION_TIME"><block type="system_nanoTime"></block></value>
+      <value name="ACQUISITION_TIME"><shadow type="math_number"><field name="NUM">0</field></shadow><block type="system_nanoTime"></block></value>
     </block>
     <block type="yawPitchRollAngles_create_withArgs2">
       <value name="ANGLE_UNIT"><shadow type="navigation_typedEnum_angleUnit"></shadow></value>

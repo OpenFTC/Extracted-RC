@@ -75,8 +75,8 @@ import java.util.concurrent.TimeUnit;
  * conceptual overview of the flow of opening, rendering, and closing cameras. However, it is old
  * and a bit crufty, doesn't handle the error situations well, etc. If you want a <em>real</em>
  * example of how API actually gets used in practice, I suggest you look at OpenCvWebcamImpl in the
- * EasyOpenCV library. Since that code powers OpenCV, AprilTag, and TensorFlow in the SDK, it is
- * much better tested than the conceptual flow here.
+ * EasyOpenCV library. Since that code powers OpenCV and AprilTag in the SDK, it is much better
+ * tested than the conceptual flow here.
  */
 @SuppressWarnings("WeakerAccess")
 public class WebcamExample

@@ -38,6 +38,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.qualcomm.hardware.adafruit.AdafruitI2cColorSensor;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.lynx.LynxI2cColorRangeSensor;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.lynx.LynxUsbDeviceImpl;
@@ -101,8 +102,13 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.internal.camera.CameraManagerInternal;
 import org.firstinspires.ftc.robotcore.internal.hardware.UserNameable;
 import org.firstinspires.ftc.robotcore.internal.hardware.usb.ArmableUsbDevice;
+import org.firstinspires.ftc.robotcore.internal.usb.EthernetOverUsbSerialNumber;
 import org.firstinspires.ftc.robotcore.internal.usb.VendorProductSerialNumber;
 
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -238,6 +244,10 @@ public class HardwareDeviceManager implements DeviceManager {
       // Also include any cameras we might find
       scanForWebcams(deviceMap);
 
+      // Yes, yes I know, these are ethernet interfaces, but they plug into a usb port and there's no
+      // other place to really plug into the scan for devices architecture.
+      scanForEthernetOverUsbDevices(deviceMap);
+
       long end = System.nanoTime();
       RobotLog.vv(TAG_USB_SCAN, "scanForUsbDevices() took %dms count=%d", (int)((end-start) / ElapsedTime.MILLIS_IN_NANO), deviceMap.size());
       return deviceMap;
@@ -257,6 +267,30 @@ public class HardwareDeviceManager implements DeviceManager {
     int count = countVidPid(map, vendorProduct);
     Pair<Integer,Integer> pair = new Pair<>(vendorProduct.getVendorId(), vendorProduct.getProductId());
     map.put(pair, count + delta);
+  }
+
+  protected void scanForEthernetOverUsbDevices(ScannedDevices scannedDevices) {
+    synchronized (scanDevicesLock) {
+      try {
+        Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+        while (interfaces.hasMoreElements()) {
+          NetworkInterface networkInterface = interfaces.nextElement();
+          // Filter out loopback and wireless interfaces
+          if (networkInterface.getName().startsWith("eth")) {
+            Enumeration<InetAddress> addresses = networkInterface.getInetAddresses();
+            while (addresses.hasMoreElements()) {
+              InetAddress address = addresses.nextElement();
+              if (address.getAddress().length == 4) {
+                RobotLog.dd(TAG, "IP Address: " + address.getHostAddress());
+                scannedDevices.put(EthernetOverUsbSerialNumber.fromIpAddress(address.getHostAddress(), networkInterface.getName()), UsbDeviceType.ETHERNET_DEVICE);
+              }
+            }
+          }
+        }
+      } catch (SocketException e) {
+        RobotLog.e(TAG, "Error getting network interfaces", e);
+      }
+    }
   }
 
   protected void scanForWebcams(ScannedDevices scannedDevices) {
@@ -436,6 +470,12 @@ public class HardwareDeviceManager implements DeviceManager {
     RobotLog.v("Creating user sensor %s - on Lynx module=%d bus=%d", type.getName(), lynxModule.getModuleAddress(), bus.channel);
     return type.createInstances(
             () -> createI2cDeviceSynchSimple(lynxModule, bus, name));
+  }
+
+  @Override
+  public HardwareDevice createLimelight3A(SerialNumber serialNumber, @Nullable String name, InetAddress ipAddress) {
+    RobotLog.v("Creating Limelight3A named %s at %s", name, serialNumber.getString());
+    return new Limelight3A(serialNumber, name, ipAddress);
   }
 
   @Override

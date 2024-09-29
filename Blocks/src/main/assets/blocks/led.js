@@ -106,3 +106,51 @@ Blockly.FtcJava['led_isLightOn'] = function(block) {
   var code = identifier + '.isLightOn()';
   return [code, Blockly.FtcJava.ORDER_FUNCTION_CALL];
 };
+
+Blockly.Blocks['led_on'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('call')
+        .appendField(createLedDropdown(), 'IDENTIFIER')
+        .appendField('.')
+        .appendField(createNonEditableField('on'));
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setColour(functionColor);
+    this.setTooltip('Turn on the LED light.');
+  }
+};
+
+Blockly.JavaScript['led_on'] = function(block) {
+  var identifier = block.getFieldValue('IDENTIFIER');
+  return identifier + '.on();\n';
+};
+
+Blockly.FtcJava['led_on'] = function(block) {
+  var identifier = Blockly.FtcJava.importDeclareAssign_(block, 'IDENTIFIER', 'LED');
+  return identifier + '.on();\n';
+};
+
+Blockly.Blocks['led_off'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('call')
+        .appendField(createLedDropdown(), 'IDENTIFIER')
+        .appendField('.')
+        .appendField(createNonEditableField('off'));
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setColour(functionColor);
+    this.setTooltip('Turn off the LED light.');
+  }
+};
+
+Blockly.JavaScript['led_off'] = function(block) {
+  var identifier = block.getFieldValue('IDENTIFIER');
+  return identifier + '.off();\n';
+};
+
+Blockly.FtcJava['led_off'] = function(block) {
+  var identifier = Blockly.FtcJava.importDeclareAssign_(block, 'IDENTIFIER', 'LED');
+  return identifier + '.off();\n';
+};

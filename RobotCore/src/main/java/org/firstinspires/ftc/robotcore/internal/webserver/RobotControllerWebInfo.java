@@ -92,6 +92,9 @@ public class RobotControllerWebInfo {
   private final String includedFirmwareFileVersion;
   private FtcUserAgentCategory ftcUserAgentCategory;
 
+  private static String cachedConfigName;
+  private String activeConfigName;
+
   public RobotControllerWebInfo(
       String networkName, String passphrase, String serverUrl,
       boolean serverIsAlive) {
@@ -163,7 +166,12 @@ public class RobotControllerWebInfo {
     this.ftcUserAgentCategory = FtcUserAgentCategory.fromUserAgent(userAgent);
   }
 
+  public static void setActiveConfigName(String newActiveConfig) {
+    cachedConfigName = newActiveConfig;
+  }
+
   public String toJson() {
+    activeConfigName = cachedConfigName;
     return gson.toJson(this);
   }
 

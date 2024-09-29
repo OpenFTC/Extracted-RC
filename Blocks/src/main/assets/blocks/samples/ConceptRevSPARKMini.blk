@@ -1,0 +1,454 @@
+<xml xmlns="https://developers.google.com/blockly/xml">
+<variables>
+<variable id="HU25z#$dyfu4*yPI2}.m">runtime</variable>
+<variable id="@WdC-EARZ=o4T@RU*OdU">usePOVMode</variable>
+<variable id="gU]#v-(W[w]`KR}q2`d1">drive</variable>
+<variable id="aFj/r.9fOcvcAV=l7q/8">leftPower</variable>
+<variable id="3x5Koa,D*iZhb~7+=u,*">rightPower</variable>
+<variable id="+tJhXeu[2Mh_PdHscqw?">turn</variable>
+</variables>
+<block type="procedures_defnoreturn" id="WtpyD@tEu+EoY=P9iY,D" deletable="false" x="25" y="150">
+<field name="NAME">runOpMode</field>
+<comment pinned="true" h="122" w="570">This OpMode demonstrates POV Drive and Tank Drive, for a two wheeled robot using two REV SPARKminis. To use this example, connect two REV SPARKminis into servo ports on the Control Hub. On the robot configuration, use the drop down list under 'Servos' to select 'REV SPARKmini Controller' and name them 'left_drive' and 'right_drive'.</comment>
+<data>{"commentPositionLeft":-20,"commentPositionTop":-150}</data>
+<statement name="STACK">
+<block type="variables_set" id="]=6Wx,7#]eE5*+H;u+xB">
+<field name="VAR" id="HU25z#$dyfu4*yPI2}.m">runtime</field>
+<value name="VALUE">
+<block type="elapsedTime2_create" id="-mg%FT$Q?A=y:-t^t!VO"/>
+</value>
+<next>
+<block type="comment" id="{Vf}iWa~L~_JQ,[$vOm@">
+<field name="COMMENT">Most robots need the motor on one side to be reversed to drive forward.</field>
+<next>
+<block type="comment" id="Ju(]qy*HqN_pRA{J+uSd">
+<field name="COMMENT">Reverse the motor that runs backward when connected directly to the battery.</field>
+<next>
+<block type="dcMotor_setProperty_Direction" id=";H^Y~8V;i8[k5/0109p1">
+<field name="IDENTIFIER">left_driveAsDcMotor</field>
+<field name="PROP">Direction</field>
+<data>{"IDENTIFIER":"left_drive"}</data>
+<value name="VALUE">
+<shadow type="dcMotor_typedEnum_direction" id="ggv;AbIN{G0-u:)da8n)">
+<field name="DIRECTION">FORWARD</field>
+</shadow>
+</value>
+<next>
+<block type="dcMotor_setProperty_Direction" id="kUKU9%_K~hc|hXpi0Bq?">
+<field name="IDENTIFIER">right_driveAsDcMotor</field>
+<field name="PROP">Direction</field>
+<data>{"IDENTIFIER":"right_drive"}</data>
+<value name="VALUE">
+<shadow type="dcMotor_typedEnum_direction" id="a30g6M07-h;~sCKB}9iN">
+<field name="DIRECTION">REVERSE</field>
+</shadow>
+</value>
+<next>
+<block type="telemetry_addTextData_All" id="U$z^x[H9a*_/.v?9`;+G">
+<value name="KEY">
+<shadow type="text" id="zTQ),9+g1:}e9CrZ9F4x">
+<field name="TEXT">Status</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id="8x|ueu*#2LMqmdTRxzbt">
+<field name="TEXT">Initialized</field>
+</shadow>
+</value>
+<next>
+<block type="telemetry_update" id="l@y;V|Rx%adX0uuhM{f4">
+<next>
+<block type="comment" id="(;?=/zCY$,e#DfTru-{F">
+<field name="COMMENT">Wait for the game to start (driver presses START).</field>
+<next>
+<block type="linearOpMode_waitForStart" id=":`$wN_ci`O;o6P0~.(+g">
+<next>
+<block type="elapsedTime2_reset" id=";;7p0eGN_-S`jpO+@}HT">
+<value name="ELAPSED_TIME">
+<block type="variables_get" id="dyGcv0#/eYbK3@YA3w?X">
+<field name="VAR" id="HU25z#$dyfu4*yPI2}.m">runtime</field>
+</block>
+</value>
+<next>
+<block type="controls_if" id="}Q?5mbxSO8Di;i!__6[y">
+<value name="IF0">
+<block type="linearOpMode_opModeIsActive" id=")o%YFX/#9kvv^sgXr4~5"/>
+</value>
+<statement name="DO0">
+<block type="comment" id="xJhXI.IxD259L/}-CTo1">
+<field name="COMMENT">Run until the end of the match (driver presses STOP).</field>
+<next>
+<block type="controls_whileUntil" id="^0Kagy/e+Ea{rbZPv2G6">
+<field name="MODE">WHILE</field>
+<value name="BOOL">
+<block type="linearOpMode_opModeIsActive" id="e)cr{!2VIET83s,JWC.="/>
+</value>
+<statement name="DO">
+<block type="comment" id="Jh/;L$n@JuX8AQJDFCul">
+<field name="COMMENT">Choose to drive using either Tank Mode, or POV Mode</field>
+<next>
+<block type="comment" id="xIsXQP;94Ljl3xLj;./d">
+<field name="COMMENT">Set usePOVMode to false to use Tank Mode.</field>
+<next>
+<block type="variables_set" id="W*1{x1|1YN_7}I*Sy45s">
+<field name="VAR" id="@WdC-EARZ=o4T@RU*OdU">usePOVMode</field>
+<value name="VALUE">
+<block type="logic_boolean" id="=B8afIZJHmHo;-/~aa7!">
+<field name="BOOL">TRUE</field>
+</block>
+</value>
+<next>
+<block type="controls_if" id="36$*464#55_hsgr=U%od">
+<mutation else="1"/>
+<value name="IF0">
+<block type="variables_get" id="*};4!%Y:_t/eYD?EQa!O">
+<field name="VAR" id="@WdC-EARZ=o4T@RU*OdU">usePOVMode</field>
+</block>
+</value>
+<statement name="DO0">
+<block type="comment" id="BE638+R]Ty3f3v9pXkRs">
+<field name="COMMENT">POV Mode uses left stick to go forward, and right stick to turn.</field>
+<next>
+<block type="comment" id="dwc)Pqi$jV[=5uDLk$,R">
+<field name="COMMENT">This uses basic math to combine motions and is easier to drive straight.</field>
+<next>
+<block type="variables_set" id="~;mzj1ok,`I=30-o//WM">
+<field name="VAR" id="gU]#v-(W[w]`KR}q2`d1">drive</field>
+<value name="VALUE">
+<block type="math_single" id="kpW]=SqsAc2vUJh7wgvK">
+<field name="OP">NEG</field>
+<value name="NUM">
+<shadow type="math_number" id="=?q8+h}e`L{E@3WZ~wxf">
+<field name="NUM">9</field>
+</shadow>
+<block type="gamepad_getProperty_Number" id="j@~H4:(kNoGos[v?hFj#">
+<field name="IDENTIFIER">gamepad1</field>
+<field name="PROP">LeftStickY</field>
+<data>{"IDENTIFIER":"gamepad1"}</data>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="variables_set" id="#ZGYBhC{P_h`t4771ybj">
+<field name="VAR" id="+tJhXeu[2Mh_PdHscqw?">turn</field>
+<value name="VALUE">
+<block type="gamepad_getProperty_Number" id="aw?InpXn6xxC*^*.OO!b">
+<field name="IDENTIFIER">gamepad1</field>
+<field name="PROP">RightStickX</field>
+<data>{"IDENTIFIER":"gamepad1"}</data>
+</block>
+</value>
+<next>
+<block type="variables_set" id="%HgbW6d7UG:VXJ$_?PT0">
+<field name="VAR" id="aFj/r.9fOcvcAV=l7q/8">leftPower</field>
+<value name="VALUE">
+<block type="range_clip" id="Nq@.bQ|3TLj7Drrh:G{B">
+<value name="NUMBER">
+<block type="math_arithmetic" id="eKFDIfs6Fa4TNkv4O#86">
+<field name="OP">ADD</field>
+<value name="A">
+<shadow type="math_number" id="Iw[QA)~~0afXBxV)z/7]">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="dtGH7X-0Zc|n8iIO]TLN">
+<field name="VAR" id="gU]#v-(W[w]`KR}q2`d1">drive</field>
+</block>
+</value>
+<value name="B">
+<shadow type="math_number" id="cFFvn5Q;VUd)j/;WHmna">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="xc`IEy7RYB@UGA3gzjzk">
+<field name="VAR" id="+tJhXeu[2Mh_PdHscqw?">turn</field>
+</block>
+</value>
+</block>
+</value>
+<value name="MIN">
+<shadow type="math_number" id="z@BQrX0zxEO,-u%5G?Jg">
+<field name="NUM">-1</field>
+</shadow>
+</value>
+<value name="MAX">
+<shadow type="math_number" id="WV]g!V~{u=fqXUUdA[nQ">
+<field name="NUM">1</field>
+</shadow>
+</value>
+</block>
+</value>
+<next>
+<block type="variables_set" id="Uu:+YD#}UV+#:NS}ds;I">
+<field name="VAR" id="3x5Koa,D*iZhb~7+=u,*">rightPower</field>
+<value name="VALUE">
+<block type="range_clip" id="SlB|_+a`88;kEBeQC(/v">
+<value name="NUMBER">
+<block type="math_arithmetic" id="Phe12ip;auZ3ZX~nQdWT">
+<field name="OP">MINUS</field>
+<value name="A">
+<shadow type="math_number">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="s2wk{Sv^d6Q4/vtU^iK?">
+<field name="VAR" id="gU]#v-(W[w]`KR}q2`d1">drive</field>
+</block>
+</value>
+<value name="B">
+<shadow type="math_number">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="z?6qcL-bOqrgy*SIgcVZ">
+<field name="VAR" id="+tJhXeu[2Mh_PdHscqw?">turn</field>
+</block>
+</value>
+</block>
+</value>
+<value name="MIN">
+<shadow type="math_number" id="sK9=_3l|K~pRRQ~+GU]j">
+<field name="NUM">-1</field>
+</shadow>
+</value>
+<value name="MAX">
+<shadow type="math_number" id="4YB!sl?(=~F-,B@A1i]M">
+<field name="NUM">1</field>
+</shadow>
+</value>
+</block>
+</value>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+<statement name="ELSE">
+<block type="comment" id="Rgz/:6XJw2WEdDK_U_K1">
+<field name="COMMENT">Tank Mode uses one stick to control each wheel.</field>
+<next>
+<block type="comment" id="*ep*z[W_=b[Aj~8S{d7r">
+<field name="COMMENT">This requires no math, but it is hard to drive forward slowly and keep straight.</field>
+<next>
+<block type="variables_set" id="$~.BdR+P#|;U`TxK5w{v">
+<field name="VAR" id="aFj/r.9fOcvcAV=l7q/8">leftPower</field>
+<value name="VALUE">
+<block type="math_single" id="pr*D3%)7*@rnLG[DHqjR">
+<field name="OP">NEG</field>
+<value name="NUM">
+<shadow type="math_number" id="|)@pSxyP{{5oEerL:hGK">
+<field name="NUM">9</field>
+</shadow>
+<block type="gamepad_getProperty_Number" id="z[H9}.yIi(~97agDW]+!">
+<field name="IDENTIFIER">gamepad1</field>
+<field name="PROP">LeftStickY</field>
+<data>{"IDENTIFIER":"gamepad1"}</data>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="variables_set" id="c^cd)XO%.1jc}u%rfKm@">
+<field name="VAR" id="3x5Koa,D*iZhb~7+=u,*">rightPower</field>
+<value name="VALUE">
+<block type="math_single" id="nj{K*g,i[*jRG``7lcKN">
+<field name="OP">NEG</field>
+<value name="NUM">
+<shadow type="math_number" id=":P%Y0HG{$n6@0{Jc*[3q">
+<field name="NUM">9</field>
+</shadow>
+<block type="gamepad_getProperty_Number" id="~*TC0y],!j`KAzyvWJx:">
+<field name="IDENTIFIER">gamepad1</field>
+<field name="PROP">RightStickY</field>
+<data>{"IDENTIFIER":"gamepad1"}</data>
+</block>
+</value>
+</block>
+</value>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+<next>
+<block type="comment" id="*!Dx{;^kAV=nA0u{l#^z">
+<field name="COMMENT">Send calculated power to wheels.</field>
+<next>
+<block type="dcMotor_setDualProperty_Number" id="pT|[Sn*4mSX{LzMw5BKS">
+<field name="PROP">Power</field>
+<field name="IDENTIFIER1">left_driveAsDcMotor</field>
+<field name="IDENTIFIER2">right_driveAsDcMotor</field>
+<data>{"IDENTIFIER1":"left_drive","IDENTIFIER2":"right_drive"}</data>
+<value name="VALUE1">
+<shadow type="math_number" id="~(!DFE4OksgO!w)AJDqu">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="X~[9Pps}hi]u{EE/*v`%">
+<field name="VAR" id="aFj/r.9fOcvcAV=l7q/8">leftPower</field>
+</block>
+</value>
+<value name="VALUE2">
+<shadow type="math_number" id="E=%pgIaU{j@H_.qd?qI;">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="Dj=~)mRd!DOm4h%UGl2]">
+<field name="VAR" id="3x5Koa,D*iZhb~7+=u,*">rightPower</field>
+</block>
+</value>
+<next>
+<block type="comment" id="nr3mKf*t-_gfM9KR:mpI">
+<field name="COMMENT">Show the elapsed game time and wheel power.</field>
+<next>
+<block type="telemetry_addTextData_All" id="ChM6|/nGiK[GKsd%}*[B">
+<value name="KEY">
+<shadow type="text" id="/av;^Ca*w.-]sC2hi/Rl">
+<field name="TEXT">Status</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id="m!?A:wKEg.z~1~MnHXYf">
+<field name="TEXT">text</field>
+</shadow>
+<block type="text_join" id="hUWu2$UPZd-Fu#3#3@$0">
+<mutation items="2"/>
+<value name="ADD0">
+<block type="text" id="ar}|k0HO+Pl_Fr^7TQV$">
+<field name="TEXT">Run Time: </field>
+</block>
+</value>
+<value name="ADD1">
+<block type="elapsedTime2_toText" id=",9U^mBbX#pGlbBS`),X~">
+<value name="ELAPSED_TIME">
+<block type="variables_get" id="wt=D)v1Ye+lFk_+dIL6W">
+<field name="VAR" id="HU25z#$dyfu4*yPI2}.m">runtime</field>
+</block>
+</value>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_addTextData_All" id="8H$BJ-q]!BK;+j1[z;)-">
+<value name="KEY">
+<shadow type="text" id="DKjHDoVim-k_6z/qkFQ,">
+<field name="TEXT">Motors</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id="jyJ{A5@Ov`(vS+xCu8@~">
+<field name="TEXT">text</field>
+</shadow>
+<block type="text_join" id="Z-p0~:hs^*l7NQVLw[Yo">
+<mutation items="5"/>
+<value name="ADD0">
+<block type="text" id="B89mwVMKbJ7!.IC6CR5V">
+<field name="TEXT">left (</field>
+</block>
+</value>
+<value name="ADD1">
+<block type="misc_formatNumber" id="8Ya#w40{gpiNTA?3BE{A">
+<value name="NUMBER">
+<shadow type="math_number" id="tFB!mwgM)8])VsQos@6n">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="variables_get" id="b/da1[4na|aF8.u/XQ]w">
+<field name="VAR" id="aFj/r.9fOcvcAV=l7q/8">leftPower</field>
+</block>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id=";I9$E:vwn7nHo8s[he22">
+<field name="NUM">2</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="ADD2">
+<block type="text" id=";%hz1;#A;-11;`Sc+4p^">
+<field name="TEXT">), right (</field>
+</block>
+</value>
+<value name="ADD3">
+<block type="misc_formatNumber" id="7_,E*1Bz+x?~L(Yd@G-N">
+<value name="NUMBER">
+<shadow type="math_number" id="Wc!7_j/M|od*9*`2iOD`">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="variables_get" id="C$Re8r^0j,TwlG:]r(g!">
+<field name="VAR" id="3x5Koa,D*iZhb~7+=u,*">rightPower</field>
+</block>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="*T*-|RZ!w/|v)a+@Nni6">
+<field name="NUM">2</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="ADD4">
+<block type="text" id="GtR06Qrh)h!N.15/h=/k">
+<field name="TEXT">)</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_update" id="exvivmft-pX$n!1,8Ea$"/>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</xml>
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<Extra>
+<OpModeMeta flavor="TELEOP" group="" autoTransition="" />
+<Enabled value="true" />
+</Extra>

@@ -18,13 +18,11 @@ package com.google.blocks.ftcrobotcontroller.runtime;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver.BlinkinPattern;
-import com.qualcomm.robotcore.hardware.HardwareDevice;
-import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.RobotLog;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
+import org.firstinspires.ftc.robotcore.internal.collections.SimpleGson;
 import org.firstinspires.ftc.robotcore.external.matrices.MatrixF;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
@@ -32,8 +30,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Quaternion;
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
 /**
  * An abstract class for classes that provides JavaScript access to an object.
@@ -79,6 +79,12 @@ public abstract class Access {
     reportWarning("This block is obsolete.");
   }
 
+  protected final void handleObsoleteBlockExecution(
+      BlockType blockType, String blockFirstNameOverride, String blockLastName) {
+    startBlockExecution(blockType, blockFirstNameOverride, blockLastName);
+    reportWarning("This block is obsolete.");
+  }
+
   protected AngleUnit checkAngleUnit(String angleUnitString) {
     return checkArg(angleUnitString, AngleUnit.class, "angleUnit");
   }
@@ -111,6 +117,10 @@ public abstract class Access {
     return checkArg(orientationArg, Orientation.class, socketName);
   }
 
+  protected Position checkPosition(Object positionArg) {
+    return checkArg(positionArg, Position.class, "position");
+  }
+
   protected Quaternion checkQuaternion(Object quaternionArg) {
     return checkArg(quaternionArg, Quaternion.class, "quaternion");
   }
@@ -129,6 +139,10 @@ public abstract class Access {
 
   protected VectorF checkVectorF(Object vectorArg) {
     return checkArg(vectorArg, VectorF.class, "vector");
+  }
+
+  protected YawPitchRollAngles checkYawPitchRollAngles(Object yawPitchRollAnglesArg) {
+    return checkArg(yawPitchRollAnglesArg, YawPitchRollAngles.class, "yawPitchRollAngles");
   }
 
   /*
@@ -201,5 +215,19 @@ public abstract class Access {
     }
 
     return type;
+  }
+
+  protected static String toJson(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return SimpleGson.getInstance().toJson(o);
+  }
+
+  protected static <T extends Object> T fromJson(String json, Class<T> clazz) {
+    if (json == null || json.equals("null") || json.equals("undefined")) {
+      return null;
+    }
+    return SimpleGson.getInstance().fromJson(json, clazz);
   }
 }

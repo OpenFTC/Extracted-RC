@@ -23,8 +23,10 @@ import org.firstinspires.ftc.robotcore.external.matrices.GeneralMatrixF;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Quaternion;
-import org.firstinspires.ftc.robotcore.internal.collections.SimpleGson;
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase;
 import org.firstinspires.ftc.vision.apriltag.AprilTagLibrary;
 import org.firstinspires.ftc.vision.apriltag.AprilTagMetadata;
@@ -61,20 +63,6 @@ class AprilTagAccess extends Access {
     return checkArg(aprilTagLibraryArg, AprilTagLibrary.class, "aprilTagLibrary");
   }
 
-  private String toJson(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return SimpleGson.getInstance().toJson(o);
-  }
-
-  private <T extends Object> T fromJson(String json, Class<T> clazz) {
-    if (json == null || json.equals("null") || json.equals("undefined")) {
-      return null;
-    }
-    return SimpleGson.getInstance().fromJson(json, clazz);
-  }
-
   private TagFamily checkTagFamily(String tagFamilyString) {
     return checkArg(tagFamilyString, TagFamily.class, "tagFamily");
   }
@@ -90,6 +78,26 @@ class AprilTagAccess extends Access {
     try {
       startBlockExecution(BlockType.CREATE, "AprilTagProcessor.Builder", "");
       return new AprilTagProcessor.Builder();
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(classes = AprilTagProcessor.Builder.class, methodName = "setCameraPose")
+  public void setCameraPose(Object aprilTagProcessorBuilderArg, Object positionArg, Object yawPitchRollAnglesArg) {
+    try {
+      startBlockExecution(BlockType.FUNCTION, "AprilTagProcessor.Builder", ".setCameraPose");
+      AprilTagProcessor.Builder aprilTagProcessorBuilder = checkAprilTagProcessorBuilder(aprilTagProcessorBuilderArg);
+      Position position = checkPosition(positionArg);
+      YawPitchRollAngles yawPitchRollAngles = checkYawPitchRollAngles(yawPitchRollAnglesArg);
+      if (aprilTagProcessorBuilder != null && position != null && yawPitchRollAngles != null) {
+        aprilTagProcessorBuilder.setCameraPose(position, yawPitchRollAngles);
+      }
     } catch (Throwable e) {
       blocksOpMode.handleFatalException(e);
       throw new AssertionError("impossible", e);
@@ -442,6 +450,21 @@ class AprilTagAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = AprilTagGameDatabase.class, methodName = "getIntoTheDeepTagLibrary")
+  public AprilTagLibrary getIntoTheDeepTagLibrary() {
+    try {
+      startBlockExecution(BlockType.FUNCTION, "AprilTagGameDatabase", ".getIntoTheDeepTagLibrary");
+      return AprilTagGameDatabase.getIntoTheDeepTagLibrary();
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
   @Block(classes = AprilTagGameDatabase.class, methodName = "getSampleTagLibrary")
   public AprilTagLibrary getSampleTagLibrary() {
     try {
@@ -705,6 +728,22 @@ class AprilTagAccess extends Access {
     try {
       startBlockExecution(BlockType.valueOf(blockTypeString), blockFirstName, blockLastName);
       return fromJson(json, AprilTagPoseRaw.class);
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  // createAprilTagPoseRobot is called if blocks passes AprilTagDetection.robotPose to a java function.
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(exclusiveToBlocks = true)
+  public Pose3D createAprilTagPoseRobot(String blockTypeString, String blockFirstName, String blockLastName, String json) {
+    try {
+      startBlockExecution(BlockType.valueOf(blockTypeString), blockFirstName, blockLastName);
+      return fromJson(json, Pose3D.class);
     } catch (Throwable e) {
       blocksOpMode.handleFatalException(e);
       throw new AssertionError("impossible", e);

@@ -31,10 +31,6 @@ class PositionAccess extends Access {
     super(blocksOpMode, identifier, "Position");
   }
 
-  private Position checkPosition(Object positionArg) {
-    return checkArg(positionArg, Position.class, "position");
-  }
-
   @SuppressWarnings("unused")
   @JavascriptInterface
   @Block(classes = Position.class, fieldName = "unit")

@@ -51,6 +51,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import static com.qualcomm.robotcore.hardware.configuration.LynxConstants.EXPANSION_HUB_PRODUCT_NUMBER;
+
 /**
  * Composes system telemetry warnings related to the status of the lynx modules, and logs
  * persistent conditions with configurable throttling.
@@ -173,7 +175,8 @@ public class LynxModuleWarningManager {
                 int majorVersion = Integer.parseInt(versionNums[0]);
                 int minorVersion = Integer.parseInt(versionNums[1]);
                 int engVersion = Integer.parseInt(versionNums[2]);
-                if (isFwVersionOutdated(majorVersion, minorVersion, engVersion)) {
+                boolean isExpansionHub = lynxModule.getRevProductNumber() == EXPANSION_HUB_PRODUCT_NUMBER;
+                if (isFwVersionOutdated(majorVersion, minorVersion, engVersion) && isExpansionHub) {
                     outdatedModules.add(getModuleName(lynxModule));
                 }
             } catch (RuntimeException e) {

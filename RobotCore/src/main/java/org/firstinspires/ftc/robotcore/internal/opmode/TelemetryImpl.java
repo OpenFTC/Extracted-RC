@@ -48,6 +48,7 @@ import org.firstinspires.ftc.robotcore.internal.network.NetworkConnectionHandler
 import org.firstinspires.ftc.robotcore.internal.network.RobotCoreCommandList;
 import org.firstinspires.ftc.robotcore.internal.network.RobotCoreCommandList.TextToSpeech;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -60,6 +61,7 @@ import static org.firstinspires.ftc.robotcore.internal.network.RobotCoreCommandL
  */
 public class TelemetryImpl implements Telemetry, TelemetryInternal
     {
+
     //----------------------------------------------------------------------------------------------
     // Types
     //----------------------------------------------------------------------------------------------
@@ -93,10 +95,13 @@ public class TelemetryImpl implements Telemetry, TelemetryInternal
             this.valueProducer = valueProducer;
             }
 
-        Value(Object value)
-            {
-            this.value = value;
+        Value(Object value) {
+            if ((value instanceof Double) || (value instanceof Float)) {
+                this.value = decimalFormat.format(value);
+            } else {
+                this.value = value;
             }
+        }
 
         Value(Func<T> valueProducer)
             {
@@ -612,6 +617,7 @@ public class TelemetryImpl implements Telemetry, TelemetryInternal
     protected int                 msTransmissionInterval;
     protected String              captionValueSeparator;
     protected String              itemSeparator;
+    protected DecimalFormat       decimalFormat = new DecimalFormat("0.####");
 
     //----------------------------------------------------------------------------------------------
     // Construction
@@ -658,6 +664,11 @@ public class TelemetryImpl implements Telemetry, TelemetryInternal
         {
         return this.isDirty;
         }
+
+    public void setNumDecimalPlaces(int minDecimalPlaces, int maxDecimalPlaces){
+        decimalFormat.setMinimumFractionDigits(minDecimalPlaces);
+        decimalFormat.setMaximumFractionDigits(maxDecimalPlaces);
+    }
 
     //----------------------------------------------------------------------------------------------
     // Updating

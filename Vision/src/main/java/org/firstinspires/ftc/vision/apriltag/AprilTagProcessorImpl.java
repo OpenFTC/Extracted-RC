@@ -40,11 +40,16 @@ import com.qualcomm.robotcore.util.MovingStatistics;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.matrices.GeneralMatrixF;
+import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
+import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
 import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibrationHelper;
 import org.firstinspires.ftc.robotcore.internal.camera.calibration.PlaceholderCalibratedAspectRatioMismatch;
@@ -98,9 +103,13 @@ public class AprilTagProcessorImpl extends AprilTagProcessor
 
     private volatile PoseSolver poseSolver = PoseSolver.OPENCV_ITERATIVE;
 
-    public AprilTagProcessorImpl(double fx, double fy, double cx, double cy, DistanceUnit outputUnitsLength, AngleUnit outputUnitsAngle, AprilTagLibrary tagLibrary,
+    private OpenGLMatrix robotInCameraFrame;
+
+    public AprilTagProcessorImpl(OpenGLMatrix robotInCameraFrame, double fx, double fy, double cx, double cy, DistanceUnit outputUnitsLength, AngleUnit outputUnitsAngle, AprilTagLibrary tagLibrary,
                                  boolean drawAxes, boolean drawCube, boolean drawOutline, boolean drawTagID, TagFamily tagFamily, int threads, boolean suppressCalibrationWarnings)
     {
+        this.robotInCameraFrame = robotInCameraFrame;
+
         this.fx = fx;
         this.fy = fy;
         this.cx = cx;
@@ -273,6 +282,7 @@ public class AprilTagProcessorImpl extends AprilTagProcessor
 
                 AprilTagPoseRaw rawPose;
                 AprilTagPoseFtc ftcPose;
+                Pose3D robotPose;
 
                 if (metadata != null)
                 {
@@ -342,10 +352,13 @@ public class AprilTagProcessorImpl extends AprilTagProcessor
                             Math.hypot(rawPose.x, rawPose.z), // range
                             outputUnitsAngle.fromUnit(AngleUnit.RADIANS, Math.atan2(-rawPose.x, rawPose.z)), // bearing
                             outputUnitsAngle.fromUnit(AngleUnit.RADIANS, Math.atan2(-rawPose.y, rawPose.z))); // elevation
+
+                    robotPose = computeRobotPose(rawPose, metadata, captureTimeNanos);
                 }
                 else
                 {
                     ftcPose = null;
+                    robotPose = null;
                 }
 
                 double[] center = ApriltagDetectionJNI.getCenterpoint(ptrDetection);
@@ -354,7 +367,7 @@ public class AprilTagProcessorImpl extends AprilTagProcessor
                         ApriltagDetectionJNI.getId(ptrDetection),
                         ApriltagDetectionJNI.getHamming(ptrDetection),
                         ApriltagDetectionJNI.getDecisionMargin(ptrDetection),
-                        new Point(center[0], center[1]), cornerPts, metadata, ftcPose, rawPose, captureTimeNanos));
+                        new Point(center[0], center[1]), cornerPts, metadata, ftcPose, rawPose, robotPose, captureTimeNanos));
             }
 
             ApriltagDetectionJNI.freeDetectionList(ptrDetectionArray);
@@ -362,6 +375,53 @@ public class AprilTagProcessorImpl extends AprilTagProcessor
         }
 
         return new ArrayList<>();
+    }
+
+    private Pose3D computeRobotPose(AprilTagPoseRaw rawPose, AprilTagMetadata metadata, long acquisitionTime)
+    {
+        // Compute transformation matrix of tag pose in field reference frame
+        float tagInFieldX = metadata.fieldPosition.get(0);
+        float tagInFieldY = metadata.fieldPosition.get(1);
+        float tagInFieldZ = metadata.fieldPosition.get(2);
+        OpenGLMatrix tagInFieldR = new OpenGLMatrix(metadata.fieldOrientation.toMatrix());
+        OpenGLMatrix tagInFieldFrame = OpenGLMatrix.identityMatrix()
+                .translated(tagInFieldX, tagInFieldY, tagInFieldZ)
+                .multiplied(tagInFieldR);
+
+        // Compute transformation matrix of camera pose in tag reference frame
+        float tagInCameraX = (float) DistanceUnit.INCH.fromUnit(outputUnitsLength, rawPose.x);
+        float tagInCameraY = (float) DistanceUnit.INCH.fromUnit(outputUnitsLength, rawPose.y);
+        float tagInCameraZ = (float) DistanceUnit.INCH.fromUnit(outputUnitsLength, rawPose.z);
+        OpenGLMatrix tagInCameraR = new OpenGLMatrix((rawPose.R));
+        OpenGLMatrix cameraInTagFrame = OpenGLMatrix.identityMatrix()
+                .translated(tagInCameraX, tagInCameraY, tagInCameraZ)
+                .multiplied(tagInCameraR)
+                .inverted();
+
+        // Compute transformation matrix of robot pose in field frame
+        OpenGLMatrix robotInFieldFrame =
+                tagInFieldFrame
+                .multiplied(cameraInTagFrame)
+                .multiplied(robotInCameraFrame);
+
+        // Extract robot location
+        VectorF robotInFieldTranslation = robotInFieldFrame.getTranslation();
+        Position robotPosition = new Position(DistanceUnit.INCH,
+                robotInFieldTranslation.get(0),
+                robotInFieldTranslation.get(1),
+                robotInFieldTranslation.get(2),
+                acquisitionTime).toUnit(outputUnitsLength);
+
+        // Extract robot orientation
+        Orientation robotInFieldOrientation = Orientation.getOrientation(robotInFieldFrame,
+                AxesReference.INTRINSIC, AxesOrder.ZXY, outputUnitsAngle);
+        YawPitchRollAngles robotOrientation = new YawPitchRollAngles(outputUnitsAngle,
+                robotInFieldOrientation.firstAngle,
+                robotInFieldOrientation.secondAngle,
+                robotInFieldOrientation.thirdAngle,
+                acquisitionTime);
+
+        return new Pose3D(robotPosition, robotOrientation);
     }
 
     private final Object drawSync = new Object();

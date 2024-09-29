@@ -54,9 +54,9 @@ import com.qualcomm.robotcore.hardware.configuration.BuiltInConfigurationType;
 import com.qualcomm.robotcore.hardware.configuration.ConfigurationType;
 import com.qualcomm.robotcore.hardware.configuration.ControllerConfiguration;
 import com.qualcomm.robotcore.hardware.configuration.DeviceConfiguration;
-import com.qualcomm.robotcore.hardware.configuration.LynxModuleConfiguration;
 import com.qualcomm.robotcore.hardware.configuration.LynxUsbDeviceConfiguration;
 import com.qualcomm.robotcore.hardware.configuration.ReadXMLFileHandler;
+import com.qualcomm.robotcore.hardware.configuration.RhspModuleConfiguration;
 import com.qualcomm.robotcore.robocol.Command;
 import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.util.SerialNumber;
@@ -362,9 +362,9 @@ public class FtcConfigurationActivity extends EditActivity {
         RobotLog.vv(TAG, "Performing Lynx discovery");
         controllerConfiguration = configurationUtility.buildNewControllerConfiguration(serialNumber, deviceType, usbScanManager.getLynxModuleMetaListSupplier(serialNumber));
         LynxUsbDeviceConfiguration lynxUsbConfiguration = (LynxUsbDeviceConfiguration) controllerConfiguration;
-        List<LynxModuleConfiguration> discoveredModules = new ArrayList<>(lynxUsbConfiguration.getModules()); // Gives us a list that we won't be editing, so that we can safely iterate over it
-        for (LynxModuleConfiguration discoveredModule: discoveredModules) {
-          for (LynxModuleConfiguration existingModule: ((LynxUsbDeviceConfiguration) existingControllers.get(serialNumber)).getModules()) {
+        List<RhspModuleConfiguration> discoveredModules = new ArrayList<>(lynxUsbConfiguration.getModules()); // Gives us a list that we won't be editing, so that we can safely iterate over it
+        for (RhspModuleConfiguration discoveredModule: discoveredModules) {
+          for (RhspModuleConfiguration existingModule: ((LynxUsbDeviceConfiguration) existingControllers.get(serialNumber)).getModules()) {
             if (discoveredModule.getModuleAddress() == existingModule.getModuleAddress()) {
               RobotLog.vv(TAG, "carrying over %s", existingModule.getModuleSerialNumber());
               existingModule.setParentModuleAddress(discoveredModule.getParentModuleAddress()); // Preserve parent state from discovery
@@ -387,7 +387,13 @@ public class FtcConfigurationActivity extends EditActivity {
     // Now that we've carried over previously-configured controllers, we can add the newly-found controllers
     for (Map.Entry<SerialNumber, DeviceManager.UsbDeviceType> entry : devicesToCreate) {
       final SerialNumber serialNumber = entry.getKey();
-      ControllerConfiguration<?> controllerConfiguration = configurationUtility.buildNewControllerConfiguration(serialNumber, entry.getValue(), usbScanManager.getLynxModuleMetaListSupplier(serialNumber));
+      final DeviceManager.UsbDeviceType deviceType = entry.getValue();
+      ControllerConfiguration<?> controllerConfiguration;
+      if (deviceType == DeviceManager.UsbDeviceType.ETHERNET_DEVICE) {
+        controllerConfiguration = configurationUtility.buildNewEthernetOverUsbControllerConfiguration(serialNumber);
+      } else {
+        controllerConfiguration = configurationUtility.buildNewControllerConfiguration(serialNumber, entry.getValue(), usbScanManager.getLynxModuleMetaListSupplier(serialNumber));
+      }
       controllerConfiguration.setKnownToBeAttached(true);
       newRobotConfigMap.put(serialNumber, controllerConfiguration);
     }
@@ -519,24 +525,24 @@ public class FtcConfigurationActivity extends EditActivity {
 
     controllerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
       @Override
-      public void onItemClick(AdapterView<?> adapterView, View v, int pos, long arg3)
-        {
+      public void onItemClick(AdapterView<?> adapterView, View v, int pos, long arg3) {
         ControllerConfiguration controllerConfiguration = (ControllerConfiguration) adapterView.getItemAtPosition(pos);
         ConfigurationType itemType = controllerConfiguration.getConfigurationType();
         if (itemType == BuiltInConfigurationType.LYNX_USB_DEVICE) {
           EditParameters parameters = initParameters(0,
-                  LynxModuleConfiguration.class,
+                  RhspModuleConfiguration.class,
                   controllerConfiguration,
                   ((LynxUsbDeviceConfiguration)controllerConfiguration).getDevices());
           handleLaunchEdit(EditLynxUsbDeviceActivity.requestCode, EditLynxUsbDeviceActivity.class, parameters);
-          }
-        else if (itemType == BuiltInConfigurationType.WEBCAM) {
+        } else if (itemType == BuiltInConfigurationType.WEBCAM) {
           EditParameters parameters = initParameters(controllerConfiguration);
           handleLaunchEdit(EditWebcamActivity.requestCode, EditWebcamActivity.class, parameters);
-          }
+        } else if (itemType == BuiltInConfigurationType.ETHERNET_OVER_USB_DEVICE) {
+          EditParameters parameters = initParameters(controllerConfiguration);
+          handleLaunchEdit(EditEthernetOverUsbActivity.requestCode, EditEthernetOverUsbActivity.class, parameters);
         }
       }
-    );
+    });
   }
 
   <ITEM_T extends DeviceConfiguration> EditParameters initParameters(int initialPortNumber, Class<ITEM_T> itemClass, ControllerConfiguration controllerConfiguration, List<ITEM_T> currentItems) {

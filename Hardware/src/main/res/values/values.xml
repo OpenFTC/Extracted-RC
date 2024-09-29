@@ -16,6 +16,8 @@
     <string name="powerIssueTip">Check your wiring, battery, and power switch.</string>
     <string name="progressUpdatingDeviceFirmware">Updating Expansion Hub firmware (%s)</string>
     <string name="quotes">\"%s\"</string>
+    <string name="rev_9_axis_imu_description">a REV 9-Axis IMU</string>
+    <string name="rev_9_axis_imu_name">REV 9-Axis IMU</string>
     <string name="robotOffTip">Make sure that your robot is turned on.</string>
     <string name="unhealthyDevice">Problem with %s.</string>
 </resources>

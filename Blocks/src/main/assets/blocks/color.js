@@ -931,3 +931,67 @@ Blockly.FtcJava['color_showColor'] = function(block) {
   Blockly.FtcJava.generateImport_('JavaUtil');
   return 'JavaUtil.showColor(hardwareMap.appContext, ' + color + ');\n';
 };
+
+Blockly.Blocks['color_constant_Number'] = {
+  init: function() {
+    var CONSTANT_CHOICES = [
+        ['BLACK', 'BLACK'],
+        ['BLUE', 'BLUE'],
+        ['CYAN', 'CYAN'],
+        ['DKGRAY', 'DKGRAY'],
+        ['GRAY', 'GRAY'],
+        ['GREEN', 'GREEN'],
+        ['LTGRAY', 'LTGRAY'],
+        ['MAGENTA', 'MAGENTA'],
+        ['RED', 'RED'],
+        ['WHITE', 'WHITE'],
+        ['YELLOW', 'YELLOW'],
+    ];
+    this.setOutput(true, 'Number');
+    this.appendDummyInput()
+        .appendField(createNonEditableField('Color'))
+        .appendField('.')
+        .appendField(new Blockly.FieldDropdown(CONSTANT_CHOICES), 'CONSTANT');
+    this.setColour(getPropertyColor);
+    // Assign 'this' to a variable for use in the closures below.
+    var thisBlock = this;
+    var TOOLTIPS = [
+        ['BLACK', 'The constant Color.BLACK, whose value is ' + getColorConstant('BLACK') + '.'],
+        ['BLUE', 'The constant Color.BLUE, whose value is ' + getColorConstant('BLUE') + '.'],
+        ['CYAN', 'The constant Color.CYAN, whose value is ' + getColorConstant('CYAN') + '.'],
+        ['DKGRAY', 'The constant Color.DKGRAY, whose value is ' + getColorConstant('DKGRAY') + '.'],
+        ['GRAY', 'The constant Color.GRAY, whose value is ' + getColorConstant('GRAY') + '.'],
+        ['GREEN', 'The constant Color.GREEN, whose value is ' + getColorConstant('GREEN') + '.'],
+        ['LTGRAY', 'The constant Color.LTGRAY, whose value is ' + getColorConstant('LTGRAY') + '.'],
+        ['MAGENTA', 'The constant Color.MAGENTA, whose value is ' + getColorConstant('MAGENTA') + '.'],
+        ['RED', 'The constant Color.RED, whose value is ' + getColorConstant('RED') + '.'],
+        ['WHITE', 'The constant Color.WHITE, whose value is ' + getColorConstant('WHITE') + '.'],
+        ['YELLOW', 'The constant Color.YELLOW, whose value is ' + getColorConstant('YELLOW') + '.'],
+    ];
+    this.setTooltip(function() {
+      var key = thisBlock.getFieldValue('CONSTANT');
+      for (var i = 0; i < TOOLTIPS.length; i++) {
+        if (TOOLTIPS[i][0] == key) {
+          return TOOLTIPS[i][1];
+        }
+      }
+      return '';
+    });
+    this.getFtcJavaOutputType = function() {
+      return 'int';
+    };
+  }
+};
+
+Blockly.JavaScript['color_constant_Number'] = function(block) {
+  var constant = block.getFieldValue('CONSTANT');
+  var code = getColorConstant(constant);
+  return [code, Blockly.JavaScript.ORDER_ATOMIC];
+};
+
+Blockly.FtcJava['color_constant_Number'] = function(block) {
+  var constant = block.getFieldValue('CONSTANT');
+  var code = 'Color.' + constant;
+  Blockly.FtcJava.generateImport_('Color');
+  return [code, Blockly.FtcJava.ORDER_MEMBER];
+};

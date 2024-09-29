@@ -120,6 +120,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static com.qualcomm.robotcore.hardware.configuration.LynxConstants.EXPANSION_HUB_PRODUCT_NUMBER;
+import static com.qualcomm.robotcore.hardware.configuration.LynxConstants.SERVO_HUB_PRODUCT_NUMBER;
+
 /**
  * Main event loop that controls the robot
  */
@@ -589,13 +592,19 @@ public class FtcEventLoop extends FtcEventLoopBase {
       try {
         moduleName = hardwareMap.getNamesOf(module).iterator().next();
       } catch (RuntimeException e) { // Protects against empty iterator
-        moduleName = "Expansion Hub " + module.getModuleAddress();
+        if (module.getRevProductNumber() == EXPANSION_HUB_PRODUCT_NUMBER) {
+          moduleName = "Expansion Hub " + module.getModuleAddress();
+        } else if (module.getRevProductNumber() == SERVO_HUB_PRODUCT_NUMBER) {
+          moduleName = "Servo Hub " + module.getModuleAddress();
+        } else {
+          moduleName = "Unknown Device " + module.getModuleAddress();
+        }
       }
 
       String rawFirmwareVersionString = module.getNullableFirmwareVersionString();
       LynxModuleImuType imuType = module.getImuType();
 
-      result.add(new CachedLynxModulesInfo.LynxModuleInfo(moduleName, rawFirmwareVersionString, module.getSerialNumber().toString(), module.getModuleAddress(), imuType));
+      result.add(new CachedLynxModulesInfo.LynxModuleInfo(moduleName, rawFirmwareVersionString, module.getSerialNumber().toString(), module.getModuleAddress(), imuType, module.getRevProductNumber()));
     }
 
     // Sort alphabetically by name

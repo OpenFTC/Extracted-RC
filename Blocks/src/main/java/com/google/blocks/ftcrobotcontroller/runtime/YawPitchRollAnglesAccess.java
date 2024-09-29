@@ -31,10 +31,6 @@ class YawPitchRollAnglesAccess extends Access {
     super(blocksOpMode, identifier, "YawPitchRollAngles");
   }
 
-  private YawPitchRollAngles checkYawPitchRollAngles(Object yawPitchRollAnglesArg) {
-    return checkArg(yawPitchRollAnglesArg, YawPitchRollAngles.class, "yawPitchRollAngles");
-  }
-
   @SuppressWarnings("unused")
   @JavascriptInterface
   @Block(classes = {YawPitchRollAngles.class}, methodName = "getYaw")

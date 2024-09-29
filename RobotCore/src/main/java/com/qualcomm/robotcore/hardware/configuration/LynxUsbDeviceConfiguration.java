@@ -54,7 +54,7 @@ import java.util.List;
  * the 'parent'; the others are called 'children'.
  */
 @SuppressWarnings("WeakerAccess")
-public class LynxUsbDeviceConfiguration extends ControllerConfiguration<LynxModuleConfiguration>
+public class LynxUsbDeviceConfiguration extends ControllerConfiguration<RhspModuleConfiguration>
     {
     //----------------------------------------------------------------------------------------------
     // State
@@ -76,19 +76,19 @@ public class LynxUsbDeviceConfiguration extends ControllerConfiguration<LynxModu
     // For use in deserializing from XML
     public LynxUsbDeviceConfiguration()
         {
-        super("", new LinkedList<LynxModuleConfiguration>(), SerialNumber.createFake(), BuiltInConfigurationType.LYNX_USB_DEVICE);
+        super("", new LinkedList<RhspModuleConfiguration>(), SerialNumber.createFake(), BuiltInConfigurationType.LYNX_USB_DEVICE);
         }
 
-    public LynxUsbDeviceConfiguration(String name, List<LynxModuleConfiguration> modules, SerialNumber serialNumber)
+    public LynxUsbDeviceConfiguration(String name, List<RhspModuleConfiguration> modules, SerialNumber serialNumber)
         {
-        super(name, new LinkedList<LynxModuleConfiguration>(modules), serialNumber, BuiltInConfigurationType.LYNX_USB_DEVICE);
+        super(name, new LinkedList<RhspModuleConfiguration>(modules), serialNumber, BuiltInConfigurationType.LYNX_USB_DEVICE);
         finishInitialization();
         }
 
     @Override public void setSerialNumber(@NonNull SerialNumber serialNumber)
         {
         super.setSerialNumber(serialNumber);
-        for (LynxModuleConfiguration module : getModules())
+        for (RhspModuleConfiguration module : getModules())
             {
             module.setUsbDeviceSerialNumber(serialNumber);
             }
@@ -111,7 +111,7 @@ public class LynxUsbDeviceConfiguration extends ControllerConfiguration<LynxModu
         this.parentModuleAddress = moduleAddress;
         }
 
-    public List<LynxModuleConfiguration> getModules()
+    public List<RhspModuleConfiguration> getModules()
         {
         return this.getDevices();
         }
@@ -157,6 +157,15 @@ public class LynxUsbDeviceConfiguration extends ControllerConfiguration<LynxModu
             moduleConfiguration.setParentModuleAddress(parentModuleAddress);
             getModules().add(moduleConfiguration);
             }
+
+        else if (configurationType == BuiltInConfigurationType.SERVO_HUB)
+            {
+            ServoHubConfiguration moduleConfiguration = new ServoHubConfiguration();
+            moduleConfiguration.deserialize(parser, xmlReader);
+
+            moduleConfiguration.setParentModuleAddress(parentModuleAddress);
+            getModules().add(moduleConfiguration);
+            }
         }
 
     @Override
@@ -185,7 +194,7 @@ public class LynxUsbDeviceConfiguration extends ControllerConfiguration<LynxModu
 
         // Checking how many modules have the reserved address is a robust way to detect non-parent modules with that address
         int numberOfModulesWithControlHubAddress = 0;
-        for (LynxModuleConfiguration module : getModules())
+        for (RhspModuleConfiguration module : getModules())
             {
             module.setUsbDeviceSerialNumber(getSerialNumber());
             if (module.isParent())

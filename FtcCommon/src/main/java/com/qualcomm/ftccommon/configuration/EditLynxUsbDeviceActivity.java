@@ -44,6 +44,7 @@ import android.widget.TextView;
 import com.qualcomm.ftccommon.R;
 import com.qualcomm.robotcore.hardware.configuration.LynxModuleConfiguration;
 import com.qualcomm.robotcore.hardware.configuration.LynxUsbDeviceConfiguration;
+import com.qualcomm.robotcore.hardware.configuration.RhspModuleConfiguration;
 
 import java.util.List;
 
@@ -90,7 +91,7 @@ public class EditLynxUsbDeviceActivity extends EditUSBDeviceActivity
     protected void populateModules()
         {
         ListView listView = (ListView) findViewById(R.id.lynxUsbDeviceModules);
-        List<LynxModuleConfiguration> modules = lynxUsbDeviceConfiguration.getModules();
+        List<RhspModuleConfiguration> modules = lynxUsbDeviceConfiguration.getModules();
         listKeys = new DisplayNameAndInteger[modules.size()];
         for (int i = 0; i < listKeys.length; i++)
             {
@@ -130,13 +131,13 @@ public class EditLynxUsbDeviceActivity extends EditUSBDeviceActivity
                 }
             else if (requestCode == EditLynxModuleActivity.requestCode)
                 {
-                LynxModuleConfiguration newModule = (LynxModuleConfiguration)parameters.getConfiguration();
+                RhspModuleConfiguration newModule = (RhspModuleConfiguration)parameters.getConfiguration();
                 if (newModule != null)
                     {
                     // Replace that configuration in the module list
                     for (int i = 0; i < lynxUsbDeviceConfiguration.getModules().size(); i++)
                         {
-                        LynxModuleConfiguration existingModule = (LynxModuleConfiguration)lynxUsbDeviceConfiguration.getModules().get(i);
+                        RhspModuleConfiguration existingModule = lynxUsbDeviceConfiguration.getModules().get(i);
                         if (existingModule.getModuleAddress() == newModule.getModuleAddress())
                             {
                             lynxUsbDeviceConfiguration.getModules().set(i, newModule);

@@ -1,0 +1,89 @@
+<xml xmlns="https://developers.google.com/blockly/xml">
+<block type="procedures_defnoreturn" id="WtpyD@tEu+EoY=P9iY,D" deletable="false" x="35" y="169">
+<field name="NAME">runOpMode</field>
+<comment pinned="true" h="157" w="570">This OpMode illustrates how to use the REV Digital Indicator
+
+This is a simple way to add the REV Digital Indicator which has a red and green LED.
+(and as you may remember, red + green = yellow so when they are both on you get yellow)
+
+Why? You can use this to show information to the driver.  For example, green might be that you can pick up more game elements and red would be that you already have the possession limit.
+
+This OpMode assumes that the REV Digital Indicator is setup as 2 LEDs named front_led_green and front_led_red.  (The green should be the lower of the 2 channels it is plugged into and the red should be the higher.)</comment>
+<data>{"commentPositionLeft":-20,"commentPositionTop":-169}</data>
+<statement name="STACK">
+<block type="linearOpMode_waitForStart" id=":`$wN_ci`O;o6P0~.(+g">
+<next>
+<block type="controls_if" id="}Q?5mbxSO8Di;i!__6[y">
+<value name="IF0">
+<block type="linearOpMode_opModeIsActive" id=")o%YFX/#9kvv^sgXr4~5"/>
+</value>
+<statement name="DO0">
+<block type="controls_whileUntil" id="^0Kagy/e+Ea{rbZPv2G6">
+<field name="MODE">WHILE</field>
+<value name="BOOL">
+<block type="linearOpMode_opModeIsActive" id="e)cr{!2VIET83s,JWC.="/>
+</value>
+<statement name="DO">
+<block type="controls_if" id="il/[@G7-brD0@tkhIw-1">
+<mutation else="1"/>
+<value name="IF0">
+<block type="gamepad_getProperty_Boolean" id=")i-uOq3N![B+p/Tjt8(u">
+<field name="IDENTIFIER">gamepad1</field>
+<field name="PROP">A</field>
+<data>{"IDENTIFIER":"gamepad1"}</data>
+</block>
+</value>
+<statement name="DO0">
+<block type="led_on" id="yRWN9m[LJZXJ(6{UgxLd">
+<field name="IDENTIFIER">front_led_redAsLED</field>
+<data>{"IDENTIFIER":"front_led_red"}</data>
+</block>
+</statement>
+<statement name="ELSE">
+<block type="led_off" id="k/!wm)Xsm.n4B8+U,5W%">
+<field name="IDENTIFIER">front_led_redAsLED</field>
+<data>{"IDENTIFIER":"front_led_red"}</data>
+</block>
+</statement>
+<next>
+<block type="controls_if" id="{=X1@5G3kFNUFE52R%K)">
+<mutation else="1"/>
+<value name="IF0">
+<block type="gamepad_getProperty_Boolean" id="xcqFE5=?3g_ixfy1H;0a">
+<field name="IDENTIFIER">gamepad1</field>
+<field name="PROP">B</field>
+<data>{"IDENTIFIER":"gamepad1"}</data>
+</block>
+</value>
+<statement name="DO0">
+<block type="led_on" id="d#Y?Yt^kS!._g-$F0{2S">
+<field name="IDENTIFIER">front_led_greenAsLED</field>
+<data>{"IDENTIFIER":"front_led_green"}</data>
+</block>
+</statement>
+<statement name="ELSE">
+<block type="led_off" id="ij`D+%lnaZm9lURAFgM9">
+<field name="IDENTIFIER">front_led_greenAsLED</field>
+<data>{"IDENTIFIER":"front_led_green"}</data>
+</block>
+</statement>
+<next>
+<block type="telemetry_update" id="exvivmft-pX$n!1,8Ea$"/>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</statement>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</xml>
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<Extra>
+<OpModeMeta flavor="TELEOP" group="" autoTransition="" />
+<Enabled value="true" />
+</Extra>

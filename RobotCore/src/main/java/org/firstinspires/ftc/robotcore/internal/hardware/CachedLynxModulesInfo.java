@@ -71,12 +71,14 @@ public class CachedLynxModulesInfo {
         public final String parentSerial;
         public final int moduleAddress;
         public final String imuType;
+        public final int revProductNumber;
 
-        public LynxModuleInfo(@NonNull String name, @Nullable String rawFirmwareVersion, @NonNull String parentSerial, int moduleAddress, LynxModuleImuType imuType) {
+        public LynxModuleInfo(@NonNull String name, @Nullable String rawFirmwareVersion, @NonNull String parentSerial, int moduleAddress, LynxModuleImuType imuType, int revProductNumber) {
             this.name = name;
             this.moduleAddress = moduleAddress;
             this.parentSerial = parentSerial;
             this.imuType = imuType.toString();
+            this.revProductNumber = revProductNumber;
             if (rawFirmwareVersion == null) {
                 this.firmwareVersion = AppUtil.getDefContext().getString(R.string.lynxUnavailableFWVersionString);
             } else {

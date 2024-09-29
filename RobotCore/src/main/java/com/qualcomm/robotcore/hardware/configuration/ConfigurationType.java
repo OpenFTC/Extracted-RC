@@ -54,7 +54,8 @@ public interface ConfigurationType
             ANALOG_SENSOR,
             SERVO,
             DIGITAL_IO,
-            ANALOG_OUTPUT
+            ANALOG_OUTPUT,
+            ETHERNET_OVER_USB
         }
 
     /**

@@ -53,8 +53,7 @@ Blockly.JavaScript['telemetry_addNumericData'] = function(block) {
       block, 'KEY', Blockly.JavaScript.ORDER_COMMA);
   var number = Blockly.JavaScript.valueToCode(
       block, 'NUMBER', Blockly.JavaScript.ORDER_COMMA);
-  // Convert the number to a String in JavaScript so a number like 123 doesn't show up as 123.0.
-  return telemetryIdentifierForJavaScript + '.addTextData(' + key + ', String(' + number + '));\n';
+  return telemetryIdentifierForJavaScript + '.addNumericData(' + key + ', ' + number + ');\n';
 };
 
 Blockly.FtcJava['telemetry_addNumericData'] = function(block) {
@@ -317,6 +316,50 @@ Blockly.FtcJava['telemetry_setDisplayFormat'] = function(block) {
   return 'telemetry.setDisplayFormat(' + displayFormat + ');\n';
 };
 
+Blockly.Blocks['telemetry_setNumDecimalPlaces'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('call')
+        .appendField(createNonEditableField('Telemetry'))
+        .appendField('.')
+        .appendField(createNonEditableField('setNumDecimalPlaces'));
+    this.appendValueInput('MIN').setCheck('Number')
+        .appendField('minDecimalPlaces')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('MAX').setCheck('Number')
+        .appendField('maxDecimalPlaces')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setColour(functionColor);
+    this.setTooltip('Sets the number of decimal places for non-integer numeric values.');
+    this.getFtcJavaInputType = function(inputName) {
+      switch (inputName) {
+        case 'MIN':
+        case 'MAX':
+          return 'int';
+      }
+      return '';
+    };
+  }
+};
+
+Blockly.JavaScript['telemetry_setNumDecimalPlaces'] = function(block) {
+  var min = Blockly.JavaScript.valueToCode(
+      block, 'MIN', Blockly.JavaScript.ORDER_COMMA);
+  var max = Blockly.JavaScript.valueToCode(
+      block, 'MAX', Blockly.JavaScript.ORDER_COMMA);
+  return telemetryIdentifierForJavaScript + '.setNumDecimalPlaces(' + min + ', ' + max + ');\n';
+};
+
+Blockly.FtcJava['telemetry_setNumDecimalPlaces'] = function(block) {
+     var min = Blockly.FtcJava.valueToCode(
+         block, 'MIN', Blockly.FtcJava.ORDER_COMMA);
+     var max = Blockly.FtcJava.valueToCode(
+         block, 'MAX', Blockly.FtcJava.ORDER_COMMA);
+     return 'telemetry.setNumDecimalPlaces(' + min + ', ' + max + ');\n';
+};
+
 // Enums
 
 Blockly.Blocks['telemetry_typedEnum_displayFormat'] = {
@@ -361,3 +404,114 @@ Blockly.FtcJava['telemetry_typedEnum_displayFormat'] = function(block) {
   Blockly.FtcJava.generateImport_('Telemetry');
   return [code, Blockly.FtcJava.ORDER_MEMBER];
 };
+
+// Properties
+
+Blockly.Blocks['telemetry_setProperty_Number'] = {
+  init: function() {
+    var PROPERTY_CHOICES = [
+        ['MsTransmissionInterval', 'MsTransmissionInterval'],
+    ];
+    this.appendValueInput('VALUE').setCheck('Number')
+        .appendField('set')
+        .appendField(createNonEditableField('Telemetry'))
+        .appendField('.')
+        .appendField(new Blockly.FieldDropdown(PROPERTY_CHOICES), 'PROP')
+        .appendField('to');
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setColour(setPropertyColor);
+    // Assign 'this' to a variable for use in the closures below.
+    var thisBlock = this;
+    var TOOLTIPS = [
+      ['MsTransmissionInterval', 'Sets the minimum interval between Telemetry transmissions from ' +
+           'the robot controller to the driver station.'],
+    ];
+    this.setTooltip(function() {
+      var key = thisBlock.getFieldValue('PROP');
+      for (var i = 0; i < TOOLTIPS.length; i++) {
+        if (TOOLTIPS[i][0] == key) {
+          return TOOLTIPS[i][1];
+        }
+      }
+      return '';
+    });
+    this.getFtcJavaInputType = function(inputName) {
+      if (inputName == 'VALUE') {
+        var property = thisBlock.getFieldValue('PROP');
+        switch (property) {
+          case 'MsTransmissionInterval':
+            return 'int';
+          default:
+            throw 'Unexpected property ' + property + ' (telemetry_setProperty_Number getArgumentType).';
+        }
+      }
+      return '';
+    };
+  }
+};
+
+Blockly.JavaScript['telemetry_setProperty_Number'] = function(block) {
+  var property = block.getFieldValue('PROP');
+  var value = Blockly.JavaScript.valueToCode(
+      block, 'VALUE', Blockly.JavaScript.ORDER_NONE);
+  return telemetryIdentifierForJavaScript + '.set' + property + '(' + value + ');\n';
+};
+
+Blockly.FtcJava['telemetry_setProperty_Number'] = function(block) {
+  var property = block.getFieldValue('PROP');
+  var value = Blockly.FtcJava.valueToCode(
+      block, 'VALUE', Blockly.FtcJava.ORDER_NONE);
+  return 'telemetry.set' + property + '(' + value + ');\n';
+};
+
+Blockly.Blocks['telemetry_getProperty_Number'] = {
+  init: function() {
+    var PROPERTY_CHOICES = [
+        ['MsTransmissionInterval', 'MsTransmissionInterval'],
+    ];
+    this.setOutput(true, 'Number');
+    this.appendDummyInput()
+        .appendField(createNonEditableField('Telemetry'))
+        .appendField('.')
+        .appendField(new Blockly.FieldDropdown(PROPERTY_CHOICES), 'PROP');
+    this.setColour(getPropertyColor);
+    // Assign 'this' to a variable for use in the closures below.
+    var thisBlock = this;
+    var TOOLTIPS = [
+      ['MsTransmissionInterval', 'Returns the minimum interval between Telemetry transmissions ' +
+           'from the robot controller to the driver station.'],
+    ];
+    this.setTooltip(function() {
+      var key = thisBlock.getFieldValue('PROP');
+      for (var i = 0; i < TOOLTIPS.length; i++) {
+        if (TOOLTIPS[i][0] == key) {
+          return TOOLTIPS[i][1];
+        }
+      }
+      return '';
+    });
+    this.getFtcJavaOutputType = function() {
+      var property = thisBlock.getFieldValue('PROP');
+      switch (property) {
+        case 'MsTransmissionInterval':
+          return 'int';
+        default:
+          throw 'Unexpected property ' + property + ' (telemetry_getProperty_Number getOutputType).';
+      }
+    };
+  }
+};
+
+Blockly.JavaScript['telemetry_getProperty_Number'] = function(block) {
+  var property = block.getFieldValue('PROP');
+  var code = telemetryIdentifierForJavaScript + '.get' + property + '()';
+  return [code, Blockly.JavaScript.ORDER_FUNCTION_CALL];
+};
+
+Blockly.FtcJava['telemetry_getProperty_Number'] = function(block) {
+  var property = block.getFieldValue('PROP');
+  var code = 'telemetry.get' + property + '()';
+  return [code, Blockly.FtcJava.ORDER_FUNCTION_CALL];
+};
+

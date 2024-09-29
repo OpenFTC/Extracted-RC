@@ -17,7 +17,6 @@
 package com.google.blocks.ftcrobotcontroller.util;
 
 import static org.firstinspires.ftc.robotcore.internal.system.AppUtil.BLOCKS_SOUNDS_DIR;
-import static org.firstinspires.ftc.robotcore.internal.system.AppUtil.TFLITE_MODELS_DIR;
 import static com.google.blocks.ftcrobotcontroller.util.ProjectsUtil.escapeDoubleQuotes;
 
 import android.text.Html;
@@ -31,8 +30,7 @@ import java.io.IOException;
  * @author lizlooney@google.com (Liz Looney)
  */
 public enum FileManager {
-  SOUNDS(BLOCKS_SOUNDS_DIR),
-  MODELS(TFLITE_MODELS_DIR);
+  SOUNDS(BLOCKS_SOUNDS_DIR);
 
   private final String VALID_NAME_REGEX =
       "^[a-zA-Z0-9 \\!\\#\\$\\%\\&\\'\\(\\)\\+\\,\\-\\.\\;\\=\\@\\[\\]\\^_\\{\\}\\~]+$";

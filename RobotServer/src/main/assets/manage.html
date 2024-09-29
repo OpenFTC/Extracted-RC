@@ -33,6 +33,9 @@
         <div id="id_control_hub_os_version_item">
             <h1 class="header-shared-line header-reduced-spacing">Control Hub OS version: </h1><span id="id_control_hub_os_version" class="next-to-header"></span>
         </div>
+        <div id="id_active_config_item">
+            <h1 class="header-shared-line header-reduced-spacing">Active Configuration: </h1><span id="id_active_config" class="next-to-header"></span>
+        </div>
         <div id="id_rev_hubs_item">
             <h1 class="header-shared-line header-reduced-spacing" style="vertical-align: top;">REV Hubs:</h1>
             <div id="id_rev_hubs" class="next-to-header" style="display: inline-block; margin-top: 6px;"></div>
@@ -141,12 +144,6 @@
                 <button id="id_action_webcam_calibration" class="aligned-action-button" onclick="uploadWebcamCalibration();">Upload</button>
             </p>
             <p id="id_webcam_calibration_upload_complete" class="text-ok"></p>
-        </div>
-    </div>
-    <div id="id_manage_tflite_models">
-        <h1>Manage TensorFlow Lite Models</h1>
-        <div>
-            <a href="FtcTFLiteModels.html">Manage TensorFlow Lite Models</a>
         </div>
     </div>
     <div id="id_manage_sounds">
@@ -799,6 +796,7 @@
                 document.getElementById("id_rc_version").textContent = rcInfo.rcVersion;
                 document.getElementById("id_sdk_version").textContent = rcInfo.sdkVersion;
                 document.getElementById("id_control_hub_os_version").textContent = rcInfo.chOsVersion;
+                document.getElementById("id_active_config").textContent = rcInfo.activeConfigName;
 
                 const revHubsListing = document.getElementById("id_rev_hubs");
                 revHubsListing.textContent = "";

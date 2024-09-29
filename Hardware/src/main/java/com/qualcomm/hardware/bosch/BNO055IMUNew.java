@@ -34,6 +34,7 @@ package com.qualcomm.hardware.bosch;
 
 import androidx.annotation.NonNull;
 
+import androidx.annotation.Nullable;
 import com.qualcomm.hardware.R;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.I2cAddr;
@@ -72,23 +73,37 @@ public abstract class BNO055IMUNew extends I2cDeviceSynchDeviceWithParameters<I2
     //----------------------------------------------------------------------------------------------
 
     private final QuaternionBasedImuHelper helper;
+    @Nullable private final I2cAddr guaranteedAddress;
 
     //----------------------------------------------------------------------------------------------
     // Construction
     //----------------------------------------------------------------------------------------------
 
     /**
-     * This constructor is called internally by the FTC SDK.
+     * Use this constructor for BNO055-based sensors that allow the I2C address to be changed
      */
     public BNO055IMUNew(I2cDeviceSynchSimple deviceClient, boolean deviceClientIsOwned) {
+        this(deviceClient, deviceClientIsOwned, null);
+    }
+
+    /**
+     * Use this constructor for BNO055-based sensors that do NOT allow the I2C address to be changed
+     */
+    public BNO055IMUNew(I2cDeviceSynchSimple deviceClient, boolean deviceClientIsOwned, @Nullable I2cAddr guaranteedAddress) {
         super(deviceClient, deviceClientIsOwned, new Parameters(
                 new RevHubOrientationOnRobot(
                         RevHubOrientationOnRobot.LogoFacingDirection.UP,
                         RevHubOrientationOnRobot.UsbFacingDirection.FORWARD)));
 
         helper = new QuaternionBasedImuHelper(parameters.imuOrientationOnRobot);
+        this.guaranteedAddress = guaranteedAddress;
 
-        deviceClient.setI2cAddress(BNO055IMU.I2CADDR_DEFAULT);
+        I2cAddr assumedAddress = guaranteedAddress;
+        if (assumedAddress == null) {
+            assumedAddress = BNO055IMU.I2CADDR_DEFAULT;
+        }
+
+        deviceClient.setI2cAddress(assumedAddress);
 
         if (BNO055Util.imuIsPresent(deviceClient, false)) {
             // Reset the yaw to ensure predictable behavior on app launch and Robot Restart, which
@@ -124,7 +139,11 @@ public abstract class BNO055IMUNew extends I2cDeviceSynchDeviceWithParameters<I2
 
         helper.setImuOrientationOnRobot(parameters.imuOrientationOnRobot);
 
-        deviceClient.setI2cAddress(parameters.i2cAddr);
+        if (guaranteedAddress == null) {
+            deviceClient.setI2cAddress(parameters.i2cAddr);
+        } else {
+            deviceClient.setI2cAddress(guaranteedAddress);
+        }
 
         try {
             // Make sure we have the right device

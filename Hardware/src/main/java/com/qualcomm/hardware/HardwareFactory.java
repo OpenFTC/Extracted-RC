@@ -60,22 +60,25 @@ import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.PWMOutput;
 import com.qualcomm.robotcore.hardware.PWMOutputController;
 import com.qualcomm.robotcore.hardware.ServoControllerEx;
-import com.qualcomm.robotcore.hardware.configuration.typecontainers.AnalogSensorConfigurationType;
+import com.qualcomm.robotcore.hardware.configuration.EthernetOverUsbConfiguration;
 import com.qualcomm.robotcore.hardware.configuration.BuiltInConfigurationType;
 import com.qualcomm.robotcore.hardware.configuration.ConfigurationType;
 import com.qualcomm.robotcore.hardware.configuration.ControllerConfiguration;
 import com.qualcomm.robotcore.hardware.configuration.DeviceConfiguration;
-import com.qualcomm.robotcore.hardware.configuration.typecontainers.DigitalIoDeviceConfigurationType;
 import com.qualcomm.robotcore.hardware.configuration.LynxConstants;
 import com.qualcomm.robotcore.hardware.configuration.LynxI2cDeviceConfiguration;
 import com.qualcomm.robotcore.hardware.configuration.LynxModuleConfiguration;
 import com.qualcomm.robotcore.hardware.configuration.LynxUsbDeviceConfiguration;
 import com.qualcomm.robotcore.hardware.configuration.ReadXMLFileHandler;
+import com.qualcomm.robotcore.hardware.configuration.RhspModuleConfiguration;
+import com.qualcomm.robotcore.hardware.configuration.ServoFlavor;
+import com.qualcomm.robotcore.hardware.configuration.ServoHubConfiguration;
+import com.qualcomm.robotcore.hardware.configuration.WebcamConfiguration;
+import com.qualcomm.robotcore.hardware.configuration.typecontainers.AnalogSensorConfigurationType;
+import com.qualcomm.robotcore.hardware.configuration.typecontainers.DigitalIoDeviceConfigurationType;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.ServoConfigurationType;
-import com.qualcomm.robotcore.hardware.configuration.ServoFlavor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.I2cDeviceConfigurationType;
-import com.qualcomm.robotcore.hardware.configuration.WebcamConfiguration;
 import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.util.SerialNumber;
 
@@ -159,6 +162,9 @@ public class HardwareFactory {
     }
     else if (type==BuiltInConfigurationType.WEBCAM) {
       mapWebcam(map, deviceMgr, (WebcamConfiguration)ctrlConf);
+    }
+    else if (type==BuiltInConfigurationType.ETHERNET_OVER_USB_DEVICE) {
+        mapEthernetOverUsb(map, deviceMgr, (EthernetOverUsbConfiguration)ctrlConf);
     }
     else {
       RobotLog.ee(TAG, "unexpected controller configuration type: %s", type);
@@ -344,6 +350,15 @@ public class HardwareFactory {
     }
   }
 
+  private void mapEthernetOverUsb(HardwareMap map, DeviceManager deviceManager, EthernetOverUsbConfiguration ethernetOverUsbConfiguration) throws RobotCoreException, InterruptedException {
+    if (!ethernetOverUsbConfiguration.isEnabled()) return;
+    SerialNumber serialNumber = ethernetOverUsbConfiguration.getSerialNumber();
+    HardwareDevice limelight = deviceManager.createLimelight3A(serialNumber, ethernetOverUsbConfiguration.getName(), ethernetOverUsbConfiguration.getIpAddress());
+    if (limelight != null) {
+      map.put(serialNumber, ethernetOverUsbConfiguration.getName(), limelight);
+    }
+  }
+
   private void mapLynxUsbDevice(HardwareMap map, DeviceManager deviceMgr, LynxUsbDeviceConfiguration lynxUsbDeviceConfiguration) throws RobotCoreException, InterruptedException {
     if (!lynxUsbDeviceConfiguration.isEnabled()) return;
     // Make a new LynxUsbDevice
@@ -370,7 +385,7 @@ public class HardwareFactory {
       List<LynxModuleDescription> moduleDescriptions = new ArrayList<LynxModuleDescription>();
       Map<Integer, String> moduleNames = new HashMap<Integer, String>();
       final int parentModuleAddress = lynxUsbDeviceConfiguration.getParentModuleAddress();
-      for (DeviceConfiguration moduleConfiguration : lynxUsbDeviceConfiguration.getModules()) {
+      for (RhspModuleConfiguration moduleConfiguration : lynxUsbDeviceConfiguration.getModules()) {
         int moduleAddress = moduleConfiguration.getPort();
         moduleNames.put(moduleAddress, moduleConfiguration.getName());
         //
@@ -378,7 +393,7 @@ public class HardwareFactory {
         moduleDescriptionBuilder.setUserModule();
 
         // If the system made up this device, let the live device know that too
-        if (((LynxModuleConfiguration)moduleConfiguration).isSystemSynthetic()) {
+        if (moduleConfiguration.isSystemSynthetic()) {
           moduleDescriptionBuilder.setSystemSynthetic();
         }
 
@@ -449,29 +464,40 @@ public class HardwareFactory {
   private void mapLynxModuleComponents(HardwareMap map, DeviceManager deviceMgr, LynxUsbDeviceConfiguration lynxUsbDeviceConfiguration, LynxUsbDevice lynxUsbDevice, Map<Integer, LynxModule> connectedModules) throws LynxNackException, RobotCoreException, InterruptedException {
 
     // Hook up the pieces to each module
-    for (DeviceConfiguration moduleConfiguration : lynxUsbDeviceConfiguration.getModules()) {
+    for (RhspModuleConfiguration moduleConfiguration : lynxUsbDeviceConfiguration.getModules()) {
       LynxModule module = connectedModules.get(moduleConfiguration.getPort());
 
       // Ignore modules that ultimately didn't connect
       if (module==null) continue;
 
-      LynxModuleConfiguration lynxModuleConfiguration = (LynxModuleConfiguration)moduleConfiguration;
-
       // For each module, hook up motor controller and motors
-      LynxDcMotorController mc = new LynxDcMotorController(context, module);
-      map.dcMotorController.put(moduleConfiguration.getName(), mc);
-      for (DeviceConfiguration motorConf : lynxModuleConfiguration.getMotors()) {
-        if (motorConf.isEnabled()) {
-          DcMotor m = deviceMgr.createDcMotorEx(mc, motorConf.getPort(), (MotorConfigurationType) motorConf.getConfigurationType(), motorConf.getName());
-          map.dcMotor.put(motorConf.getName(), m);
+      if (moduleConfiguration instanceof LynxModuleConfiguration) {
+        LynxDcMotorController mc = new LynxDcMotorController(context, module);
+        map.dcMotorController.put(moduleConfiguration.getName(), mc);
+        for (DeviceConfiguration motorConf : ((LynxModuleConfiguration) moduleConfiguration).getMotors()) {
+          if (motorConf.isEnabled()) {
+            DcMotor m = deviceMgr.createDcMotorEx(mc, motorConf.getPort(), (MotorConfigurationType) motorConf.getConfigurationType(), motorConf.getName());
+            map.dcMotor.put(motorConf.getName(), m);
+          }
         }
       }
 
       // And hook up servo controller and servos
-      LynxServoController sc = new LynxServoController(context, module);
-      map.servoController.put(moduleConfiguration.getName(), sc);
-      for (DeviceConfiguration servoConf : lynxModuleConfiguration.getServos()) {
-        mapLynxServoDevice(map, deviceMgr, servoConf, sc);
+      if (moduleConfiguration instanceof LynxModuleConfiguration) {
+        LynxServoController sc = new LynxServoController(context, module);
+        map.servoController.put(moduleConfiguration.getName(), sc);
+        for (DeviceConfiguration servoConf : ((LynxModuleConfiguration) moduleConfiguration).getServos()) {
+          mapLynxServoDevice(map, deviceMgr, servoConf, sc);
+        }
+      }
+
+      // hook up servos for servo hub
+      if (moduleConfiguration instanceof ServoHubConfiguration) {
+        LynxServoController sc = new LynxServoController(context, module);
+        map.servoController.put(moduleConfiguration.getName(), sc);
+        for (DeviceConfiguration servoConf : ((ServoHubConfiguration) moduleConfiguration).getServos()) {
+          mapLynxServoDevice(map, deviceMgr, servoConf, sc);
+        }
       }
 
       // And a voltage sensor
@@ -479,17 +505,23 @@ public class HardwareFactory {
       map.voltageSensor.put(moduleConfiguration.getName(), voltageSensor);
 
       // Also an AnalogInputController
-      LynxAnalogInputController analogInputController = new LynxAnalogInputController(context, module);
-      map.put(moduleConfiguration.getName(), analogInputController);
-      buildLynxDevices(lynxModuleConfiguration.getAnalogInputs(), map, deviceMgr, analogInputController);
+      if (moduleConfiguration instanceof LynxModuleConfiguration) {
+        LynxAnalogInputController analogInputController = new LynxAnalogInputController(context, module);
+        map.put(moduleConfiguration.getName(), analogInputController);
+        buildLynxDevices(((LynxModuleConfiguration) moduleConfiguration).getAnalogInputs(), map, deviceMgr, analogInputController);
+      }
 
       // And a digital channel controller
-      LynxDigitalChannelController digitalChannelController = new LynxDigitalChannelController(context, module);
-      map.put(moduleConfiguration.getName(), digitalChannelController);
-      buildLynxDevices(lynxModuleConfiguration.getDigitalDevices(), map, deviceMgr, digitalChannelController);
+      if (moduleConfiguration instanceof LynxModuleConfiguration) {
+        LynxDigitalChannelController digitalChannelController = new LynxDigitalChannelController(context, module);
+        map.put(moduleConfiguration.getName(), digitalChannelController);
+        buildLynxDevices(((LynxModuleConfiguration) moduleConfiguration).getDigitalDevices(), map, deviceMgr, digitalChannelController);
+      }
 
       // And I2c devices
-      buildLynxI2cDevices(lynxModuleConfiguration.getI2cDevices(), map, deviceMgr, module);
+      if (moduleConfiguration instanceof LynxModuleConfiguration) {
+        buildLynxI2cDevices(((LynxModuleConfiguration) moduleConfiguration).getI2cDevices(), map, deviceMgr, module);
+      }
     }
   }
 

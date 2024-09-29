@@ -438,6 +438,41 @@ public class RegisteredOpModes implements OpModeManager
         return opModeClasses.containsKey(meta.name) || opModeInstances.containsKey(meta.name);
         }
 
+        /**
+         * This renames an OpMode by unregistering it with the old name and then
+         * registering it with the new name.   If the old name didn't exist, it
+         * does nothing.
+         * @param oldName - the name as it is registered
+         */
+    public void renameOpModeWithClass(String oldName)
+        {
+        lockOpModesWhile(new Runnable()
+        {
+            @Override
+            public void run()
+                {
+                if (opModeClasses.containsKey(oldName))
+                    {
+                    OpModeMetaAndClass opModeMetaAndClass = opModeClasses.get(oldName);
+
+                    unregister(opModeMetaAndClass.meta);
+                    String newName = oldName + '-' + opModeMetaAndClass.clazz.getSimpleName();
+                    register(new OpModeMeta.Builder().setName(newName).build(),
+                            opModeMetaAndClass.clazz);
+                    }
+                else if (opModeInstances.containsKey(oldName))
+                    {
+                    OpModeMetaAndInstance opModeMetaAndInstance = opModeInstances.get(oldName);
+
+                    unregister(opModeMetaAndInstance.meta);
+                    String newName = oldName + '-' + opModeMetaAndInstance.getClass().getSimpleName();
+
+                    register(new OpModeMeta.Builder().setName(newName).build(),
+                            opModeMetaAndInstance.instance, null);
+                    }
+                }
+            });
+        }
     //----------------------------------------------------------------------------------------------
     // Registration and unregistration
     //----------------------------------------------------------------------------------------------

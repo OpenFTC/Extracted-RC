@@ -158,6 +158,12 @@
             android:label="@string/edit_i2c_devices_activity"
             android:windowSoftInputMode="stateHidden|adjustResize" >
         </activity>
+        <activity
+            android:name="com.qualcomm.ftccommon.configuration.EditEthernetOverUsbActivity"
+            android:configChanges="orientation|screenSize"
+            android:label="@string/edit_ethernet_devices_activity"
+            android:windowSoftInputMode="stateHidden|adjustResize" >
+        </activity>
 
         <!-- A service that will auto-restart the robot controller if it crashes (if it's supposed to) -->
         <service

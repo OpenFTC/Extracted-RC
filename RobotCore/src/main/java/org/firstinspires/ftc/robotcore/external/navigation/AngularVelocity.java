@@ -58,21 +58,21 @@ public class AngularVelocity
      * the angular unit in which angular rates are expressed. The time unit thereof
      * is always "per second".
      */
-    public AngleUnit unit;
+    public UnnormalizedAngleUnit angleUnit;
 
     /**
      * the instantaneous body-referenced rotation rate about the x-axis in units
-     * of "{@link #unit}s per second".
+     * of "{@link #angleUnit}s per second".
      */
     public float xRotationRate;
     /**
      * the instantaneous body-referenced rotation rate about the y-axis in units
-     * of "{@link #unit}s per second".
+     * of "{@link #angleUnit}s per second".
      */
     public float yRotationRate;
     /**
      * the instantaneous body-referenced rotation rate about the z-axis in units
-     * of "{@link #unit}s per second".
+     * of "{@link #angleUnit}s per second".
      */
     public float zRotationRate;
 
@@ -91,15 +91,19 @@ public class AngularVelocity
         this(AngleUnit.DEGREES, 0, 0, 0, 0);
         }
 
-    public AngularVelocity(AngleUnit unit, float xRotationRate, float yRotationRate, float zRotationRate, long acquisitionTime)
+    public AngularVelocity(UnnormalizedAngleUnit unit, float xRotationRate, float yRotationRate, float zRotationRate, long acquisitionTime)
         {
-        this.unit = unit;
+        this.angleUnit = unit;
         this.xRotationRate = xRotationRate;
         this.yRotationRate = yRotationRate;
         this.zRotationRate = zRotationRate;
         this.acquisitionTime = acquisitionTime;
         }
 
+    public AngularVelocity(AngleUnit unit, float xRotationRate, float yRotationRate, float zRotationRate, long acquisitionTime)
+        {
+        this(unit.getUnnormalized(), xRotationRate, yRotationRate, zRotationRate, acquisitionTime);
+        }
     /**
      * Converts this {@link AngularVelocity} to one with the indicated angular units.
      *
@@ -108,12 +112,14 @@ public class AngularVelocity
      */
     public AngularVelocity toAngleUnit(AngleUnit unit)
         {
-        if (unit != this.unit)
+        if (unit.getUnnormalized() != this.angleUnit)
             {
+            UnnormalizedAngleUnit unnormalizedAngleUnit = unit.getUnnormalized();
+
             return new AngularVelocity(unit,
-                    unit.fromUnit(this.unit, xRotationRate),
-                    unit.fromUnit(this.unit, yRotationRate),
-                    unit.fromUnit(this.unit, zRotationRate),
+                    unnormalizedAngleUnit.fromUnit(unit, xRotationRate),
+                    unnormalizedAngleUnit.fromUnit(unit, yRotationRate),
+                    unnormalizedAngleUnit.fromUnit(unit, zRotationRate),
                     this.acquisitionTime);
             }
         else
@@ -123,6 +129,6 @@ public class AngularVelocity
     @Override
     public String toString()
         {
-        return String.format(Locale.US, "{x=%.3f, y=%.3f, z=%.3f (%s)}", xRotationRate, yRotationRate, zRotationRate, unit);
+        return String.format(Locale.US, "{x=%.3f, y=%.3f, z=%.3f (%s)}", xRotationRate, yRotationRate, zRotationRate, angleUnit);
         }
     }

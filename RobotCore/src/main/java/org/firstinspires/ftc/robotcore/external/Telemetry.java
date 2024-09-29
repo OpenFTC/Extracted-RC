@@ -553,6 +553,16 @@ public interface Telemetry
      */
     void setDisplayFormat(DisplayFormat displayFormat);
 
+    /**
+     * Sets the number of decimal places for Double and Float
+     *
+     * @param minDecimalPlaces - the minimum number of places to show when Double or Float is passed in without a Format
+     * @param maxDecimalPlaces - the maximum number of places to show when Double or Float is passed in without a Format
+     */
+    default void setNumDecimalPlaces(int minDecimalPlaces, int maxDecimalPlaces){
+        // does nothing just so we don't break existing Telemetry
+    }
+
     //----------------------------------------------------------------------------------------------
     // Properties
     //----------------------------------------------------------------------------------------------

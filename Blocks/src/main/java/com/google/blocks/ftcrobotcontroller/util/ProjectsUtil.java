@@ -414,6 +414,7 @@ public class ProjectsUtil {
         "<block type=\"linearOpMode_resetStartTime",
         "<block type=\"linearOpMode_resetRuntime");
 
+    // Note that TensorFlow is now obsolete, but this code remains so that we can still open projects with TensorFlow blocks in the blocks editor.
     // In previous versions, there were separate blocks with block type prefixes tfodCurrentGame_
     // and tfodCustomModel_. Now TensorFlow blocks have the block type prefix tfod_.
     // All tfodCurrentGame_ blocks can safely be renamed tfod_.

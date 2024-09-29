@@ -172,9 +172,6 @@ public class AppUtil
     /** Where to place webcam calibration files */
     public static final File WEBCAM_CALIBRATIONS_DIR = new File(FIRST_FOLDER + "/webcamcalibrations/");
 
-    /** Where to place TensorFlow Lite model files */
-    public static final File TFLITE_MODELS_DIR = new File(FIRST_FOLDER + "/tflitemodels/");
-
     /** Progress WebSocket constants */
     public static final String PROGRESS_NAMESPACE = "progress";
     public static final String SHOW_PROGRESS_MSG = "showProgress";

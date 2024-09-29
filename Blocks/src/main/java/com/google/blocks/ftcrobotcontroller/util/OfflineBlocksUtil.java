@@ -120,10 +120,12 @@ public class OfflineBlocksUtil {
     assetsToInclude.add("blocks/led.js");
     assetsToInclude.add("blocks/led_effect.js");
     assetsToInclude.add("blocks/light_sensor.js");
+    assetsToInclude.add("blocks/limelight_3a.js");
     assetsToInclude.add("blocks/linear_op_mode.js");
     assetsToInclude.add("blocks/locale.js");
     assetsToInclude.add("blocks/magnetic_flux.js");
     assetsToInclude.add("blocks/matrix_f.js");
+    assetsToInclude.add("blocks/max_sonar_i2cxl.js");
     assetsToInclude.add("blocks/misc.js");
     assetsToInclude.add("blocks/mr_i2c_compass_sensor.js");
     assetsToInclude.add("blocks/mr_i2c_range_sensor.js");
@@ -144,12 +146,11 @@ public class OfflineBlocksUtil {
     assetsToInclude.add("blocks/servo.js");
     assetsToInclude.add("blocks/servo_controller.js");
     // sound_util.js is not needed
+    assetsToInclude.add("blocks/sparkfun_led_stick.js");
     assetsToInclude.add("blocks/sparkfun_otos.js");
     assetsToInclude.add("blocks/system.js");
     assetsToInclude.add("blocks/telemetry.js");
     assetsToInclude.add("blocks/temperature.js");
-    assetsToInclude.add("blocks/tensor_flow.js");
-    assetsToInclude.add("blocks/tfod_recognition.js");
     assetsToInclude.add("blocks/toolbox_util.js");
     assetsToInclude.add("blocks/touch_sensor.js");
     assetsToInclude.add("blocks/ultrasonic_sensor.js");
@@ -167,10 +168,12 @@ public class OfflineBlocksUtil {
 
     assetsToInclude.add("blocks/obsolete/elapsed_time.js");
     assetsToInclude.add("blocks/obsolete/obsolete.js");
+    assetsToInclude.add("blocks/obsolete/tensor_flow.js");
     assetsToInclude.add("blocks/obsolete/tfod.js");
     assetsToInclude.add("blocks/obsolete/tfod_base.js");
     assetsToInclude.add("blocks/obsolete/tfod_current_game.js");
     assetsToInclude.add("blocks/obsolete/tfod_custom_model.js");
+    assetsToInclude.add("blocks/obsolete/tfod_recognition.js");
     assetsToInclude.add("blocks/obsolete/tfod_rover_ruckus.js");
     assetsToInclude.add("blocks/obsolete/tfod_sky_stone.js");
     assetsToInclude.add("blocks/obsolete/vuforia.js");

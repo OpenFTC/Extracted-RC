@@ -56,12 +56,6 @@
       <field name="VISION_PORTAL_BUILDER" variabletype="VisionPortal.Builder">myVisionPortalBuilder</field>
       <value name="VISION_PROCESSOR"><block type="variables_get"><field name="VAR">myAprilTagProcessor</field></block></value>
     </block>
-    <block type="visionPortalBuilder_addProcessor">
-      <comment pinned="false" h="150" w="325">Add the TensorFlow Object Detection processor.
-      </comment>
-      <field name="VISION_PORTAL_BUILDER" variabletype="VisionPortal.Builder">myVisionPortalBuilder</field>
-      <value name="VISION_PROCESSOR"><block type="variables_get"><field name="VAR">myTfodProcessor</field></block></value>
-    </block>
     <block type="variables_set">
       <comment pinned="false" h="150" w="325">Build the VisionPortal object and assign it to a variable.
       </comment>
@@ -84,24 +78,11 @@
       <value name="VISION_PROCESSOR"><block type="variables_get"><field name="VAR">myAprilTagProcessor</field></block></value>
       <value name="ENABLED"><shadow type="logic_boolean"><field name="BOOL">TRUE</field></shadow></value>
     </block>
-    <block type="visionPortal_setProcessorEnabled">
-      <comment pinned="false" h="150" w="325">Enable or disable the TensorFlow Object Detection processor.
-      </comment>
-      <value name="VISION_PORTAL"><block type="variables_get"><field name="VAR">myVisionPortal</field></block></value>
-      <value name="VISION_PROCESSOR"><block type="variables_get"><field name="VAR">myTfodProcessor</field></block></value>
-      <value name="ENABLED"><shadow type="logic_boolean"><field name="BOOL">TRUE</field></shadow></value>
-    </block>
     <block type="visionPortal_getProcessorEnabled">
       <comment pinned="false" h="150" w="325">Get whether the AprilTag processor is enabled.
       </comment>
       <value name="VISION_PORTAL"><block type="variables_get"><field name="VAR">myVisionPortal</field></block></value>
       <value name="VISION_PROCESSOR"><block type="variables_get"><field name="VAR">myAprilTagProcessor</field></block></value>
-    </block>
-    <block type="visionPortal_getProcessorEnabled">
-      <comment pinned="false" h="150" w="325">Get whether the TensorFlow Object Detection processor is enabled.
-      </comment>
-      <value name="VISION_PORTAL"><block type="variables_get"><field name="VAR">myVisionPortal</field></block></value>
-      <value name="VISION_PROCESSOR"><block type="variables_get"><field name="VAR">myTfodProcessor</field></block></value>
     </block>
     <block type="visionPortal_getCameraState">
       <comment pinned="false" h="150" w="325">Get the state of the camera.
@@ -238,6 +219,11 @@ This setSource() Block is useful under MultiPortal. The camera view of the desig
         </comment>
         <field name="APRIL_TAG_PROCESSOR_BUILDER" variabletype="AprilTagProcessor.Builder">myAprilTagProcessorBuilder</field>
         <value name="DRAW_TAG_ID"><shadow type="logic_boolean"><field name="BOOL">TRUE</field></shadow></value>
+      </block>
+      <block type="aprilTagProcessorBuilder_setCameraPose">
+        <field name="APRIL_TAG_PROCESSOR_BUILDER" variabletype="AprilTagProcessor.Builder">myAprilTagProcessorBuilder</field>
+        <value name="POSITION"><block type="variables_get"><field name="VAR">cameraPosition</field></block></value>
+        <value name="ORIENTATION"><block type="variables_get"><field name="VAR">cameraOrientation</field></block></value>
       </block>
       <block type="aprilTagProcessorBuilder_setLensIntrinsics">
         <comment pinned="false" h="150" w="325">Set the lens intrinsics, obtained from a camera calibration.
@@ -472,6 +458,34 @@ detections multiple times.
         <field name="PROP">rawPose</field>
         <value name="APRIL_TAG_DETECTION"><block type="variables_get"><field name="VAR">myAprilTagDetection</field></block></value>
       </block>
+      <block type="aprilTagDetection_getProperty_IsNotNull">
+        <field name="PROP">robotPose</field>
+        <value name="APRIL_TAG_DETECTION"><block type="variables_get"><field name="VAR">myAprilTagDetection</field></block></value>
+      </block>
+      <block type="aprilTagDetection_getProperty_Number">
+        <field name="PROP">robotPose.position.x</field>
+        <value name="APRIL_TAG_DETECTION"><block type="variables_get"><field name="VAR">myAprilTagDetection</field></block></value>
+      </block>
+      <block type="aprilTagDetection_getProperty_Number">
+        <field name="PROP">robotPose.position.y</field>
+        <value name="APRIL_TAG_DETECTION"><block type="variables_get"><field name="VAR">myAprilTagDetection</field></block></value>
+      </block>
+      <block type="aprilTagDetection_getProperty_Number">
+        <field name="PROP">robotPose.position.z</field>
+        <value name="APRIL_TAG_DETECTION"><block type="variables_get"><field name="VAR">myAprilTagDetection</field></block></value>
+      </block>
+      <block type="aprilTagDetection_getProperty_Number">
+        <field name="PROP">robotPose.orientation.roll</field>
+        <value name="APRIL_TAG_DETECTION"><block type="variables_get"><field name="VAR">myAprilTagDetection</field></block></value>
+      </block>
+      <block type="aprilTagDetection_getProperty_Number">
+        <field name="PROP">robotPose.orientation.pitch</field>
+        <value name="APRIL_TAG_DETECTION"><block type="variables_get"><field name="VAR">myAprilTagDetection</field></block></value>
+      </block>
+      <block type="aprilTagDetection_getProperty_Number">
+        <field name="PROP">robotPose.orientation.yaw</field>
+        <value name="APRIL_TAG_DETECTION"><block type="variables_get"><field name="VAR">myAprilTagDetection</field></block></value>
+      </block>
     </category>
     <category name="AprilTagLibrary">
       <block type="variables_set">
@@ -486,8 +500,8 @@ detections multiple times.
       <block type="variables_set">
         <field name="VAR">myAprilTagLibrary</field>
         <value name="VALUE">
-          <block type="aprilTagGameDatabase_getCenterStageTagLibrary">
-            <comment pinned="false" h="150" w="325">Get the AprilTagLibrary for the Center Stage FTC game.
+          <block type="aprilTagGameDatabase_getIntoTheDeepTagLibrary">
+            <comment pinned="false" h="150" w="325">Get the AprilTagLibrary for the Into The Deep FTC game.
             </comment>
           </block>
         </value>
@@ -625,229 +639,6 @@ detections multiple times.
         <field name="PROP">tagsize</field>
         <value name="APRIL_TAG_METADATA"><block type="variables_get"><field name="VAR">myAprilTagMetadata</field></block></value>
       </block>
-    </category>
-  </category>
-  <category name="TensorFlow (deprecated)">
-    <category name="TfodProcessor.Builder">
-      <block type="tfodProcessorBuilder_create_assign">
-        <comment pinned="false" h="150" w="325">Create a new TfodProcessor.Builder object.
-        </comment>
-        <field name="TFOD_PROCESSOR_BUILDER" variabletype="TfodProcessor.Builder">myTfodProcessorBuilder</field>
-      </block>
-      <block type="tfodProcessorBuilder_setModelAssetName">
-        <comment pinned="false" h="150" w="325">Set the name of the asset where the model can be found.
-        </comment>
-        <field name="TFOD_PROCESSOR_BUILDER" variabletype="TfodProcessor.Builder">myTfodProcessorBuilder</field>
-        <value name="MODEL_ASSET_NAME"><shadow type="text"><field name="TEXT">CenterStage.tflite</field></shadow></value>
-      </block>
-      <block type="tfodProcessorBuilder_setModelFileName">
-        <comment pinned="false" h="150" w="325">Set the name of the file where the model can be found.
-        </comment>
-        <field name="TFOD_PROCESSOR_BUILDER" variabletype="TfodProcessor.Builder">myTfodProcessorBuilder</field>
-        <value name="MODEL_FILE_NAME"><shadow type="text"><field name="TEXT">MyCustomModel.tflite</field></shadow></value>
-      </block>
-      <block type="tfodProcessorBuilder_setModelLabels">
-        <comment pinned="false" h="150" w="325">Set the full ordered list of labels the model is trained to recognize.
-        </comment>
-        <field name="TFOD_PROCESSOR_BUILDER" variabletype="TfodProcessor.Builder">myTfodProcessorBuilder</field>
-        <value name="LABELS"><block type="lists_create_with"><mutation items="1"/>
-          <value name="ADD0"><block type="text"><field name="TEXT">Pixel</field></block></value>
-          </block></value>
-      </block>
-      <block type="tfodProcessorBuilder_setIsModelTensorFlow2">
-        <comment pinned="false" h="150" w="325">Set whether the model is a TensorFlow2 model.
-        </comment>
-        <field name="TFOD_PROCESSOR_BUILDER" variabletype="TfodProcessor.Builder">myTfodProcessorBuilder</field>
-        <value name="IS_MODEL_TENSORFLOW_2"><shadow type="logic_boolean"><field name="BOOL">TRUE</field></shadow></value>
-      </block>
-      <block type="tfodProcessorBuilder_setIsModelQuantized">
-        <comment pinned="false" h="150" w="325">Set whether the model is quantized.
-        </comment>
-        <field name="TFOD_PROCESSOR_BUILDER" variabletype="TfodProcessor.Builder">myTfodProcessorBuilder</field>
-        <value name="IS_MODEL_QUANTIZED"><shadow type="logic_boolean"><field name="BOOL">TRUE</field></shadow></value>
-      </block>
-      <block type="tfodProcessorBuilder_setModelInputSize">
-        <comment pinned="false" h="150" w="325">Set the size, in pixels, of images input to the network.
-        </comment>
-        <field name="TFOD_PROCESSOR_BUILDER" variabletype="TfodProcessor.Builder">myTfodProcessorBuilder</field>
-        <value name="MODEL_INPUT_SIZE"><shadow type="math_number"><field name="NUM">300</field></shadow></value>
-      </block>
-      <block type="tfodProcessorBuilder_setModelAspectRatio">
-        <comment pinned="false" h="150" w="325">Set the aspect ratio for the images used when the model was created.
-        </comment>
-        <field name="TFOD_PROCESSOR_BUILDER" variabletype="TfodProcessor.Builder">myTfodProcessorBuilder</field>
-        <value name="MODEL_ASPECT_RATIO">
-          <block type="math_arithmetic">
-            <field name="OP">DIVIDE</field>
-            <value name="A"><shadow type="math_number"><field name="NUM">16</field></shadow></value>
-            <value name="B"><shadow type="math_number"><field name="NUM">9</field></shadow></value>
-          </block>
-        </value>
-      </block>
-      <block type="tfodProcessorBuilder_setNumExecutorThreads">
-        <comment pinned="false" h="150" w="325">Set the number of executor threads to use. Each executor corresponds to one TensorFlow Object Detector.
-        </comment>
-        <field name="TFOD_PROCESSOR_BUILDER" variabletype="TfodProcessor.Builder">myTfodProcessorBuilder</field>
-        <value name="NUM_EXECUTOR_THREADS"><shadow type="math_number"><field name="NUM">2</field></shadow></value>
-      </block>
-      <block type="tfodProcessorBuilder_setNumDetectorThreads">
-        <comment pinned="false" h="150" w="325">Set the number of threads that each individual TensorFlow object detector is allowed to use.
-        </comment>
-        <field name="TFOD_PROCESSOR_BUILDER" variabletype="TfodProcessor.Builder">myTfodProcessorBuilder</field>
-        <value name="NUM_DETECTOR_THREADS"><shadow type="math_number"><field name="NUM">1</field></shadow></value>
-      </block>
-      <block type="tfodProcessorBuilder_setMaxNumRecognitions">
-        <comment pinned="false" h="150" w="325">Set the maximum number of recognitions the network will return.
-        </comment>
-        <field name="TFOD_PROCESSOR_BUILDER" variabletype="TfodProcessor.Builder">myTfodProcessorBuilder</field>
-        <value name="MAX_NUM_RECOGNITIONS"><shadow type="math_number"><field name="NUM">10</field></shadow></value>
-      </block>
-      <block type="tfodProcessorBuilder_setUseObjectTracker">
-        <comment pinned="false" h="150" w="325">Set whether to use the object tracker.
-        </comment>
-        <field name="TFOD_PROCESSOR_BUILDER" variabletype="TfodProcessor.Builder">myTfodProcessorBuilder</field>
-        <value name="USE_OBJECT_TRACKER"><shadow type="logic_boolean"><field name="BOOL">TRUE</field></shadow></value>
-      </block>
-      <block type="tfodProcessorBuilder_setTrackerMaxOverlap">
-        <comment pinned="false" h="150" w="325">Set the maximum percentage of a box that can be overlapped by another box at recognition time.
-        </comment>
-        <field name="TFOD_PROCESSOR_BUILDER" variabletype="TfodProcessor.Builder">myTfodProcessorBuilder</field>
-        <value name="TRACKER_MAX_OVERLAP"><shadow type="math_number"><field name="NUM">0.2</field></shadow></value>
-      </block>
-      <block type="tfodProcessorBuilder_setTrackerMinSize">
-        <comment pinned="false" h="150" w="325">Set the minimum size of an object that the object tracker will track.
-        </comment>
-        <field name="TFOD_PROCESSOR_BUILDER" variabletype="TfodProcessor.Builder">myTfodProcessorBuilder</field>
-        <value name="TRACKER_MIN_SIZE"><shadow type="math_number"><field name="NUM">16</field></shadow></value>
-      </block>
-      <block type="tfodProcessorBuilder_setTrackerMarginalCorrelation">
-        <comment pinned="false" h="150" w="325">Allow replacement of the tracked box with new results if correlation has dropped below trackerMarginalCorrelation.
-        </comment>
-        <field name="TFOD_PROCESSOR_BUILDER" variabletype="TfodProcessor.Builder">myTfodProcessorBuilder</field>
-        <value name="TRACKER_MARGINAL_CORRELATION"><shadow type="math_number"><field name="NUM">0.75</field></shadow></value>
-      </block>
-      <block type="tfodProcessorBuilder_setTrackerMinCorrelation">
-        <comment pinned="false" h="150" w="325">Consider an object to be lost if correlation falls below trackerMinCorrelation.
-        </comment>
-        <field name="TFOD_PROCESSOR_BUILDER" variabletype="TfodProcessor.Builder">myTfodProcessorBuilder</field>
-        <value name="TRACKER_MIN_CORRELATION"><shadow type="math_number"><field name="NUM">0.3</field></shadow></value>
-      </block>
-      <block type="variables_set">
-        <comment pinned="false" h="150" w="325">Build the TensorFlow Object Detection processor and assign it to a variable.
-        </comment>
-        <field name="VAR">myTfodProcessor</field>
-        <value name="VALUE">
-          <block type="tfodProcessorBuilder_build">
-            <field name="TFOD_PROCESSOR_BUILDER" variabletype="TfodProcessor.Builder">myTfodProcessorBuilder</field>
-          </block>
-        </value>
-      </block>
-    </category>
-    <category name="TfodProcessor">
-      <block type="variables_set">
-        <comment pinned="false" h="150" w="325">Create the TensorFlow Object Detection processor and assign it to a variable.
-        </comment>
-        <field name="VAR">myTfodProcessor</field>
-        <value name="VALUE">
-          <block type="tfodProcessor_easyCreateWithDefaults"></block>
-        </value>
-      </block>
-      <block type="tfodProcessor_setMinResultConfidence">
-        <comment pinned="false" h="150" w="325">Set the minimum confidence at which to keep recognitions.
-        </comment>
-        <value name="TFOD_PROCESSOR"><block type="variables_get"><field name="VAR">myTfodProcessor</field></block></value>
-        <value name="MIN_RESULT_CONFIDENCE"><shadow type="math_number"><field name="NUM">0.75</field></shadow></value>
-      </block>
-      <block type="tfodProcessor_setClippingMargins">
-        <comment pinned="false" h="150" w="325">Set the number of pixels to obscure on the left,
-top, right, and bottom edges of each image passed to the TensorFlow object detector. The size of the
-images are not changed, but the pixels in the margins are colored black.
-      </comment>
-        <value name="TFOD_PROCESSOR"><block type="variables_get"><field name="VAR">myTfodProcessor</field></block></value>
-        <value name="LEFT"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
-        <value name="TOP"><shadow type="math_number"><field name="NUM">200</field></shadow></value>
-        <value name="RIGHT"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
-        <value name="BOTTOM"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
-      </block>
-      <block type="tfodProcessor_setZoom">
-        <comment pinned="false" h="150" w="325">Indicate that only the zoomed center area of each
-image will be passed to the TensorFlow object detector. For no zooming, set magnification to 1.0.
-        </comment>
-        <value name="TFOD_PROCESSOR"><block type="variables_get"><field name="VAR">myTfodProcessor</field></block></value>
-        <value name="MAGNIFICATION"><shadow type="math_number"><field name="NUM">1.0</field></shadow></value>
-      </block>
-      <block type="variables_set">
-        <field name="VAR">myTfodRecognitions</field>
-        <value name="VALUE">
-          <block type="tfodProcessor_getRecognitions">
-            <comment pinned="false" h="150" w="325">Get a list containing the latest recognitions, which may be stale.
-            </comment>
-            <value name="TFOD_PROCESSOR"><block type="variables_get"><field name="VAR">myTfodProcessor</field></block></value>
-          </block>
-        </value>
-      </block>
-      <block type="variables_set">
-        <field name="VAR">myTfodRecognitions</field>
-        <value name="VALUE">
-          <block type="tfodProcessor_getFreshRecognitions">
-            <comment pinned="false" h="150" w="325">Get a list containing recognitions that were detected since the last call to this method,
-or null if no new recognitions are available. This is useful to avoid re-processing the same
-recognitions multiple times.
-          </comment>
-            <value name="TFOD_PROCESSOR"><block type="variables_get"><field name="VAR">myTfodProcessor</field></block></value>
-          </block>
-        </value>
-      </block>
-    </category>
-    <category name="Recognition">
-      <block type="tfodRecognition_getProperty_String">
-        <field name="PROP">Label</field>
-        <value name="TFOD_RECOGNITION"><block type="variables_get"><field name="VAR">myTfodRecognition</field></block></value>
-      </block>
-      <block type="tfodRecognition_getProperty_Number">
-        <field name="PROP">Confidence</field>
-        <value name="TFOD_RECOGNITION"><block type="variables_get"><field name="VAR">myTfodRecognition</field></block></value>
-      </block>
-      <block type="tfodRecognition_getProperty_Number">
-        <field name="PROP">Left</field>
-        <value name="TFOD_RECOGNITION"><block type="variables_get"><field name="VAR">myTfodRecognition</field></block></value>
-      </block>
-      <block type="tfodRecognition_getProperty_Number">
-        <field name="PROP">Right</field>
-        <value name="TFOD_RECOGNITION"><block type="variables_get"><field name="VAR">myTfodRecognition</field></block></value>
-      </block>
-      <block type="tfodRecognition_getProperty_Number">
-        <field name="PROP">Top</field>
-        <value name="TFOD_RECOGNITION"><block type="variables_get"><field name="VAR">myTfodRecognition</field></block></value>
-      </block>
-      <block type="tfodRecognition_getProperty_Number">
-        <field name="PROP">Bottom</field>
-        <value name="TFOD_RECOGNITION"><block type="variables_get"><field name="VAR">myTfodRecognition</field></block></value>
-      </block>
-      <block type="tfodRecognition_getProperty_Number">
-        <field name="PROP">Width</field>
-        <value name="TFOD_RECOGNITION"><block type="variables_get"><field name="VAR">myTfodRecognition</field></block></value>
-      </block>
-      <block type="tfodRecognition_getProperty_Number">
-        <field name="PROP">Height</field>
-        <value name="TFOD_RECOGNITION"><block type="variables_get"><field name="VAR">myTfodRecognition</field></block></value>
-      </block>
-      <block type="tfodRecognition_getProperty_Number">
-        <field name="PROP">ImageWidth</field>
-        <value name="TFOD_RECOGNITION"><block type="variables_get"><field name="VAR">myTfodRecognition</field></block></value>
-      </block>
-      <block type="tfodRecognition_getProperty_Number">
-        <field name="PROP">ImageHeight</field>
-        <value name="TFOD_RECOGNITION"><block type="variables_get"><field name="VAR">myTfodRecognition</field></block></value>
-      </block>
-      <block type="tfodRecognition_toText">
-        <value name="TFOD_RECOGNITION"><block type="variables_get"><field name="VAR">myTfodRecognition</field></block></value>
-      </block>
-      <block type="tfodRecognition_estimateAngleToObject">
-        <value name="TFOD_RECOGNITION"><block type="variables_get"><field name="VAR">myTfodRecognition</field></block></value>
-        <value name="ANGLE_UNIT"><shadow type="navigation_typedEnum_angleUnit"></shadow></value>
-      </block>
-      <placeholder_vision_tfodCurrentGameLabels/>
     </category>
   </category>
   <category name="Webcam Controls">

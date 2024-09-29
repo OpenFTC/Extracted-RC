@@ -50,20 +50,16 @@ import java.util.List;
  * Created by bob on 2016-03-11.
  */
 @SuppressWarnings("WeakerAccess")
-public class LynxModuleConfiguration extends ControllerConfiguration<DeviceConfiguration>
+public class LynxModuleConfiguration extends RhspModuleConfiguration
     {
     public static final String TAG = "LynxModuleConfiguration";
 
-    private int parentModuleAddress;
     private List<DeviceConfiguration>  motors         = new LinkedList<>();
     private List<DeviceConfiguration>  servos         = new LinkedList<>();
     private List<DeviceConfiguration> pwmOutputs     = new LinkedList<>();
     private List<DeviceConfiguration> digitalDevices = new LinkedList<>();
     private List<DeviceConfiguration> analogInputs   = new LinkedList<>();
     private List<LynxI2cDeviceConfiguration> i2cDevices  = new LinkedList<>();
-
-    /** not persisted in XML */
-    private @NonNull SerialNumber     usbDeviceSerialNumber = SerialNumber.createFake();
 
     // A note: unlike everything else, we don't have a fixed number of attachable i2c devices.
     // Rather, we have four i2c busses, to each of which may be attached any number of i2c devices
@@ -80,7 +76,7 @@ public class LynxModuleConfiguration extends ControllerConfiguration<DeviceConfi
 
     public LynxModuleConfiguration(String name)
         {
-        super(name, new ArrayList<DeviceConfiguration>(), SerialNumber.createFake(), BuiltInConfigurationType.LYNX_MODULE);
+        super(name, new ArrayList<>(), SerialNumber.createFake(), BuiltInConfigurationType.LYNX_MODULE);
 
         servos          = ConfigurationUtility.buildEmptyServos(LynxConstants.INITIAL_SERVO_PORT, LynxConstants.NUMBER_OF_SERVO_CHANNELS);
         motors          = ConfigurationUtility.buildEmptyMotors(LynxConstants.INITIAL_MOTOR_PORT, LynxConstants.NUMBER_OF_MOTORS);
@@ -91,70 +87,14 @@ public class LynxModuleConfiguration extends ControllerConfiguration<DeviceConfi
 
         }
 
-    @Override
-    public void setPort(int port)
-        {
-        super.setPort(port);
-        setSerialNumber(new LynxModuleSerialNumber(usbDeviceSerialNumber, port));
-        }
-
-    public void setModuleAddress(int moduleAddress)
-        {
-        this.setPort(moduleAddress);
-        }
-    public int getModuleAddress()
-        {
-        return this.getPort();
-        }
-
-    /**
-     * Set the address of the parent module that this module is connected through.
-     * <p>
-     * If this module *is* this parent module, indicate that by providing this module's own address.
-     */
-    public void setParentModuleAddress(int parentModuleAddress)
-        {
-        this.parentModuleAddress = parentModuleAddress;
-        }
-
-    /**
-     * If this module is a parent, this will return its own address
-     */
-    public int getParentModuleAddress()
-        {
-        return this.parentModuleAddress;
-        }
-
     /**
      * A Control Hub or a USB-connected Expansion Hub is considered a "Parent",
      * and an RS485-connected Expansion Hub is a "Child".
      */
+    @Override
     public boolean isParent()
         {
         return getParentModuleAddress() == getModuleAddress();
-        }
-
-    public void setUsbDeviceSerialNumber(@NonNull SerialNumber usbDeviceSerialNumber)
-        {
-        this.usbDeviceSerialNumber = usbDeviceSerialNumber;
-        setSerialNumber(new LynxModuleSerialNumber(usbDeviceSerialNumber, getModuleAddress()));
-        }
-
-    @Override public void setSerialNumber(@NonNull SerialNumber serialNumber)
-        {
-        super.setSerialNumber(serialNumber);
-        // RobotLog.vv(TAG, "setSerialNumber(%s)", serialNumber);
-        }
-
-    public @NonNull SerialNumber getUsbDeviceSerialNumber()
-        {
-        return usbDeviceSerialNumber;
-        }
-
-    /** separate method just to reinforce whose serial number we're retreiving */
-    public @NonNull SerialNumber getModuleSerialNumber()
-        {
-        return getSerialNumber();
         }
 
     public List<DeviceConfiguration> getServos()

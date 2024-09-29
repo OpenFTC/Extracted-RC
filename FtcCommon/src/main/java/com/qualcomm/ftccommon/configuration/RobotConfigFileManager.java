@@ -34,6 +34,7 @@ import org.firstinspires.ftc.robotcore.internal.system.Dom2XmlPullBuilder;
 import org.firstinspires.ftc.robotcore.internal.collections.SimpleGson;
 import org.firstinspires.ftc.robotcore.internal.network.NetworkConnectionHandler;
 import org.firstinspires.ftc.robotcore.internal.ui.UILocation;
+import org.firstinspires.ftc.robotcore.internal.webserver.RobotControllerWebInfo;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xmlpull.v1.XmlPullParser;
@@ -187,6 +188,7 @@ public class RobotConfigFileManager {
         } else {
             file = getConfigFromString(objSerialized);
         }
+        RobotControllerWebInfo.setActiveConfigName(file.getName());
 
         if (DEBUG) RobotLog.vv(TAG, "getActiveConfig()='%s'", file.getName());
         return file;

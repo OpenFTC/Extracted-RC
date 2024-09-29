@@ -35,7 +35,11 @@ function isObsolete(block) {
       block.type.startsWith('tfodCustomModel_') ||
       block.type.startsWith('vuforia') ||
       block.type.startsWith('vuMarks') ||
-      block.type.startsWith('elapsedTime_')) {
+      block.type.startsWith('elapsedTime_') ||
+      block.type.startsWith('tfodRecognition_') ||
+      block.type.startsWith('tfodProcessorBuilder_') ||
+      block.type.startsWith('tfodProcessor_') ||
+      block.type == 'tfod_typedEnum_label') {
     return true;
   }
   return false;
@@ -110,6 +114,9 @@ function addReservedWordsForFtcJavaObsolete() {
   Blockly.FtcJava.addReservedWords('VuforiaTrackables');
   Blockly.FtcJava.addReservedWords('TfodBase');
   Blockly.FtcJava.addReservedWords('TfodRoverRuckus');
+  Blockly.FtcJava.addReservedWords('TfodProcessor');
+  Blockly.FtcJava.addReservedWords('Recognition');
+
 }
 
 function knownTypeToClassNameObsolete(type) {
@@ -128,6 +135,7 @@ function knownTypeToClassNameObsolete(type) {
     case 'VuforiaTrackableDefaultListener':
     case 'VuforiaTrackables':
       return 'org.firstinspires.ftc.robotcore.external.navigation.' + type;
+    case 'Recognition':
     case 'Tfod':
     case 'TfodBase':
     case 'TfodCurrentGame':
@@ -135,6 +143,8 @@ function knownTypeToClassNameObsolete(type) {
     case 'TfodRoverRuckus':
     case 'TfodSkyStone':
       return 'org.firstinspires.ftc.robotcore.external.tfod.' + type;
+    case 'TfodProcessor':
+      return 'org.firstinspires.ftc.vision.tfod.' + type;
   }
   return null;
 }
@@ -331,4 +341,15 @@ var VUFORIA_CURRENT_GAME_TRACKABLE_NAME_TOOLTIPS = [
   ['Red Rear Wall', 'The TrackableName value Red Rear Wall.'],
   ['Blue Audience Wall', 'The TrackableName value Blue Audience Wall.'],
   ['Blue Rear Wall', 'The TrackableName value Blue Rear Wall.'],
+];
+
+function createTfodCurrentGameLabelDropdown() {
+  var CHOICES = [
+      ['Pixel', 'Pixel'],
+  ];
+  return createFieldDropdown(CHOICES);
+}
+
+var TFOD_CURRENT_GAME_LABEL_TOOLTIPS = [
+  ['Pixel', 'The Label value Pixel.'],
 ];

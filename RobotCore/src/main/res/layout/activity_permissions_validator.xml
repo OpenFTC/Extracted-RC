@@ -12,7 +12,7 @@
         android:layout_height="match_parent"
         android:background="@color/background_black"
         android:scaleType="centerInside"
-        android:src="@drawable/centerstage_background"
+        android:src="@drawable/intothedeep_background"
         android:visibility="visible" />
 
     <TextView

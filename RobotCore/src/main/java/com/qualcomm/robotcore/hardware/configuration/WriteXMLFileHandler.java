@@ -85,6 +85,8 @@ public class WriteXMLFileHandler {
           writeLynxUSBDevice((LynxUsbDeviceConfiguration)controllerConfiguration);
         } else if (type == BuiltInConfigurationType.WEBCAM) {
           writeWebcam((WebcamConfiguration) controllerConfiguration);
+        } else if (type == BuiltInConfigurationType.ETHERNET_OVER_USB_DEVICE) {
+          writeEthernetOverUsbDevice((EthernetOverUsbConfiguration) controllerConfiguration);
         }
       }
       serializer.endTag("", "Robot");
@@ -123,6 +125,14 @@ public class WriteXMLFileHandler {
     }, null);
   }
 
+  private void writeEthernetOverUsbDevice(final EthernetOverUsbConfiguration controller) throws IOException {
+    writeUsbController(controller, new ThrowingRunnable<IOException>() {
+      @Override public void run() throws IOException {
+          controller.serializeXmlAttributes(serializer);
+      }
+    }, null);
+  }
+
   private void writeLynxUSBDevice(final LynxUsbDeviceConfiguration controller) throws IOException {
     writeUsbController(controller,
       new ThrowingRunnable<IOException>() {
@@ -136,6 +146,8 @@ public class WriteXMLFileHandler {
               ConfigurationType type = device.getConfigurationType();
               if (type == BuiltInConfigurationType.LYNX_MODULE) {
                 writeController((LynxModuleConfiguration)device, false);
+              } else if (type == BuiltInConfigurationType.SERVO_HUB) {
+                writeController((ServoHubConfiguration) device, false);
               } else {
                 writeDeviceNameAndPort(device);
               }
@@ -179,6 +191,11 @@ public class WriteXMLFileHandler {
               writeDeviceNameAndPort(device);
             }
             for (DeviceConfiguration device : moduleConfiguration.getI2cDevices()) {
+              writeDeviceNameAndPort(device);
+            }
+          } else if (controller.getConfigurationType() == BuiltInConfigurationType.SERVO_HUB) {
+            ServoHubConfiguration configuration = (ServoHubConfiguration) controller;
+            for (DeviceConfiguration device : configuration.getServos()) {
               writeDeviceNameAndPort(device);
             }
           } else {

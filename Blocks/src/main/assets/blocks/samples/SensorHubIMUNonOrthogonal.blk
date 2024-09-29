@@ -1,0 +1,666 @@
+<xml xmlns="https://developers.google.com/blockly/xml">
+<variables>
+<variable id="0tO!UoO$E??e8]IFVZ01">xRotation</variable>
+<variable id="`dsWFJ[;.P`%Vnnsk5tU">yRotation</variable>
+<variable id="7zSDmBJYCz),K.fJ3F2j">zRotation</variable>
+<variable id=";LhHh#r[=37Kw^@9$Vjj">hubRotation</variable>
+<variable id="Kvw=:6*+SnTe3ybC_IbC">orientationOnRobot</variable>
+<variable id="~LUL9~Z;enziZiH||`!?">orientation</variable>
+<variable id="uJjN|$P.}=4O:6Fa#2s)">angularVelocity</variable>
+</variables>
+<block type="procedures_defnoreturn" id=".C5qAWP%TVp.hOLyFe(w" deletable="false" x="25" y="459">
+<field name="NAME">runOpMode</field>
+<comment pinned="true" h="430" w="711">This OpMode shows how to use the new universal IMU blocks. These blocks may be used with the BNO055 IMU or the BHI260 IMU. It assumes that an IMU is configured on the robot with the name "imu".
+
+The sample will display the current Yaw, Pitch and Roll of the robot.
+
+With the correct orientation parameters selected, pitch/roll/yaw should act as follows:
+ *   Pitch value should INCREASE as the robot is tipped UP at the front. (Rotation about X)
+ *   Roll value should INCREASE as the robot is tipped UP at the left side. (Rotation about Y)
+ *   Yaw value should INCREASE as the robot is rotated Counter Clockwise. (Rotation about Z)
+
+The yaw can be reset (to zero) by pressing the Y button on the gamepad (Triangle on a PS4 controller).
+
+This specific sample DOES NOT assume that the Hub is mounted on one of the three orthogonal planes (X/Y, X/Z or Y/Z) OR that the Hub has only been rotated in a range of 90 degree increments.
+
+Note: if your Hub is mounted Orthogonally (on a orthogonal surface, angled at some multiple of 90 Degrees) then you should use the simpler SensorHubIMUOrthogonal sample.
+
+But... If your Hub is mounted Non-Orthogonally, you must specify one or more rotational angles that transform a "Default" Hub orientation into your desired orientation.  That is what is illustrated here.</comment>
+<data>{"commentPositionLeft":-22,"commentPositionTop":-459}</data>
+<statement name="STACK">
+<block type="comment" id="}uxrcK{*_XRvt~Af0=Zh">
+<field name="COMMENT">Define how the Hub is mounted to the robot...</field>
+<comment pinned="false" h="370" w="735">Define how the Hub is mounted to the robot to get the correct Yaw, Pitch, and Roll values.
+
+You can apply up to three axis rotations to orient your Hub according to how it's mounted on the robot.
+
+The starting point for these rotations is the "Default" Hub orientation, which is:
+1) Hub laying flat on a horizontal surface, with the REV logo facing up.
+2) Rotated such that the USB ports are facing forward on the robot.
+
+The order that the rotations are performed matters, so this sample shows doing them in the order X, Y, then Z.
+For specifying non-orthogonal Hub mounting orientations, we must temporarily use axes defined relative to the Hub itself, instead of the usual Robot Coordinate System axes used for the results the IMU gives us. In the starting orientation, the Hub axes are aligned with the Robot Coordinate System:
+* X Axis:  Starting at center of Hub, pointing out towards I2C connectors
+* Y Axis:  Starting at center of Hub, pointing out towards USB connectors
+* Z Axis:  Starting at center of Hub, pointing up through the REV logo
+
+Positive rotation is defined by right-hand rule with thumb pointing in +ve direction on axis.</comment>
+<data>{"commentPositionLeft":22,"commentPositionTop":-186}</data>
+<next>
+<block type="comment" id="+qSLTRXEFWp=@`h?Uc4,">
+<field name="COMMENT">Some examples...</field>
+<comment pinned="false" h="518" w="788">Some examples.
+----------------------------------------------------------------------------------------------------------------------------------
+Example A) Assume that the Hub is mounted on a sloped plate at the back of the robot, with the USB ports coming out the top of the Hub. The plate is tilted UP 60 degrees from horizontal.
+ To get the "Default" Hub into this configuration you would just need a single rotation.
+ 1) Rotate the Hub +60 degrees around the X axis to tilt up the front edge.
+ 2) No rotation around the Y or Z axes.
+ So the X,Y,Z rotations would be 60,0,0
+----------------------------------------------------------------------------------------------------------------------------------
+Example B) Assume that the Hub is laying flat on the chassis, but it has been twisted 30 degrees towards the right front wheel to make the USB cable accessible.
+To get the "Default" Hub into this configuration you would just need a single rotation, but around a different axis.
+1) No rotation around the X or Y axes.
+2) Rotate the Hub -30 degrees (Clockwise) around the Z axis, since a positive angle would be Counter Clockwise.
+So the X,Y,Z rotations would be 0,0,-30
+----------------------------------------------------------------------------------------------------------------------------------
+Example C) Assume that the Hub is mounted on a vertical plate on the right side of the robot, with the REV logo facing out, and the Hub rotated so that the USB ports are facing down 30 degrees towards the back wheels of the robot.
+To get the "Default" Hub into this configuration will require several rotations.
+1) Rotate the Hub +90 degrees around the X axis to get it standing upright with the REV logo pointing backwards on the robot
+2) Next, rotate the Hub +90 around the Y axis to get it facing to the right.
+3) Finally rotate the Hub +120 degrees around the Z axis to take the USB ports from vertical to sloping down 30 degrees and facing towards the back of the robot.
+So the X,Y,Z rotations would be 90,90,120</comment>
+<data>{"commentPositionLeft":26,"commentPositionTop":-210}</data>
+<next>
+<block type="comment" id="acF@V2SK[:zCGe8m;S.V">
+<field name="COMMENT">The next three lines define the desired axis rotations. To Do: EDIT these values to match YOUR mounting configuration.</field>
+<next>
+<block type="variables_set" id="WQ{%O,GzbAS:*Nw+FM!x">
+<field name="VAR" id="0tO!UoO$E??e8]IFVZ01">xRotation</field>
+<comment pinned="true" h="41" w="272">Enter the desired X rotation angle here.</comment>
+<data>{"commentPositionLeft":214,"commentPositionTop":-23}</data>
+<value name="VALUE">
+<block type="math_number" id="_m^YMvAPhN3#R.zSClwA">
+<field name="NUM">0</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id=":O,:tVa;`B}wotWK4s@u">
+<field name="VAR" id="`dsWFJ[;.P`%Vnnsk5tU">yRotation</field>
+<comment pinned="true" h="40" w="272">Enter the desired Y rotation angle here.</comment>
+<data>{"commentPositionLeft":214,"commentPositionTop":-22}</data>
+<value name="VALUE">
+<block type="math_number" id="WX;a|Vw$]bblht|WA8!Y">
+<field name="NUM">0</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id="7a^anEqh5NoirHOsrgEa">
+<field name="VAR" id="7zSDmBJYCz),K.fJ3F2j">zRotation</field>
+<comment pinned="true" h="39" w="273">Enter the desired Z rotation angle here.</comment>
+<data>{"commentPositionLeft":214,"commentPositionTop":-19}</data>
+<value name="VALUE">
+<block type="math_number" id="Kn6eRS#ODedLh=/(z-4s">
+<field name="NUM">0</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id="R0l.*n5Q*mWd{)2-=#aU">
+<field name="VAR" id=";LhHh#r[=37Kw^@9$Vjj">hubRotation</field>
+<value name="VALUE">
+<block type="revHubOrientationOnRobot_xyzOrientation" id="LtrB%*!Cp|JCH0o(7dq_">
+<value name="X">
+<shadow type="math_number" id="izFc*(-p5rfeSB+K8.w7">
+<field name="NUM">90</field>
+</shadow>
+<block type="variables_get" id="gvypPwCgqeHExA3g%_wf">
+<field name="VAR" id="0tO!UoO$E??e8]IFVZ01">xRotation</field>
+</block>
+</value>
+<value name="Y">
+<shadow type="math_number" id="mhTg29D=DagM7Tz0up4x">
+<field name="NUM">0</field>
+</shadow>
+<block type="variables_get" id="@IQF;PLkMcSHwxb|i.mK">
+<field name="VAR" id="`dsWFJ[;.P`%Vnnsk5tU">yRotation</field>
+</block>
+</value>
+<value name="Z">
+<shadow type="math_number" id="x#(uWetTzn!mh,=yGY3q">
+<field name="NUM">-45</field>
+</shadow>
+<block type="variables_get" id="[*b?VLX:Nu`.qhpyoZTd">
+<field name="VAR" id="7zSDmBJYCz),K.fJ3F2j">zRotation</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="comment" id="h|1k$[CAFT,-YU=5LW-l">
+<field name="COMMENT"> Now initialize the IMU with this mounting orientation.</field>
+<next>
+<block type="variables_set" id="3Qa]v.cA0n6(Y/Ml/;yf">
+<field name="VAR" id="Kvw=:6*+SnTe3ybC_IbC">orientationOnRobot</field>
+<value name="VALUE">
+<block type="revHubOrientationOnRobot_create2" id="{%*zT/O0/P*N$.IDzFfA">
+<value name="ROTATION">
+<block type="variables_get" id="K(./zJ61x$Al[2D0|{9`">
+<field name="VAR" id=";LhHh#r[=37Kw^@9$Vjj">hubRotation</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="imu_initialize" id="}M*G+/1)}7tsunfZN,%O">
+<field name="IDENTIFIER">imuAsIMU</field>
+<data>{"IDENTIFIER":"imu"}</data>
+<value name="PARAMETERS">
+<block type="imuParameters_create" id="on[20fqLSt$5mnWjHdG4">
+<value name="IMU_ORIENTATION_ON_ROBOT">
+<block type="variables_get" id="{zd1VPKo6*(K++I!U~:1">
+<field name="VAR" id="Kvw=:6*+SnTe3ybC_IbC">orientationOnRobot</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="comment" id="50963kz99wL?$qb1eCM#">
+<field name="COMMENT">Loop and update the dashboard.</field>
+<next>
+<block type="controls_whileUntil" id="x+6xBn4:_+Iq]kCttUSS">
+<field name="MODE">WHILE</field>
+<value name="BOOL">
+<block type="logic_negate" id="jqrQW/Lb{pa~}F#[HUX0">
+<value name="BOOL">
+<block type="linearOpMode_isStopRequested" id="B2(A2w68JIQy+EhKR_#w"/>
+</value>
+</block>
+</value>
+<statement name="DO">
+<block type="telemetry_addTextData_All" id="|6B;.9y0VBuNLt7se3yY">
+<value name="KEY">
+<shadow type="text" id="Gc4Z{2a`i|n:$CA_i/s6">
+<field name="TEXT">Hub orientation</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id="x:`((tfPE4knRA|:lIgp">
+<field name="TEXT">text</field>
+</shadow>
+<block type="text_join" id="5(d,5cg|mDlrEPk#o(_L">
+<mutation items="6"/>
+<value name="ADD0">
+<block type="text" id="QK5SWXda7d_TTBEQ[NHO">
+<field name="TEXT">X=</field>
+</block>
+</value>
+<value name="ADD1">
+<block type="misc_formatNumber" id="$/Mf}Gi-I@6qFs{e7DE?">
+<value name="NUMBER">
+<shadow type="math_number" id="J+^xA,yd)WzP@jHna9}^">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="variables_get" id="2$@;Jf~m7ygmFNF8@Z~+">
+<field name="VAR" id="0tO!UoO$E??e8]IFVZ01">xRotation</field>
+</block>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="tGBPISDA]8tnd%psoK|t">
+<field name="NUM">1</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="ADD2">
+<block type="text" id="hCZ3P6qOq^fO$50x-/AZ">
+<field name="TEXT">,  Y=</field>
+</block>
+</value>
+<value name="ADD3">
+<block type="misc_formatNumber" id=".op{fndZjno$o=-O26ft">
+<value name="NUMBER">
+<shadow type="math_number" id="@Xlkb2$skjyip-H0FpR_">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="variables_get" id=".}YLB`NF?40^$Cd-w=3S">
+<field name="VAR" id="`dsWFJ[;.P`%Vnnsk5tU">yRotation</field>
+</block>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="n1|WFQJJ#,Etv9YgbC4P">
+<field name="NUM">1</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="ADD4">
+<block type="text" id="JTAWJX{GYK0WhVd)1N_{">
+<field name="TEXT">,  Z=</field>
+</block>
+</value>
+<value name="ADD5">
+<block type="misc_formatNumber" id="w+fz}!7#6tbFUvzfF%Yo">
+<value name="NUMBER">
+<shadow type="math_number" id="EU[WdiKxo$E%x8=Vo3v@">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="variables_get" id="Df=a2y}2a94r.[5Kal5t">
+<field name="VAR" id="7zSDmBJYCz),K.fJ3F2j">zRotation</field>
+</block>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="Ck^}@~A=X/CbQb_4w6nu">
+<field name="NUM">1</field>
+</shadow>
+</value>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_addLine" id="}giyl6*;+7u$OnzTf|%G">
+<value name="TEXT">
+<shadow type="text" id="Q,h7wguFCKGoo9tw!]5M">
+<field name="TEXT"/>
+</shadow>
+</value>
+<next>
+<block type="comment" id="~(szoVNv9wHcI0i=O:w$">
+<field name="COMMENT">Check to see if heading reset is requested.</field>
+<next>
+<block type="controls_if" id="Ilq3k`~~w6KX;Q,!ER#*">
+<mutation else="1"/>
+<value name="IF0">
+<block type="gamepad_getProperty_Boolean" id="!ojSX8f+pSY2OU2b#5T(">
+<field name="IDENTIFIER">gamepad1</field>
+<field name="PROP">Y</field>
+<data>{"IDENTIFIER":"gamepad1"}</data>
+</block>
+</value>
+<statement name="DO0">
+<block type="telemetry_addTextData_All" id="f.`yHb[slGYPQc3G2JR$">
+<value name="KEY">
+<shadow type="text" id="MW,,W+{4o[UkJQY9ek@=">
+<field name="TEXT">Yaw</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id="H}o~/#JsXf-n4/oP#W~Y">
+<field name="TEXT">Resetting</field>
+</shadow>
+</value>
+<next>
+<block type="imu_resetYaw" id="n%oZl)HU7a9;,;soG(*p">
+<field name="IDENTIFIER">imuAsIMU</field>
+<data>{"IDENTIFIER":"imu"}</data>
+</block>
+</next>
+</block>
+</statement>
+<statement name="ELSE">
+<block type="telemetry_addTextData_All" id="B)KK7xP+-|S?Z*;)p}Sd">
+<value name="KEY">
+<shadow type="text" id="*OeY$nrzm%k(IrI#4Ym9">
+<field name="TEXT">Yaw</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id=".5#,2~|boS-jf4LNaV3G">
+<field name="TEXT">Press Y (triangle) on Gamepad to reset</field>
+</shadow>
+</value>
+</block>
+</statement>
+<next>
+<block type="telemetry_addLine" id="_CBHzSZq|l{6:^dTfZJ`">
+<value name="TEXT">
+<shadow type="text" id="}Mp.3O@Hrmj9+[1K[2QU">
+<field name="TEXT"/>
+</shadow>
+</value>
+<next>
+<block type="comment" id="Hk{3u|gayGk}t4B[mn57">
+<field name="COMMENT">Retrieve rotational angles and velocities.</field>
+<next>
+<block type="variables_set" id="yL3ltwiBH4E(OD(%|WA!">
+<field name="VAR" id="~LUL9~Z;enziZiH||`!?">orientation</field>
+<value name="VALUE">
+<block type="imu_getProperty_YawPitchRollAngles" id=".t{2T{XxofDeE/ENw;3c">
+<field name="IDENTIFIER">imuAsIMU</field>
+<field name="PROP">RobotYawPitchRollAngles</field>
+<data>{"IDENTIFIER":"imu"}</data>
+</block>
+</value>
+<next>
+<block type="variables_set" id="MDVK`%jrUQYSE/zq12$p">
+<field name="VAR" id="uJjN|$P.}=4O:6Fa#2s)">angularVelocity</field>
+<value name="VALUE">
+<block type="imu_getRobotAngularVelocity" id="g;GhzDLOIP(|e/2R8g}-">
+<field name="IDENTIFIER">imuAsIMU</field>
+<data>{"IDENTIFIER":"imu"}</data>
+<value name="ANGLE_UNIT">
+<shadow type="navigation_typedEnum_angleUnit" id="YGOM]sLE[sCDuL`HFa%f">
+<field name="ANGLE_UNIT">DEGREES</field>
+</shadow>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_addTextData_All" id="V/Jd5^q^NJ;;g)*_*{}U">
+<value name="KEY">
+<shadow type="text" id="u2+)H.QPHh|bSS(jl4rn">
+<field name="TEXT">Yaw (Z)</field>
+</shadow>
+</value>
+<value name="TEXT">
+<block type="text_join" id="ZJR9TANrcS(M^5xt_m5}">
+<mutation items="2"/>
+<value name="ADD0">
+<block type="misc_formatNumber" id="QMdk}x=J$m08{K9cycan">
+<value name="NUMBER">
+<shadow type="math_number" id=",)];oqpd%Tlez*ysZ8*N">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="yawPitchRollAngles_getPropertyWithAngleUnit_Number" id="yTh35V)vPoigkv2q=NvG">
+<field name="PROP">Yaw</field>
+<value name="YAW_PITCH_ROLL_ANGLES">
+<block type="variables_get" id="(/6;@TJA5$EJRli0nLC8">
+<field name="VAR" id="~LUL9~Z;enziZiH||`!?">orientation</field>
+</block>
+</value>
+<value name="ANGLE_UNIT">
+<shadow type="navigation_typedEnum_angleUnit" id="nz9q*@)K/@Q:pTmC29:^">
+<field name="ANGLE_UNIT">DEGREES</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="%o.y#}+)UHu5qM[Uwma|">
+<field name="NUM">2</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="ADD1">
+<block type="text" id="yZ2=KH%(;e$/IS05ehpg">
+<field name="TEXT"> Deg. (Heading)</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_addTextData_All" id="}xm#jey#5u8TS$;F~:ey">
+<value name="KEY">
+<shadow type="text" id="vq;Z1]dZuY2,Ot8HPf^W">
+<field name="TEXT">Pitch (X)</field>
+</shadow>
+</value>
+<value name="TEXT">
+<block type="text_join" id="AI]~hzKIO2xrY1-hwTOv">
+<mutation items="2"/>
+<value name="ADD0">
+<block type="misc_formatNumber" id="fv*i=Sv$BW95`Tn1LT78">
+<value name="NUMBER">
+<shadow type="math_number" id=".zaPop@XbvI(BcCUz2Pu">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="yawPitchRollAngles_getPropertyWithAngleUnit_Number" id="(zV(NmTpBOz|am?7/m9U">
+<field name="PROP">Pitch</field>
+<value name="YAW_PITCH_ROLL_ANGLES">
+<block type="variables_get" id="}t:Q3lG)pR?zjp5uX}zh">
+<field name="VAR" id="~LUL9~Z;enziZiH||`!?">orientation</field>
+</block>
+</value>
+<value name="ANGLE_UNIT">
+<shadow type="navigation_typedEnum_angleUnit" id="szYMJE:x:lK]/jmq3{DM">
+<field name="ANGLE_UNIT">DEGREES</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="^%_|ob,^57hs^1z8`AY5">
+<field name="NUM">2</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="ADD1">
+<block type="text" id="NwhV*y$v6,|@FSf^ZUw-">
+<field name="TEXT"> Deg.</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_addTextData_All" id="r?tpCDZu,Sf7ZWy)wDJ-">
+<value name="KEY">
+<shadow type="text" id="BCQ;NOBB|-x+Gdky+?v.">
+<field name="TEXT">Roll (Y)</field>
+</shadow>
+</value>
+<value name="TEXT">
+<block type="text_join" id="2z`i2WijURX%e/ZK:s8i">
+<mutation items="2"/>
+<value name="ADD0">
+<block type="misc_formatNumber" id="U:Z=.gm3%2+*5ZKVy/HT">
+<value name="NUMBER">
+<shadow type="math_number" id="{OpC7YRf-A`by)XAYHuS">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="yawPitchRollAngles_getPropertyWithAngleUnit_Number" id="H(M==MHND?/%YeI1M).R">
+<field name="PROP">Roll</field>
+<value name="YAW_PITCH_ROLL_ANGLES">
+<block type="variables_get" id="7Xi+Xz}e/ZJq2M6K+Y{F">
+<field name="VAR" id="~LUL9~Z;enziZiH||`!?">orientation</field>
+</block>
+</value>
+<value name="ANGLE_UNIT">
+<shadow type="navigation_typedEnum_angleUnit" id="Upu*.1X!R$WG#Jg^M7Xs">
+<field name="ANGLE_UNIT">DEGREES</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="WT+|Myz9b/@bzdo=;hKG">
+<field name="NUM">2</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="ADD1">
+<block type="text" id="xy%k{5bs`TY]=clxw?)x">
+<field name="TEXT"> Deg.</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_addLine" id="j$|)eDnTdByM-d1SU-5J">
+<value name="TEXT">
+<shadow type="text" id="CZVB@v@,|u]tS`gE+?@U">
+<field name="TEXT"/>
+</shadow>
+</value>
+<next>
+<block type="telemetry_addTextData_All" id="!`]muGoZ03Dg0*]edC]K">
+<value name="KEY">
+<shadow type="text" id="8{1,iOG7TC7gljmuCj#_">
+<field name="TEXT">Yaw (Z) velocity</field>
+</shadow>
+</value>
+<value name="TEXT">
+<block type="text_join" id="z-puW3!VxLgb;O;=hL:i">
+<mutation items="2"/>
+<value name="ADD0">
+<block type="misc_formatNumber" id="KaSj3~D*BM3`Lg_/.y:t">
+<value name="NUMBER">
+<shadow type="math_number" id="9(c}k42O`H6)@1NXw6]:">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="angularVelocity_getProperty_Number" id="5b?ic3^@pgO0-1#V_))]">
+<field name="PROP">ZRotationRate</field>
+<value name="ANGULAR_VELOCITY">
+<block type="variables_get" id="E%(irAGQfPNVia{C.wL1">
+<field name="VAR" id="uJjN|$P.}=4O:6Fa#2s)">angularVelocity</field>
+</block>
+</value>
+</block>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="yOvPj6%*=NeTRN;|e.)I">
+<field name="NUM">2</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="ADD1">
+<block type="text" id="?xd07q%ip8L;eRM{lG.=">
+<field name="TEXT"> Deg/Sec</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_addTextData_All" id="5n+2$pw;}59k.c.gZ,tc">
+<value name="KEY">
+<shadow type="text" id="]Y*JxSAE}YVz6X^~#rvx">
+<field name="TEXT">Pitch (X) velocity</field>
+</shadow>
+</value>
+<value name="TEXT">
+<block type="text_join" id=":e}3tF5v3X6G~k-7bZj2">
+<mutation items="2"/>
+<value name="ADD0">
+<block type="misc_formatNumber" id="N}1cu?)b~{0YKRLqsb^=">
+<value name="NUMBER">
+<shadow type="math_number" id="F##|-bH;9/OCezXVFrZc">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="angularVelocity_getProperty_Number" id="I|W}dC0ZFBjN%egU*rx`">
+<field name="PROP">XRotationRate</field>
+<value name="ANGULAR_VELOCITY">
+<block type="variables_get" id="X[*?(,$L49T+BgG$b}~|">
+<field name="VAR" id="uJjN|$P.}=4O:6Fa#2s)">angularVelocity</field>
+</block>
+</value>
+</block>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="{488c#{ef|x{+9bHjytR">
+<field name="NUM">2</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="ADD1">
+<block type="text" id="]:Q#h(0QK]|-pkm`1Q8J">
+<field name="TEXT"> Deg/Sec</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_addTextData_All" id="Nvvam2b1jR+6[Yk`_mT/">
+<value name="KEY">
+<shadow type="text" id="VoEOrd6T.UgZ;WLNVo2k">
+<field name="TEXT">Roll (Y) velocity</field>
+</shadow>
+</value>
+<value name="TEXT">
+<block type="text_join" id="1R:n|Sf}QyjC=1q*j{Iw">
+<mutation items="2"/>
+<value name="ADD0">
+<block type="misc_formatNumber" id="hBSgcm^n!c)hXnlFl?lT">
+<value name="NUMBER">
+<shadow type="math_number" id="=Y|drUy?D,4RtfFlJE`U">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="angularVelocity_getProperty_Number" id="+Z53/[F/.Qb+M~bQd).I">
+<field name="PROP">YRotationRate</field>
+<value name="ANGULAR_VELOCITY">
+<block type="variables_get" id="xLMyL#q]jX|q9Jr7j2PP">
+<field name="VAR" id="uJjN|$P.}=4O:6Fa#2s)">angularVelocity</field>
+</block>
+</value>
+</block>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="%2:Bf+vz_(xrRklN5!.D">
+<field name="NUM">2</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="ADD1">
+<block type="text" id="ob(nX@Rxf;`@3$_@|V7V">
+<field name="TEXT"> Deg/Sec</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_update" id="Dd6y4Mjx5+AfHM?TiUbT"/>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</xml>
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<Extra>
+<OpModeMeta flavor="TELEOP" group="" autoTransition="" />
+<Enabled value="true" />
+</Extra>

@@ -360,3 +360,78 @@ Blockly.JavaScript['crServo_typedEnum_direction'] =
 
 Blockly.FtcJava['crServo_typedEnum_direction'] =
     Blockly.FtcJava['crServo_enum_direction'];
+
+// Functions
+
+Blockly.Blocks['crServo_isPwmEnabled'] = {
+  init: function() {
+    this.setOutput(true, 'Boolean');
+    this.appendDummyInput()
+        .appendField('call')
+        .appendField(createCRServoDropdown(), 'IDENTIFIER')
+        .appendField('.')
+        .appendField(createNonEditableField('isPwmEnabled'));
+    this.setColour(functionColor);
+    this.setTooltip('Returns true if the PWM is energized for this particular CR servo.');
+  }
+};
+
+Blockly.JavaScript['crServo_isPwmEnabled'] = function(block) {
+  var identifier = block.getFieldValue('IDENTIFIER');
+  var code = identifier + '.isPwmEnabled()';
+  return [code, Blockly.JavaScript.ORDER_FUNCTION_CALL];
+};
+
+Blockly.FtcJava['crServo_isPwmEnabled'] = function(block) {
+  var identifier = Blockly.FtcJava.importDeclareAssign_(block, 'IDENTIFIER', 'CRServo');
+  var code = identifier + '.isPwmEnabled()';
+  return [code, Blockly.FtcJava.ORDER_FUNCTION_CALL];
+};
+
+Blockly.Blocks['crServo_setPwmEnable'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('call')
+        .appendField(createCRServoDropdown(), 'IDENTIFIER')
+        .appendField('.')
+        .appendField(createNonEditableField('setPwmEnable'));
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setColour(functionColor);
+    this.setTooltip('Individually energizes the PWM for this particular CR servo.');
+  }
+};
+
+Blockly.JavaScript['crServo_setPwmEnable'] = function(block) {
+  var identifier = block.getFieldValue('IDENTIFIER');
+  return identifier + '.setPwmEnable();\n';
+};
+
+Blockly.FtcJava['crServo_setPwmEnable'] = function(block) {
+  var identifier = Blockly.FtcJava.importDeclareAssign_(block, 'IDENTIFIER', 'CRServo');
+  return identifier + '.setPwmEnable();\n';
+};
+
+Blockly.Blocks['crServo_setPwmDisable'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('call')
+        .appendField(createCRServoDropdown(), 'IDENTIFIER')
+        .appendField('.')
+        .appendField(createNonEditableField('setPwmDisable'));
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setColour(functionColor);
+    this.setTooltip('Individually de-energizes the PWM for this particular CR servo.');
+  }
+};
+
+Blockly.JavaScript['crServo_setPwmDisable'] = function(block) {
+  var identifier = block.getFieldValue('IDENTIFIER');
+  return identifier + '.setPwmDisable();\n';
+};
+
+Blockly.FtcJava['crServo_setPwmDisable'] = function(block) {
+  var identifier = Blockly.FtcJava.importDeclareAssign_(block, 'IDENTIFIER', 'CRServo');
+  return identifier + '.setPwmDisable();\n';
+};

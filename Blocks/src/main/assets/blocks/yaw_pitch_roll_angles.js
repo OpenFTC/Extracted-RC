@@ -106,12 +106,12 @@ Blockly.Blocks['yawPitchRollAngles_getPropertyWithAngleUnit_Number'] = {
     // Assign 'this' to a variable for use in the closures below.
     var thisBlock = this;
     var TOOLTIPS = [
-        ['Yaw', 'Returns the side-to-side lateral rotation of the robot ' +
-            '(rotation around the Z axis), normalized to the range of [-180,+180) degrees.'],
-        ['Pitch', 'Returns the front-to-back rotation of the robot ' +
-            '(rotation around the X axis), normalized to the range of [-180,+180) degrees.'],
-        ['Roll', 'Returns the side-to-side tilt of the robot ' +
-            '(rotation around the Y axis), normalized to the range of [-180,+180) degrees.'],
+        ['Yaw', 'Returns the side-to-side lateral rotation of the object, ' +
+            'normalized to the range of [-180,+180) degrees.'],
+        ['Pitch', 'Returns the front-to-back rotation of the object, ' +
+            'normalized to the range of [-180,+180) degrees.'],
+        ['Roll', 'Returns the side-to-side tilt of the object, ' +
+            'normalized to the range of [-180,+180) degrees.'],
     ];
     this.setTooltip(function() {
       var key = thisBlock.getFieldValue('PROP');

@@ -471,6 +471,18 @@ public class JavaUtil {
     return sb.toString();
   }
 
+  public static String makeTextFromList(double[] list, String delimiter) {
+    StringBuilder sb = new StringBuilder();
+    if (list != null && delimiter != null) {
+      String d = ""; // No delimiter before first item.
+      for (double o : list) {
+        sb.append(d).append(o);
+        d = delimiter;
+      }
+    }
+    return sb.toString();
+  }
+
   public static List makeListFromText(String text, String delimiter) {
     // Make list from text.
     List list = new ArrayList();
@@ -568,5 +580,23 @@ public class JavaUtil {
       boxed[i] = Integer.valueOf(unboxed[i]);
     }
     return Arrays.asList(boxed);
+  }
+
+  // Utility for the SparkFunLEDStick.setColors blocks.
+  public static int[] makeIntArray(List<Integer> list) {
+    int[] unboxed = new int[list.size()];
+    for (int i = 0; i < unboxed.length; i++) {
+      unboxed[i] = list.get(i);
+    }
+    return unboxed;
+  }
+
+  // Utility for the Limelight3A.updatePythonInputs block.
+  public static double[] makeDoubleArray(List<Double> list) {
+    double[] unboxed = new double[list.size()];
+    for (int i = 0; i < unboxed.length; i++) {
+      unboxed[i] = list.get(i);
+    }
+    return unboxed;
   }
 }

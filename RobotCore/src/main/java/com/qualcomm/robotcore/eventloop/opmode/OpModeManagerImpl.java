@@ -397,6 +397,7 @@ public class OpModeManagerImpl implements OpModeServices, OpModeManagerNotifier 
 
     if (opModeSwapNeeded) {
       callActiveOpModeStop();
+      checkOnActiveOpMode();
       boolean swapSucceeded = performOpModeSwap();
       if (swapSucceeded) {
         opModeSwapNeeded = false;

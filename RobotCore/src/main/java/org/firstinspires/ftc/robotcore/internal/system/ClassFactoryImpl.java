@@ -34,11 +34,7 @@ package org.firstinspires.ftc.robotcore.internal.system;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraManager;
-import org.firstinspires.ftc.robotcore.external.tfod.FrameGenerator;
-import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
-import org.firstinspires.ftc.robotcore.external.tfod.TfodParameters;
 import org.firstinspires.ftc.robotcore.internal.camera.CameraManagerImpl;
-import org.firstinspires.ftc.robotcore.internal.tfod.TFObjectDetectorImpl;
 
 import java.lang.ref.WeakReference;
 
@@ -69,11 +65,6 @@ public class ClassFactoryImpl extends ClassFactory
     //----------------------------------------------------------------------------------------------
     // Accessing
     //----------------------------------------------------------------------------------------------
-
-    @Override public TFObjectDetector createTFObjectDetector(TfodParameters parameters, FrameGenerator frameGenerator)
-        {
-        return new TFObjectDetectorImpl(parameters, frameGenerator);
-        }
 
     /**
      * We weakly retain the device manager so that calling multiple times while a given manager or anything

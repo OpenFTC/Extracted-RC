@@ -1,7 +1,7 @@
 #!/bin/bash
 
 BASE_MAVEN_URL=https://repo1.maven.org/maven2/org/firstinspires/ftc
-RELEASE_VERSION=9.2.0
+RELEASE_VERSION=10.0.0
 
 OUTPUT_DIR=ftcmaven_scraped_$RELEASE_VERSION
 
@@ -10,7 +10,7 @@ if [ -d "$OUTPUT_DIR" ]; then
 fi
 mkdir $OUTPUT_DIR
 
-declare -a modules=("Blocks" "FtcCommon" "Hardware" "Inspection" "OnBotJava" "RobotCore" "RobotServer" "Tfod" "Vision")
+declare -a modules=("Blocks" "FtcCommon" "Hardware" "Inspection" "OnBotJava" "RobotCore" "RobotServer" "Vision")
 
 for module in "${modules[@]}"
 do

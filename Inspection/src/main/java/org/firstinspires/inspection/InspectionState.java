@@ -57,7 +57,6 @@ import org.firstinspires.ftc.robotcore.internal.network.StartResult;
 import org.firstinspires.ftc.robotcore.internal.network.WifiDirectAgent;
 
 import java.util.List;
-import java.util.Locale;
 
 /**
  * {@link InspectionState} contains the inspection state of either a RC or a DS

@@ -211,6 +211,7 @@ Blockly.Blocks['quaternion_create_withArgs'] = {
     this.setTooltip('Creates a new Quaternion object.');
     this.getFtcJavaInputType = function(inputName) {
       switch (inputName) {
+        case 'W':
         case 'X':
         case 'Y':
         case 'Z':
@@ -277,6 +278,7 @@ Blockly.Blocks['quaternion_create_withArgs2'] = {
     this.setTooltip('Creates a new Quaternion object.');
     this.getFtcJavaInputType = function(inputName) {
       switch (inputName) {
+        case 'W':
         case 'X':
         case 'Y':
         case 'Z':

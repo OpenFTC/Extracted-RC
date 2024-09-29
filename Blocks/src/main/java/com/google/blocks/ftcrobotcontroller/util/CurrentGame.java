@@ -16,8 +16,6 @@
 
 package com.google.blocks.ftcrobotcontroller.util;
 
-import org.firstinspires.ftc.robotcore.external.tfod.TfodParameters;
-
 /**
  * A class that provides constants related to the current game.
  *
@@ -25,15 +23,10 @@ import org.firstinspires.ftc.robotcore.external.tfod.TfodParameters;
  */
 public class CurrentGame {
   // TODO(lizlooney): This file should be updated when the FTC game changes.
-  // Also, the following other files should be updated:
-  // * lib/RobotCore/src/main/java/org/firstinspires/ftc/robotcore/external/tfod/TfodParameters.java
 
-  public static final String CURRENT_GAME_NAME = "CENTERSTAGE";
+  public static final String CURRENT_GAME_NAME = "INTO THE DEEP";
 
-  public static final String CURRENT_GAME_NAME_NO_SPACES = "CENTERSTAGE";
-
-  public static final String TFOD_MODEL_ASSET = TfodParameters.CurrentGame.MODEL_ASSET;
-  public static final String[] TFOD_LABELS = TfodParameters.CurrentGame.LABELS;
+  public static final String CURRENT_GAME_NAME_NO_SPACES = "INTOTHEDEEP";
 
   private CurrentGame() {
     // No instantiation allowed.

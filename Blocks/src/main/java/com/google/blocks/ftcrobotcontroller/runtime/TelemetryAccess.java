@@ -36,8 +36,6 @@ class TelemetryAccess extends Access {
   @JavascriptInterface
   @Block(classes = Telemetry.class, methodName = "addData")
   public void addNumericData(String key, double data) {
-    // Note(lizlooney): This method is no longer used in the JavaScript code generator because
-    // it makes a number like 123 doesn't show up as 123.0.
     try {
       startBlockExecution(BlockType.FUNCTION, ".addData");
       telemetry.addData(key, data);
@@ -156,6 +154,51 @@ class TelemetryAccess extends Access {
       if (displayFormat != null) {
         telemetry.setDisplayFormat(displayFormat);
       }
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(classes = Telemetry.class, methodName = "setNumDecimalPlaces")
+  public void setNumDecimalPlaces(int minDecimalPlaces, int maxDecimalPlaces) {
+    try {
+      startBlockExecution(BlockType.FUNCTION, ".setNumDecimalPlaces");
+
+      telemetry.setNumDecimalPlaces(minDecimalPlaces, maxDecimalPlaces);
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(classes = Telemetry.class, methodName = "setMsTransmissionInterval")
+  public void setMsTransmissionInterval(int interval) {
+    try {
+      startBlockExecution(BlockType.SETTER, ".MsTransmissionInterval");
+      telemetry.setMsTransmissionInterval(interval);
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(classes = Telemetry.class, methodName = "getMsTransmissionInterval")
+  public int getMsTransmissionInterval() {
+    try {
+      startBlockExecution(BlockType.GETTER, ".MsTransmissionInterval");
+      return telemetry.getMsTransmissionInterval();
     } catch (Throwable e) {
       blocksOpMode.handleFatalException(e);
       throw new AssertionError("impossible", e);

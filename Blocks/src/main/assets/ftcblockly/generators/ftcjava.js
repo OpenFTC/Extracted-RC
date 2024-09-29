@@ -1111,16 +1111,16 @@ Blockly.FtcJava.generateImport_ = function(type) {
   if (type.endsWith('[]')) {
     type = type.substring(0, type.length - 2); // 2 is length of []
   }
-  // For inner classes, only import the outer class.
-  var dot = type.indexOf('.');
-  if (dot > -1) {
-    type = type.substring(0, dot);
-  }
   var matches = type.match(/^List<(.*)>$/);
   if (matches) {
     Blockly.FtcJava.generateImport_('List');
     Blockly.FtcJava.generateImport_(matches[1]);
     return;
+  }
+  // For inner classes, only import the outer class.
+  var dot = type.indexOf('.');
+  if (dot > -1) {
+    type = type.substring(0, dot);
   }
 
   // Use knownTypeToClassName (in vars.js) to get the full class name of a type that used in blocks.

@@ -227,6 +227,7 @@
     <string name="counted_imu_name">imu %d</string>
     <string name="counted_lynx_module_name">Expansion Hub %d</string>
     <string name="counted_lynx_usb_device_name">Expansion Hub Portal %d</string>
+    <string name="counted_servo_hub_name">Servo Hub %d</string>
     <string name="currentApLabel">Current Robot Controller: </string>
     <string name="defaultOpModeName">Stop Robot</string>
     <string name="descriptionLynxEmbeddedModule">Embedded Expansion Hub</string>
@@ -457,6 +458,8 @@
     <string name="robotStatusWaitingOnWifiDirect">waiting for Wi-Fi Direct to enable</string>
     <string name="setWifiChannelFailure">Unable to change Wi-Fi Direct channel to \'%s\'</string>
     <string name="setWifiChannelSuccess">Changed Wi-Fi Direct channel to \'%s\'</string>
+    <string name="sparkfun_led_stick_description" ns1:ignore="ExtraTranslation">a SparkFun QWIIC LED Stick</string>
+    <string name="sparkfun_led_stick_name" ns1:ignore="ExtraTranslation">SparkFun QWIIC LED Stick</string>
     <string name="sparkfun_optical_odometry_description" ns1:ignore="ExtraTranslation">a SparkFun optical odometry sensor</string>
     <string name="sparkfun_optical_odometry_name" ns1:ignore="ExtraTranslation">SparkFun Optical Odometry Sensor</string>
     <string name="standard_servo_description">a servo</string>

@@ -94,7 +94,7 @@ Keep testing until ALL the wheels move the robot forward when you push the left 
 </value>
 <next>
 <block type="comment" id="yZ;(w:4Zz-]iv%sbRp5Y">
-<field name="COMMENT">Wait for the game to start (driver presses PLAY)</field>
+<field name="COMMENT">Wait for the game to start (driver presses START)</field>
 <next>
 <block type="telemetry_addTextData_All" id="a.kwb6Bf4W0Ml6L?wVrO">
 <value name="KEY">

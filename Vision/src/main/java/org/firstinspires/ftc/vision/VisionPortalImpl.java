@@ -209,7 +209,7 @@ public class VisionPortalImpl extends VisionPortal
 
                             if (camera instanceof OpenCvWebcam)
                             {
-                                ((OpenCvWebcam)camera).startStreaming(cameraResolution.getWidth(), cameraResolution.getHeight(), CAMERA_ROTATION, webcamStreamFormat.eocvStreamFormat);
+                                ((OpenCvWebcam)camera).startStreaming(cameraResolution.getWidth(), cameraResolution.getHeight(), CAMERA_ROTATION, webcamStreamFormat == null ? null : webcamStreamFormat.eocvStreamFormat);
                             }
                             else
                             {

@@ -177,7 +177,7 @@ This can be done directly from a RC phone screen (if you are using an external W
 </value>
 <value name="TEXT">
 <shadow type="text" id="^u5_oh+s(.Vs1Kk;$yw9">
-<field name="TEXT">Touch Play to start OpMode</field>
+<field name="TEXT">Touch START to start OpMode</field>
 </shadow>
 </value>
 <next>

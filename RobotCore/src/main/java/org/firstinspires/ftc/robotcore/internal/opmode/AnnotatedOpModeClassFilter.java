@@ -258,6 +258,8 @@ public class AnnotatedOpModeClassFilter implements ClassFilter
                             .setName(name)
                             .build(),
                     clazz);
+            // Now handle the original one to also append the classname to it
+            this.registeredOpModes.renameOpModeWithClass(meta.name);
             }
         }
 

@@ -155,8 +155,7 @@ public abstract class VisionPortal implements CameraStreamSource
         private boolean autoStartStreamOnBuild = true;
         private boolean showStatsOverlay = true;
         private Size cameraResolution = new Size(640, 480);
-        private StreamFormat streamFormat = null;
-        private StreamFormat STREAM_FORMAT_DEFAULT = StreamFormat.YUY2;
+        private StreamFormat streamFormat = null; // null by default on purpose
         private final List<VisionProcessor> processors = new ArrayList<>();
 
         /**
@@ -334,11 +333,6 @@ public abstract class VisionPortal implements CameraStreamSource
                 {
                     throw new IllegalStateException("setStreamFormat() may only be used with a webcam");
                 }
-            }
-            else
-            {
-                // Only used with webcams, will be ignored for internal camera
-                streamFormat = STREAM_FORMAT_DEFAULT;
             }
 
             VisionPortal portal = new VisionPortalImpl(

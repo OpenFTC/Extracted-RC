@@ -27,6 +27,7 @@ import com.google.blocks.ftcrobotcontroller.hardware.HardwareItem;
 import com.google.blocks.ftcrobotcontroller.hardware.HardwareItemMap;
 import com.google.blocks.ftcrobotcontroller.hardware.HardwareType;
 import com.google.blocks.ftcrobotcontroller.hardware.HardwareUtil;
+import com.google.blocks.ftcrobotcontroller.runtime.obsolete.TensorFlowAccess;
 import com.google.blocks.ftcrobotcontroller.runtime.obsolete.TfodAccess;
 import com.google.blocks.ftcrobotcontroller.runtime.obsolete.TfodCurrentGameAccess;
 import com.google.blocks.ftcrobotcontroller.runtime.obsolete.TfodCustomModelAccess;
@@ -478,6 +479,10 @@ public final class BlocksOpMode extends LinearOpMode {
         new ImuParametersAccess(this, Identifier.IMU_PARAMETERS.identifierForJavaScript));
     addJavascriptInterface(Identifier.LED_EFFECT.identifierForJavaScript,
         new LedEffectAccess(this, Identifier.LED_EFFECT.identifierForJavaScript));
+    addJavascriptInterface(Identifier.LL_RESULT.identifierForJavaScript,
+        new LLResultAccess(this, Identifier.LL_RESULT.identifierForJavaScript));
+    addJavascriptInterface(Identifier.LL_STATUS.identifierForJavaScript,
+        new LLStatusAccess(this, Identifier.LL_STATUS.identifierForJavaScript));
     addJavascriptInterface(Identifier.LINEAR_OP_MODE.identifierForJavaScript,
         new LinearOpModeAccess(this, Identifier.LINEAR_OP_MODE.identifierForJavaScript, project));
     addJavascriptInterface(Identifier.MAGNETIC_FLUX.identifierForJavaScript,
@@ -504,6 +509,8 @@ public final class BlocksOpMode extends LinearOpMode {
         new RangeAccess(this, Identifier.RANGE.identifierForJavaScript));
     addJavascriptInterface(Identifier.REV_HUB_ORIENTATION_ON_ROBOT.identifierForJavaScript,
         new RevHubOrientationOnRobotAccess(this, Identifier.REV_HUB_ORIENTATION_ON_ROBOT.identifierForJavaScript));
+    addJavascriptInterface(Identifier.REV_9AXIS_IMU_ORIENTATION_ON_ROBOT.identifierForJavaScript,
+        new Rev9AxisImuOrientationOnRobotAccess(this, Identifier.REV_9AXIS_IMU_ORIENTATION_ON_ROBOT.identifierForJavaScript));
     addJavascriptInterface(Identifier.RUMBLE_EFFECT.identifierForJavaScript,
         new RumbleEffectAccess(this, Identifier.RUMBLE_EFFECT.identifierForJavaScript));
     addJavascriptInterface(Identifier.SYSTEM.identifierForJavaScript,
@@ -512,8 +519,6 @@ public final class BlocksOpMode extends LinearOpMode {
         new TelemetryAccess(this, Identifier.TELEMETRY.identifierForJavaScript, telemetry));
     addJavascriptInterface(Identifier.TEMPERATURE.identifierForJavaScript,
         new TemperatureAccess(this, Identifier.TEMPERATURE.identifierForJavaScript));
-    addJavascriptInterface(Identifier.TENSOR_FLOW.identifierForJavaScript,
-        new TensorFlowAccess(this, Identifier.TENSOR_FLOW.identifierForJavaScript));
     addJavascriptInterface(Identifier.VECTOR_F.identifierForJavaScript,
         new VectorFAccess(this, Identifier.VECTOR_F.identifierForJavaScript));
     addJavascriptInterface(Identifier.VELOCITY.identifierForJavaScript,
@@ -528,6 +533,8 @@ public final class BlocksOpMode extends LinearOpMode {
 
   // Visible for testing.
   void addObsoleteJavascriptInterfaces() {
+    addJavascriptInterface(Identifier.OBSOLETE_TENSOR_FLOW.identifierForJavaScript,
+        new TensorFlowAccess(this, Identifier.OBSOLETE_TENSOR_FLOW.identifierForJavaScript));
     addJavascriptInterface(Identifier.OBSOLETE_TFOD.identifierForJavaScript,
         new TfodAccess(this, Identifier.OBSOLETE_TFOD.identifierForJavaScript));
     addJavascriptInterface(Identifier.OBSOLETE_TFOD_CURRENT_GAME.identifierForJavaScript,

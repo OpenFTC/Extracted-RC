@@ -133,7 +133,6 @@ public class ClassManager {
             "org.firstinspires.ftc.robotcore.internal.android",
             "org.java_websocket",
             "org.slf4j",
-            "org.tensorflow",
             "org.threeten",
             "com.journeyapps"
         ));

@@ -241,17 +241,17 @@ public class ManualControlOpMode extends HardwareManualControlOpMode {
     }
 
     public void initializeImu(IMU.Parameters parameters) throws ImuNotFoundException, DeviceNotControlHubException {
-        LynxModule module = (LynxModule) EmbeddedControlHubModule.get();
+        LynxModule controlHub = (LynxModule) EmbeddedControlHubModule.get();
         if (!Device.isRevControlHub()) {
             throw new DeviceNotControlHubException();
         }
 
-        if (module == null) {
+        if (controlHub == null) {
             throw new RuntimeException("Unable to access the Control Hub's internal module");
         }
-        //the IMU is on I2C bus 0.
-        LynxI2cDeviceSynch device = LynxFirmwareVersionManager.createLynxI2cDeviceSynch(AppUtil.getDefContext(), module, 0);
-        controlHubImu = createImu(device);
+        // The IMU is on I2C bus 0.
+        LynxI2cDeviceSynch i2cDevice = LynxFirmwareVersionManager.createLynxI2cDeviceSynch(AppUtil.getDefContext(), controlHub, 0);
+        controlHubImu = createImu(controlHub, i2cDevice);
         boolean successful = controlHubImu.initialize(parameters);
         if(!successful) {
             controlHubImu = null;
@@ -516,13 +516,14 @@ public class ManualControlOpMode extends HardwareManualControlOpMode {
                 .toArray();
     }
 
-    private IMU createImu(LynxI2cDeviceSynch device) throws ImuNotFoundException {
-        if (BHI260IMU.imuIsPresent(device)) {
-            return new BHI260IMU(device, true);
-        } else if (BNO055Util.imuIsPresent(device, false)) {
-            return new LynxEmbeddedBNO055IMUNew(device, true);
-        } else {
-            throw new ImuNotFoundException("Failed to communicate with BHI260 or BNO055 IMU.");
+    private IMU createImu(LynxModule controlHub, LynxI2cDeviceSynch i2cDevice) throws ImuNotFoundException {
+        switch (controlHub.getImuType()) {
+            case BNO055:
+                return new LynxEmbeddedBNO055IMUNew(i2cDevice, true);
+            case BHI260:
+                return new BHI260IMU(i2cDevice, true);
+            default:
+                throw new ImuNotFoundException("Failed to communicate with BHI260 or BNO055 IMU.");
         }
     }
 }

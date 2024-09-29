@@ -41,7 +41,7 @@ import com.qualcomm.hardware.HardwareManualControlOpMode;
 import com.qualcomm.hardware.R;
 import com.qualcomm.hardware.bosch.BHI260IMU;
 import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.bosch.BNO055IMUImpl;
+import com.qualcomm.hardware.bosch.BNO055Util;
 import com.qualcomm.hardware.lynx.commands.LynxCommand;
 import com.qualcomm.hardware.lynx.commands.LynxDatagram;
 import com.qualcomm.hardware.lynx.commands.LynxInterface;
@@ -101,6 +101,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VoltageUnit;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.robotcore.internal.system.Assert;
 import org.firstinspires.ftc.robotcore.internal.system.Misc;
+import org.firstinspires.ftc.robotcore.internal.ui.UILocation;
 import org.firstinspires.ftc.robotcore.internal.usb.LynxModuleSerialNumber;
 
 import java.lang.reflect.Constructor;
@@ -115,6 +116,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -123,6 +125,11 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static com.qualcomm.robotcore.hardware.configuration.LynxConstants.EXPANSION_HUB_PRODUCT_NUMBER;
+import static com.qualcomm.robotcore.hardware.configuration.LynxConstants.SERVO_HUB_INTERFACE_NAME;
+import static com.qualcomm.robotcore.hardware.configuration.LynxConstants.SERVO_HUB_PRODUCT_NUMBER;
+import static com.qualcomm.robotcore.hardware.configuration.LynxConstants.revHubTypeCanHaveImu;
 
 /**
  * {@link LynxModule} represents the connection between the host and a particular
@@ -418,6 +425,19 @@ public class LynxModule extends LynxCommExceptionHandler implements LynxModuleIn
         {
         warnIfClosed();
         this.controllers.add(controller);
+        }
+
+    public int getRevProductNumber()
+        {
+        try {
+            boolean succeeded = queryInterface(new LynxInterface(SERVO_HUB_INTERFACE_NAME));
+            return succeeded ? SERVO_HUB_PRODUCT_NUMBER : EXPANSION_HUB_PRODUCT_NUMBER;
+            }
+        catch (InterruptedException e)
+            {
+            RobotLog.ee(TAG, e, "Failed to determine the REV product number");
+            return EXPANSION_HUB_PRODUCT_NUMBER;
+            }
         }
 
     public int getModuleAddress()
@@ -1273,6 +1293,19 @@ public class LynxModule extends LynxCommExceptionHandler implements LynxModuleIn
                 // Mark this interface as not supported, and add it to the map
                 theInterface.setWasNacked(true);
                 this.interfacesQueried.put(theInterface.getInterfaceName(), theInterface);
+
+                if (Objects.equals(theInterface.getInterfaceName(), LynxDekaInterfaceCommand.dekaInterfaceName))
+                    {
+                    // DEKA was Nacked. Maybe we're a newer Servo Hub?
+                    boolean success = queryInterface(new LynxInterface(SERVO_HUB_INTERFACE_NAME));
+                    if (success)
+                        {
+                        AppUtil.getInstance().showAlertDialog(UILocation.BOTH,
+                                "Unsupported Servo Hub Firmware Version",
+                                "The Robot Controller app needs to be updated to support the firmware version of the connected Servo Hub"
+                        );
+                        }
+                    }
                 }
             catch (RuntimeException e)
                 {
@@ -1835,32 +1868,36 @@ public class LynxModule extends LynxCommExceptionHandler implements LynxModuleIn
         return LynxUsbUtil.makePlaceholderValue(0.0);
         }
 
-    public LynxModuleImuType getImuType()
+    @NonNull public LynxModuleImuType getImuType()
         {
         warnIfClosed();
+        if (!revHubTypeCanHaveImu(getRevProductNumber()))
+            {
+            return LynxModuleImuType.NONE;
+            }
         LynxI2cDeviceSynch rawImuI2c = LynxFirmwareVersionManager.createLynxI2cDeviceSynch(AppUtil.getDefContext(), this, 0);
         try
             {
             LynxModuleImuType result = LynxModuleImuType.NONE;
 
+            // We MUST check for a BNO055 first, because the BNO055 can coincidentally respond
+            // as if it was a BHI260, but that is not true the other way around
+
+            // The BNO055 version of imuIsPresent() doesn't set the I2C address because there is
+            // more than one possible address.
+            rawImuI2c.setI2cAddress(BNO055IMU.I2CADDR_DEFAULT);
+            if (BNO055Util.imuIsPresent(rawImuI2c, false))
+                {
+                result = LynxModuleImuType.BNO055;
+                }
+
             // BHI260 IMUs will only ever exist on the parent module of a Control Hub
-            if (lynxUsbDevice.getSerialNumber().isEmbedded() && isParent())
+            // (and we can skip checking if we found a BNO055)
+            if (result == LynxModuleImuType.NONE && lynxUsbDevice.getSerialNumber().isEmbedded() && isParent())
                 {
                 if (BHI260IMU.imuIsPresent(rawImuI2c))
                     {
                     result = LynxModuleImuType.BHI260;
-                    }
-                }
-
-            // If we've found a BHI260 IMU, we don't need to look for a BNO055
-            if (result == LynxModuleImuType.NONE)
-                {
-                // The BNO055 version of imuIsPresent() doesn't set the I2C address because there is
-                // more than one possible address.
-                rawImuI2c.setI2cAddress(BNO055IMU.I2CADDR_DEFAULT);
-                if (BNO055IMUImpl.imuIsPresent(rawImuI2c, false))
-                    {
-                    result = LynxModuleImuType.BNO055;
                     }
                 }
 

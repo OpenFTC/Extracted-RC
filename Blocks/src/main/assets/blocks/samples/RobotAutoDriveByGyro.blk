@@ -1,0 +1,2675 @@
+<xml xmlns="https://developers.google.com/blockly/xml">
+<variables>
+<variable id="gW:Y#!BRQHC*-m3m^K=`">maxDriveSpeed</variable>
+<variable id="j8LrUw,!b^[gx6tO-K/]">distance</variable>
+<variable id="^TypnSY@!%hth6-7m}XN">heading</variable>
+<variable id="Usn~`$[6-|gCTq1q./sr">maxTurnSpeed</variable>
+<variable id="`;]!l*zy.@!G}Lk#XQX3">holdTime</variable>
+<variable id="wu^`.(w2$+w~=uV?c~jy">desiredHeading</variable>
+<variable id="TP;A^pzFEw$BB6B-30)y">proportionalGain</variable>
+<variable id="zJ$zS49ZrF0`aR.jO3l{">drive</variable>
+<variable id="e8{!=^6y}`eqR$fvQ|Y@">turn</variable>
+<variable id="!~:X9QjH%o+[/(MDZs.7">straight</variable>
+<variable id="{[J[lP8N_jADYO:Y?7|*">headingError</variable>
+<variable id="o,feuSnsJa`C5!qKMaJ}">holdTimer</variable>
+<variable id="G|;6-!=a4h|rA!yV$d-!">orientation</variable>
+<variable id="Vw4y{;dYIC5[[)sF9#+d">targetHeading</variable>
+<variable id="~At^Mzg)O;m5E^Y9mqS`">steeringCorrection</variable>
+<variable id="EDNV@nO|d?wpO)(L;Y#,">driveSpeed</variable>
+<variable id="Z$*B;z;Qz^SHi#:a3hOl">turnSpeed</variable>
+<variable id="?`hbO|Zv*}izH}ED!IF3">moveCounts</variable>
+<variable id="=}.ByAbDz3et^4QYFc;Q">P_DRIVE_GAIN</variable>
+<variable id="-6=Vz.4i/q@Agh5tFkFv">leftSpeed</variable>
+<variable id="h/N-;@mY2NnGU|`(J+T!">leftTarget</variable>
+<variable id="wYUl[rMja/lXBu@5TP6B">rightSpeed</variable>
+<variable id="7BZfEs/gy|p$f1NP9n+U">rightTarget</variable>
+<variable id="Pr[]y^V-4CPurO=:hiq;">COUNTS_PER_INCH</variable>
+<variable id="]!p{j@vi)Ny9h{2%iH$v">HEADING_THRESHOLD</variable>
+<variable id="ZV(Mwy{8a)(Q6GZx}yR0">max</variable>
+<variable id="zqQB+{wXcMz@l0;dK2Z!">P_TURN_GAIN</variable>
+<variable id="pAW3[b/G)2f/bny|1`AM">orientationOnRobot</variable>
+<variable id="e6Oo}ANF7ar5HnKCaOy(">COUNTS_PER_MOTOR_REV</variable>
+<variable id="VQN{6:0eeGxvX[;Nj;Uq">DRIVE_GEAR_REDUCTION</variable>
+<variable id="c8Y^Nsb:#d:7zyJ[6s1=">WHEEL_DIAMETER_INCHES</variable>
+<variable id="fwbZFUagM`Jl$|xHep7K">DRIVE_SPEED</variable>
+<variable id="6O-jq)x;Me(c,Wdqd/w|">TURN_SPEED</variable>
+</variables>
+<block type="procedures_defnoreturn" id="WtpyD@tEu+EoY=P9iY,D" deletable="false" x="25" y="680">
+<field name="NAME">runOpMode</field>
+<comment pinned="true" h="649" w="909">This OpMode illustrates the concept of driving an autonomous path based on gyro (IMU) heading and encoder counts.
+
+The path to be followed by the robot is built from a series of drive, turn or pause steps. Each step on the path is defined by a single function call, and these can be strung together in any order.
+
+This OpMode requires that you have encoders on the drive motors, otherwise you should use RobotAutoDriveByTime.
+
+This OpMode uses the Universal IMU interface so it will work with either the BNO055 or BHI260 IMU. To run as written, the Control/Expansion hub should be mounted horizontally on a flat part of the robot chassis. The REV Logo should be facing up, and the USB port should be facing forward. If this is not the configuration of your REV Control Hub, then this OpMode should be modified to reflect the correct orientation.
+
+This sample requires that the drive motors have been configured with names: left_drive and right_drive.
+It also requires that a positive power command moves both motors forward, and causes the encoders to count up. Please verify that both of your motors move the robot forward on the first move. If not, make the required correction in runOpMode to set the FORWARD/REVERSE option for each motor.
+
+This OpMode uses RUN_TO_POSITION mode for driving straight, and RUN_USING_ENCODER mode for turning and holding.
+
+All angles are referenced to the coordinate-frame that is set whenever resetHeading is called. In this sample, the heading is reset when the Start button is touched on the Driver Station. Note: It would be possible to reset the heading after each move, but this would accumulate steering errors.
+
+The angle of movement/rotation is assumed to be a standardized rotation around the robot Z axis, which means that a Positive rotation is Counter Clockwise, looking down on the field. This is consistent with the FTC field coordinate conventions set out in the document: https://ftc-docs.firstinspires.org/field-coordinate-system
+
+To reach, or maintain a required heading, this OpMode implements a basic Proportional Controller where:
+- Steering power = Heading Error * Proportional Gain.
+- Heading Error is calculated by taking the difference between the desired heading and the actual heading, and then
+  normalizing it by converting it to a value in the +/- 180 degree range.
+- Proportional Gain is a constant that you choose to set the "strength" of the steering response.</comment>
+<data>{"commentPositionLeft":-21,"commentPositionTop":-680}</data>
+<statement name="STACK">
+<block type="procedures_callnoreturn" id="jPoW3:Z*i#lSQhL{N*E@">
+<mutation name="initializeVariables"/>
+<next>
+<block type="comment" id="V[?474tU*P:=;9.xP1=K">
+<field name="COMMENT">To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.</field>
+<next>
+<block type="comment" id="Txj0*DmCBM011U%nc$_l">
+<field name="COMMENT">When run, this OpMode should start both motors driving forward. So adjust the motor directions based on your first test drive.</field>
+<next>
+<block type="comment" id="Rah}m/CIlNaJPMaD+3[_">
+<field name="COMMENT">Note: The settings here assume direct drive on left and right wheels. Gear Reduction or 90 Deg drives may require direction flips.</field>
+<next>
+<block type="dcMotor_setProperty_Direction" id="6GhuBSR)G;%0Ie{m79ml">
+<field name="IDENTIFIER">left_driveAsDcMotor</field>
+<field name="PROP">Direction</field>
+<data>{"IDENTIFIER":"left_drive"}</data>
+<value name="VALUE">
+<shadow type="dcMotor_typedEnum_direction" id="5?3A;yJb#a{/71ttITkk">
+<field name="DIRECTION">REVERSE</field>
+</shadow>
+</value>
+<next>
+<block type="dcMotor_setProperty_Direction" id="U`]/^wsve=~%K}.~r(:O">
+<field name="IDENTIFIER">right_driveAsDcMotor</field>
+<field name="PROP">Direction</field>
+<data>{"IDENTIFIER":"right_drive"}</data>
+<value name="VALUE">
+<shadow type="dcMotor_typedEnum_direction" id="},MoJUk/@*;[Ln#Gcjw]">
+<field name="DIRECTION">FORWARD</field>
+</shadow>
+</value>
+<next>
+<block type="comment" id="CD`EbTm/=|a;B/dg$8}O">
+<field name="COMMENT">Define hub orientation.</field>
+<next>
+<block type="comment" id="IB%FG]R;#GpeR*W}OVNf">
+<field name="COMMENT">The default orientation is when a hub is mounted horizontally with the printed logo pointing up and the USB port pointing forward.</field>
+<next>
+<block type="comment" id="xCf_]!t+`Vvep2[Aa$oD">
+<field name="COMMENT">Edit this to match your mounting configuration.</field>
+<next>
+<block type="variables_set" id="2_+5AAc[JtiE4HLWV@{w">
+<field name="VAR" id="pAW3[b/G)2f/bny|1`AM">orientationOnRobot</field>
+<value name="VALUE">
+<block type="revHubOrientationOnRobot_create1" id="VI}}E!^V+@DN4|L*azDl">
+<value name="LOGO_FACING_DIRECTION">
+<shadow type="revHubOrientationOnRobot_typedEnum_logoFacingDirection" id="_x*01vZFPM-#@|9fbAb_">
+<field name="LOGO_FACING_DIRECTION">UP</field>
+</shadow>
+</value>
+<value name="USB_FACING_DIRECTION">
+<shadow type="revHubOrientationOnRobot_typedEnum_usbFacingDirection" id="h)V%u{%#D3|):S8jSEgX">
+<field name="USB_FACING_DIRECTION">FORWARD</field>
+</shadow>
+</value>
+</block>
+</value>
+<next>
+<block type="comment" id="_0l$Ti^}o/Xg8^hR{=D7">
+<field name="COMMENT">Now initialize the IMU with this mounting orientation.</field>
+<next>
+<block type="imu_initialize" id="Gj~dKA%dI5r}Dt`*QUuA">
+<field name="IDENTIFIER">imuAsIMU</field>
+<data>{"IDENTIFIER":"imu"}</data>
+<value name="PARAMETERS">
+<block type="imuParameters_create" id="x2zR~+oSbZQKhG(dQJOj">
+<value name="IMU_ORIENTATION_ON_ROBOT">
+<block type="variables_get" id="nPVd$T;9fW1iLB@qS#]+">
+<field name="VAR" id="pAW3[b/G)2f/bny|1`AM">orientationOnRobot</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="comment" id="OZt*36]APZISvL[M*j*W">
+<field name="COMMENT">Ensure the robot is stationary. Reset the encoders and set the motors to BRAKE mode.</field>
+<next>
+<block type="dcMotor_setDualProperty_RunMode" id="3|z3:`?xLpBxG5t?(J3[">
+<field name="PROP">Mode</field>
+<field name="IDENTIFIER1">left_driveAsDcMotor</field>
+<field name="IDENTIFIER2">right_driveAsDcMotor</field>
+<data>{"IDENTIFIER1":"left_drive","IDENTIFIER2":"right_drive"}</data>
+<value name="VALUE1">
+<shadow type="dcMotor_typedEnum_runMode" id="ire_!mbL@QRD7NMQVv!2">
+<field name="RUN_MODE">STOP_AND_RESET_ENCODER</field>
+</shadow>
+</value>
+<value name="VALUE2">
+<shadow type="dcMotor_typedEnum_runMode" id="#-ieRR$KiRPt/GKo0V:B">
+<field name="RUN_MODE">STOP_AND_RESET_ENCODER</field>
+</shadow>
+</value>
+<next>
+<block type="dcMotor_setDualProperty_ZeroPowerBehavior" id="iwcN]]AF_]c{pIZ.RoK,">
+<field name="PROP">ZeroPowerBehavior</field>
+<field name="IDENTIFIER1">left_driveAsDcMotor</field>
+<field name="IDENTIFIER2">right_driveAsDcMotor</field>
+<data>{"IDENTIFIER1":"left_drive","IDENTIFIER2":"right_drive"}</data>
+<value name="VALUE1">
+<shadow type="dcMotor_typedEnum_zeroPowerBehavior" id="2Wg~0h$*{4_9)Sog)_Ya">
+<field name="ZERO_POWER_BEHAVIOR">BRAKE</field>
+</shadow>
+</value>
+<value name="VALUE2">
+<shadow type="dcMotor_typedEnum_zeroPowerBehavior" id="t#5RJ{PL+:4e^78/:1pR">
+<field name="ZERO_POWER_BEHAVIOR">BRAKE</field>
+</shadow>
+</value>
+<next>
+<block type="comment" id="zeVi2w7o(4ROfhB4V_!(">
+<field name="COMMENT">Wait for the game to start.</field>
+<next>
+<block type="controls_whileUntil" id="0LNb.^nemb?ecfx(?NcM">
+<field name="MODE">WHILE</field>
+<value name="BOOL">
+<block type="linearOpMode_opModeInInit" id="1tbx@b9@DROqctMF^=q+"/>
+</value>
+<statement name="DO">
+<block type="comment" id="xQUIXYYZV!af|{ZTd}nT">
+<field name="COMMENT">Display Gyro value while waiting.</field>
+<next>
+<block type="telemetry_addTextData_All" id="#85W{59++_ZBV%6D-JAJ">
+<value name="KEY">
+<shadow type="text" id="JG[VeqRmHh9vumHG7)MG">
+<field name="TEXT">&gt;</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id=";vM5NRydq,3X}_tu?@sV">
+<field name="TEXT">text</field>
+</shadow>
+<block type="text_join" id="-nS/y}*1UjE@(y`g!xu1">
+<mutation items="2"/>
+<value name="ADD0">
+<block type="text" id="XSTJ93A6Bk9Edw$ILK*e">
+<field name="TEXT">Robot Heading = </field>
+</block>
+</value>
+<value name="ADD1">
+<block type="misc_formatNumber_withWidth" id="Jaq9RF_^:hxHI6)_OZ0o">
+<value name="NUMBER">
+<shadow type="math_number" id="JZfMN~LL{UYGuNtCuU}:">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="procedures_callreturn" id="Y:f,3e)}*BM:kcQ==^lC">
+<mutation name="getHeading"/>
+</block>
+</value>
+<value name="WIDTH">
+<shadow type="math_number" id="%P$:,2G,Vy8ygA~UG`=h">
+<field name="NUM">4</field>
+</shadow>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="S-QmD-CzEcTwJlvX;bv~">
+<field name="NUM">0</field>
+</shadow>
+</value>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_update" id=")l5s=JN%F_zEScJoMKSy"/>
+</next>
+</block>
+</next>
+</block>
+</statement>
+<next>
+<block type="controls_if" id="}Q?5mbxSO8Di;i!__6[y">
+<value name="IF0">
+<block type="linearOpMode_opModeIsActive" id=")o%YFX/#9kvv^sgXr4~5"/>
+</value>
+<statement name="DO0">
+<block type="comment" id="(rU-p_T_/B|vExcs}liL">
+<field name="COMMENT">Set the encoders for closed loop speed control, and reset the heading.</field>
+<next>
+<block type="dcMotor_setDualProperty_RunMode" id="Q.xoMsGd[:AB,r=SUV0.">
+<field name="PROP">Mode</field>
+<field name="IDENTIFIER1">left_driveAsDcMotor</field>
+<field name="IDENTIFIER2">right_driveAsDcMotor</field>
+<data>{"IDENTIFIER1":"left_drive","IDENTIFIER2":"right_drive"}</data>
+<value name="VALUE1">
+<shadow type="dcMotor_typedEnum_runMode" id="!twbx17[Ci}/?[lX+[/J">
+<field name="RUN_MODE">RUN_USING_ENCODER</field>
+</shadow>
+</value>
+<value name="VALUE2">
+<shadow type="dcMotor_typedEnum_runMode" id="{PTiA={I/X/XTKVC0}|^">
+<field name="RUN_MODE">RUN_USING_ENCODER</field>
+</shadow>
+</value>
+<next>
+<block type="imu_resetYaw" id="wY{`*MrvW,6E`(gy1t6s">
+<field name="IDENTIFIER">imuAsIMU</field>
+<data>{"IDENTIFIER":"imu"}</data>
+<next>
+<block type="comment" id="b_R:0:x.FD=]|s|~t~BF">
+<field name="COMMENT">Step through each leg of the path.</field>
+<next>
+<block type="comment" id="vvHWiF:AFH%M1DqF.^gT">
+<field name="COMMENT">Reverse movement is obtained by setting a negative distance (not speed).</field>
+<next>
+<block type="comment" id="tqt):SO${.7saP=Wo_F^">
+<field name="COMMENT">holdHeading is used after turns to let the heading stabilize.</field>
+<next>
+<block type="comment" id="M,rdGD[-6ab_RaK*K|mS">
+<field name="COMMENT">Drive Forward 24".</field>
+<next>
+<block type="procedures_callnoreturn" id="3UjG.oha%=5hp{Wwp+O]">
+<mutation name="driveStraight">
+<arg name="maxDriveSpeed"/>
+<arg name="distance"/>
+<arg name="heading"/>
+</mutation>
+<value name="ARG0">
+<block type="variables_get" id="*G+Ls:hCsDz`DC!7`bIq">
+<field name="VAR" id="fwbZFUagM`Jl$|xHep7K">DRIVE_SPEED</field>
+</block>
+</value>
+<value name="ARG1">
+<block type="math_number" id="I:0;{~ks)rkas8H5w{:U">
+<field name="NUM">24</field>
+</block>
+</value>
+<value name="ARG2">
+<block type="math_number" id="36(3y]Zzw/bBz`a.zDA^">
+<field name="NUM">0</field>
+</block>
+</value>
+<next>
+<block type="linearOpMode_sleep_Number" id="da/HIU7S2:ts?fT}rp9K" disabled="true">
+<comment pinned="true" h="44" w="447">Enable this sleep block to keep the telemetry data visible for review.</comment>
+<data>{"commentPositionLeft":180,"commentPositionTop":-7}</data>
+<value name="MILLISECONDS">
+<shadow type="math_number" id="X?%l_GHWT,HU^QS88#b]">
+<field name="NUM">2000</field>
+</shadow>
+</value>
+<next>
+<block type="comment" id="-=aSv7lPN;q2VaYf#F6T">
+<field name="COMMENT">Turn CW to -45 degrees.</field>
+<next>
+<block type="procedures_callnoreturn" id="JKg^~OkK^s3+-(Fyuabi">
+<mutation name="turnToHeading">
+<arg name="maxTurnSpeed"/>
+<arg name="heading"/>
+</mutation>
+<value name="ARG0">
+<block type="variables_get" id="-2@1~0.T3BLQ./PvX-/b">
+<field name="VAR" id="6O-jq)x;Me(c,Wdqd/w|">TURN_SPEED</field>
+</block>
+</value>
+<value name="ARG1">
+<block type="math_number" id="DwbfCsfDx/gBcx]gp.oO">
+<field name="NUM">-45</field>
+</block>
+</value>
+<next>
+<block type="linearOpMode_sleep_Number" id="L/ZGU_!?.gu3E%`/BRAe" disabled="true">
+<comment pinned="true" h="44" w="447">Enable this sleep block to keep the telemetry data visible for review.</comment>
+<data>{"commentPositionLeft":180,"commentPositionTop":-7}</data>
+<value name="MILLISECONDS">
+<shadow type="math_number" id="fw[W=]I,C`6Oz*+s0+l-">
+<field name="NUM">2000</field>
+</shadow>
+</value>
+<next>
+<block type="comment" id="sCLSzK5L|6~v%:TJ8oFf">
+<field name="COMMENT">Hold -45 degree heading for a 1/2 second.</field>
+<next>
+<block type="procedures_callnoreturn" id="@p?Z`6W;p;{vGaHvs{Qn">
+<mutation name="holdHeading">
+<arg name="maxTurnSpeed"/>
+<arg name="heading"/>
+<arg name="holdTime"/>
+</mutation>
+<value name="ARG0">
+<block type="variables_get" id="iQ}WUfPxRK;*D5H.Rmur">
+<field name="VAR" id="6O-jq)x;Me(c,Wdqd/w|">TURN_SPEED</field>
+</block>
+</value>
+<value name="ARG1">
+<block type="math_number" id="o/5N+ZRobZiO$Ven$Un]">
+<field name="NUM">-45</field>
+</block>
+</value>
+<value name="ARG2">
+<block type="math_number" id=")YlQ~xGd+Sdbu4Nzh`~k">
+<field name="NUM">0.5</field>
+</block>
+</value>
+<next>
+<block type="linearOpMode_sleep_Number" id="^b^a)}u;iZEw]uZ`)*80" disabled="true">
+<comment pinned="true" h="44" w="447">Enable this sleep block to keep the telemetry data visible for review.</comment>
+<data>{"commentPositionLeft":180,"commentPositionTop":-7}</data>
+<value name="MILLISECONDS">
+<shadow type="math_number" id="{f%-8:jxoa,:+?@E6lo_">
+<field name="NUM">2000</field>
+</shadow>
+</value>
+<next>
+<block type="comment" id="1eZ;/$;*lk6zM,-?/,[9">
+<field name="COMMENT">Drive Forward 17" at -45 degrees (12"x and 12"y).</field>
+<next>
+<block type="procedures_callnoreturn" id=";^)o{4)JUjf+Nll,s*(Q">
+<mutation name="driveStraight">
+<arg name="maxDriveSpeed"/>
+<arg name="distance"/>
+<arg name="heading"/>
+</mutation>
+<value name="ARG0">
+<block type="variables_get" id="]8L-My?)-z%WhL79mal{">
+<field name="VAR" id="fwbZFUagM`Jl$|xHep7K">DRIVE_SPEED</field>
+</block>
+</value>
+<value name="ARG1">
+<block type="math_number" id="uf[Vzj~a6$np|.b}~V*e">
+<field name="NUM">17</field>
+</block>
+</value>
+<value name="ARG2">
+<block type="math_number" id="c*[h/d6qdK{QLQagFiwj">
+<field name="NUM">-45</field>
+</block>
+</value>
+<next>
+<block type="linearOpMode_sleep_Number" id="A!#M/tgn@/bu0;VoGgR5" disabled="true">
+<comment pinned="true" h="44" w="447">Enable this sleep block to keep the telemetry data visible for review.</comment>
+<data>{"commentPositionLeft":180,"commentPositionTop":-7}</data>
+<value name="MILLISECONDS">
+<shadow type="math_number" id="L2msKI/W:C4I$6zh3o26">
+<field name="NUM">2000</field>
+</shadow>
+</value>
+<next>
+<block type="comment" id="*@Pgo*_8$oSF!CONcq!(">
+<field name="COMMENT">Turn CCW to 45 degrees.</field>
+<next>
+<block type="procedures_callnoreturn" id="+CG12s)%2/R[nU0E8uUu">
+<mutation name="turnToHeading">
+<arg name="maxTurnSpeed"/>
+<arg name="heading"/>
+</mutation>
+<value name="ARG0">
+<block type="variables_get" id="7~F?P~Hi/RxF/aqAX2d(">
+<field name="VAR" id="6O-jq)x;Me(c,Wdqd/w|">TURN_SPEED</field>
+</block>
+</value>
+<value name="ARG1">
+<block type="math_number" id="iQze-XE5$2ZhoE|2Z=v~">
+<field name="NUM">45</field>
+</block>
+</value>
+<next>
+<block type="linearOpMode_sleep_Number" id="8iW|0/s5HisXjmVInw`/" disabled="true">
+<comment pinned="true" h="44" w="447">Enable this sleep block to keep the telemetry data visible for review.</comment>
+<data>{"commentPositionLeft":180,"commentPositionTop":-7}</data>
+<value name="MILLISECONDS">
+<shadow type="math_number" id="c:m-5)3sMD%qF#@x~JR!">
+<field name="NUM">2000</field>
+</shadow>
+</value>
+<next>
+<block type="comment" id="8lqo3xd!jhYBPaVrLz}T">
+<field name="COMMENT">Hold 45 degree heading for a 1/2 second.</field>
+<next>
+<block type="procedures_callnoreturn" id="(r-W_?U4(rCA+_[[PB]U">
+<mutation name="holdHeading">
+<arg name="maxTurnSpeed"/>
+<arg name="heading"/>
+<arg name="holdTime"/>
+</mutation>
+<value name="ARG0">
+<block type="variables_get" id="R.aBbxZr1:u|%dD6yGK-">
+<field name="VAR" id="6O-jq)x;Me(c,Wdqd/w|">TURN_SPEED</field>
+</block>
+</value>
+<value name="ARG1">
+<block type="math_number" id=",6BFose6ifVW3zb8..RL">
+<field name="NUM">45</field>
+</block>
+</value>
+<value name="ARG2">
+<block type="math_number" id="*3,mG*f@P7|i1P=M!/?F">
+<field name="NUM">0.5</field>
+</block>
+</value>
+<next>
+<block type="linearOpMode_sleep_Number" id="]$D#X2=f|-5#{LKO~]N?" disabled="true">
+<comment pinned="true" h="44" w="447">Enable this sleep block to keep the telemetry data visible for review.</comment>
+<data>{"commentPositionLeft":180,"commentPositionTop":-7}</data>
+<value name="MILLISECONDS">
+<shadow type="math_number" id="@Ige^86mUR,kaiF(Me~^">
+<field name="NUM">2000</field>
+</shadow>
+</value>
+<next>
+<block type="comment" id="ZTYS$[kuAK(gQ;0u56~Y">
+<field name="COMMENT">Drive Forward 17" at 45 degrees (-12"x and 12"y).</field>
+<next>
+<block type="procedures_callnoreturn" id="Z?g:Ed7kHPV6^/e-S.,0">
+<mutation name="driveStraight">
+<arg name="maxDriveSpeed"/>
+<arg name="distance"/>
+<arg name="heading"/>
+</mutation>
+<value name="ARG0">
+<block type="variables_get" id="7Zm-sfu/c5jjmxUGi)95">
+<field name="VAR" id="fwbZFUagM`Jl$|xHep7K">DRIVE_SPEED</field>
+</block>
+</value>
+<value name="ARG1">
+<block type="math_number" id="5?Fa}JOPXvD93n4Lg#/G">
+<field name="NUM">17</field>
+</block>
+</value>
+<value name="ARG2">
+<block type="math_number" id=";dpCj:!|(?JpL7MI{~nw">
+<field name="NUM">45</field>
+</block>
+</value>
+<next>
+<block type="linearOpMode_sleep_Number" id="P*P4uaze+jxAkQa^d6I$" disabled="true">
+<comment pinned="true" h="44" w="447">Enable this sleep block to keep the telemetry data visible for review.</comment>
+<data>{"commentPositionLeft":180,"commentPositionTop":-7}</data>
+<value name="MILLISECONDS">
+<shadow type="math_number" id="}NV.$uodgOE8`]Y@dE=l">
+<field name="NUM">2000</field>
+</shadow>
+</value>
+<next>
+<block type="comment" id="$J;O:}^bXJ}=qJ#aY,Pv">
+<field name="COMMENT">Turn CW to 0 degrees.</field>
+<next>
+<block type="procedures_callnoreturn" id="g5h.~|q%C/g/Mf4?HqBh">
+<mutation name="turnToHeading">
+<arg name="maxTurnSpeed"/>
+<arg name="heading"/>
+</mutation>
+<value name="ARG0">
+<block type="variables_get" id="{t6zy9%8T[qH)oxcasa1">
+<field name="VAR" id="6O-jq)x;Me(c,Wdqd/w|">TURN_SPEED</field>
+</block>
+</value>
+<value name="ARG1">
+<block type="math_number" id="Jn?jN2RlttHb[LNcJ[*J">
+<field name="NUM">0</field>
+</block>
+</value>
+<next>
+<block type="linearOpMode_sleep_Number" id="G3Y{Kv`.9G?kRliEtS9~" disabled="true">
+<comment pinned="true" h="44" w="447">Enable this sleep block to keep the telemetry data visible for review.</comment>
+<data>{"commentPositionLeft":180,"commentPositionTop":-7}</data>
+<value name="MILLISECONDS">
+<shadow type="math_number" id="Qg_f]*u!^;.~}_:g~Jmf">
+<field name="NUM">2000</field>
+</shadow>
+</value>
+<next>
+<block type="comment" id="r~38+(3,},=1U=bL4prI">
+<field name="COMMENT">Hold 0 degree heading for 1 second.</field>
+<next>
+<block type="procedures_callnoreturn" id="Zi[ot7IPLJwM@H5b@:~!">
+<mutation name="holdHeading">
+<arg name="maxTurnSpeed"/>
+<arg name="heading"/>
+<arg name="holdTime"/>
+</mutation>
+<value name="ARG0">
+<block type="variables_get" id="fu0ig1IV%8mc+?Xx3=$X">
+<field name="VAR" id="6O-jq)x;Me(c,Wdqd/w|">TURN_SPEED</field>
+</block>
+</value>
+<value name="ARG1">
+<block type="math_number" id="P1qcpyaaEQHDkyO%;]aq">
+<field name="NUM">0</field>
+</block>
+</value>
+<value name="ARG2">
+<block type="math_number" id="9owlVx=Ee]f^(K)~j`}W">
+<field name="NUM">1</field>
+</block>
+</value>
+<next>
+<block type="linearOpMode_sleep_Number" id="wn9Rc;A.jYFI6yv~48N%" disabled="true">
+<comment pinned="true" h="44" w="447">Enable this sleep block to keep the telemetry data visible for review.</comment>
+<data>{"commentPositionLeft":180,"commentPositionTop":-7}</data>
+<value name="MILLISECONDS">
+<shadow type="math_number" id="NV@rP/X=(zL@FB@Ks+BT">
+<field name="NUM">2000</field>
+</shadow>
+</value>
+<next>
+<block type="comment" id="$|mgg{r$6{4VQ{U;4|`{">
+<field name="COMMENT">Drive in reverse 48". Should return to approx. starting position.</field>
+<next>
+<block type="procedures_callnoreturn" id="+~F5Q5/2,v]0T1cf@^XF">
+<mutation name="driveStraight">
+<arg name="maxDriveSpeed"/>
+<arg name="distance"/>
+<arg name="heading"/>
+</mutation>
+<value name="ARG0">
+<block type="variables_get" id="1?x.WsYhyexQ1GzfkA8G">
+<field name="VAR" id="fwbZFUagM`Jl$|xHep7K">DRIVE_SPEED</field>
+</block>
+</value>
+<value name="ARG1">
+<block type="math_number" id="I7w94Zy_?JD+A)YaZ2|F">
+<field name="NUM">-48</field>
+</block>
+</value>
+<value name="ARG2">
+<block type="math_number" id="ml^bb6q=DoU,sxeLexzY">
+<field name="NUM">0</field>
+</block>
+</value>
+<next>
+<block type="linearOpMode_sleep_Number" id="/jcbvdGHvZOH|oa+;cxO" disabled="true">
+<comment pinned="true" h="44" w="447">Enable this sleep block to keep the telemetry data visible for review.</comment>
+<data>{"commentPositionLeft":180,"commentPositionTop":-7}</data>
+<value name="MILLISECONDS">
+<shadow type="math_number" id="}mg(R@$x]Bzx;Do30p#)">
+<field name="NUM">2000</field>
+</shadow>
+</value>
+<next>
+<block type="telemetry_addTextData_All" id="nIeJO_+(h`fEZ]b,|:+1">
+<value name="KEY">
+<shadow type="text" id="_,l2OytG4`pi-oqguJc1">
+<field name="TEXT">Path</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id="]M.@4rkL=#RLn0!zR;vc">
+<field name="TEXT">Complete</field>
+</shadow>
+</value>
+<next>
+<block type="telemetry_update" id="sM?Gcm@FX:Yf5q--GC4V">
+<next>
+<block type="comment" id="Npid/L%yw/k6G+v[d6wh">
+<field name="COMMENT">Pause to display last telemetry message.</field>
+<next>
+<block type="linearOpMode_sleep_Number" id="g0o0Ci^/GoR|X_@-UxXn">
+<value name="MILLISECONDS">
+<shadow type="math_number" id="TS(PB_^q.UOK?qAV0cu^">
+<field name="NUM">1000</field>
+</shadow>
+</value>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+<block type="procedures_defnoreturn" id="Bb_nzxS?lhi!Cro_-Sg@" x="25" y="3874">
+<field name="NAME">initializeVariables</field>
+<comment pinned="true" h="42" w="279">Initialize the variables.</comment>
+<data>{"commentPositionLeft":-47,"commentPositionTop":-67}</data>
+<statement name="STACK">
+<block type="variables_set" id=":`JpJ~I(J0N*C}*,!2.q">
+<field name="VAR" id="{[J[lP8N_jADYO:Y?7|*">headingError</field>
+<value name="VALUE">
+<block type="math_number" id="KX}l:uw@/II}Cs4c;O1L">
+<field name="NUM">0</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id="#6$f536fx*K/%*Jsx+6V">
+<field name="VAR" id="Vw4y{;dYIC5[[)sF9#+d">targetHeading</field>
+<value name="VALUE">
+<block type="math_number" id="zb87cMY*jHztkJw6ccC,">
+<field name="NUM">0</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id="O4^=j2$|85poW0,/?k/M">
+<field name="VAR" id="EDNV@nO|d?wpO)(L;Y#,">driveSpeed</field>
+<value name="VALUE">
+<block type="math_number" id=";55+X%4[SPPuSTnA,#1x">
+<field name="NUM">0</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id="M+f%(QT+ax|5Pi#iLFgg">
+<field name="VAR" id="Z$*B;z;Qz^SHi#:a3hOl">turnSpeed</field>
+<value name="VALUE">
+<block type="math_number" id="o_AImUe[v^5qw5Z9POO%">
+<field name="NUM">0</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id="C[]P={0i8wx0sh/!5~mM">
+<field name="VAR" id="-6=Vz.4i/q@Agh5tFkFv">leftSpeed</field>
+<value name="VALUE">
+<block type="math_number" id="nE:z(+e{ql=T.:P*[R!L">
+<field name="NUM">0</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id="q0Kk::,_KNb-R-T?5^OK">
+<field name="VAR" id="wYUl[rMja/lXBu@5TP6B">rightSpeed</field>
+<value name="VALUE">
+<block type="math_number" id="x:m@p,UF5-*D{vQUS]$E">
+<field name="NUM">0</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id="DuUALP?*x/7YQm6GVh8f">
+<field name="VAR" id="h/N-;@mY2NnGU|`(J+T!">leftTarget</field>
+<value name="VALUE">
+<block type="math_number" id="QHF*KgWf~(Ushe.LCy~0">
+<field name="NUM">0</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id="X^b)R:2;MDPa*i4+4C,J">
+<field name="VAR" id="7BZfEs/gy|p$f1NP9n+U">rightTarget</field>
+<value name="VALUE">
+<block type="math_number" id="W3ckC2*T:MZEO)d0,pHG">
+<field name="NUM">0</field>
+</block>
+</value>
+<next>
+<block type="comment" id="n)ySApME*FToVXw!bu]e">
+<field name="COMMENT">Calculate the COUNTS_PER_INCH for your specific drive train.</field>
+<next>
+<block type="comment" id="!ooyM:3d|/@-WRgEO`rh">
+<field name="COMMENT">Go to your motor vendor website to determine your motor's COUNTS_PER_MOTOR_REV.</field>
+<next>
+<block type="comment" id="Fm[}pZ9f%qma^/_//al*">
+<field name="COMMENT">For external drive gearing, set DRIVE_GEAR_REDUCTION as needed.</field>
+<next>
+<block type="comment" id=")B,:++vWS;bU0{$b[g6%">
+<field name="COMMENT">For example, use a value of 2.0 for a 12-tooth spur gear driving a 24-tooth spur gear.</field>
+<next>
+<block type="comment" id=";GBZYJ$F~}D?X=Cne/;d">
+<field name="COMMENT">This is gearing down for less speed and more torque.</field>
+<next>
+<block type="comment" id="MN.?zEASYCBd]/|G|WxC">
+<field name="COMMENT">For gearing up, use a gear ratio less than 1.0. Note this will affect the direction of wheel rotation.</field>
+<next>
+<block type="variables_set" id="|l*5G@w,F[hHZNB#nWm-">
+<field name="VAR" id="e6Oo}ANF7ar5HnKCaOy(">COUNTS_PER_MOTOR_REV</field>
+<comment pinned="false" h="40" w="295">eg: GoBILDA 312 RPM Yellow Jacket</comment>
+<data>{"commentPositionLeft":368,"commentPositionTop":-18}</data>
+<value name="VALUE">
+<block type="math_number" id="WHAo*^5tH]!,x?u1)Ea#">
+<field name="NUM">537.7</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id="o5fLc:;%5*CysfW;]drH">
+<field name="VAR" id="VQN{6:0eeGxvX[;Nj;Uq">DRIVE_GEAR_REDUCTION</field>
+<comment pinned="false" h="40" w="175">No External Gearing.</comment>
+<data>{"commentPositionLeft":332,"commentPositionTop":-18}</data>
+<value name="VALUE">
+<block type="math_number" id="G{n;c%O#u1MFboVt03W{">
+<field name="NUM">1</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id="OE4a-~`Wb{[If5[+k~z4">
+<field name="VAR" id="c8Y^Nsb:#d:7zyJ[6s1=">WHEEL_DIAMETER_INCHES</field>
+<comment pinned="false" h="40" w="208">For figuring circumference</comment>
+<data>{"commentPositionLeft":336,"commentPositionTop":-18}</data>
+<value name="VALUE">
+<block type="math_number" id="}}L2pDrwJS]b!(P7LFU@">
+<field name="NUM">4</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id="aJfUz/(/7o9_*EM1CXbm">
+<field name="VAR" id="Pr[]y^V-4CPurO=:hiq;">COUNTS_PER_INCH</field>
+<value name="VALUE">
+<block type="math_arithmetic" id="8]1Vfnyxn+Xx:$vWwwFw" inline="false">
+<field name="OP">DIVIDE</field>
+<value name="A">
+<shadow type="math_number" id="s=M3,y]QTedqfMPjJ|Em">
+<field name="NUM">1</field>
+</shadow>
+<block type="math_arithmetic" id="MAUg/O(24r5#H{Abno3[">
+<field name="OP">MULTIPLY</field>
+<value name="A">
+<shadow type="math_number" id="Ul[j+Dd9NCMSj?)-_-Vy">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="7+LQ@6?ieXxR^.Fs.g+r">
+<field name="VAR" id="e6Oo}ANF7ar5HnKCaOy(">COUNTS_PER_MOTOR_REV</field>
+</block>
+</value>
+<value name="B">
+<shadow type="math_number" id="X!KfY]afDS^[$Fu=m{i~">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="ZF!;tv7%4z`6+,|%]jZe">
+<field name="VAR" id="VQN{6:0eeGxvX[;Nj;Uq">DRIVE_GEAR_REDUCTION</field>
+</block>
+</value>
+</block>
+</value>
+<value name="B">
+<shadow type="math_number" id="[%%tf_C8*ZKg$`BzB`S^">
+<field name="NUM">1</field>
+</shadow>
+<block type="math_arithmetic" id="3dYV`#.OTaX2yjjD:)UE">
+<field name="OP">MULTIPLY</field>
+<value name="A">
+<shadow type="math_number" id="G49%C,]njgn[??=1LNCL">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="4e|be^utUJOau,b=t?;w">
+<field name="VAR" id="c8Y^Nsb:#d:7zyJ[6s1=">WHEEL_DIAMETER_INCHES</field>
+</block>
+</value>
+<value name="B">
+<shadow type="math_number" id="8+YP9RWYPbG7r/Zhcrz4">
+<field name="NUM">1</field>
+</shadow>
+<block type="math_constant" id="knh$*vt1aGE{t*`-2#.B">
+<field name="CONSTANT">PI</field>
+</block>
+</value>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="comment" id=":OU!cT{IN=E}0iS$qr9e">
+<field name="COMMENT">These constants define the desired driving/control characteristics.</field>
+<next>
+<block type="comment" id="l--OP`b;GN-=7ors1tPO">
+<field name="COMMENT">They can/should be tweaked to suit the specific robot drive train.</field>
+<next>
+<block type="variables_set" id=".;dlMmtL;J4rKp[A9d!b">
+<field name="VAR" id="fwbZFUagM`Jl$|xHep7K">DRIVE_SPEED</field>
+<comment pinned="false" h="40" w="335">Max driving speed for better distance accuracy.</comment>
+<data>{"commentPositionLeft":250,"commentPositionTop":-18}</data>
+<value name="VALUE">
+<block type="math_number" id="kk2~Y/u3Ko;3oxP)cVn[">
+<field name="NUM">0.4</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id="R={_Vx)rhqfo;_o|L+gx">
+<field name="VAR" id="6O-jq)x;Me(c,Wdqd/w|">TURN_SPEED</field>
+<comment pinned="false" h="40" w="251">Max turn speed to limit turn rate.</comment>
+<data>{"commentPositionLeft":250,"commentPositionTop":-18}</data>
+<value name="VALUE">
+<block type="math_number" id="EU3UNB?ja_3MbR2Oh6-~">
+<field name="NUM">0.2</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id="+lk}r|?Px``2(1wIC`)0">
+<field name="VAR" id="]!p{j@vi)Ny9h{2%iH$v">HEADING_THRESHOLD</field>
+<comment pinned="false" h="94" w="503">How close must the heading get to the target before moving to next step.
+Requiring more accuracy (a smaller number) will often make the turn take longer to get into the final position.</comment>
+<data>{"commentPositionLeft":304,"commentPositionTop":-18}</data>
+<value name="VALUE">
+<block type="math_number" id="-vUEz+/Qo$ok;_=bs`UI">
+<field name="NUM">1</field>
+</block>
+</value>
+<next>
+<block type="comment" id="T{J!I4XPmNw$x+Hxdt!M">
+<field name="COMMENT">Define the proportional control coefficient (or gain) for heading control.</field>
+<next>
+<block type="comment" id="xxT1m*ts%3aV`Q%(Qc[C">
+<field name="COMMENT">We define one value when turning (larger errors), and the other is used when driving straight (smaller errors).</field>
+<next>
+<block type="comment" id="F!{WuP|#*]bxA-Jc:Ih+">
+<field name="COMMENT">Increase these numbers if the heading does not correct strongly enough (eg: a heavy robot or using tracks).</field>
+<next>
+<block type="comment" id="/V1Le[@{#[~ha|%w7pZ@">
+<field name="COMMENT">Decrease these numbers if the heading does not settle on the correct value (eg: very agile robot with omni wheels).</field>
+<next>
+<block type="variables_set" id="):$10UfH`f]!tL1r6I:|">
+<field name="VAR" id="zqQB+{wXcMz@l0;dK2Z!">P_TURN_GAIN</field>
+<comment pinned="false" h="40" w="319">Larger is more responsive, but also less stable.</comment>
+<data>{"commentPositionLeft":260,"commentPositionTop":-18}</data>
+<value name="VALUE">
+<block type="math_number" id="tU6H$HZeQ*HJd_yg5S#h">
+<field name="NUM">0.02</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id=":5AxfrlzZHJCf9jKg8^3">
+<field name="VAR" id="=}.ByAbDz3et^4QYFc;Q">P_DRIVE_GAIN</field>
+<comment pinned="false" h="40" w="319">Larger is more responsive, but also less stable.</comment>
+<data>{"commentPositionLeft":260,"commentPositionTop":-18}</data>
+<value name="VALUE">
+<block type="math_number" id="`9Q4IX8,oF_uY2wRfZdU">
+<field name="NUM">0.03</field>
+</block>
+</value>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+<block type="procedures_defnoreturn" id="tQx9_N8C=b5(xCazR|1}" x="25" y="4877">
+<mutation>
+<arg name="maxDriveSpeed" varid="gW:Y#!BRQHC*-m3m^K=`"/>
+<arg name="distance" varid="j8LrUw,!b^[gx6tO-K/]"/>
+<arg name="heading" varid="^TypnSY@!%hth6-7m}XN"/>
+</mutation>
+<field name="NAME">driveStraight</field>
+<comment pinned="true" h="104" w="636">Drive in a straight line, on a fixed compass heading (angle), based on encoder counts.
+Move will stop if either of these conditions occur:
+1) Move gets to the desired position.
+2) Driver stops the OpMode running.</comment>
+<data>{"commentPositionLeft":-44,"commentPositionTop":-135}</data>
+<statement name="STACK">
+<block type="comment" id="KB*n}$#IJ}9fP;6(cP2[">
+<field name="COMMENT">Ensure that the OpMode is still active.</field>
+<next>
+<block type="controls_if" id="=z]sv)!D~5/mTlU8aUh2">
+<value name="IF0">
+<block type="linearOpMode_opModeIsActive" id="]e]SE/2o=Ko6r2aa+QVM"/>
+</value>
+<statement name="DO0">
+<block type="comment" id="$1ORWW+fT!;v,K5T$:xo">
+<field name="COMMENT">Determine new target position, and pass to motor controller.</field>
+<next>
+<block type="variables_set" id="Bf/`gbO75?lzoV@/_|UK">
+<field name="VAR" id="?`hbO|Zv*}izH}ED!IF3">moveCounts</field>
+<value name="VALUE">
+<block type="math_round" id="2Ivj2M$D?3OmMZ[hN0O6">
+<field name="OP">ROUNDDOWN</field>
+<value name="NUM">
+<shadow type="math_number" id="ET;4#Y1(GeNyn,o!N`0o">
+<field name="NUM">3.1</field>
+</shadow>
+<block type="math_arithmetic" id="DD-qIb`_-Ly,~~r,PBug">
+<field name="OP">MULTIPLY</field>
+<value name="A">
+<shadow type="math_number" id="JvXXOT?EbF}YMjh@,5.A">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="Ky65Q2WuSuuUv.I6L:t9">
+<field name="VAR" id="j8LrUw,!b^[gx6tO-K/]">distance</field>
+</block>
+</value>
+<value name="B">
+<shadow type="math_number" id="z0[M#0XE_LLPw*-39G+$">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="Mkddyg5Ipbr=Wujb+.y@">
+<field name="VAR" id="Pr[]y^V-4CPurO=:hiq;">COUNTS_PER_INCH</field>
+</block>
+</value>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="variables_set" id="Q1YNFcHj}p]c^{*v=0]l">
+<field name="VAR" id="h/N-;@mY2NnGU|`(J+T!">leftTarget</field>
+<value name="VALUE">
+<block type="math_arithmetic" id="%{wnBxTMHT~NllMCm9Zk">
+<field name="OP">ADD</field>
+<value name="A">
+<shadow type="math_number" id="Do`1./:ks7x:,os$(=Qp">
+<field name="NUM">1</field>
+</shadow>
+<block type="dcMotor_getProperty_Number" id="R2i`Z[pKqDg3bl*|SAD(">
+<field name="IDENTIFIER">left_driveAsDcMotor</field>
+<field name="PROP">CurrentPosition</field>
+<data>{"IDENTIFIER":"left_drive"}</data>
+</block>
+</value>
+<value name="B">
+<shadow type="math_number" id="Tt)Nh/IRll3Q32%Nc~VX">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="?[JEoE$h`cNG(/]J7/o;">
+<field name="VAR" id="?`hbO|Zv*}izH}ED!IF3">moveCounts</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="variables_set" id="X-*N3q-kw:*i/~y_?SZ2">
+<field name="VAR" id="7BZfEs/gy|p$f1NP9n+U">rightTarget</field>
+<value name="VALUE">
+<block type="math_arithmetic" id=".IQp2AqHk$I2_3Nefv0z">
+<field name="OP">ADD</field>
+<value name="A">
+<shadow type="math_number" id="R=55.EUf}$)q#cvar1r(">
+<field name="NUM">1</field>
+</shadow>
+<block type="dcMotor_getProperty_Number" id="A-8-{ub([f/E:Z8iymQD">
+<field name="IDENTIFIER">right_driveAsDcMotor</field>
+<field name="PROP">CurrentPosition</field>
+<data>{"IDENTIFIER":"right_drive"}</data>
+</block>
+</value>
+<value name="B">
+<shadow type="math_number">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="^?CqnTA[70D{+PHWu;OQ">
+<field name="VAR" id="?`hbO|Zv*}izH}ED!IF3">moveCounts</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="comment" id="4;xyN(bHWE8FeskEbTGb">
+<field name="COMMENT">Set Target FIRST, then turn on RUN_TO_POSITION.</field>
+<next>
+<block type="dcMotor_setDualProperty_Number" id="iifM./?u_Q~[.8jb;)i2">
+<field name="PROP">TargetPosition</field>
+<field name="IDENTIFIER1">left_driveAsDcMotor</field>
+<field name="IDENTIFIER2">right_driveAsDcMotor</field>
+<data>{"IDENTIFIER1":"left_drive","IDENTIFIER2":"right_drive"}</data>
+<value name="VALUE1">
+<shadow type="math_number" id="cMkdDaMa9}oJCL)^Cd-H">
+<field name="NUM">0</field>
+</shadow>
+<block type="variables_get" id="5a,,jQks|?aLb@yb1vD8">
+<field name="VAR" id="h/N-;@mY2NnGU|`(J+T!">leftTarget</field>
+</block>
+</value>
+<value name="VALUE2">
+<shadow type="math_number" id=".]URqV1t:t{UK$=qRB+3">
+<field name="NUM">0</field>
+</shadow>
+<block type="variables_get" id="(kwyp9O8dYgmvc}@uR%y">
+<field name="VAR" id="7BZfEs/gy|p$f1NP9n+U">rightTarget</field>
+</block>
+</value>
+<next>
+<block type="dcMotor_setDualProperty_RunMode" id="E=os({VnfFxssS)-W-ug">
+<field name="PROP">Mode</field>
+<field name="IDENTIFIER1">left_driveAsDcMotor</field>
+<field name="IDENTIFIER2">right_driveAsDcMotor</field>
+<data>{"IDENTIFIER1":"left_drive","IDENTIFIER2":"right_drive"}</data>
+<value name="VALUE1">
+<shadow type="dcMotor_typedEnum_runMode" id=";SLrx![Ln-|*4AjFo/TH">
+<field name="RUN_MODE">RUN_TO_POSITION</field>
+</shadow>
+</value>
+<value name="VALUE2">
+<shadow type="dcMotor_typedEnum_runMode" id="zsgiw1+l-D#~UN^X)Eqx">
+<field name="RUN_MODE">RUN_TO_POSITION</field>
+</shadow>
+</value>
+<next>
+<block type="comment" id="j(QJ)lAzg~e`7@e//LHA">
+<field name="COMMENT">Set the required driving speed, which must be positive for RUN_TO_POSITION.</field>
+<next>
+<block type="comment" id="(o,q*Ea=v.l9uG/KBEw{">
+<field name="COMMENT">Start driving straight, and then enter the control loop.</field>
+<next>
+<block type="variables_set" id="?O:`M(L*-@kHCnFa$%Qm">
+<field name="VAR" id="gW:Y#!BRQHC*-m3m^K=`">maxDriveSpeed</field>
+<value name="VALUE">
+<block type="math_single" id="D/PDW)OB8MSmE)^D(0en">
+<field name="OP">ABS</field>
+<value name="NUM">
+<shadow type="math_number" id="u!o/.~WC0;PdU2*mSijQ">
+<field name="NUM">9</field>
+</shadow>
+<block type="variables_get" id="L.-]7B0/ri%dnJ-G$,O_">
+<field name="VAR" id="gW:Y#!BRQHC*-m3m^K=`">maxDriveSpeed</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="procedures_callnoreturn" id="DX}H_h7WU,$?q~B=8xnE">
+<mutation name="moveRobot">
+<arg name="drive"/>
+<arg name="turn"/>
+</mutation>
+<value name="ARG0">
+<block type="variables_get" id="(Yo(SgZ5IM9ZV]Ht7MIk">
+<field name="VAR" id="gW:Y#!BRQHC*-m3m^K=`">maxDriveSpeed</field>
+</block>
+</value>
+<value name="ARG1">
+<block type="math_number" id="AFMr*/VggGDu]Q/oTi|.">
+<field name="NUM">0</field>
+</block>
+</value>
+<next>
+<block type="comment" id="G)2qog_oAT8B15lFpJPk">
+<field name="COMMENT">Keep looping while we are still active, and both motors are running.</field>
+<next>
+<block type="controls_whileUntil" id="(TpI1}G|+N`~]mnHOWTn">
+<field name="MODE">WHILE</field>
+<value name="BOOL">
+<block type="logic_operation" id="R216/Cv`|I`:eu]{[K|5" inline="false">
+<field name="OP">AND</field>
+<value name="A">
+<block type="linearOpMode_opModeIsActive" id="#zR24Frn+N.H8=BfT|n4"/>
+</value>
+<value name="B">
+<block type="logic_operation" id="t{D@Bye.#h{BvT,?Hk`_" inline="false">
+<field name="OP">AND</field>
+<value name="A">
+<block type="dcMotor_isBusy" id="MO-4Mg#b!y`yxZd!cX#S">
+<field name="IDENTIFIER">left_driveAsDcMotor</field>
+<data>{"IDENTIFIER":"left_drive"}</data>
+</block>
+</value>
+<value name="B">
+<block type="dcMotor_isBusy" id="z;9e)?Y5|j]=`sN72Sb^">
+<field name="IDENTIFIER">right_driveAsDcMotor</field>
+<data>{"IDENTIFIER":"right_drive"}</data>
+</block>
+</value>
+</block>
+</value>
+</block>
+</value>
+<statement name="DO">
+<block type="comment" id="c2u~5/5@i)56=hkuZqMk">
+<field name="COMMENT">Determine required steering to keep on heading.</field>
+<next>
+<block type="variables_set" id="PR^6FKQXy!0CaOeB-xoK">
+<field name="VAR" id="Z$*B;z;Qz^SHi#:a3hOl">turnSpeed</field>
+<value name="VALUE">
+<block type="procedures_callreturn" id="_ONoT$r@%KoP5JG9g/,Y">
+<mutation name="getSteeringCorrection">
+<arg name="desiredHeading"/>
+<arg name="proportionalGain"/>
+</mutation>
+<value name="ARG0">
+<block type="variables_get" id="Dlue$50Gy9e-ua,jAn.M">
+<field name="VAR" id="^TypnSY@!%hth6-7m}XN">heading</field>
+</block>
+</value>
+<value name="ARG1">
+<block type="variables_get" id="l{LXPt[epZ32|,|g^}%2">
+<field name="VAR" id="=}.ByAbDz3et^4QYFc;Q">P_DRIVE_GAIN</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="comment" id="xnUfQ%3QO.j9+W?hL69W">
+<field name="COMMENT">If driving in reverse, the motor correction also needs to be reversed.</field>
+<next>
+<block type="controls_if" id="zEkE5Loh3DFK~q16[ex=">
+<value name="IF0">
+<block type="logic_compare" id="4u+j]i=zEdZ^b6FAzWRU">
+<field name="OP">LT</field>
+<value name="A">
+<block type="variables_get" id="f%Ws;+m(lpPLJ17ZYKRI">
+<field name="VAR" id="j8LrUw,!b^[gx6tO-K/]">distance</field>
+</block>
+</value>
+<value name="B">
+<block type="math_number" id="#9Onv{$Gw^~JlNu:^zp:">
+<field name="NUM">0</field>
+</block>
+</value>
+</block>
+</value>
+<statement name="DO0">
+<block type="variables_set" id="x7$@%4Y7~p(:H2-Kh.%X">
+<field name="VAR" id="Z$*B;z;Qz^SHi#:a3hOl">turnSpeed</field>
+<value name="VALUE">
+<block type="math_single" id="nRHLed`h|($]p|q-dRt1">
+<field name="OP">NEG</field>
+<value name="NUM">
+<shadow type="math_number" id="C|HkpD6l*JOP-8Giq`cy">
+<field name="NUM">9</field>
+</shadow>
+<block type="variables_get" id="pCiUcd$pSf_?DX:=0[0{">
+<field name="VAR" id="Z$*B;z;Qz^SHi#:a3hOl">turnSpeed</field>
+</block>
+</value>
+</block>
+</value>
+</block>
+</statement>
+<next>
+<block type="comment" id="#]GjI^_@.!(MoqZVZR)4">
+<field name="COMMENT">Apply the turning correction to the current driving speed.</field>
+<next>
+<block type="procedures_callnoreturn" id="s)w~%TCLvj^-:pm(nV}=">
+<mutation name="moveRobot">
+<arg name="drive"/>
+<arg name="turn"/>
+</mutation>
+<value name="ARG0">
+<block type="variables_get" id="+HQ|ynIty901t}iB?Gh;">
+<field name="VAR" id="EDNV@nO|d?wpO)(L;Y#,">driveSpeed</field>
+</block>
+</value>
+<value name="ARG1">
+<block type="variables_get" id="#EW$}Ns3DaJHcu5.nGKZ">
+<field name="VAR" id="Z$*B;z;Qz^SHi#:a3hOl">turnSpeed</field>
+</block>
+</value>
+<next>
+<block type="comment" id="ByI7/{VXWcoa?%%l^KC0">
+<field name="COMMENT">Display drive status for the driver.</field>
+<next>
+<block type="procedures_callnoreturn" id="I!f~wWe~,N]t0WlwbH1|">
+<mutation name="sendTelemetry">
+<arg name="straight"/>
+</mutation>
+<value name="ARG0">
+<block type="logic_boolean" id="_tQ67s?f~ag3xW1J/xgn">
+<field name="BOOL">TRUE</field>
+</block>
+</value>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+<next>
+<block type="comment" id=",z7qB9xdThxa0F5o,fZw">
+<field name="COMMENT">Stop all motion and turn off RUN_TO_POSITION.</field>
+<next>
+<block type="procedures_callnoreturn" id="BZ=78,`3uRzM2!06IVLH">
+<mutation name="moveRobot">
+<arg name="drive"/>
+<arg name="turn"/>
+</mutation>
+<value name="ARG0">
+<block type="math_number" id=":g.ojX_cJg.j)vV{Ub#e">
+<field name="NUM">0</field>
+</block>
+</value>
+<value name="ARG1">
+<block type="math_number" id="Naj_oqg:,m5u;4)}~wK=">
+<field name="NUM">0</field>
+</block>
+</value>
+<next>
+<block type="dcMotor_setDualProperty_RunMode" id="Cn*Ymwki_cl$V}v)esuJ">
+<field name="PROP">Mode</field>
+<field name="IDENTIFIER1">left_driveAsDcMotor</field>
+<field name="IDENTIFIER2">right_driveAsDcMotor</field>
+<data>{"IDENTIFIER1":"left_drive","IDENTIFIER2":"right_drive"}</data>
+<value name="VALUE1">
+<shadow type="dcMotor_typedEnum_runMode" id="O5C~xx^!k~GWg,7b/.n1">
+<field name="RUN_MODE">RUN_USING_ENCODER</field>
+</shadow>
+</value>
+<value name="VALUE2">
+<shadow type="dcMotor_typedEnum_runMode" id="3D%Xd,*HJZozEGdVosVC">
+<field name="RUN_MODE">RUN_USING_ENCODER</field>
+</shadow>
+</value>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</next>
+</block>
+</statement>
+</block>
+<block type="procedures_defnoreturn" id="`$,DdQn20?xd@ZvaQ:AB" x="25" y="6301">
+<mutation>
+<arg name="maxTurnSpeed" varid="Usn~`$[6-|gCTq1q./sr"/>
+<arg name="heading" varid="^TypnSY@!%hth6-7m}XN"/>
+</mutation>
+<field name="NAME">turnToHeading</field>
+<comment pinned="true" h="111" w="366">Spin on the central axis to point in a new direction.
+Move will stop if either of these conditions occur:
+1) Move gets to the heading (angle).
+2) Driver stops the OpMode running.</comment>
+<data>{"commentPositionLeft":-47,"commentPositionTop":-139}</data>
+<statement name="STACK">
+<block type="comment" id="}X(W9SVoe_3~f?+G/s,}">
+<field name="COMMENT">Run getSteeringCorrection() once to pre-calculate the current error</field>
+<next>
+<block type="variables_set" id="T=REvG)AZ8Ur{M%s73(g">
+<field name="VAR" id="~At^Mzg)O;m5E^Y9mqS`">steeringCorrection</field>
+<value name="VALUE">
+<block type="procedures_callreturn" id="Ponz}c?gjU[s)D+sP`+-">
+<mutation name="getSteeringCorrection">
+<arg name="desiredHeading"/>
+<arg name="proportionalGain"/>
+</mutation>
+<value name="ARG0">
+<block type="variables_get" id=".-8v878p~:Wm{!A66Ge,">
+<field name="VAR" id="^TypnSY@!%hth6-7m}XN">heading</field>
+</block>
+</value>
+<value name="ARG1">
+<block type="variables_get" id="~v:0:dT.R+X47(l.[XEK">
+<field name="VAR" id="=}.ByAbDz3et^4QYFc;Q">P_DRIVE_GAIN</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="comment" id="eMnxL%GmS}4WDxn2clWt">
+<field name="COMMENT">Keep looping while we are still active and not on heading.</field>
+<next>
+<block type="controls_whileUntil" id="Ph8mFboRp2s_X9+p_rZl">
+<field name="MODE">WHILE</field>
+<value name="BOOL">
+<block type="logic_operation" id="dL6,H15c=1G/3p-ZTM.." inline="false">
+<field name="OP">AND</field>
+<value name="A">
+<block type="linearOpMode_opModeIsActive" id="N=nlTK!bCLtj.-om6re/"/>
+</value>
+<value name="B">
+<block type="logic_compare" id="FRQR+Jnjy49u_}.Owm=m">
+<field name="OP">GT</field>
+<value name="A">
+<block type="math_single" id="Qnc1H.T4wu;nkeS(d*?W">
+<field name="OP">ABS</field>
+<value name="NUM">
+<shadow type="math_number" id="BJ+SN8TPI1GkRyRaG).L">
+<field name="NUM">9</field>
+</shadow>
+<block type="variables_get" id="Uq-IC-_{ttuj`;%%[LN)">
+<field name="VAR" id="{[J[lP8N_jADYO:Y?7|*">headingError</field>
+</block>
+</value>
+</block>
+</value>
+<value name="B">
+<block type="variables_get" id="sK,NPsB%z7f=:wp9zs%Y">
+<field name="VAR" id="]!p{j@vi)Ny9h{2%iH$v">HEADING_THRESHOLD</field>
+</block>
+</value>
+</block>
+</value>
+</block>
+</value>
+<statement name="DO">
+<block type="comment" id="ot(S$ekZ/0/e{7Zrfi}i">
+<field name="COMMENT">Determine required steering to keep on heading</field>
+<next>
+<block type="variables_set" id="~sbC!IM562d7wN/hkE!z">
+<field name="VAR" id="Z$*B;z;Qz^SHi#:a3hOl">turnSpeed</field>
+<value name="VALUE">
+<block type="procedures_callreturn" id="6[?Ldr~%Z7WiZ1|lJsRm">
+<mutation name="getSteeringCorrection">
+<arg name="desiredHeading"/>
+<arg name="proportionalGain"/>
+</mutation>
+<value name="ARG0">
+<block type="variables_get" id="DRy_87:~}nb_6U8}_gU8">
+<field name="VAR" id="^TypnSY@!%hth6-7m}XN">heading</field>
+</block>
+</value>
+<value name="ARG1">
+<block type="variables_get" id="Dl*=Aw:Eb]lMdWL$]Bl4">
+<field name="VAR" id="zqQB+{wXcMz@l0;dK2Z!">P_TURN_GAIN</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="comment" id="9_pn_~+sr/6C8[CWy%X*">
+<field name="COMMENT">Clip the speed to the maximum permitted value.</field>
+<next>
+<block type="variables_set" id="msPIFHj:vCSIA-|j4/}#">
+<field name="VAR" id="Z$*B;z;Qz^SHi#:a3hOl">turnSpeed</field>
+<value name="VALUE">
+<block type="range_clip" id="3EQ$moK,l_c]YFFNlKEW">
+<value name="NUMBER">
+<block type="variables_get" id="wewnxR4`d-je?hhMh-%4">
+<field name="VAR" id="Z$*B;z;Qz^SHi#:a3hOl">turnSpeed</field>
+</block>
+</value>
+<value name="MIN">
+<shadow type="math_number" id="EXRRWxY#,y*`t,ln#/aR">
+<field name="NUM">-1</field>
+</shadow>
+<block type="math_single" id="5qO9c:tzM{=I?eeCJNtx">
+<field name="OP">NEG</field>
+<value name="NUM">
+<shadow type="math_number" id="E6O:_Tl88G?~je)F*/hj">
+<field name="NUM">9</field>
+</shadow>
+<block type="variables_get" id=")Q?isS]@%!D_5tDd(S[3">
+<field name="VAR" id="Usn~`$[6-|gCTq1q./sr">maxTurnSpeed</field>
+</block>
+</value>
+</block>
+</value>
+<value name="MAX">
+<shadow type="math_number" id="Ot.^w0uUI+$DnSC*J9tw">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="dFG{1!Ev8+RNsy{(#(`1">
+<field name="VAR" id="Usn~`$[6-|gCTq1q./sr">maxTurnSpeed</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="comment" id="REb(N3udr)4R1/G[[zBT">
+<field name="COMMENT">Pivot in place by applying the turning correction.</field>
+<next>
+<block type="procedures_callnoreturn" id="P+z*%=99_DbAd@w]c#ay">
+<mutation name="moveRobot">
+<arg name="drive"/>
+<arg name="turn"/>
+</mutation>
+<value name="ARG0">
+<block type="math_number" id="gd`B}_l{}vq!Cil1TO6-">
+<field name="NUM">0</field>
+</block>
+</value>
+<value name="ARG1">
+<block type="variables_get" id="n(RauKwz4!ypimw_|H_8">
+<field name="VAR" id="Z$*B;z;Qz^SHi#:a3hOl">turnSpeed</field>
+</block>
+</value>
+<next>
+<block type="comment" id=")/`eg^Q^tDZzQY7R8ryD">
+<field name="COMMENT">Display drive status for the driver.</field>
+<next>
+<block type="procedures_callnoreturn" id="=SC32tAujf5#m51!x#Zq">
+<mutation name="sendTelemetry">
+<arg name="straight"/>
+</mutation>
+<value name="ARG0">
+<block type="logic_boolean" id="J/TE9k[rGII,+!~K0yv?">
+<field name="BOOL">FALSE</field>
+</block>
+</value>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+<next>
+<block type="comment" id="eqZ`1LW]xEgov^]u@Pbi">
+<field name="COMMENT">Stop all motion;</field>
+<next>
+<block type="procedures_callnoreturn" id="x[4WRFkkxd=AO`^VpnLJ">
+<mutation name="moveRobot">
+<arg name="drive"/>
+<arg name="turn"/>
+</mutation>
+<value name="ARG0">
+<block type="math_number" id="_W]Mgr3BX8m1OabMjiiD">
+<field name="NUM">0</field>
+</block>
+</value>
+<value name="ARG1">
+<block type="math_number" id="h%u!k=]KStBD{:6oF:#V">
+<field name="NUM">0</field>
+</block>
+</value>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+<block type="procedures_defnoreturn" id="T2lFMSm3McY/=)FYhbWG" x="25" y="7201">
+<mutation>
+<arg name="maxTurnSpeed" varid="Usn~`$[6-|gCTq1q./sr"/>
+<arg name="heading" varid="^TypnSY@!%hth6-7m}XN"/>
+<arg name="holdTime" varid="`;]!l*zy.@!G}Lk#XQX3"/>
+</mutation>
+<field name="NAME">holdHeading</field>
+<comment pinned="true" h="87" w="642">Obtain &amp; hold a heading for a finite amount of time
+Move will stop once the requested time has elapsed
+This function is useful for giving the robot a moment to stabilize its heading between movements.</comment>
+<data>{"commentPositionLeft":-45,"commentPositionTop":-114}</data>
+<statement name="STACK">
+<block type="variables_set" id="3j)%#?M[DzqKwN^e*dPr">
+<field name="VAR" id="o,feuSnsJa`C5!qKMaJ}">holdTimer</field>
+<value name="VALUE">
+<block type="elapsedTime2_create" id="BcZc#OfPCayO{fXx][b_"/>
+</value>
+<next>
+<block type="elapsedTime2_reset" id="~Q]7rb-Ul1i??LH;H=g$">
+<value name="ELAPSED_TIME">
+<block type="variables_get" id="MD,jj.xhJOp.09u9Nj+7">
+<field name="VAR" id="o,feuSnsJa`C5!qKMaJ}">holdTimer</field>
+</block>
+</value>
+<next>
+<block type="comment" id="M6{?CFHHvGH~U{prF_Jw">
+<field name="COMMENT">Keep looping while we have time remaining.</field>
+<next>
+<block type="controls_whileUntil" id="=/38`1c9.u3#DVB`635T">
+<field name="MODE">WHILE</field>
+<value name="BOOL">
+<block type="logic_operation" id="TH88btDsSF2w]rv4fWKy" inline="false">
+<field name="OP">AND</field>
+<value name="A">
+<block type="linearOpMode_opModeIsActive" id="NwYV$,lQmqCQ^cwXZFSI"/>
+</value>
+<value name="B">
+<block type="logic_compare" id="y9s8T4Ot3Ns5iKrx-2lM">
+<field name="OP">LT</field>
+<value name="A">
+<block type="elapsedTime2_getProperty_Number" id="Lg*kSbkK^dYt5rV]dB5/">
+<field name="PROP">Seconds</field>
+<value name="ELAPSED_TIME">
+<block type="variables_get" id="].Tp%,rem4Lg6J[tQJ|0">
+<field name="VAR" id="o,feuSnsJa`C5!qKMaJ}">holdTimer</field>
+</block>
+</value>
+</block>
+</value>
+<value name="B">
+<block type="variables_get" id="nAE*KNhppmg`*w7iA3:(">
+<field name="VAR" id="`;]!l*zy.@!G}Lk#XQX3">holdTime</field>
+</block>
+</value>
+</block>
+</value>
+</block>
+</value>
+<statement name="DO">
+<block type="comment" id="CLnfC^=~!4;xw(vS|Yrl">
+<field name="COMMENT">Determine required steering to keep on heading.</field>
+<next>
+<block type="variables_set" id="*|t*ZaxYBbDo`Tj:Bz=h">
+<field name="VAR" id="Z$*B;z;Qz^SHi#:a3hOl">turnSpeed</field>
+<value name="VALUE">
+<block type="procedures_callreturn" id="l{j0#Puk.r#R1-9r`SR(">
+<mutation name="getSteeringCorrection">
+<arg name="desiredHeading"/>
+<arg name="proportionalGain"/>
+</mutation>
+<value name="ARG0">
+<block type="variables_get" id="1nZ!E[HRW6a`HTfq,.]f">
+<field name="VAR" id="^TypnSY@!%hth6-7m}XN">heading</field>
+</block>
+</value>
+<value name="ARG1">
+<block type="variables_get" id="9yJv[.qBghD7xF-6FZ3m">
+<field name="VAR" id="zqQB+{wXcMz@l0;dK2Z!">P_TURN_GAIN</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="comment" id="HQsNB$cOh;em[WT,Cxzs">
+<field name="COMMENT">Clip the speed to the maximum permitted value.</field>
+<next>
+<block type="variables_set" id="JIrQu/u0]~Ur~!JX?4Y9">
+<field name="VAR" id="Z$*B;z;Qz^SHi#:a3hOl">turnSpeed</field>
+<value name="VALUE">
+<block type="range_clip" id="m[S{_z`xO/|@]KJ[IC{[">
+<value name="NUMBER">
+<block type="variables_get" id="B8P*[6x?]=h6xMgA+wu?">
+<field name="VAR" id="Z$*B;z;Qz^SHi#:a3hOl">turnSpeed</field>
+</block>
+</value>
+<value name="MIN">
+<shadow type="math_number" id="xk-gNuy.er1%xI?R6mQf">
+<field name="NUM">-1</field>
+</shadow>
+<block type="math_single" id="8z}fqf(OF@l.G9MeBu6,">
+<field name="OP">NEG</field>
+<value name="NUM">
+<shadow type="math_number" id="$RfX1$wMb,L%HRy.pq*y">
+<field name="NUM">9</field>
+</shadow>
+<block type="variables_get" id="$iRiaS*O7qwP]UD_wsLE">
+<field name="VAR" id="Usn~`$[6-|gCTq1q./sr">maxTurnSpeed</field>
+</block>
+</value>
+</block>
+</value>
+<value name="MAX">
+<shadow type="math_number" id="CS!/4ALI+ovTUDdSFF,X">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="$lm0pVSQjzo9kuJ~-NI@">
+<field name="VAR" id="Usn~`$[6-|gCTq1q./sr">maxTurnSpeed</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="comment" id="=Glzb#5%{%p:Lu`:nXlf">
+<field name="COMMENT">Pivot in place by applying the turning correction.</field>
+<next>
+<block type="procedures_callnoreturn" id="C2x0mM+CN0xl4YYjwZ(#">
+<mutation name="moveRobot">
+<arg name="drive"/>
+<arg name="turn"/>
+</mutation>
+<value name="ARG0">
+<block type="math_number" id="zBB%Y{knE;e_E:eh].L+">
+<field name="NUM">0</field>
+</block>
+</value>
+<value name="ARG1">
+<block type="variables_get" id="qB2H^KX$q_17$ZYlE(1c">
+<field name="VAR" id="Z$*B;z;Qz^SHi#:a3hOl">turnSpeed</field>
+</block>
+</value>
+<next>
+<block type="comment" id="P$LcMddi3S|}AlR.N`8/">
+<field name="COMMENT">Display drive status for the driver.</field>
+<next>
+<block type="procedures_callnoreturn" id="jLnAA{LY3;*IzVAh,t!9">
+<mutation name="sendTelemetry">
+<arg name="straight"/>
+</mutation>
+<value name="ARG0">
+<block type="logic_boolean" id="pZ4:QWvzF;;y~d?a:97g">
+<field name="BOOL">FALSE</field>
+</block>
+</value>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+<next>
+<block type="comment" id="#cp:vf]@npEIvfM$*.0L">
+<field name="COMMENT">Stop all motion.</field>
+<next>
+<block type="procedures_callnoreturn" id="RKtNKRD/2Z/D6/|:Kxjx">
+<mutation name="moveRobot">
+<arg name="drive"/>
+<arg name="turn"/>
+</mutation>
+<value name="ARG0">
+<block type="math_number" id="$l!X[2^_Ey}Dc2n8s$np">
+<field name="NUM">0</field>
+</block>
+</value>
+<value name="ARG1">
+<block type="math_number" id="xUJ-F#g(Bx-HP}Lu]G05">
+<field name="NUM">0</field>
+</block>
+</value>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+<block type="procedures_defreturn" id="@wTG,yyRA;8YK+*v;np:" x="25" y="8056">
+<mutation>
+<arg name="desiredHeading" varid="wu^`.(w2$+w~=uV?c~jy"/>
+<arg name="proportionalGain" varid="TP;A^pzFEw$BB6B-30)y"/>
+</mutation>
+<field name="NAME">getSteeringCorrection</field>
+<comment pinned="true" h="43" w="559">Use a Proportional Controller to determine how much steering correction is required.</comment>
+<data>{"commentPositionLeft":-47,"commentPositionTop":-70}</data>
+<statement name="STACK">
+<block type="comment" id="*3J]]y~=@!fX57j8p?t6">
+<field name="COMMENT">Save targetHeading for telemetry.</field>
+<next>
+<block type="variables_set" id="/Ccu`ag*AUGN:I=M%?{i">
+<field name="VAR" id="Vw4y{;dYIC5[[)sF9#+d">targetHeading</field>
+<value name="VALUE">
+<block type="variables_get" id="$s5UYc)8wYt_UR^KUv?5">
+<field name="VAR" id="wu^`.(w2$+w~=uV?c~jy">desiredHeading</field>
+</block>
+</value>
+<next>
+<block type="comment" id="v@#k;f@=33_z{fG(49)T">
+<field name="COMMENT">Determine the heading current error.</field>
+<next>
+<block type="variables_set" id="{=|9!Jrj;{Ez6sNGp.2%">
+<field name="VAR" id="{[J[lP8N_jADYO:Y?7|*">headingError</field>
+<value name="VALUE">
+<block type="math_arithmetic" id="96A!^%R8qEI`)?b=TxqF">
+<field name="OP">MINUS</field>
+<value name="A">
+<shadow type="math_number" id="@+o9Lk^_:(4YzQl1~_dO">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="K%Kd;`!L[$hMNqxtRu)-">
+<field name="VAR" id="Vw4y{;dYIC5[[)sF9#+d">targetHeading</field>
+</block>
+</value>
+<value name="B">
+<shadow type="math_number" id="^~,.h%1L.?V)52q##0;j">
+<field name="NUM">1</field>
+</shadow>
+<block type="procedures_callreturn" id="v~)2ey2QoDe6)%sf,,lZ">
+<mutation name="getHeading"/>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="comment" id="Ygqh*4nG1|iNz{,*7ek*">
+<field name="COMMENT">Normalize the error to be within +/- 180 degrees</field>
+<next>
+<block type="controls_whileUntil" id="@%8VU~hAb2~QjytMmezf">
+<field name="MODE">WHILE</field>
+<value name="BOOL">
+<block type="logic_compare" id="5bleC:yYS[Ns4_F;HK@r">
+<field name="OP">GT</field>
+<value name="A">
+<block type="variables_get" id="Po``idi;ub6HoE^P~@hk">
+<field name="VAR" id="{[J[lP8N_jADYO:Y?7|*">headingError</field>
+</block>
+</value>
+<value name="B">
+<block type="math_number" id="l7/yHc8P;6zjWiIKo7ba">
+<field name="NUM">180</field>
+</block>
+</value>
+</block>
+</value>
+<statement name="DO">
+<block type="variables_set" id="~aK#*IWRw%J];LCTOZ=6">
+<field name="VAR" id="{[J[lP8N_jADYO:Y?7|*">headingError</field>
+<value name="VALUE">
+<block type="math_arithmetic" id="dZ1T]FXP6xb5MiNROzdf">
+<field name="OP">MINUS</field>
+<value name="A">
+<shadow type="math_number" id="5KMoNPJb_w-_?}KTr9Pw">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="F3J~%:=V);1G~;ya0?^y">
+<field name="VAR" id="{[J[lP8N_jADYO:Y?7|*">headingError</field>
+</block>
+</value>
+<value name="B">
+<shadow type="math_number" id="#yM8*hlF2#SRgm1T,TbB">
+<field name="NUM">360</field>
+</shadow>
+</value>
+</block>
+</value>
+</block>
+</statement>
+<next>
+<block type="controls_whileUntil" id="dsa[g,*N[d,fCu1{]?LC">
+<field name="MODE">WHILE</field>
+<value name="BOOL">
+<block type="logic_compare" id="jWjVLOS1F}Kgv-had*0A">
+<field name="OP">LTE</field>
+<value name="A">
+<block type="variables_get" id="NXnG(ZGcG=;}F3H1nRA)">
+<field name="VAR" id="{[J[lP8N_jADYO:Y?7|*">headingError</field>
+</block>
+</value>
+<value name="B">
+<block type="math_number" id="01;3Ll%g3:5A5V~YY%eo">
+<field name="NUM">-180</field>
+</block>
+</value>
+</block>
+</value>
+<statement name="DO">
+<block type="variables_set" id="{jI#y8a2hX7{^Mfo@cE~">
+<field name="VAR" id="{[J[lP8N_jADYO:Y?7|*">headingError</field>
+<value name="VALUE">
+<block type="math_arithmetic" id="H#h,@^~:cpMXhJ!qGFWu">
+<field name="OP">ADD</field>
+<value name="A">
+<shadow type="math_number" id="o#_QEkaV[B~(*]Dq%c%F">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="IdfboZhn`||WUWeftPiD">
+<field name="VAR" id="{[J[lP8N_jADYO:Y?7|*">headingError</field>
+</block>
+</value>
+<value name="B">
+<shadow type="math_number" id="39!hx(vbws:3)nk0egT3">
+<field name="NUM">360</field>
+</shadow>
+</value>
+</block>
+</value>
+</block>
+</statement>
+<next>
+<block type="comment" id="50@?Q,~T.2YlI5bJuKPD">
+<field name="COMMENT">Multiply the error by the gain to determine the required steering correction. Limit the result to +/- 1.0.</field>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+<value name="RETURN">
+<block type="range_clip" id="|yFSc39d]S6sP/9,xj:,">
+<value name="NUMBER">
+<block type="math_arithmetic" id="V~A_Ph(QHfG[G$n_uQq#">
+<field name="OP">MULTIPLY</field>
+<value name="A">
+<shadow type="math_number" id="$NGBnfpIRewPs!*_W+B?">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="))=R~q-EFalfSEDRJoZR">
+<field name="VAR" id="{[J[lP8N_jADYO:Y?7|*">headingError</field>
+</block>
+</value>
+<value name="B">
+<shadow type="math_number" id="i.Tit0K:Y4TDB}u7Rl3l">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="1Fug(NOtR1=e~nl*/T7p">
+<field name="VAR" id="TP;A^pzFEw$BB6B-30)y">proportionalGain</field>
+</block>
+</value>
+</block>
+</value>
+<value name="MIN">
+<shadow type="math_number" id="YvLm^2?!j.[K2Oxv3%Q-">
+<field name="NUM">-1</field>
+</shadow>
+</value>
+<value name="MAX">
+<shadow type="math_number" id="E9E!f6Bh,v$,OZpc/#v`">
+<field name="NUM">1</field>
+</shadow>
+</value>
+</block>
+</value>
+</block>
+<block type="procedures_defnoreturn" id="=I`ESn(QX^NA:#,BEy%r" x="25" y="8660">
+<mutation>
+<arg name="drive" varid="zJ$zS49ZrF0`aR.jO3l{"/>
+<arg name="turn" varid="e8{!=^6y}`eqR$fvQ|Y@"/>
+</mutation>
+<field name="NAME">moveRobot</field>
+<comment pinned="true" h="64" w="604">Takes separate drive (fwd/rev) and turn (right/left) requests, combines them, and applies the appropriate speed commands to the left and right wheel motors.</comment>
+<data>{"commentPositionLeft":-48,"commentPositionTop":-93}</data>
+<statement name="STACK">
+<block type="comment" id="fT$v*=Ep7]wD{Kt76g6n">
+<field name="COMMENT">Save driveSpeed and turnSpeed for telemetry.</field>
+<next>
+<block type="variables_set" id="WG2sMeEU@LuJ*/%Ucl~M">
+<field name="VAR" id="EDNV@nO|d?wpO)(L;Y#,">driveSpeed</field>
+<value name="VALUE">
+<block type="variables_get" id="F9mO06fT^]rvS*j[6WkU">
+<field name="VAR" id="zJ$zS49ZrF0`aR.jO3l{">drive</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id="D~1pkcL7t1[6vqrEqZP!">
+<field name="VAR" id="Z$*B;z;Qz^SHi#:a3hOl">turnSpeed</field>
+<value name="VALUE">
+<block type="variables_get" id="m%lKCc:bWJUM~msV;DcX">
+<field name="VAR" id="e8{!=^6y}`eqR$fvQ|Y@">turn</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id="3W}F_PR,NjJ@BY@$KO3l">
+<field name="VAR" id="-6=Vz.4i/q@Agh5tFkFv">leftSpeed</field>
+<value name="VALUE">
+<block type="math_arithmetic" id="O/nSeB+UmrZeyr7;g)dn">
+<field name="OP">MINUS</field>
+<value name="A">
+<shadow type="math_number" id="9|Kj9pU:f,^O=KhIFSU8">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="Usw,}zLYlw.*pBnUom20">
+<field name="VAR" id="zJ$zS49ZrF0`aR.jO3l{">drive</field>
+</block>
+</value>
+<value name="B">
+<shadow type="math_number" id="vC,GD?DpPsP3v)@HD(c/">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="+,N:s/+)oLQwQuOC(Lx]">
+<field name="VAR" id="e8{!=^6y}`eqR$fvQ|Y@">turn</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="variables_set" id=")=8)SNbhlrih,#^T3(N|">
+<field name="VAR" id="wYUl[rMja/lXBu@5TP6B">rightSpeed</field>
+<value name="VALUE">
+<block type="math_arithmetic" id="KKQyt*m*ZBq$?`51y$7$">
+<field name="OP">ADD</field>
+<value name="A">
+<shadow type="math_number" id="(l,dPkdi],hIK4.XMW{2">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="TPxC}GtJL=*blilwY}j!">
+<field name="VAR" id="zJ$zS49ZrF0`aR.jO3l{">drive</field>
+</block>
+</value>
+<value name="B">
+<shadow type="math_number" id="+uzi%oNr_T2Jr0-.78T!">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="5oZ6fGQbiKXHqUmVzqLm">
+<field name="VAR" id="e8{!=^6y}`eqR$fvQ|Y@">turn</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="comment" id="{|N9s8V7jg8z#qzlTojY">
+<field name="COMMENT">Scale speeds down if either one exceeds +/- 1.0.</field>
+<next>
+<block type="variables_set" id="t6v}?etf*lP?1x6mSBqj">
+<field name="VAR" id="ZV(Mwy{8a)(Q6GZx}yR0">max</field>
+<value name="VALUE">
+<block type="misc_minmax" id="s|!pQdsa;7]Z17OB(/O?">
+<field name="FUNC">max</field>
+<value name="A">
+<block type="math_single" id="1M:v13;%FjF(-Ne8$9b4">
+<field name="OP">ABS</field>
+<value name="NUM">
+<shadow type="math_number" id="~)js#_9j|14T`HO@SZKj">
+<field name="NUM">9</field>
+</shadow>
+<block type="variables_get" id=",bS^JVYeb#;%0ORP!vq_">
+<field name="VAR" id="-6=Vz.4i/q@Agh5tFkFv">leftSpeed</field>
+</block>
+</value>
+</block>
+</value>
+<value name="B">
+<block type="math_single" id="5.?h;1ba#BQ*c-M=?DV}">
+<field name="OP">ABS</field>
+<value name="NUM">
+<shadow type="math_number" id="2)umF9h$]P%*kx#wvHV|">
+<field name="NUM">9</field>
+</shadow>
+<block type="variables_get" id="~p4u`X(XSk4C$z6i}FaC">
+<field name="VAR" id="wYUl[rMja/lXBu@5TP6B">rightSpeed</field>
+</block>
+</value>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="controls_if" id="wz~Z{:47{u_#I078RFd/">
+<value name="IF0">
+<block type="logic_compare" id=".4d+fYA|V{_-Fk-EmfwA">
+<field name="OP">GT</field>
+<value name="A">
+<block type="variables_get" id="b[xVS!8;QsQvwgoF$-@6">
+<field name="VAR" id="ZV(Mwy{8a)(Q6GZx}yR0">max</field>
+</block>
+</value>
+<value name="B">
+<block type="math_number" id="NocOx@^A{O}v{};]@vto">
+<field name="NUM">1</field>
+</block>
+</value>
+</block>
+</value>
+<statement name="DO0">
+<block type="variables_set" id="$`(@69{nH4iWsxJj2_f]">
+<field name="VAR" id="-6=Vz.4i/q@Agh5tFkFv">leftSpeed</field>
+<value name="VALUE">
+<block type="math_arithmetic" id="$1Hv6.hi-*uW6+:w.spW">
+<field name="OP">DIVIDE</field>
+<value name="A">
+<shadow type="math_number" id="DDby+$oPQ!B]kvYnL3zu">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="lYY/g=W,6N){ZlF[cTDU">
+<field name="VAR" id="-6=Vz.4i/q@Agh5tFkFv">leftSpeed</field>
+</block>
+</value>
+<value name="B">
+<shadow type="math_number" id="y-U?)5p,^ClN7e7Vht$!">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="dMRkmYMI6ETx0,YV0]#@">
+<field name="VAR" id="ZV(Mwy{8a)(Q6GZx}yR0">max</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="variables_set" id="2CRm({?u?u.X^eR=HF57">
+<field name="VAR" id="wYUl[rMja/lXBu@5TP6B">rightSpeed</field>
+<value name="VALUE">
+<block type="math_arithmetic" id="@uVykLh-gr^`)K6dh0e(">
+<field name="OP">DIVIDE</field>
+<value name="A">
+<shadow type="math_number">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="ZOP%u{Yvr;C5Tb=ch[mN">
+<field name="VAR" id="wYUl[rMja/lXBu@5TP6B">rightSpeed</field>
+</block>
+</value>
+<value name="B">
+<shadow type="math_number">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="!]wN_EkGM91inK.Mzgck">
+<field name="VAR" id="ZV(Mwy{8a)(Q6GZx}yR0">max</field>
+</block>
+</value>
+</block>
+</value>
+</block>
+</next>
+</block>
+</statement>
+<next>
+<block type="dcMotor_setDualProperty_Number" id="36C+0e-D-ED=[PHfxx@~">
+<field name="PROP">Power</field>
+<field name="IDENTIFIER1">left_driveAsDcMotor</field>
+<field name="IDENTIFIER2">right_driveAsDcMotor</field>
+<data>{"IDENTIFIER1":"left_drive","IDENTIFIER2":"right_drive"}</data>
+<value name="VALUE1">
+<shadow type="math_number" id="5bvU^u$PJOMcsXBJEJ-:">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="Ft0u^t#}Q%u5@pQOXAU,">
+<field name="VAR" id="-6=Vz.4i/q@Agh5tFkFv">leftSpeed</field>
+</block>
+</value>
+<value name="VALUE2">
+<shadow type="math_number" id="t8au#`Z^r6_s2X|]r{G_">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="21?7%}4%FcH,(;E8X+Gr">
+<field name="VAR" id="wYUl[rMja/lXBu@5TP6B">rightSpeed</field>
+</block>
+</value>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+<block type="procedures_defnoreturn" id="SK_#_6C!Uc`5r`E$jjeK" x="25" y="9255">
+<mutation>
+<arg name="straight" varid="!~:X9QjH%o+[/(MDZs.7"/>
+</mutation>
+<field name="NAME">sendTelemetry</field>
+<comment pinned="true" h="44" w="352">Display the various control parameters while driving.</comment>
+<data>{"commentPositionLeft":-46,"commentPositionTop":-73}</data>
+<statement name="STACK">
+<block type="controls_if" id="-0DF,;nqG9iPjbH$%uvI">
+<mutation else="1"/>
+<value name="IF0">
+<block type="variables_get" id="ior:yV3,kCmC4=xvoj%f">
+<field name="VAR" id="!~:X9QjH%o+[/(MDZs.7">straight</field>
+</block>
+</value>
+<statement name="DO0">
+<block type="telemetry_addTextData_All" id="rQ2D6{3XpjyP71bA#yD,">
+<value name="KEY">
+<shadow type="text" id="tB]Eu-6k3{,IDZLQB.gL">
+<field name="TEXT">Motion</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id="OC/@5{qL+ndMt}@|~JK[">
+<field name="TEXT">Drive Straight</field>
+</shadow>
+</value>
+<next>
+<block type="telemetry_addTextData_All" id="3IFb5YOg_p~/SBPv;g%3">
+<value name="KEY">
+<shadow type="text" id="?L|2kA85lTBQ5G19Ua@~">
+<field name="TEXT">Target Pos L:R</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id="`1lV*%3zYuZ**_+@Dg35">
+<field name="TEXT">text</field>
+</shadow>
+<block type="text_join" id="z{NSab,#~y?J+8kfcnZH">
+<mutation items="3"/>
+<value name="ADD0">
+<block type="misc_formatNumber_withWidth" id=")ebG3D_@FRjp]#K6XhnU">
+<value name="NUMBER">
+<shadow type="math_number" id="oJ${tQHu:fPlNs46M|m$">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="variables_get" id="hjHk|+Rx0#{QIE0^zd+H">
+<field name="VAR" id="h/N-;@mY2NnGU|`(J+T!">leftTarget</field>
+</block>
+</value>
+<value name="WIDTH">
+<shadow type="math_number" id="H/%i3F6{cfzgcpNFWqWE">
+<field name="NUM">7</field>
+</shadow>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="qsB(QB=a:6pcRYpbR#V_">
+<field name="NUM">0</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="ADD1">
+<block type="text" id="CVp`dFG55KMnT7wW-_09">
+<field name="TEXT">:</field>
+</block>
+</value>
+<value name="ADD2">
+<block type="misc_formatNumber_withWidth" id="Qux,7ZMh33TW0rp|qNZq">
+<value name="NUMBER">
+<shadow type="math_number" id=":%9Zft8X8(:@a`J;9:v;">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="variables_get" id="omn?8IuS7,`T6A%#Q}xb">
+<field name="VAR" id="7BZfEs/gy|p$f1NP9n+U">rightTarget</field>
+</block>
+</value>
+<value name="WIDTH">
+<shadow type="math_number" id="Sq{mtIG#?|#w{9XV`rJ#">
+<field name="NUM">7</field>
+</shadow>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="|s=Oo2TM?ph`o`IB](BX">
+<field name="NUM">0</field>
+</shadow>
+</value>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_addTextData_All" id="5Z5gTaMDJ:mWz^p/Az_?">
+<value name="KEY">
+<shadow type="text" id="BOOI4gf!TtedYeCunut0">
+<field name="TEXT">Actual Pos L:R</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id=".Ju|]N,xO]T5MuzZJoL(">
+<field name="TEXT">text</field>
+</shadow>
+<block type="text_join" id="H=w2Q4ol/y%4RCOCJ2[]">
+<mutation items="3"/>
+<value name="ADD0">
+<block type="misc_formatNumber_withWidth" id="]hXv@F-;AvhH.WY5FwU+">
+<value name="NUMBER">
+<shadow type="math_number" id="RE4B=9G5VTdunj:;gja,">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="dcMotor_getProperty_Number" id="./rd3!OXAhgm$-f__W0E">
+<field name="IDENTIFIER">left_driveAsDcMotor</field>
+<field name="PROP">CurrentPosition</field>
+<data>{"IDENTIFIER":"left_drive"}</data>
+</block>
+</value>
+<value name="WIDTH">
+<shadow type="math_number" id=";{|=S;]~L~XgcFNmSao+">
+<field name="NUM">7</field>
+</shadow>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="]_is):1CUH{%R85SV*=x">
+<field name="NUM">0</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="ADD1">
+<block type="text" id="7Ax]*76X,)Hw}A{sTen9">
+<field name="TEXT">:</field>
+</block>
+</value>
+<value name="ADD2">
+<block type="misc_formatNumber_withWidth" id="?F+]o:$:}9?p3@ORFAS@">
+<value name="NUMBER">
+<shadow type="math_number" id="Un)3c[fEM*;^IT%t-Ak{">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="dcMotor_getProperty_Number" id="zpH{x~]_cY!N1Fk^Gw.Y">
+<field name="IDENTIFIER">right_driveAsDcMotor</field>
+<field name="PROP">CurrentPosition</field>
+<data>{"IDENTIFIER":"right_drive"}</data>
+</block>
+</value>
+<value name="WIDTH">
+<shadow type="math_number" id=",BpW$),6Q.EC,VzZinoY">
+<field name="NUM">7</field>
+</shadow>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="?`VogwxJ4LRp}4La[;}L">
+<field name="NUM">0</field>
+</shadow>
+</value>
+</block>
+</value>
+</block>
+</value>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+<statement name="ELSE">
+<block type="telemetry_addTextData_All" id="0Ro8dmOuIzPU,pRaT@2D">
+<value name="KEY">
+<shadow type="text" id="ehQ84n:dG6i@{wqz-S_B">
+<field name="TEXT">Motion</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id="}v+;vtp~fafO4+B^a3aN">
+<field name="TEXT">Turning</field>
+</shadow>
+</value>
+</block>
+</statement>
+<next>
+<block type="telemetry_addTextData_All" id="2bVO@t{/$pfC1u$d]K#R">
+<value name="KEY">
+<shadow type="text" id="q}+`1NqKS^,JA^9*}A69">
+<field name="TEXT">Heading- Target : Current</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id="U1|~{4k}3Uwxk;@,@Q[Y">
+<field name="TEXT">text</field>
+</shadow>
+<block type="text_join" id="$vT$nptNOYUy=$X3s25y">
+<mutation items="3"/>
+<value name="ADD0">
+<block type="misc_formatNumber_withWidth" id="+VBZ!u+o4.V0RxY=D`M+">
+<value name="NUMBER">
+<shadow type="math_number" id="GyN3OxldT?IkqpJkqwg2">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="variables_get" id=",!`i]Ia++asDU$Bq$u~7">
+<field name="VAR" id="Vw4y{;dYIC5[[)sF9#+d">targetHeading</field>
+</block>
+</value>
+<value name="WIDTH">
+<shadow type="math_number" id="p~TK$_^I8T)uJ+$PjQfT">
+<field name="NUM">5</field>
+</shadow>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="N7KJV-U*W~arW2Hpp+_$">
+<field name="NUM">2</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="ADD1">
+<block type="text" id="PEPJUvqXsqR-uj5K/(OV">
+<field name="TEXT"> : </field>
+</block>
+</value>
+<value name="ADD2">
+<block type="misc_formatNumber_withWidth" id=":gd#ZxA%=MeiAu[G8==4">
+<value name="NUMBER">
+<shadow type="math_number" id=".cA:w_U60M9NfYUFyhK_">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="procedures_callreturn" id="i3.,A2d?W:C7r{QW=gRF">
+<mutation name="getHeading"/>
+</block>
+</value>
+<value name="WIDTH">
+<shadow type="math_number" id="gF$880G/e0~E?rxxJ#+r">
+<field name="NUM">5</field>
+</shadow>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="!z,2,,lQje!egV2KM8m{">
+<field name="NUM">0</field>
+</shadow>
+</value>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_addTextData_All" id="gs2I!0DL4H(9X:tiU%+Z">
+<value name="KEY">
+<shadow type="text" id="!M+Z,0q%g==-t:I^cnnW">
+<field name="TEXT">Error  : Steer Pwr</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id="yl!?qiAjzycftXM,$I6}">
+<field name="TEXT">text</field>
+</shadow>
+<block type="text_join" id="^QG4:u-Af@Ys~i6?z)BW">
+<mutation items="3"/>
+<value name="ADD0">
+<block type="misc_formatNumber_withWidth" id="$h}[G[R,~BV;8.{%%_|,">
+<value name="NUMBER">
+<shadow type="math_number" id="Qhg[XQl?hY+QA$`h?L4G">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="variables_get" id="vsw]=|[*Rq_1=smS+}oZ">
+<field name="VAR" id="{[J[lP8N_jADYO:Y?7|*">headingError</field>
+</block>
+</value>
+<value name="WIDTH">
+<shadow type="math_number" id="?sAZ7.k0`]^tE!=xWbR:">
+<field name="NUM">5</field>
+</shadow>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="!apC.3bYQDY/bELDrw.t">
+<field name="NUM">1</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="ADD1">
+<block type="text" id="AGiLVJ+uHl{i}aS))9Vv">
+<field name="TEXT"> : </field>
+</block>
+</value>
+<value name="ADD2">
+<block type="misc_formatNumber_withWidth" id="a~#*6hJ`==m?feD$*0WV">
+<value name="NUMBER">
+<shadow type="math_number" id="Mc7v|nwc%$F%+pxpVs/Q">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="variables_get" id="^lCc~~tl5jVu87@UK~:;">
+<field name="VAR" id="Z$*B;z;Qz^SHi#:a3hOl">turnSpeed</field>
+</block>
+</value>
+<value name="WIDTH">
+<shadow type="math_number" id="5/!QhF*akQ}/KTQxKZE*">
+<field name="NUM">5</field>
+</shadow>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="ge5B9{G+u,9a[q;{Bi|N">
+<field name="NUM">1</field>
+</shadow>
+</value>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_addTextData_All" id="oejfK~=!rX*!E73PQA{(">
+<value name="KEY">
+<shadow type="text" id="}(9s45y//;eqvXJS-wJu">
+<field name="TEXT">Wheel Speeds L : R</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id="Qts8OpYdJc;]?0,oDVXu">
+<field name="TEXT">text</field>
+</shadow>
+<block type="text_join" id="#Yu2U[f@Kbvw4~!)!c64">
+<mutation items="3"/>
+<value name="ADD0">
+<block type="misc_formatNumber_withWidth" id="1wSZEZS#a{X*vUdGX{Rp">
+<value name="NUMBER">
+<shadow type="math_number" id="#$bN-*g#!DQkuP6eKIss">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="variables_get" id="%Ig,Tamb1IGW1V)l=xcR">
+<field name="VAR" id="-6=Vz.4i/q@Agh5tFkFv">leftSpeed</field>
+</block>
+</value>
+<value name="WIDTH">
+<shadow type="math_number" id="Km/F6sogs^Ie^256T*J}">
+<field name="NUM">5</field>
+</shadow>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="Wgf(f,`V3@VYdIE42oO/">
+<field name="NUM">2</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="ADD1">
+<block type="text" id="h-duH.Z~n^s-6y_Nc|@X">
+<field name="TEXT"> : </field>
+</block>
+</value>
+<value name="ADD2">
+<block type="misc_formatNumber_withWidth" id="+a8MDe}yn[cyBji$_39R">
+<value name="NUMBER">
+<shadow type="math_number" id="WJQn*@;rwy*DY!VW#GXB">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="variables_get" id="J=_XP7{5-7Rt,Pa4Jj^I">
+<field name="VAR" id="wYUl[rMja/lXBu@5TP6B">rightSpeed</field>
+</block>
+</value>
+<value name="WIDTH">
+<shadow type="math_number" id="/0)d8UP7tgu[/S2OjtX^">
+<field name="NUM">5</field>
+</shadow>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="qn=3-/6uTJ/5e98]3+Ka">
+<field name="NUM">2</field>
+</shadow>
+</value>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_update" id="Ab5e6cCqjCE-T|8vJnRQ"/>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+<block type="procedures_defreturn" id="x/PsBI+uOmA60Xiv2)3l" x="25" y="11042">
+<field name="NAME">getHeading</field>
+<comment pinned="true" h="45" w="404">Read the robot heading directly from the IMU (in degrees).</comment>
+<data>{"commentPositionLeft":-48,"commentPositionTop":-74}</data>
+<statement name="STACK">
+<block type="variables_set" id="CJkj3n:hi4Rkibai9Kg)">
+<field name="VAR" id="G|;6-!=a4h|rA!yV$d-!">orientation</field>
+<value name="VALUE">
+<block type="imu_getProperty_YawPitchRollAngles" id="YxZe}XerFPtO/LeF2Cu6">
+<field name="IDENTIFIER">imuAsIMU</field>
+<field name="PROP">RobotYawPitchRollAngles</field>
+<data>{"IDENTIFIER":"imu"}</data>
+</block>
+</value>
+</block>
+</statement>
+<value name="RETURN">
+<block type="yawPitchRollAngles_getPropertyWithAngleUnit_Number" id="K{~pyKV90raTp#W@)-c#">
+<field name="PROP">Yaw</field>
+<value name="YAW_PITCH_ROLL_ANGLES">
+<block type="variables_get" id="aa5[U^A,`PQf-_TlcNLr">
+<field name="VAR" id="G|;6-!=a4h|rA!yV$d-!">orientation</field>
+</block>
+</value>
+<value name="ANGLE_UNIT">
+<shadow type="navigation_typedEnum_angleUnit" id="|{28VBna!Cu7V7[lPMMN">
+<field name="ANGLE_UNIT">DEGREES</field>
+</shadow>
+</value>
+</block>
+</value>
+</block>
+</xml>
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<Extra>
+<OpModeMeta flavor="AUTONOMOUS" group="" autoTransition="" />
+<Enabled value="true" />
+</Extra>

@@ -32,6 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package com.qualcomm.hardware.lynx;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.BNO055IMUNew;
 import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynchSimple;
@@ -50,7 +51,7 @@ public class LynxEmbeddedBNO055IMUNew extends BNO055IMUNew {
      * This constructor is called internally by the FTC SDK.
      */
     public LynxEmbeddedBNO055IMUNew(I2cDeviceSynchSimple deviceClient, boolean deviceClientIsOwned) {
-        super(deviceClient, deviceClientIsOwned);
+        super(deviceClient, deviceClientIsOwned, BNO055IMU.I2CADDR_DEFAULT);
     }
 
     @Override public String getDeviceName() {

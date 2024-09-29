@@ -32,9 +32,12 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package com.qualcomm.robotcore.hardware;
 
+import androidx.annotation.NonNull;
 import org.firstinspires.ftc.robotcore.internal.system.Misc;
 
 import androidx.annotation.Nullable;
+
+import static com.qualcomm.robotcore.hardware.configuration.LynxConstants.EXPANSION_HUB_PRODUCT_NUMBER;
 
 /**
  * {@link LynxModuleMeta} has simple lynx module meta information for transmission from RC to DS
@@ -42,9 +45,12 @@ import androidx.annotation.Nullable;
 @SuppressWarnings("WeakerAccess")
 public class LynxModuleMeta
     {
-    protected int moduleAddress;
-    protected boolean isParent;
-    @Nullable protected volatile LynxModuleImuType imuType;
+    protected final int moduleAddress;
+    protected final boolean isParent;
+
+    // Methods that access these must be synchronized
+    @Nullable protected LynxModuleImuType imuType;
+    @Nullable protected Integer revProductNumber;
 
     public LynxModuleMeta(int moduleAddress, boolean isParent)
         {
@@ -58,6 +64,7 @@ public class LynxModuleMeta
         this.moduleAddress = him.getModuleAddress();
         this.isParent = him.isParent();
         this.imuType = him.imuType;
+        this.revProductNumber = him.revProductNumber;
         }
 
     public int getModuleAddress()
@@ -70,18 +77,37 @@ public class LynxModuleMeta
         return isParent;
         }
 
-    @Nullable public LynxModuleImuType imuType()
+    @NonNull public synchronized LynxModuleImuType imuType()
         {
+        if (imuType == null)
+            {
+            imuType = LynxModuleImuType.UNKNOWN;
+            }
         return imuType;
         }
 
-    public void setImuType(LynxModuleImuType imuType)
+    public synchronized void setImuType(@NonNull LynxModuleImuType imuType)
         {
         this.imuType = imuType;
         }
 
-    @Override public String toString()
+    public synchronized int revProductNumber()
         {
-        return Misc.formatForUser("LynxModuleMeta(#%d,%b,ImuType.%s)", moduleAddress, isParent, imuType);
+        if (revProductNumber == null)
+            {
+            // Most likely, this code is running on a DS connected to an RC older than 10.0
+            // We have to just assume the device in question is an Expansion Hub.
+            revProductNumber = EXPANSION_HUB_PRODUCT_NUMBER;
+            }
+        return revProductNumber;
+        }
+
+    public synchronized void setRevProductNumber(int productNumber) {
+        revProductNumber = productNumber;
+    }
+
+    @Override public synchronized String toString()
+        {
+        return Misc.formatForUser("LynxModuleMeta(#%d,%b,ImuType.%s)", moduleAddress, isParent, imuType());
         }
     }

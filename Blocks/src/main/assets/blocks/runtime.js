@@ -24,6 +24,8 @@
 // blocksOpMode
 // telemetry
 
+// IMPORTANT!!! All identifiers in this file must be added as reserved words for the JavaScript runtime.
+// This is done in the function addReservedWordsForJavaScriptRuntime in FtcBlocks_common.js.
 
 var currentBlockLabel = '';
 
@@ -197,3 +199,19 @@ function nullOrJson(s) {
 function evalIfTruthy(o, code, otherwise) {
   return o ? eval(code) : otherwise;
 }
+
+var objectCache = new Map();
+
+function getObjectViaJson(miscIdentifierForJavaScript, oJava) {
+  var oJavaScript = objectCache.get(oJava);
+  if (oJavaScript) {
+    return oJavaScript;
+  }
+  var json = miscIdentifierForJavaScript.objectToJson(oJava);
+  oJavaScript = JSON.parse(json);
+  objectCache.set(oJava, oJavaScript);
+  return oJavaScript;
+}
+
+// IMPORTANT!!! All identifiers in this file must be added as reserved words for the JavaScript runtime.
+// This is done in the function addReservedWordsForJavaScriptRuntime in FtcBlocks_common.js.

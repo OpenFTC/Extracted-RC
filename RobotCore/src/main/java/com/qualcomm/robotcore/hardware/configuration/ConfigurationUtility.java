@@ -32,6 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package com.qualcomm.robotcore.hardware.configuration;
 
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -53,13 +54,19 @@ import org.firstinspires.ftc.robotcore.external.function.Supplier;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.robotcore.internal.system.Assert;
 import org.firstinspires.ftc.robotcore.internal.system.Misc;
+import org.firstinspires.ftc.robotcore.internal.ui.UILocation;
+import org.firstinspires.ftc.robotcore.internal.usb.EthernetOverUsbSerialNumber;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+
+import static com.qualcomm.robotcore.hardware.configuration.LynxConstants.EXPANSION_HUB_PRODUCT_NUMBER;
+import static com.qualcomm.robotcore.hardware.configuration.LynxConstants.SERVO_HUB_PRODUCT_NUMBER;
 
 /**
  * {@link ConfigurationUtility} is a utility class containing methods for construction and
@@ -167,8 +174,13 @@ public class ConfigurationUtility
             {
             case WEBCAM:                                        result = buildNewWebcam(serialNumber); break;
             case LYNX_USB_DEVICE:                               result = buildNewLynxUsbDevice(serialNumber, lynxModuleSupplier); break;
-            }
+        }
         return result;
+        }
+
+    public ControllerConfiguration buildNewEthernetOverUsbControllerConfiguration(SerialNumber serialNumber)
+        {
+            return new EthernetOverUsbConfiguration("Ethernet Device", serialNumber, ((EthernetOverUsbSerialNumber)serialNumber).getIpAddress());
         }
 
     public WebcamConfiguration buildNewWebcam(SerialNumber serialNumber)
@@ -208,11 +220,12 @@ public class ConfigurationUtility
                     }
                 }
 
-            List<LynxModuleConfiguration> modules = new LinkedList<>();
+            List<RhspModuleConfiguration> modules = new LinkedList<>();
             for (LynxModuleMeta meta : metas)
                 {
                 boolean isEmbeddedControlHubModule =
                         isEmbeddedControlHubUsbDevice &&
+                        meta.revProductNumber() == EXPANSION_HUB_PRODUCT_NUMBER &&
                         meta.isParent() &&
                         meta.getModuleAddress() == LynxConstants.CH_EMBEDDED_MODULE_ADDRESS;
 
@@ -247,12 +260,26 @@ public class ConfigurationUtility
                     parentModuleAddress = parentMeta.getModuleAddress();
                     }
 
-                modules.add(buildNewLynxModule(
-                        meta.getModuleAddress(),
-                        parentModuleAddress,
-                        syntheticImuType,
-                        true,
-                        isEmbeddedControlHubModule));
+                if (meta.revProductNumber() == EXPANSION_HUB_PRODUCT_NUMBER)
+                    {
+                    modules.add(buildNewLynxModule(
+                            meta.getModuleAddress(),
+                            parentModuleAddress,
+                            syntheticImuType,
+                            true,
+                            isEmbeddedControlHubModule));
+                    }
+                else if (meta.revProductNumber() == SERVO_HUB_PRODUCT_NUMBER)
+                    {
+                    modules.add(buildNewServoHub(
+                            meta.getModuleAddress(),
+                            parentModuleAddress,
+                            true));
+                    }
+                else
+                    {
+                    AppUtil.getInstance().showToast(UILocation.BOTH, "Found unknown REV Hub device", Toast.LENGTH_LONG);
+                    }
                 }
             DeviceConfiguration.sortByName(modules);
             RobotLog.vv(TAG, "buildNewLynxUsbDevice(%s): %d modules", serialNumber, modules.size());
@@ -322,6 +349,20 @@ public class ConfigurationUtility
         return lynxModuleConfiguration;
         }
 
+    public ServoHubConfiguration buildNewServoHub(
+            int moduleAddress,
+            int parentModuleAddress,
+            boolean isEnabled)
+        {
+        String name;
+
+        name = createUniqueName(BuiltInConfigurationType.SERVO_HUB, R.string.counted_servo_hub_name, moduleAddress);
+
+        ServoHubConfiguration servoHubConfiguration = buildEmptyServoHub(name, moduleAddress, parentModuleAddress, isEnabled);
+
+        return servoHubConfiguration;
+        }
+
     /** The distinguishing feature of the 'embedded' Lynx USB device is that it is labelled as
      * 'system synthetic', in that we make it up, making sure it's there independent of whether
      * it's been configured in the hardware map or not. We do this so that we can ALWAYS access
@@ -329,6 +370,7 @@ public class ConfigurationUtility
     protected LynxUsbDeviceConfiguration buildNewEmbeddedLynxUsbDevice(final @NonNull DeviceManager deviceManager)
         {
         LynxModuleMeta embeddedMeta = new LynxModuleMeta(LynxConstants.CH_EMBEDDED_MODULE_ADDRESS, true);
+        embeddedMeta.setRevProductNumber(EXPANSION_HUB_PRODUCT_NUMBER);
         embeddedMeta.setImuType(EmbeddedControlHubModule.getImuType());
         LynxModuleMetaList embeddedMetaList = new LynxModuleMetaList(
                 LynxConstants.SERIAL_NUMBER_EMBEDDED,
@@ -336,7 +378,7 @@ public class ConfigurationUtility
         LynxUsbDeviceConfiguration controllerConfiguration = buildNewLynxUsbDevice(LynxConstants.SERIAL_NUMBER_EMBEDDED, embeddedMetaList);
         controllerConfiguration.setEnabled(true);
         controllerConfiguration.setSystemSynthetic(true);
-        for (LynxModuleConfiguration moduleConfiguration : controllerConfiguration.getModules())
+        for (RhspModuleConfiguration moduleConfiguration : controllerConfiguration.getModules())
             {
             moduleConfiguration.setSystemSynthetic(true);
             }
@@ -386,4 +428,18 @@ public class ConfigurationUtility
         return moduleConfiguration;
         }
 
+    protected ServoHubConfiguration buildEmptyServoHub(String name, int moduleAddress, int parentModuleAddress, boolean isEnabled)
+        {
+        RobotLog.vv(TAG, "buildEmptyServoHub() mod#=%d...", moduleAddress);
+        //
+        noteExistingName(BuiltInConfigurationType.SERVO_HUB, name);
+        //
+        ServoHubConfiguration moduleConfiguration = new ServoHubConfiguration(name);
+        moduleConfiguration.setModuleAddress(moduleAddress);
+        moduleConfiguration.setParentModuleAddress(parentModuleAddress);
+        moduleConfiguration.setEnabled(isEnabled);
+        //
+        RobotLog.vv(TAG, "...buildEmptyServoHub() mod#=%d", moduleAddress);
+        return moduleConfiguration;
+        }
     }

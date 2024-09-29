@@ -1,0 +1,299 @@
+<category name="LLStatus">
+  <block type="llStatus_getProperty_Quaternion">
+    <field name="PROP">CameraQuat</field>
+    <value name="LL_STATUS"><block type="variables_get"><field name="VAR">status</field></block></value>
+  </block>
+  <block type="llStatus_getProperty_Number">
+    <field name="PROP">Cid</field>
+    <value name="LL_STATUS"><block type="variables_get"><field name="VAR">status</field></block></value>
+  </block>
+  <block type="llStatus_getProperty_Number">
+    <field name="PROP">Cpu</field>
+    <value name="LL_STATUS"><block type="variables_get"><field name="VAR">status</field></block></value>
+  </block>
+  <block type="llStatus_getProperty_Number">
+    <field name="PROP">FinalYaw</field>
+    <value name="LL_STATUS"><block type="variables_get"><field name="VAR">status</field></block></value>
+  </block>
+  <block type="llStatus_getProperty_Number">
+    <field name="PROP">Fps</field>
+    <value name="LL_STATUS"><block type="variables_get"><field name="VAR">status</field></block></value>
+  </block>
+  <block type="llStatus_getProperty_Number">
+    <field name="PROP">HwType</field>
+    <value name="LL_STATUS"><block type="variables_get"><field name="VAR">status</field></block></value>
+  </block>
+  <block type="llStatus_getProperty_String">
+    <field name="PROP">Name</field>
+    <value name="LL_STATUS"><block type="variables_get"><field name="VAR">status</field></block></value>
+  </block>
+  <block type="llStatus_getProperty_Number">
+    <field name="PROP">PipeImgCount</field>
+    <value name="LL_STATUS"><block type="variables_get"><field name="VAR">status</field></block></value>
+  </block>
+  <block type="llStatus_getProperty_Number">
+    <field name="PROP">PipelineIndex</field>
+    <value name="LL_STATUS"><block type="variables_get"><field name="VAR">status</field></block></value>
+  </block>
+  <block type="llStatus_getProperty_String">
+    <field name="PROP">PipelineType</field>
+    <value name="LL_STATUS"><block type="variables_get"><field name="VAR">status</field></block></value>
+  </block>
+  <block type="llStatus_getProperty_Number">
+    <field name="PROP">Ram</field>
+    <value name="LL_STATUS"><block type="variables_get"><field name="VAR">status</field></block></value>
+  </block>
+  <block type="llStatus_getProperty_Number">
+    <field name="PROP">Temp</field>
+    <value name="LL_STATUS"><block type="variables_get"><field name="VAR">status</field></block></value>
+  </block>
+  <block type="llStatus_toText">
+    <value name="LL_STATUS"><block type="variables_get"><field name="VAR">status</field></block></value>
+  </block>
+</category>
+<category name="LLResult">
+  <block type="llResult_getProperty_Number">
+    <field name="PROP">ControlHubTimeStamp</field>
+    <value name="LL_RESULT"><block type="variables_get"><field name="VAR">result</field></block></value>
+  </block>
+  <block type="llResult_getProperty_Number">
+    <field name="PROP">ControlHubTimeStampNanos</field>
+    <value name="LL_RESULT"><block type="variables_get"><field name="VAR">result</field></block></value>
+  </block>
+  <block type="llResult_getProperty_Number">
+    <field name="PROP">Staleness</field>
+    <value name="LL_RESULT"><block type="variables_get"><field name="VAR">result</field></block></value>
+  </block>
+  <block type="llResult_getProperty_Array">
+    <field name="PROP">FiducialResults</field>
+    <value name="LL_RESULT"><block type="variables_get"><field name="VAR">result</field></block></value>
+  </block>
+  <block type="llResult_getProperty_Array">
+    <field name="PROP">ColorResults</field>
+    <value name="LL_RESULT"><block type="variables_get"><field name="VAR">result</field></block></value>
+  </block>
+  <block type="llResult_getProperty_Number">
+    <field name="PROP">FocusMetric</field>
+    <value name="LL_RESULT"><block type="variables_get"><field name="VAR">result</field></block></value>
+  </block>
+  <block type="llResult_getProperty_Pose3D">
+    <field name="PROP">Botpose</field>
+    <value name="LL_RESULT"><block type="variables_get"><field name="VAR">result</field></block></value>
+  </block>
+  <block type="llResult_getProperty_Pose3D">
+    <field name="PROP">Botpose_MT2</field>
+    <value name="LL_RESULT"><block type="variables_get"><field name="VAR">result</field></block></value>
+  </block>
+  <block type="llResult_getProperty_Number">
+    <field name="PROP">BotposeTagCount</field>
+    <value name="LL_RESULT"><block type="variables_get"><field name="VAR">result</field></block></value>
+  </block>
+  <block type="llResult_getProperty_Number">
+    <field name="PROP">BotposeSpan</field>
+    <value name="LL_RESULT"><block type="variables_get"><field name="VAR">result</field></block></value>
+  </block>
+  <block type="llResult_getProperty_Number">
+    <field name="PROP">BotposeAvgDist</field>
+    <value name="LL_RESULT"><block type="variables_get"><field name="VAR">result</field></block></value>
+  </block>
+  <block type="llResult_getProperty_Number">
+    <field name="PROP">BotposeAvgArea</field>
+    <value name="LL_RESULT"><block type="variables_get"><field name="VAR">result</field></block></value>
+  </block>
+  <block type="llResult_getProperty_Array">
+    <field name="PROP">PythonOutput</field>
+    <value name="LL_RESULT"><block type="variables_get"><field name="VAR">result</field></block></value>
+  </block>
+  <block type="llResult_getProperty_Number">
+    <field name="PROP">CaptureLatency</field>
+    <value name="LL_RESULT"><block type="variables_get"><field name="VAR">result</field></block></value>
+  </block>
+  <block type="llResult_getProperty_String">
+    <field name="PROP">PipelineType</field>
+    <value name="LL_RESULT"><block type="variables_get"><field name="VAR">result</field></block></value>
+  </block>
+  <block type="llResult_getProperty_Number">
+    <field name="PROP">Tx</field>
+    <value name="LL_RESULT"><block type="variables_get"><field name="VAR">result</field></block></value>
+  </block>
+  <block type="llResult_getProperty_Number">
+    <field name="PROP">Ty</field>
+    <value name="LL_RESULT"><block type="variables_get"><field name="VAR">result</field></block></value>
+  </block>
+  <block type="llResult_getProperty_Number">
+    <field name="PROP">TxNC</field>
+    <value name="LL_RESULT"><block type="variables_get"><field name="VAR">result</field></block></value>
+  </block>
+  <block type="llResult_getProperty_Number">
+    <field name="PROP">TyNC</field>
+    <value name="LL_RESULT"><block type="variables_get"><field name="VAR">result</field></block></value>
+  </block>
+  <block type="llResult_getProperty_Number">
+    <field name="PROP">Ta</field>
+    <value name="LL_RESULT"><block type="variables_get"><field name="VAR">result</field></block></value>
+  </block>
+  <block type="llResult_getProperty_Number">
+    <field name="PROP">PipelineIndex</field>
+    <value name="LL_RESULT"><block type="variables_get"><field name="VAR">result</field></block></value>
+  </block>
+  <block type="llResult_getProperty_Number">
+    <field name="PROP">TargetingLatency</field>
+    <value name="LL_RESULT"><block type="variables_get"><field name="VAR">result</field></block></value>
+  </block>
+  <block type="llResult_getProperty_Number">
+    <field name="PROP">Timestamp</field>
+    <value name="LL_RESULT"><block type="variables_get"><field name="VAR">result</field></block></value>
+  </block>
+  <block type="llResult_getProperty_Boolean">
+    <field name="PROP">IsValid</field>
+    <value name="LL_RESULT"><block type="variables_get"><field name="VAR">result</field></block></value>
+  </block>
+  <block type="llResult_toText">
+    <value name="LL_RESULT"><block type="variables_get"><field name="VAR">result</field></block></value>
+  </block>
+</category>
+<category name="FiducialResult">
+  <block type="llResultTypesFiducialResult_getProperty_Number">
+    <field name="PROP">FiducialId</field>
+    <value name="FIDUCIAL_RESULT"><block type="variables_get"><field name="VAR">fiducialResult</field></block></value>
+  </block>
+  <block type="llResultTypesFiducialResult_getProperty_String">
+    <field name="PROP">Family</field>
+    <value name="FIDUCIAL_RESULT"><block type="variables_get"><field name="VAR">fiducialResult</field></block></value>
+  </block>
+  <block type="llResultTypesFiducialResult_getProperty_Array">
+    <field name="PROP">TargetCorners</field>
+    <value name="FIDUCIAL_RESULT"><block type="variables_get"><field name="VAR">fiducialResult</field></block></value>
+  </block>
+  <block type="llResultTypesFiducialResult_getProperty_Pose3D">
+    <field name="PROP">CameraPoseTargetSpace</field>
+    <value name="FIDUCIAL_RESULT"><block type="variables_get"><field name="VAR">fiducialResult</field></block></value>
+  </block>
+  <block type="llResultTypesFiducialResult_getProperty_Pose3D">
+    <field name="PROP">RobotPoseFieldSpace</field>
+    <value name="FIDUCIAL_RESULT"><block type="variables_get"><field name="VAR">fiducialResult</field></block></value>
+  </block>
+  <block type="llResultTypesFiducialResult_getProperty_Pose3D">
+    <field name="PROP">RobotPoseTargetSpace</field>
+    <value name="FIDUCIAL_RESULT"><block type="variables_get"><field name="VAR">fiducialResult</field></block></value>
+  </block>
+  <block type="llResultTypesFiducialResult_getProperty_Pose3D">
+    <field name="PROP">TargetPoseCameraSpace</field>
+    <value name="FIDUCIAL_RESULT"><block type="variables_get"><field name="VAR">fiducialResult</field></block></value>
+  </block>
+  <block type="llResultTypesFiducialResult_getProperty_Pose3D">
+    <field name="PROP">TargetPoseRobotSpace</field>
+    <value name="FIDUCIAL_RESULT"><block type="variables_get"><field name="VAR">fiducialResult</field></block></value>
+  </block>
+  <block type="llResultTypesFiducialResult_getProperty_Number">
+    <field name="PROP">TargetArea</field>
+    <value name="FIDUCIAL_RESULT"><block type="variables_get"><field name="VAR">fiducialResult</field></block></value>
+  </block>
+  <block type="llResultTypesFiducialResult_getProperty_Number">
+    <field name="PROP">TargetXPixels</field>
+    <value name="FIDUCIAL_RESULT"><block type="variables_get"><field name="VAR">fiducialResult</field></block></value>
+  </block>
+  <block type="llResultTypesFiducialResult_getProperty_Number">
+    <field name="PROP">TargetYPixels</field>
+    <value name="FIDUCIAL_RESULT"><block type="variables_get"><field name="VAR">fiducialResult</field></block></value>
+  </block>
+  <block type="llResultTypesFiducialResult_getProperty_Number">
+    <field name="PROP">TargetXDegrees</field>
+    <value name="FIDUCIAL_RESULT"><block type="variables_get"><field name="VAR">fiducialResult</field></block></value>
+  </block>
+  <block type="llResultTypesFiducialResult_getProperty_Number">
+    <field name="PROP">TargetYDegrees</field>
+    <value name="FIDUCIAL_RESULT"><block type="variables_get"><field name="VAR">fiducialResult</field></block></value>
+  </block>
+  <block type="llResultTypesFiducialResult_getProperty_Number">
+    <field name="PROP">TargetXDegreesNoCrosshair</field>
+    <value name="FIDUCIAL_RESULT"><block type="variables_get"><field name="VAR">fiducialResult</field></block></value>
+  </block>
+  <block type="llResultTypesFiducialResult_getProperty_Number">
+    <field name="PROP">TargetYDegreesNoCrosshair</field>
+    <value name="FIDUCIAL_RESULT"><block type="variables_get"><field name="VAR">fiducialResult</field></block></value>
+  </block>
+</category>
+<category name="ColorResult">
+  <block type="llResultTypesColorResult_getProperty_Array">
+    <field name="PROP">TargetCorners</field>
+    <value name="COLOR_RESULT"><block type="variables_get"><field name="VAR">colorResult</field></block></value>
+  </block>
+  <block type="llResultTypesColorResult_getProperty_Pose3D">
+    <field name="PROP">CameraPoseTargetSpace</field>
+    <value name="COLOR_RESULT"><block type="variables_get"><field name="VAR">colorResult</field></block></value>
+  </block>
+  <block type="llResultTypesColorResult_getProperty_Pose3D">
+    <field name="PROP">RobotPoseFieldSpace</field>
+    <value name="COLOR_RESULT"><block type="variables_get"><field name="VAR">colorResult</field></block></value>
+  </block>
+  <block type="llResultTypesColorResult_getProperty_Pose3D">
+    <field name="PROP">RobotPoseTargetSpace</field>
+    <value name="COLOR_RESULT"><block type="variables_get"><field name="VAR">colorResult</field></block></value>
+  </block>
+  <block type="llResultTypesColorResult_getProperty_Pose3D">
+    <field name="PROP">TargetPoseCameraSpace</field>
+    <value name="COLOR_RESULT"><block type="variables_get"><field name="VAR">colorResult</field></block></value>
+  </block>
+  <block type="llResultTypesColorResult_getProperty_Pose3D">
+    <field name="PROP">TargetPoseRobotSpace</field>
+    <value name="COLOR_RESULT"><block type="variables_get"><field name="VAR">colorResult</field></block></value>
+  </block>
+  <block type="llResultTypesColorResult_getProperty_Number">
+    <field name="PROP">TargetArea</field>
+    <value name="COLOR_RESULT"><block type="variables_get"><field name="VAR">colorResult</field></block></value>
+  </block>
+  <block type="llResultTypesColorResult_getProperty_Number">
+    <field name="PROP">TargetXPixels</field>
+    <value name="COLOR_RESULT"><block type="variables_get"><field name="VAR">colorResult</field></block></value>
+  </block>
+  <block type="llResultTypesColorResult_getProperty_Number">
+    <field name="PROP">TargetYPixels</field>
+    <value name="COLOR_RESULT"><block type="variables_get"><field name="VAR">colorResult</field></block></value>
+  </block>
+  <block type="llResultTypesColorResult_getProperty_Number">
+    <field name="PROP">TargetXDegrees</field>
+    <value name="COLOR_RESULT"><block type="variables_get"><field name="VAR">colorResult</field></block></value>
+  </block>
+  <block type="llResultTypesColorResult_getProperty_Number">
+    <field name="PROP">TargetYDegrees</field>
+    <value name="COLOR_RESULT"><block type="variables_get"><field name="VAR">colorResult</field></block></value>
+  </block>
+  <block type="llResultTypesColorResult_getProperty_Number">
+    <field name="PROP">TargetXDegreesNoCrosshair</field>
+    <value name="COLOR_RESULT"><block type="variables_get"><field name="VAR">colorResult</field></block></value>
+  </block>
+  <block type="llResultTypesColorResult_getProperty_Number">
+    <field name="PROP">TargetYDegreesNoCrosshair</field>
+    <value name="COLOR_RESULT"><block type="variables_get"><field name="VAR">colorResult</field></block></value>
+  </block>
+</category>
+<category name="Pose3D">
+  <block type="pose3D_getProperty_Number">
+    <field name="PROP">position.x</field>
+    <value name="POSE_3D"><block type="variables_get"><field name="VAR">pose</field></block></value>
+  </block>
+  <block type="pose3D_getProperty_Number">
+    <field name="PROP">position.y</field>
+    <value name="POSE_3D"><block type="variables_get"><field name="VAR">pose</field></block></value>
+  </block>
+  <block type="pose3D_getProperty_Number">
+    <field name="PROP">position.z</field>
+    <value name="POSE_3D"><block type="variables_get"><field name="VAR">pose</field></block></value>
+  </block>
+  <block type="pose3D_getProperty_Number">
+    <field name="PROP">orientation.yaw</field>
+    <value name="POSE_3D"><block type="variables_get"><field name="VAR">pose</field></block></value>
+  </block>
+  <block type="pose3D_getProperty_Number">
+    <field name="PROP">orientation.pitch</field>
+    <value name="POSE_3D"><block type="variables_get"><field name="VAR">pose</field></block></value>
+  </block>
+  <block type="pose3D_getProperty_Number">
+    <field name="PROP">orientation.roll</field>
+    <value name="POSE_3D"><block type="variables_get"><field name="VAR">pose</field></block></value>
+  </block>
+  <block type="pose3D_toText">
+    <value name="POSE_3D"><block type="variables_get"><field name="VAR">pose</field></block></value>
+  </block>
+</category>

@@ -45,6 +45,7 @@ import com.qualcomm.robotcore.util.SerialNumber;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraManager;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 
+import java.net.InetAddress;
 import java.util.List;
 
 @SuppressWarnings("javadoc")
@@ -58,6 +59,7 @@ public interface DeviceManager {
     LYNX_USB_DEVICE,
     /** a camera managed by {@link CameraManager}. See {@link WebcamName} */
     WEBCAM,
+    ETHERNET_DEVICE,
     UNKNOWN_DEVICE;
 
     public static UsbDeviceType from(String string) {
@@ -139,6 +141,11 @@ public interface DeviceManager {
    * @return Instances of a user-defined sensor type.
    */
   List<HardwareDevice> createI2cDeviceInstances(RobotCoreLynxModule lynxModule, DeviceConfiguration.I2cChannel channel, I2cDeviceConfigurationType type, String name);
+
+  /**
+   * Creates a Limelight3A.
+   */
+  HardwareDevice createLimelight3A(SerialNumber serialNumber, @Nullable String name, InetAddress ipAddress);
 
   /**
    * Creates an instance of a Lynx USB device

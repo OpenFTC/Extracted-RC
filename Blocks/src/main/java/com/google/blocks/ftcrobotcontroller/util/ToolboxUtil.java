@@ -273,6 +273,7 @@ public class ToolboxUtil {
   public static String escapeForXml(String s) {
     return s
         .replace("&", "&amp;")
+        .replace("\n", "&#x0D;")
         .replace("\"", "&quot;")
         .replace("'", "&apos;")
         .replace("<", "&lt;")

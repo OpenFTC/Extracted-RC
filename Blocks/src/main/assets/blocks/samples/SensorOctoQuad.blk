@@ -1,0 +1,516 @@
+<xml xmlns="https://developers.google.com/blockly/xml">
+<variables>
+<variable id=")yF_G=wCCrqd|A,)vIhN">posLeft</variable>
+<variable id="W7.v|+sS.Oc-Q$iPrZ3y">ODO_LEFT</variable>
+<variable id="@{8U6/R;yyC-$!7^cGG|">posRight</variable>
+<variable id="[ky^]p!NE9rI7ir;bnY2">ODO_RIGHT</variable>
+<variable id="_],awtSPr4/s25^}[96Z">posPerp</variable>
+<variable id="qtXZvnNz,A,~zu]CbF8L">ODO_PERP</variable>
+</variables>
+<block type="procedures_defnoreturn" id="WtpyD@tEu+EoY=P9iY,D" deletable="false" x="25" y="546">
+<field name="NAME">runOpMode</field>
+<comment pinned="true" h="525" w="641">This OpMode illustrates how to use the DigitalChickenLabs OctoQuad Quadrature Encoder &amp; Pulse Width Interface Module
+
+The OctoQuad has 8 input channels that can used to read either Relative Quadrature Encoders or Pulse-Width Absolute Encoder inputs. Relative Quadrature encoders are found on most FTC motors, and some stand-alone position sensors like the REV Thru-Bore encoder. Pulse-Width encoders are less common. The REV Thru-Bore encoder can provide its absolute position via a variable pulse width, as can several sonar rangefinders such as the MaxBotix MB1000 series.
+
+This basic sample shows how an OctoQuad can be used to read the position three Odometry pods fitted with REV Thru-Bore encoders.
+
+This OpMode assumes that the OctoQuad is attached to an I2C interface named "octoquad" in the robot configuration.
+
+The code assumes the first three OctoQuad inputs are connected as follows
+- Chan 0: for measuring forward motion on the left side of the robot.
+- Chan 1: for measuring forward motion on the right side of the robot.
+- Chan 2: for measuring Lateral (strafing) motion.
+
+The encoder values may be reset to zero by pressing the X (left most) button on Gamepad 1.
+
+This sample does not show how to interpret these readings, just how to obtain and display them.
+
+See the sensor's product page: https://www.tindie.com/products/35114/</comment>
+<data>{"commentPositionLeft":-20,"commentPositionTop":-546}</data>
+<statement name="STACK">
+<block type="comment" id="Lc#BFtj*NTB48YL;eBl.">
+<field name="COMMENT">Identify which encoder OctoQuad inputs are connected to each odometry pod.</field>
+<next>
+<block type="variables_set" id="|!?ZY]+5HSLLMG8hJ{9k">
+<field name="VAR" id="W7.v|+sS.Oc-Q$iPrZ3y">ODO_LEFT</field>
+<comment pinned="false" h="38" w="399">Facing forward direction on left side of robot (Axial motion)</comment>
+<data>{"commentPositionLeft":210,"commentPositionTop":-19}</data>
+<value name="VALUE">
+<block type="math_number" id="aA-WbU?J.ld1py-j^ibp">
+<field name="NUM">0</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id="GJ)T0hanktJ,R|cl{rL?">
+<field name="VAR" id="[ky^]p!NE9rI7ir;bnY2">ODO_RIGHT</field>
+<comment pinned="false" h="36" w="407">Facing forward direction on right side or robot (Axial motion)</comment>
+<data>{"commentPositionLeft":212,"commentPositionTop":-15}</data>
+<value name="VALUE">
+<block type="math_number" id=",hb3?Jq$=}EScfshnhdT">
+<field name="NUM">1</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id="ugFRL#YRgyH3/apV8p.3">
+<field name="VAR" id="qtXZvnNz,A,~zu]CbF8L">ODO_PERP</field>
+<comment pinned="false" h="42" w="474">Facing perpendicular direction at the center of the robot (Lateral motion)</comment>
+<data>{"commentPositionLeft":215,"commentPositionTop":-7}</data>
+<value name="VALUE">
+<block type="math_number" id="(g{w(tAmYygwRTjzVLWn">
+<field name="NUM">2</field>
+</block>
+</value>
+<next>
+<block type="comment" id="{G*qf^Z3b064$ef,0j@D">
+<field name="COMMENT">Read the Firmware Revision number from the OctoQuad and display it as telemetry.</field>
+<next>
+<block type="telemetry_addTextData_All" id="j%2R`Ok9[Z0@RyS;Ke#J">
+<value name="KEY">
+<shadow type="text" id="|S[J|uw9wu|}hHpX3l%V">
+<field name="TEXT">OctoQuad Firmware Version </field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id="cYslL`:.]viPAx[5Yh!{">
+<field name="TEXT">text</field>
+</shadow>
+<block type="octoquad_getProperty_String" id="=dV2(wQeN+V}F!5Him]/">
+<field name="IDENTIFIER">octoquadAsOctoQuad</field>
+<field name="PROP">FirmwareVersionString</field>
+<data>{"IDENTIFIER":"octoquad"}</data>
+</block>
+</value>
+<next>
+<block type="comment" id="b.UNmcSqW$ON^9mVWco~">
+<field name="COMMENT">Reverse the count-direction of any encoder that is not what you require.</field>
+<next>
+<block type="comment" id="%sJqT#$Lu^p#{?LT:ct4">
+<field name="COMMENT">e.g. if you push the robot forward and the left encoder counts down, then reverse it so it counts up.</field>
+<next>
+<block type="octoquad_setSingleEncoderDirection" id="6kC2hqllM%w=4g?G/kdK">
+<field name="IDENTIFIER">octoquadAsOctoQuad</field>
+<data>{"IDENTIFIER":"octoquad"}</data>
+<value name="INDEX">
+<shadow type="math_number" id="6kL{-:Hl:m`I@)%#xIE1">
+<field name="NUM">0</field>
+</shadow>
+<block type="variables_get" id="!L]}~fsyc1KcYPrVb%0S">
+<field name="VAR" id="W7.v|+sS.Oc-Q$iPrZ3y">ODO_LEFT</field>
+</block>
+</value>
+<value name="DIRECTION">
+<shadow type="octoquad_typedEnum_encoderDirection" id="[h2:h}-Fs#[CQEI(nZ0Q">
+<field name="ENCODER_DIRECTION">REVERSE</field>
+</shadow>
+</value>
+<next>
+<block type="octoquad_setSingleEncoderDirection" id=",=hkaog*N/cIV[_+!$*X">
+<field name="IDENTIFIER">octoquadAsOctoQuad</field>
+<data>{"IDENTIFIER":"octoquad"}</data>
+<value name="INDEX">
+<shadow type="math_number">
+<field name="NUM">0</field>
+</shadow>
+<block type="variables_get" id="mhSFguT+v3966h}kr0eU">
+<field name="VAR" id="[ky^]p!NE9rI7ir;bnY2">ODO_RIGHT</field>
+</block>
+</value>
+<value name="DIRECTION">
+<shadow type="octoquad_typedEnum_encoderDirection" id="KXV]0jD^n:C_4`+!qvFZ">
+<field name="ENCODER_DIRECTION">FORWARD</field>
+</shadow>
+</value>
+<next>
+<block type="octoquad_setSingleEncoderDirection" id="i2BIaDEFvbsO@$B7CQWY">
+<field name="IDENTIFIER">octoquadAsOctoQuad</field>
+<data>{"IDENTIFIER":"octoquad"}</data>
+<value name="INDEX">
+<shadow type="math_number">
+<field name="NUM">0</field>
+</shadow>
+<block type="variables_get" id=")nJ/HgxE8(6,TUL8DNMj">
+<field name="VAR" id="qtXZvnNz,A,~zu]CbF8L">ODO_PERP</field>
+</block>
+</value>
+<value name="DIRECTION">
+<shadow type="octoquad_typedEnum_encoderDirection" id="+@}EzUQ$kvIu6d%^G~eM">
+<field name="ENCODER_DIRECTION">FORWARD</field>
+</shadow>
+</value>
+<next>
+<block type="comment" id="boi%,Qv93A]3%54HH,ri">
+<field name="COMMENT">Any changes that are made should be saved in FLASH just in case there is a sensor power glitch.</field>
+<next>
+<block type="octoquad_saveParametersToFlash" id="eK0K!~S%$A%NW`KR=J.W">
+<field name="IDENTIFIER">octoquadAsOctoQuad</field>
+<data>{"IDENTIFIER":"octoquad"}</data>
+<next>
+<block type="telemetry_addLine" id="+NyW7BU94)Z#*0^=g]IH">
+<value name="TEXT">
+<shadow type="text" id="4E@1gId11~8MRt!*|Fih">
+<field name="TEXT"/>
+</shadow>
+</value>
+<next>
+<block type="telemetry_addLine" id=")Lu*.!)AgOnUWth?o](=">
+<value name="TEXT">
+<shadow type="text" id="wVxuk}Q,zUi@MPKdB0A`">
+<field name="TEXT">Press START to read encoder values</field>
+</shadow>
+</value>
+<next>
+<block type="telemetry_update" id="X#wydoSjR+!eDZBt!-0c">
+<next>
+<block type="linearOpMode_waitForStart" id=":`$wN_ci`O;o6P0~.(+g">
+<next>
+<block type="comment" id="9;qd%#f}[.2iv%2[m)B!">
+<field name="COMMENT">Configure the telemetry for optimal display of data.</field>
+<next>
+<block type="telemetry_setDisplayFormat" id="*F({MW]K0M6fm;?[gnZ1">
+<value name="DISPLAY_FORMAT">
+<shadow type="telemetry_typedEnum_displayFormat" id="rX=MM^}zMHdplyE1]xa+">
+<field name="DISPLAY_FORMAT">MONOSPACE</field>
+</shadow>
+</value>
+<next>
+<block type="telemetry_setProperty_Number" id="btB1lXK_[0.3Ot|vd%NB">
+<field name="PROP">MsTransmissionInterval</field>
+<value name="VALUE">
+<block type="math_number" id="NeGb^AUFbD=PLCpLg#@f">
+<field name="NUM">50</field>
+</block>
+</value>
+<next>
+<block type="comment" id="CQ{jsXJnU3P,[xMQ0njq">
+<field name="COMMENT">Set all the encoder inputs to zero.</field>
+<next>
+<block type="octoquad_resetAllPositions" id=".,=iaC:~M^XpfvSB)E34">
+<field name="IDENTIFIER">octoquadAsOctoQuad</field>
+<data>{"IDENTIFIER":"octoquad"}</data>
+<next>
+<block type="comment" id="(~I^T/H%T+P9Pt}S6{1$">
+<field name="COMMENT">Loop while displaying the odometry pod positions.</field>
+<next>
+<block type="controls_whileUntil" id="^0Kagy/e+Ea{rbZPv2G6">
+<field name="MODE">WHILE</field>
+<value name="BOOL">
+<block type="linearOpMode_opModeIsActive" id="e)cr{!2VIET83s,JWC.="/>
+</value>
+<statement name="DO">
+<block type="telemetry_addTextData_All" id="pQ*)RY3.:+Xp(x`I1?;F">
+<value name="KEY">
+<shadow type="text" id="fgGk*Fc|lSE!q6alK)3P">
+<field name="TEXT">&gt;</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id="`oNyA7QHiLIQP7c}Em*m">
+<field name="TEXT">Press X to Reset Encoders</field>
+</shadow>
+</value>
+<next>
+<block type="telemetry_addLine" id="kQ@TT6[Bx+i@F3EuWHot">
+<value name="TEXT">
+<shadow type="text" id="Tptxdngxq!Q^~`S@*g97">
+<field name="TEXT"/>
+</shadow>
+</value>
+<next>
+<block type="comment" id=";!^v2^SO_%y`+BdY!aT8">
+<field name="COMMENT">Check for X button to reset encoders.</field>
+<next>
+<block type="controls_if" id="ec$-(46,Gru:XU;Vm]X/">
+<value name="IF0">
+<block type="gamepad_getProperty_Boolean" id="uAHZk%D:^chFB9VSPxR$">
+<field name="IDENTIFIER">gamepad1</field>
+<field name="PROP">X</field>
+<data>{"IDENTIFIER":"gamepad1"}</data>
+</block>
+</value>
+<statement name="DO0">
+<block type="comment" id="^D%;Aa7-_+~rjz6@[(Ny">
+<field name="COMMENT">Reset the position of all encoders to zero.</field>
+<next>
+<block type="octoquad_resetAllPositions" id="4H!:+NyWR!(TvZtMhmR}">
+<field name="IDENTIFIER">octoquadAsOctoQuad</field>
+<data>{"IDENTIFIER":"octoquad"}</data>
+</block>
+</next>
+</block>
+</statement>
+<next>
+<block type="comment" id=",+Z!P?S8n|pRLc.bnJL@">
+<field name="COMMENT">Read all the encoder data.  Load into local members.</field>
+<next>
+<block type="procedures_callnoreturn" id=";-*a=+MQ)emOMnL^1njW">
+<mutation name="readOdometryPods"/>
+<next>
+<block type="comment" id=",eRq.6^5=2^d37Un]_NB">
+<field name="COMMENT">Display the values.</field>
+<next>
+<block type="telemetry_addTextData_All" id="!D[!$pjV3U^X~vZ%qERo">
+<value name="KEY">
+<shadow type="text" id="f?MQ`MK|UJY,}L6m1PkX">
+<field name="TEXT">Left </field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id="sWd~QmM#yzQk@$}!iK#H">
+<field name="TEXT">text</field>
+</shadow>
+<block type="text_join" id="i89n[!:[_m}oNI`dx}mX">
+<mutation items="2"/>
+<value name="ADD0">
+<block type="misc_formatNumber_withWidth" id="~,Z?K(7ocji.LG.6I|w}">
+<value name="NUMBER">
+<shadow type="math_number" id="LH;EWXqNfP=;F6:d2E+D">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="variables_get" id="i5H[5zv?047kc1eI]J2o">
+<field name="VAR" id=")yF_G=wCCrqd|A,)vIhN">posLeft</field>
+</block>
+</value>
+<value name="WIDTH">
+<shadow type="math_number" id="?2;L5MGALV_f7hj7iN(]">
+<field name="NUM">8</field>
+</shadow>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="b.~WHVOyrR.P/4(4[CZc">
+<field name="NUM">0</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="ADD1">
+<block type="text" id="mBAB_KSb=.k[rSiWT^m6">
+<field name="TEXT"> counts</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_addTextData_All" id="$ideLuRFJv?Ja{S;;X2#">
+<value name="KEY">
+<shadow type="text" id="v}KpUw*Tl|OeqfZG38!k">
+<field name="TEXT">Right</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text">
+<field name="TEXT">text</field>
+</shadow>
+<block type="text_join" id="T0.y6C4,S*3))UXidB[L">
+<mutation items="2"/>
+<value name="ADD0">
+<block type="misc_formatNumber_withWidth" id="%}w(dr0gQg8,4_-Yiadf">
+<value name="NUMBER">
+<shadow type="math_number" id="n=_`*^cib5{{QmkMOX8n">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="variables_get" id="o$pf?}^/37BOL/|d:C%D">
+<field name="VAR" id="@{8U6/R;yyC-$!7^cGG|">posRight</field>
+</block>
+</value>
+<value name="WIDTH">
+<shadow type="math_number" id="**|Tmp}dkirMDw1T8Dll">
+<field name="NUM">8</field>
+</shadow>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="i@^1L0g/|zc0uj0Z-Ae?">
+<field name="NUM">0</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="ADD1">
+<block type="text" id="_1vK;pbj3=x`!*#xwa%n">
+<field name="TEXT"> counts</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_addTextData_All" id="H`Lj3yX*P+Jk*xQg#,F*">
+<value name="KEY">
+<shadow type="text" id="A-F,]7LQqg99-RZ;2.gq">
+<field name="TEXT">Perp </field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text">
+<field name="TEXT">text</field>
+</shadow>
+<block type="text_join" id=":PL)orEEUje_nnd5hg1d">
+<mutation items="2"/>
+<value name="ADD0">
+<block type="misc_formatNumber_withWidth" id="!;-xN1bku0/x_spZYa;X">
+<value name="NUMBER">
+<shadow type="math_number" id="hpdWBOK_PDr`0^pfKrP)">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="variables_get" id="O?`m=)TP/S*LEX==$#rL">
+<field name="VAR" id="_],awtSPr4/s25^}[96Z">posPerp</field>
+</block>
+</value>
+<value name="WIDTH">
+<shadow type="math_number" id="l-O^H,b_mx+E(~=Q|4zL">
+<field name="NUM">8</field>
+</shadow>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="TqJKvr1+ePgciJbITr)s">
+<field name="NUM">0</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="ADD1">
+<block type="text" id="Phd#s6}W~FjDXaDl)b`?">
+<field name="TEXT"> counts</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_update" id="exvivmft-pX$n!1,8Ea$"/>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+<block type="procedures_defnoreturn" id="e?BDpI_IiMr=5pLSS],t" x="25" y="2501">
+<field name="NAME">readOdometryPods</field>
+<comment pinned="true" h="40" w="418">Read the positions from the OctoQuad.</comment>
+<data>{"commentPositionLeft":-48,"commentPositionTop":-60}</data>
+<statement name="STACK">
+<block type="variables_set" id="{#l[iG*g):=HYfeOfdsm">
+<field name="VAR" id=")yF_G=wCCrqd|A,)vIhN">posLeft</field>
+<value name="VALUE">
+<block type="octoquad_readSinglePosition_Caching" id="-i3N#)FP1?wZg0)S)0nu">
+<field name="IDENTIFIER">octoquadAsOctoQuad</field>
+<data>{"IDENTIFIER":"octoquad"}</data>
+<value name="INDEX">
+<shadow type="math_number" id="ZAbk)(F08GZ3V`F:.?yi">
+<field name="NUM">0</field>
+</shadow>
+<block type="variables_get" id="7h=Uh4H)[jRwsL1!#5.]">
+<field name="VAR" id="W7.v|+sS.Oc-Q$iPrZ3y">ODO_LEFT</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="variables_set" id="`Wgd^vdMm38qG-Ny[xZt">
+<field name="VAR" id="@{8U6/R;yyC-$!7^cGG|">posRight</field>
+<value name="VALUE">
+<block type="octoquad_readSinglePosition_Caching" id="r/jlG?X=pNO-$fFzH|TL">
+<field name="IDENTIFIER">octoquadAsOctoQuad</field>
+<data>{"IDENTIFIER":"octoquad"}</data>
+<value name="INDEX">
+<shadow type="math_number" id="}0m!A=7|iMob0,*Uwipg">
+<field name="NUM">0</field>
+</shadow>
+<block type="variables_get" id="Ka_9FpCtV|BMmC(+Id96">
+<field name="VAR" id="[ky^]p!NE9rI7ir;bnY2">ODO_RIGHT</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="variables_set" id="yD:JSyA|8_ruJN9X{2LN">
+<field name="VAR" id="_],awtSPr4/s25^}[96Z">posPerp</field>
+<value name="VALUE">
+<block type="octoquad_readSinglePosition_Caching" id="Yz@DFLs;3Bg8:tdQT1mM">
+<field name="IDENTIFIER">octoquadAsOctoQuad</field>
+<data>{"IDENTIFIER":"octoquad"}</data>
+<value name="INDEX">
+<shadow type="math_number" id="4EynCr?LTcOQ+|KDz2H+">
+<field name="NUM">0</field>
+</shadow>
+<block type="variables_get" id="WB7|X4.Q#mivt#C@K1t+">
+<field name="VAR" id="qtXZvnNz,A,~zu]CbF8L">ODO_PERP</field>
+</block>
+</value>
+</block>
+</value>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</xml>
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<Extra>
+<OpModeMeta flavor="TELEOP" group="" autoTransition="" />
+<Enabled value="true" />
+</Extra>

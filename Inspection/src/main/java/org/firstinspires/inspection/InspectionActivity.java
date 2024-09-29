@@ -650,9 +650,11 @@ public abstract class InspectionActivity extends ThemedActivity
 
     public boolean isValidFirmwareVersion(String string)
         {
-        // For the 2021-2022 season, require firmware version 1.8.2
+        // For the 2021-2022 season, require firmware version 1.8.2.
         // When you update this, make sure to update LynxModuleWarningManager
         // and getValidFirmwareVersionString() at the same time.
+        // The list of illegal firmware versions should also include any illegal
+        // Servo Hub firmware versions.
 
         //noinspection RedundantIfStatement
         if (string != null && !string.contains(notApplicable) && (

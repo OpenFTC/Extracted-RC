@@ -129,6 +129,14 @@ public enum UnnormalizedAngleUnit
             }
         }
 
+    public double fromUnit(AngleUnit them, double theirs) {
+        return this.fromUnit(them.getUnnormalized(), theirs);
+    }
+
+    public float fromUnit(AngleUnit them, float theirs) {
+        return this.fromUnit(them.getUnnormalized(), theirs);
+    }
+
     //----------------------------------------------------------------------------------------------
     // Derived operations
     //----------------------------------------------------------------------------------------------

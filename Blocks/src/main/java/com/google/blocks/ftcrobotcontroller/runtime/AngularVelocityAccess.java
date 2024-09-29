@@ -20,6 +20,7 @@ import android.webkit.JavascriptInterface;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AngularVelocity;
 import org.firstinspires.ftc.robotcore.external.navigation.Axis;
+import org.firstinspires.ftc.robotcore.external.navigation.UnnormalizedAngleUnit;
 
 /**
  * A class that provides JavaScript access to {@link AngularVelocity}.
@@ -38,13 +39,14 @@ class AngularVelocityAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
-  @Block(classes = AngularVelocity.class, fieldName = "unit")
+  @Block(classes = AngularVelocity.class, fieldName = "angleUnit")
   public String getAngleUnit(Object angularVelocityArg) {
     try {
       startBlockExecution(BlockType.GETTER, ".AngleUnit");
       AngularVelocity angularVelocity = checkAngularVelocity(angularVelocityArg);
       if (angularVelocity != null) {
-        AngleUnit angleUnit = angularVelocity.unit;
+        // AngleUnit and UnnormalizedAngleUnit have the same string value (DEGREES and RADIANS)
+        UnnormalizedAngleUnit angleUnit = angularVelocity.angleUnit;
         if (angleUnit != null) {
           return angleUnit.toString();
         }

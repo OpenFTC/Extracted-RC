@@ -26,7 +26,7 @@
     <string name="firmwareContext">The firmware version of the Control Hub and/or Expansion Hub is less than the minimum version, %1$s, specified in the Game Manual.</string>
     <string name="hubFirmwareLabel">Hub Firmware:</string>
     <string name="inspection_activity">Inspection Mode</string>
-    <string name="locationEnabledContext">Turn off location services in settings.</string>
+    <string name="locationEnabledContext">Turn on location services in settings.</string>
     <string name="locationLabel">Location services:</string>
     <string name="matchesDSVersionLabel">Matches DS version:</string>
     <string name="menuButtonContentDescription">Menu button</string>

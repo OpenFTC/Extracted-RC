@@ -99,4 +99,18 @@ public class LED implements HardwareDevice, SwitchableLight {
   public void close() {
 
   }
+    /**
+     * Turns the light on
+     */
+    public void on(){
+        enableLight(true);
+    }
+    /**
+     * Turns the light off
+     */
+    public void off(){
+        enableLight(false);
+    }
+
+
 }

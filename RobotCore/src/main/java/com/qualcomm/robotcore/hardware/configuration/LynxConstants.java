@@ -62,6 +62,16 @@ public class LynxConstants
     private static final String EMPTY_STRING = "";
     private static final int ORIGINAL_CH_OS_VERSION_CODE = 1;
 
+    public static final int EXPANSION_HUB_PRODUCT_NUMBER = 0x311152;
+    public static final int SERVO_HUB_PRODUCT_NUMBER = 0x111855;
+
+    public static final String SERVO_HUB_INTERFACE_NAME = "SERVO_HUB";
+
+    public static boolean revHubTypeCanHaveImu(int productNumber)
+        {
+        return productNumber == EXPANSION_HUB_PRODUCT_NUMBER;
+        }
+
     /** Are we running on an Android / Lynx combo device */
     private static Boolean isControlHub;
     public static boolean isRevControlHub()

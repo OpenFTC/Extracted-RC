@@ -24,11 +24,11 @@ import static com.google.blocks.ftcrobotcontroller.util.ToolboxUtil.escapeForXml
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
+import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 
 import com.google.blocks.ftcrobotcontroller.util.AvailableTtsLocalesProvider;
-import com.google.blocks.ftcrobotcontroller.util.CurrentGame;
 import com.google.blocks.ftcrobotcontroller.util.FileUtil;
 import com.google.blocks.ftcrobotcontroller.util.Identifier;
 import com.google.blocks.ftcrobotcontroller.util.ProjectsUtil;
@@ -41,9 +41,13 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.hardware.digitalchickenlabs.CachingOctoQuad;
 import com.qualcomm.hardware.digitalchickenlabs.OctoQuadBase;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.hardware.lynx.LynxModule;
+import com.qualcomm.hardware.maxbotix.MaxSonarI2CXL;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver.BlinkinPattern;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.hardware.rev.Rev9AxisImuOrientationOnRobot;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -254,7 +258,7 @@ public class HardwareUtil {
         .append("function getOctoQuadConstant(constantIdentifier) {\n")
         .append("  switch (constantIdentifier) {\n")
 	.append("    case 'OCTOQUAD_CHIP_ID':\n")
-        .append("      return '").append("0x").append(Integer.toHexString(OctoQuadBase.OCTOQUAD_CHIP_ID)).append("';\n")
+        .append("      return '").append("0x").append(Integer.toHexString(OctoQuadBase.OCTOQUAD_CHIP_ID).toUpperCase()).append("';\n")
 	.append("    case 'SUPPORTED_FW_VERSION_MAJ':\n")
         .append("      return '").append(OctoQuadBase.SUPPORTED_FW_VERSION_MAJ).append("';\n")
 	.append("    case 'ENCODER_FIRST':\n")
@@ -290,6 +294,35 @@ public class HardwareUtil {
         .append("      return '").append(SparkFunOTOS.MIN_SCALAR).append("';\n")
 	.append("    case 'MAX_SCALAR':\n")
         .append("      return '").append(SparkFunOTOS.MAX_SCALAR).append("';\n")
+        .append("  }\n")
+        .append("  return '';\n")
+        .append("}\n\n");
+
+    jsHardware
+        .append("function getColorConstant(constantIdentifier) {\n")
+        .append("  switch (constantIdentifier) {\n")
+	.append("    case 'BLACK':\n")
+        .append("      return '").append("0x").append(Integer.toHexString(Color.BLACK).toUpperCase()).append("';\n")
+	.append("    case 'BLUE':\n")
+        .append("      return '").append("0x").append(Integer.toHexString(Color.BLUE).toUpperCase()).append("';\n")
+	.append("    case 'CYAN':\n")
+        .append("      return '").append("0x").append(Integer.toHexString(Color.CYAN).toUpperCase()).append("';\n")
+	.append("    case 'DKGRAY':\n")
+        .append("      return '").append("0x").append(Integer.toHexString(Color.DKGRAY).toUpperCase()).append("';\n")
+	.append("    case 'GRAY':\n")
+        .append("      return '").append("0x").append(Integer.toHexString(Color.GRAY).toUpperCase()).append("';\n")
+	.append("    case 'GREEN':\n")
+        .append("      return '").append("0x").append(Integer.toHexString(Color.GREEN).toUpperCase()).append("';\n")
+	.append("    case 'LTGRAY':\n")
+        .append("      return '").append("0x").append(Integer.toHexString(Color.LTGRAY).toUpperCase()).append("';\n")
+	.append("    case 'MAGENTA':\n")
+        .append("      return '").append("0x").append(Integer.toHexString(Color.MAGENTA).toUpperCase()).append("';\n")
+	.append("    case 'RED':\n")
+        .append("      return '").append("0x").append(Integer.toHexString(Color.RED).toUpperCase()).append("';\n")
+	.append("    case 'WHITE':\n")
+        .append("      return '").append("0x").append(Integer.toHexString(Color.WHITE).toUpperCase()).append("';\n")
+	.append("    case 'YELLOW':\n")
+        .append("      return '").append("0x").append(Integer.toHexString(Color.YELLOW).toUpperCase()).append("';\n")
         .append("  }\n")
         .append("  return '';\n")
         .append("}\n\n");
@@ -465,32 +498,6 @@ public class HardwareUtil {
         .append("  return createFieldDropdown(CHOICES);\n")
         .append("}\n\n");
 
-    // Current game tfod labels
-    StringBuilder createTfodCurrentGameLabelDropdown = new StringBuilder();
-    StringBuilder tfodCurrentGameLabelTooltips = new StringBuilder();
-    createTfodCurrentGameLabelDropdown
-        .append("function createTfodCurrentGameLabelDropdown() {\n")
-        .append("  var CHOICES = [\n");
-    tfodCurrentGameLabelTooltips
-        .append("var TFOD_CURRENT_GAME_LABEL_TOOLTIPS = [\n");
-    for (String tfodLabel : CurrentGame.TFOD_LABELS) {
-      createTfodCurrentGameLabelDropdown
-          .append("      ['").append(escapeSingleQuotes(makeVisibleNameForDropdownItem(tfodLabel))).append("', '")
-          .append(escapeSingleQuotes(tfodLabel)).append("'],\n");
-      tfodCurrentGameLabelTooltips
-          .append("  ['").append(escapeSingleQuotes(tfodLabel)).append("', 'The Label value ")
-          .append(escapeSingleQuotes(tfodLabel)).append(".'],\n");
-    }
-    createTfodCurrentGameLabelDropdown.append("  ];\n")
-        .append("  return createFieldDropdown(CHOICES);\n")
-        .append("}\n\n");
-    tfodCurrentGameLabelTooltips
-        .append("];\n");
-    jsHardware
-        .append(createTfodCurrentGameLabelDropdown)
-        .append(tfodCurrentGameLabelTooltips)
-        .append("\n");
-
     // Hardware
     for (HardwareType hardwareType : HardwareType.values()) {
       // Some HardwareTypes might have a null createDropdownFunctionName. This allows us to support
@@ -520,20 +527,7 @@ public class HardwareUtil {
         .append("}\n\n");
 
     jsHardware
-        .append("function addReservedWordsForJavaScript() {\n")
-        .append("  Blockly.JavaScript.addReservedWords('orientation');\n")
-        .append("  Blockly.JavaScript.addReservedWords('callRunOpMode');\n")
-        .append("  Blockly.JavaScript.addReservedWords('telemetryAddTextData');\n")
-        .append("  Blockly.JavaScript.addReservedWords('telemetrySpeak');\n")
-        .append("  Blockly.JavaScript.addReservedWords('callJava');\n")
-        .append("  Blockly.JavaScript.addReservedWords('callJava_boolean');\n")
-        .append("  Blockly.JavaScript.addReservedWords('callJava_String');\n")
-        .append("  Blockly.JavaScript.addReservedWords('callHardware');\n")
-        .append("  Blockly.JavaScript.addReservedWords('callHardware_boolean');\n")
-        .append("  Blockly.JavaScript.addReservedWords('callHardware_String');\n")
-        .append("  Blockly.JavaScript.addReservedWords('listLength');\n")
-        .append("  Blockly.JavaScript.addReservedWords('listIsEmpty');\n")
-        .append("  Blockly.JavaScript.addReservedWords('nullOrJson');\n");
+        .append("function addReservedWordsForJavaScript() {\n");
     for (HardwareItem hardwareItem : hardwareItemMap.getAllHardwareItems()) {
       jsHardware
           .append("  Blockly.JavaScript.addReservedWords('")
@@ -1231,6 +1225,16 @@ public class HardwareUtil {
         shadow = (defaultValue == null)
             ? ToolboxUtil.makeTypedEnumShadow("revHubOrientationOnRobot", "usbFacingDirection")
             : ToolboxUtil.makeTypedEnumShadow("revHubOrientationOnRobot", "usbFacingDirection", "USB_FACING_DIRECTION", defaultValue);
+      } else if (argType.equals(Rev9AxisImuOrientationOnRobot.LogoFacingDirection.class.getName())) {
+        String defaultValue = parseEnumDefaultValue(parameterDefaultValues[i], Rev9AxisImuOrientationOnRobot.LogoFacingDirection.class);
+        shadow = (defaultValue == null)
+            ? ToolboxUtil.makeTypedEnumShadow("rev9AxisImuOrientationOnRobot", "logoFacingDirection")
+            : ToolboxUtil.makeTypedEnumShadow("rev9AxisImuOrientationOnRobot", "logoFacingDirection", "LOGO_FACING_DIRECTION", defaultValue);
+      } else if (argType.equals(Rev9AxisImuOrientationOnRobot.I2cPortFacingDirection.class.getName())) {
+        String defaultValue = parseEnumDefaultValue(parameterDefaultValues[i], Rev9AxisImuOrientationOnRobot.I2cPortFacingDirection.class);
+        shadow = (defaultValue == null)
+            ? ToolboxUtil.makeTypedEnumShadow("rev9AxisImuOrientationOnRobot", "i2cPortFacingDirection")
+            : ToolboxUtil.makeTypedEnumShadow("rev9AxisImuOrientationOnRobot", "i2cPortFacingDirection", "I2C_PORT_FACING_DIRECTION", defaultValue);
       } else {
         // Leave other sockets empty?
       }
@@ -1441,7 +1445,6 @@ public class HardwareUtil {
         line = line.trim();
 
         line = line.replace("<placeholder_webcam_webcamNames/>", getWebcamBlocks(hardwareItemMap));
-        line = line.replace("<placeholder_vision_tfodCurrentGameLabels/>", getTfodCurrentGameLabelBlocks());
         line = line.replace("<placeholder_apriltag_exportedAprilTagLibraries/>",
             getExportedAprilTagLibraryBlocks(additionalReservedWordsForFtcJava, methodLookupStrings));
 
@@ -1489,22 +1492,6 @@ public class HardwareUtil {
           .append("</field></block>\n");
     }
     return webcamBlocks.toString();
-  }
-
-  private static String getTfodCurrentGameLabelBlocks() {
-    StringBuilder tfodCurrentGameLabelBlocks = new StringBuilder();
-    if (CurrentGame.TFOD_LABELS.length <= 5) {
-      for (String tfodLabel : CurrentGame.TFOD_LABELS) {
-        tfodCurrentGameLabelBlocks
-            .append("<block type=\"tfod_typedEnum_label\"><field name=\"LABEL\">")
-            .append(tfodLabel)
-            .append("</field></block>\n");
-      }
-    } else {
-      tfodCurrentGameLabelBlocks
-          .append("<block type=\"tfod_typedEnum_label\"></block>\n");
-    }
-    return tfodCurrentGameLabelBlocks.toString();
   }
 
   private static String getExportedAprilTagLibraryBlocks(Set<String> additionalReservedWordsForFtcJava, Set<String> methodLookupStrings) {
@@ -1673,8 +1660,14 @@ public class HardwareUtil {
         case LED:
           addLedCategoryToToolbox(xmlToolbox, hardwareType, hardwareItems);
           break;
+        case LIMELIGHT_3A:
+          addLimelight3ACategoryToToolbox(xmlToolbox, hardwareType, hardwareItems, assetManager);
+          break;
         case LIGHT_SENSOR:
           addLightSensorCategoryToToolbox(xmlToolbox, hardwareType, hardwareItems);
+          break;
+        case MAX_SONAR_I2CXL:
+          addMaxSonarI2CXLCategoryToToolbox(xmlToolbox, hardwareType, hardwareItems);
           break;
         case MR_I2C_COMPASS_SENSOR:
           addMrI2cCompassSensorCategoryToToolbox(xmlToolbox, hardwareType, hardwareItems);;
@@ -1696,6 +1689,9 @@ public class HardwareUtil {
           break;
         case SERVO_CONTROLLER:
           addServoControllerCategoryToToolbox(xmlToolbox, hardwareType, hardwareItems);
+          break;
+        case SPARKFUN_LED_STICK:
+          addSparkFunLEDStickCategoryToToolbox(xmlToolbox, hardwareType, hardwareItems, assetManager);
           break;
         case SPARKFUN_OTOS:
           addSparkFunOTOSCategoryToToolbox(xmlToolbox, hardwareType, hardwareItems, assetManager);
@@ -1828,18 +1824,11 @@ public class HardwareUtil {
 
     // Initialization blocks
     Map<String, Map<String, String>> initFunctions = new TreeMap<String, Map<String, String>>();
-    Map<String, String> initFunctionComments = new HashMap<String, String>();
-    initFunctions.put("initialize", null);
-    initFunctionComments.put("initialize", "<comment pinned=\"false\" h=\"120\" w=\"250\">" +
-        "Initialize the IMU with non-default settings. To use this block, plug one of the " +
-        "\"new IMU.Parameters\" blocks into the parameters socket." +
-        "</comment>");
-    ToolboxUtil.addFunctions(xmlToolbox, hardwareType, identifier, initFunctions, initFunctionComments,
-                             null /* variableSetters */, null /* enumBlocks */);
-    if (assetManager != null) {
-      addAsset(
-          xmlToolbox, assetManager, "toolbox/imu_parameters.xml");
-    }
+    Map<String, String> initializeArgs = new LinkedHashMap<String, String>();
+    initializeArgs.put("PARAMETERS", "<block type=\"imuParameters_create\"></block>");
+    initFunctions.put("initialize", initializeArgs);
+    ToolboxUtil.addFunctions(xmlToolbox, hardwareType, identifier, initFunctions,
+                             null /* functionComments */, null /* variableSetters */, null /* enumBlocks */);
 
     // Property blocks
     SortedMap<String, String> properties = new TreeMap<String, String>();
@@ -1860,6 +1849,10 @@ public class HardwareUtil {
     functions.put("getRobotOrientation", getRobotOrientationArgs);
     functions.put("resetYaw", null);
     ToolboxUtil.addFunctions(xmlToolbox, hardwareType, identifier, functions);
+
+    if (assetManager != null) {
+      addAsset(xmlToolbox, assetManager, "toolbox/imu_orientation.xml");
+    }
   }
 
   /**
@@ -1977,6 +1970,13 @@ public class HardwareUtil {
     });
     ToolboxUtil.addProperties(xmlToolbox, hardwareType, identifier, properties,
         setterValues, enumBlocks);
+
+    // Functions
+    Map<String, Map<String, String>> functions = new TreeMap<String, Map<String, String>>();
+    functions.put("setPwmEnable", null);
+    functions.put("setPwmDisable", null);
+    functions.put("isPwmEnabled", null);
+    ToolboxUtil.addFunctions(xmlToolbox, hardwareType, identifier, functions);
   }
 
   /**
@@ -2295,7 +2295,59 @@ public class HardwareUtil {
     enableLedArgs.put("ENABLE", ToolboxUtil.makeBooleanShadow(true));
     functions.put("enableLed_Boolean", enableLedArgs);
     functions.put("isLightOn", null);
+    functions.put("on", null);
+    functions.put("off", null);
     ToolboxUtil.addFunctions(xmlToolbox, hardwareType, identifier, functions);
+  }
+
+  /**
+   * Adds the category for Limelight3A to the toolbox.
+   */
+  private static void addLimelight3ACategoryToToolbox(
+      StringBuilder xmlToolbox, HardwareType hardwareType, List<HardwareItem> hardwareItems,
+      AssetManager assetManager) throws IOException {
+    String identifier = hardwareItems.get(0).identifier;
+
+    // Functions
+    Map<String, Map<String, String>> functions = new TreeMap<String, Map<String, String>>();
+    functions.put("start", null);
+    functions.put("pause", null);
+    functions.put("stop", null);
+    functions.put("isRunning", null);
+    Map<String, String> setPollRateHzArgs = new LinkedHashMap<String, String>();
+    setPollRateHzArgs.put("RATE_HZ", ToolboxUtil.makeNumberShadow(100));
+    functions.put("setPollRateHz", setPollRateHzArgs);
+    functions.put("getTimeSinceLastUpdate", null);
+    functions.put("isConnected", null);
+    functions.put("getLatestResult", null);
+    functions.put("getStatus", null);
+    functions.put("reloadPipeline", null);
+    Map<String, String> pipelineSwitchArgs = new LinkedHashMap<String, String>();
+    pipelineSwitchArgs.put("INDEX", ToolboxUtil.makeNumberShadow(0));
+    functions.put("pipelineSwitch", pipelineSwitchArgs);
+
+    Map<String, String> updatePythonInputs_with8DoublesArgs = new LinkedHashMap<String, String>();
+    updatePythonInputs_with8DoublesArgs.put("INPUT1", ToolboxUtil.makeNumberShadow(1));
+    updatePythonInputs_with8DoublesArgs.put("INPUT2", ToolboxUtil.makeNumberShadow(2));
+    updatePythonInputs_with8DoublesArgs.put("INPUT3", ToolboxUtil.makeNumberShadow(3));
+    updatePythonInputs_with8DoublesArgs.put("INPUT4", ToolboxUtil.makeNumberShadow(4));
+    updatePythonInputs_with8DoublesArgs.put("INPUT5", ToolboxUtil.makeNumberShadow(5));
+    updatePythonInputs_with8DoublesArgs.put("INPUT6", ToolboxUtil.makeNumberShadow(6));
+    updatePythonInputs_with8DoublesArgs.put("INPUT7", ToolboxUtil.makeNumberShadow(7));
+    updatePythonInputs_with8DoublesArgs.put("INPUT8", ToolboxUtil.makeNumberShadow(8));
+    functions.put("updatePythonInputs_with8Doubles", updatePythonInputs_with8DoublesArgs);
+    Map<String, String> updatePythonInputs_withArray = new LinkedHashMap<String, String>();
+    updatePythonInputs_withArray.put("INPUTS", ToolboxUtil.makeVariableGetBlock("pythonInputs"));
+    functions.put("updatePythonInputs_withArray", updatePythonInputs_withArray);
+    Map<String, String> updateRobotOrientationArgs = new LinkedHashMap<String, String>();
+    updateRobotOrientationArgs.put("YAW", ToolboxUtil.makeNumberShadow(45));
+    functions.put("updateRobotOrientation", updateRobotOrientationArgs);
+    functions.put("shutdown", null);
+    ToolboxUtil.addFunctions(xmlToolbox, hardwareType, identifier, functions);
+
+    if (assetManager != null) {
+      addAsset(xmlToolbox, assetManager, "toolbox/limelight.xml");
+    }
   }
 
   /**
@@ -2354,6 +2406,42 @@ public class HardwareUtil {
     getDistanceArgs.put("UNIT", ToolboxUtil.makeTypedEnumShadow("navigation", "distanceUnit"));
     functions.put("getDistance_Number", getDistanceArgs);
     functions.put("getNormalizedColors", null);
+    ToolboxUtil.addFunctions(xmlToolbox, hardwareType, identifier, functions);
+  }
+
+  private static void addMaxSonarI2CXLCategoryToToolbox(
+      StringBuilder xmlToolbox, HardwareType hardwareType, List<HardwareItem> hardwareItems) {
+    String identifier = hardwareItems.get(0).identifier;
+
+    // Properties
+    SortedMap<String, String> properties = new TreeMap<String, String>();
+    properties.put("I2cAddress7Bit", "Number");
+    properties.put("I2cAddress8Bit", "Number");
+    Map<String, String[]> setterValues = new HashMap<String, String[]>();
+    setterValues.put("I2cAddress7Bit", new String[] { ToolboxUtil.makeNumberShadow(8) });
+    setterValues.put("I2cAddress8Bit", new String[] { ToolboxUtil.makeNumberShadow(16) });
+    ToolboxUtil.addProperties(xmlToolbox, hardwareType, identifier, properties,
+        setterValues, null /* enumBlocks */);
+
+    // Functions
+    Map<String, Map<String, String>> functions = new TreeMap<String, Map<String, String>>();
+    Map<String, String> getDistanceSyncArgs = new LinkedHashMap<String, String>();
+    getDistanceSyncArgs.put("DISTANCE_UNIT", ToolboxUtil.makeTypedEnumShadow("navigation", "distanceUnit"));
+    functions.put("getDistanceSync", getDistanceSyncArgs);
+    Map<String, String> getDistanceSync_withDelayArgs = new LinkedHashMap<String, String>();
+    getDistanceSync_withDelayArgs.put("DELAY", ToolboxUtil.makeNumberShadow(50));
+    getDistanceSync_withDelayArgs.put("DISTANCE_UNIT", ToolboxUtil.makeTypedEnumShadow("navigation", "distanceUnit"));
+    functions.put("getDistanceSync_withDelay", getDistanceSync_withDelayArgs);
+    Map<String, String> getDistanceAsyncArgs = new LinkedHashMap<String, String>();
+    getDistanceAsyncArgs.put("DISTANCE_UNIT", ToolboxUtil.makeTypedEnumShadow("navigation", "distanceUnit"));
+    functions.put("getDistanceAsync", getDistanceAsyncArgs);
+    Map<String, String> getDistanceAsync_withDelayArgs = new LinkedHashMap<String, String>();
+    getDistanceAsync_withDelayArgs.put("DELAY", ToolboxUtil.makeNumberShadow(50));
+    getDistanceAsync_withDelayArgs.put("DISTANCE_UNIT", ToolboxUtil.makeTypedEnumShadow("navigation", "distanceUnit"));
+    functions.put("getDistanceAsync_withDelay", getDistanceAsync_withDelayArgs);
+    Map<String, String> writeI2cAddrToSensorEEPROMArgs = new LinkedHashMap<String, String>();
+    writeI2cAddrToSensorEEPROMArgs.put("ADDRESS", ToolboxUtil.makeNumberShadow(20));
+    functions.put("writeI2cAddrToSensorEEPROM", writeI2cAddrToSensorEEPROMArgs);
     ToolboxUtil.addFunctions(xmlToolbox, hardwareType, identifier, functions);
   }
 
@@ -2567,6 +2655,9 @@ public class HardwareUtil {
     scaleRangeArgs.put("MIN", ToolboxUtil.makeNumberShadow(0.2));
     scaleRangeArgs.put("MAX", ToolboxUtil.makeNumberShadow(0.8));
     functions.put("scaleRange_Number", scaleRangeArgs);
+    functions.put("setPwmEnable", null);
+    functions.put("setPwmDisable", null);
+    functions.put("isPwmEnabled", null);
     ToolboxUtil.addFunctions(xmlToolbox, hardwareType, identifier, functions);
   }
 
@@ -2587,6 +2678,42 @@ public class HardwareUtil {
     Map<String, Map<String, String>> functions = new TreeMap<String, Map<String, String>>();
     functions.put("pwmEnable", null);
     functions.put("pwmDisable", null);
+    ToolboxUtil.addFunctions(xmlToolbox, hardwareType, identifier, functions);
+  }
+
+  /**
+   * Adds the category for SparkFunLEDStick to the toolbox.
+   */
+  private static void addSparkFunLEDStickCategoryToToolbox(
+      StringBuilder xmlToolbox, HardwareType hardwareType, List<HardwareItem> hardwareItems,
+      AssetManager assetManager) throws IOException {
+    String identifier = hardwareItems.get(0).identifier;
+    String zero = ToolboxUtil.makeNumberShadow(0);
+    String one = ToolboxUtil.makeNumberShadow(1);
+    String blue = "<shadow type=\"color_constant_Number\"><field name=\"CONSTANT\">BLUE</field></shadow>\n";
+    String red = "<shadow type=\"color_constant_Number\"><field name=\"CONSTANT\">RED</field></shadow>\n";
+    String twenty = ToolboxUtil.makeNumberShadow(20);
+
+    // Functions
+    Map<String, Map<String, String>> functions = new TreeMap<String, Map<String, String>>();
+    Map<String, String> setColor_withPositionArgs = new LinkedHashMap<String, String>();
+    setColor_withPositionArgs.put("POSITION", one);
+    setColor_withPositionArgs.put("COLOR", blue);
+    functions.put("setColor_withPosition", setColor_withPositionArgs);
+    Map<String, String> setColorArgs = new LinkedHashMap<String, String>();
+    setColorArgs.put("COLOR", blue);
+    functions.put("setColor", setColorArgs);
+    Map<String, String> setColorsArgs = new LinkedHashMap<String, String>();
+    setColorsArgs.put("COLORS", ToolboxUtil.makeVariableGetBlock("ledColors"));
+    functions.put("setColors", setColorsArgs);
+    Map<String, String> setBrightness_withPositionArgs = new LinkedHashMap<String, String>();
+    setBrightness_withPositionArgs.put("POSITION", one);
+    setBrightness_withPositionArgs.put("BRIGHTNESS", twenty);
+    functions.put("setBrightness_withPosition", setBrightness_withPositionArgs);
+    Map<String, String> setBrightnessArgs = new LinkedHashMap<String, String>();
+    setBrightnessArgs.put("BRIGHTNESS", twenty);
+    functions.put("setBrightness", setBrightnessArgs);
+    functions.put("turnAllOff", null);
     ToolboxUtil.addFunctions(xmlToolbox, hardwareType, identifier, functions);
   }
 
@@ -2780,6 +2907,14 @@ public class HardwareUtil {
     // com.qualcomm.hardware.digitalchickenlabs
     set.add("CachingOctoQuad");
     set.add("OctoQuadBase");
+    // com.qualcomm.hardware.limelightvision
+    set.add("Limelight3A");
+    set.add("LLResult");
+    set.add("LLResultTypes");
+    set.add("LLStatus");
+    set.add("OctoQuad");
+    // com.qualcomm.hardware.maxbotix
+    set.add("MaxSonarI2CXL");
     // com.qualcomm.hardware.modernrobotics
     set.add("ModernRoboticsI2cCompassSensor");
     set.add("ModernRoboticsI2cGyro");
@@ -2787,7 +2922,9 @@ public class HardwareUtil {
     // com.qualcomm.hardware.rev
     set.add("RevBlinkinLedDriver");
     set.add("RevHubOrientationOnRobot");
+    set.add("Rev9AxisImuOrientationOnRobot");
     // com.qualcomm.hardware.sparkfun
+    set.add("SparkFunLEDStick");
     set.add("SparkFunOTOS");
     // com.qualcomm.robotcore.eventloop
     set.add("Autonomous");
@@ -2851,8 +2988,6 @@ public class HardwareUtil {
     set.add("AprilTagPoseFtc");
     set.add("AprilTagPoseRaw");
     set.add("AprilTagProcessor");
-    // org.firstinspires.ftc.vision.tfod
-    set.add("TfodProcessor");
     // org.firstinspires.ftc.robotcore.external
     set.add("ClassFactory");
     set.add("JavaUtil");
@@ -2882,6 +3017,7 @@ public class HardwareUtil {
     set.add("Acceleration");
     set.add("AngleUnit");
     set.add("AngularVelocity");
+    set.add("Pose3D");
     set.add("AxesOrder");
     set.add("AxesReference");
     set.add("Axis");
@@ -2896,8 +3032,6 @@ public class HardwareUtil {
     set.add("Velocity");
     // org.firstinspires.ftc.robotcore.external.stream
     set.add("CameraStreamServer");
-    // org.firstinspires.ftc.robotcore.external.tfod
-    set.add("Recognition");
     // org.firstinspires.ftc.robotcore.internal.system
     set.add("AppUtil");
     // LinearOpMode members

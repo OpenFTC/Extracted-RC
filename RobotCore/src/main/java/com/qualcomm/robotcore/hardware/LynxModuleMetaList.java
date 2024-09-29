@@ -165,7 +165,7 @@ public class LynxModuleMetaList implements Iterable<LynxModuleMeta>
         for (LynxModuleMeta module : this.modules)
             {
             if (!first) result.append(" ");
-            result.append(String.format(Locale.getDefault(), "%d(%s, ImuType.%s)", module.getModuleAddress(), module.isParent(), module.imuType()));
+            result.append(String.format(Locale.getDefault(), "%d(%s, ImuType.%s, Product.%x)", module.getModuleAddress(), module.isParent(), module.imuType(), module.revProductNumber()));
             first = false;
             }
         result.append("]");

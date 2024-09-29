@@ -32,12 +32,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package com.qualcomm.hardware.rev;
 
-import com.qualcomm.robotcore.hardware.ImuOrientationOnRobot;
-import com.qualcomm.robotcore.hardware.QuaternionBasedImuHelper;
-
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Quaternion;
 
@@ -46,7 +40,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Quaternion;
  * <p>
  * Pass to the {@link com.qualcomm.robotcore.hardware.IMU.Parameters} constructor.
  */
-public class RevHubOrientationOnRobot implements ImuOrientationOnRobot {
+public class RevHubOrientationOnRobot extends RevImuOrientationOnRobot {
     public enum LogoFacingDirection {
         UP,
         DOWN,
@@ -64,10 +58,6 @@ public class RevHubOrientationOnRobot implements ImuOrientationOnRobot {
         LEFT,
         RIGHT
     }
-
-    private final Quaternion robotCoordinateSystemFromPerspectiveOfImu;
-    private final Quaternion imuRotationOffset;
-    private final Quaternion angularVelocityTransform;
 
     /**
      * Constructs a {@link RevHubOrientationOnRobot} for a REV Hub that is mounted orthogonally to a
@@ -102,45 +92,7 @@ public class RevHubOrientationOnRobot implements ImuOrientationOnRobot {
      *                 facing forward, to its actual orientation on the robot.
      */
     public RevHubOrientationOnRobot(Quaternion rotation) {
-        // When an Expansion Hub or Control Hub has its logo facing up and the USB ports facing
-        // forward, the IMU's axes are rotated by -90 degrees around the Z axis compared to the
-        // Robot Coordinate System's axes, so we need to apply that rotation to whatever the user
-        // has specified.
-        Quaternion imuRotationWithinHub = QuaternionBasedImuHelper.quaternionFromZAxisRotation(-90, AngleUnit.DEGREES);
-        rotation = rotation.multiply(imuRotationWithinHub, 0).normalized();
-
-        // A rotation that will take the hub from the "default" orientation to its actual
-        // orientation when applied in the Robot Coordinate System, will take the hub from its
-        // actual orientation to the "default" orientation when applied in the IMU's coordinate
-        // system, which is what the angular velocity transform is!
-        this.angularVelocityTransform = new Quaternion(rotation.w, rotation.x, rotation.y, rotation.z, 0);
-
-        // For the BNO055 and BHI260, the Z axis always points upward, just like in the Robot
-        // Coordinate System, regardless of the starting orientation (this is accomplished using
-        // their internal accelerometers). This means that the only axes that ever need to be
-        // remapped are the X and Y axes, which we can do with the Z axis component of the rotation.
-        this.robotCoordinateSystemFromPerspectiveOfImu = new Quaternion(rotation.w, 0, 0, rotation.z, 0).normalized();
-
-        // The Z axis rotation will always start out at zero, so we don't want to include that in
-        // the rotation offset.
-        rotation = rotation.multiply(robotCoordinateSystemFromPerspectiveOfImu.inverse(), 0).normalized();
-
-        // The rotation was provided as the rotation that needs to be applied to a hub in the
-        // "default" orientation to get it to its actual orientation. The offset that will be
-        // applied needs to be the opposite (inverse) of that.
-        this.imuRotationOffset = rotation.inverse().normalized();
-    }
-
-    @Override public Quaternion imuCoordinateSystemOrientationFromPerspectiveOfRobot() {
-        return robotCoordinateSystemFromPerspectiveOfImu;
-    }
-
-    @Override public Quaternion imuRotationOffset() {
-        return imuRotationOffset;
-    }
-
-    @Override public Quaternion angularVelocityTransform() {
-        return angularVelocityTransform;
+        super(rotation);
     }
 
     protected static Orientation friendlyApiToOrientation(LogoFacingDirection logoFacingDirection, UsbFacingDirection usbFacingDirection) {
@@ -238,10 +190,10 @@ public class RevHubOrientationOnRobot implements ImuOrientationOnRobot {
     }
 
     public static Orientation zyxOrientation(double z, double y, double x) {
-        return new Orientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES, (float) z, (float) y, (float) x, 0);
+        return RevImuOrientationOnRobot.zyxOrientation(z, y, x);
     }
 
     public static Orientation xyzOrientation(double x, double y, double z) {
-        return new Orientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES, (float) x, (float) y, (float) z, 0);
+        return RevImuOrientationOnRobot.xyzOrientation(x, y, z);
     }
 }

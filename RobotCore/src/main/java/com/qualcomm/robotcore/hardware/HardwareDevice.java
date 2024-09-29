@@ -51,6 +51,8 @@ public interface HardwareDevice {
     DFRobot,
     DigitalChickenLabs,
     SparkFun,
+    MaxBotix,
+    LimelightVision,
   }
 
   /**

@@ -94,10 +94,14 @@ abstract class HardwareAccess<DEVICE_TYPE extends HardwareDevice> extends Access
         return new IrSeekerSensorAccess(blocksOpMode, hardwareItem, hardwareMap);
       case LED:
         return new LedAccess(blocksOpMode, hardwareItem, hardwareMap);
+      case LIMELIGHT_3A:
+        return new Limelight3AAccess(blocksOpMode, hardwareItem, hardwareMap);
       case LIGHT_SENSOR:
         return new LightSensorAccess(blocksOpMode, hardwareItem, hardwareMap);
       case LYNX_MODULE:
         return null;
+      case MAX_SONAR_I2CXL:
+        return new MaxSonarI2CXLAccess(blocksOpMode, hardwareItem, hardwareMap);
       case MR_I2C_COMPASS_SENSOR:
         return new MrI2cCompassSensorAccess(blocksOpMode, hardwareItem, hardwareMap);
       case MR_I2C_RANGE_SENSOR:
@@ -112,6 +116,8 @@ abstract class HardwareAccess<DEVICE_TYPE extends HardwareDevice> extends Access
         return new ServoAccess(blocksOpMode, hardwareItem, hardwareMap);
       case SERVO_CONTROLLER:
         return new ServoControllerAccess(blocksOpMode, hardwareItem, hardwareMap);
+      case SPARKFUN_LED_STICK:
+        return new SparkFunLEDStickAccess(blocksOpMode, hardwareItem, hardwareMap);
       case SPARKFUN_OTOS:
         return new SparkFunOTOSAccess(blocksOpMode, hardwareItem, hardwareMap);
       case TOUCH_SENSOR:

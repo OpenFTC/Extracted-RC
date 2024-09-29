@@ -213,7 +213,17 @@ function knownTypeToClassName(type) {
       return 'com.qualcomm.hardware.dfrobot.' + type;
     case 'CachingOctoQuad':
     case 'OctoQuadBase':
+    case 'OctoQuad':
       return 'com.qualcomm.hardware.digitalchickenlabs.' + type;
+    case 'Limelight3A':
+    case 'LLResult':
+    case 'LLResultTypes':
+    case 'LLResultTypes.FiducialResult':
+    case 'LLResultTypes.ColorResult':
+    case 'LLStatus':
+      return 'com.qualcomm.hardware.limelightvision.' + type;
+    case 'MaxSonarI2CXL':
+      return 'com.qualcomm.hardware.maxbotix.' + type;
     case 'ModernRoboticsI2cCompassSensor':
     case 'ModernRoboticsI2cGyro':
     case 'ModernRoboticsI2cGyro.HeadingMode':
@@ -224,7 +234,11 @@ function knownTypeToClassName(type) {
     case 'RevHubOrientationOnRobot':
     case 'RevHubOrientationOnRobot.LogoFacingDirection':
     case 'RevHubOrientationOnRobot.UsbFacingDirection':
+    case 'Rev9AxisImuOrientationOnRobot':
+    case 'Rev9AxisImuOrientationOnRobot.I2cPortFacingDirection':
+    case 'Rev9AxisImuOrientationOnRobot.LogoFacingDirection':
       return 'com.qualcomm.hardware.rev.' + type;
+    case 'SparkFunLEDStick':
     case 'SparkFunOTOS':
     case 'SparkFunOTOS.Pose2D':
     case 'SparkFunOTOS.SelfTestConfig':
@@ -324,8 +338,6 @@ function knownTypeToClassName(type) {
     case 'AprilTagPoseRaw':
     case 'AprilTagProcessor':
       return 'org.firstinspires.ftc.vision.apriltag.' + type;
-    case 'TfodProcessor':
-      return 'org.firstinspires.ftc.vision.tfod.' + type;
     case 'ClassFactory':
     case 'JavaUtil':
     case 'Telemetry':
@@ -361,6 +373,7 @@ function knownTypeToClassName(type) {
     case 'Acceleration':
     case 'AngleUnit':
     case 'AngularVelocity':
+    case 'Pose3D':
     case 'AxesOrder':
     case 'AxesReference':
     case 'Axis':
@@ -378,8 +391,6 @@ function knownTypeToClassName(type) {
       return 'org.firstinspires.ftc.robotcore.external.navigation.' + type;
     case 'CameraStreamServer':
       return 'org.firstinspires.ftc.robotcore.external.stream.' + type;
-    case 'Recognition':
-      return 'org.firstinspires.ftc.robotcore.external.tfod.' + type;
     case 'AppUtil':
       return 'org.firstinspires.ftc.robotcore.internal.system.' + type;
   }

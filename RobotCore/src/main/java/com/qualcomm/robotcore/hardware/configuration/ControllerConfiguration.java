@@ -87,9 +87,12 @@ public abstract class ControllerConfiguration<ITEM_T extends DeviceConfiguration
 
   public static @Nullable ControllerConfiguration forType(String name, @NonNull SerialNumber serialNumber, ConfigurationType type) {
 
-    if (type==BuiltInConfigurationType.LYNX_USB_DEVICE)          return new LynxUsbDeviceConfiguration(name, new LinkedList<LynxModuleConfiguration>(), serialNumber);
+    if (type==BuiltInConfigurationType.LYNX_USB_DEVICE)          return new LynxUsbDeviceConfiguration(name, new LinkedList<RhspModuleConfiguration>(), serialNumber);
     if (type==BuiltInConfigurationType.LYNX_MODULE)              return new LynxModuleConfiguration(name);  // unclear if necessary
     if (type==BuiltInConfigurationType.WEBCAM)                   return new WebcamConfiguration(name, serialNumber);
+    if (type==BuiltInConfigurationType.ETHERNET_OVER_USB_DEVICE) return new EthernetOverUsbConfiguration(name, serialNumber, "172.0.0.1");
+    if (type==BuiltInConfigurationType.SERVO_HUB)                return new ServoHubConfiguration(name);
+
 
     return null;
   }

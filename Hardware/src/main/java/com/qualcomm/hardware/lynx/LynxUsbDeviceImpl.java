@@ -47,6 +47,7 @@ import com.qualcomm.robotcore.eventloop.SyncdDevice;
 import com.qualcomm.robotcore.exception.RobotCoreException;
 import com.qualcomm.robotcore.hardware.DeviceManager;
 import com.qualcomm.robotcore.hardware.LynxModuleDescription;
+import com.qualcomm.robotcore.hardware.LynxModuleImuType;
 import com.qualcomm.robotcore.hardware.LynxModuleMeta;
 import com.qualcomm.robotcore.hardware.LynxModuleMetaList;
 import com.qualcomm.robotcore.hardware.configuration.LynxConstants;
@@ -939,36 +940,44 @@ public class LynxUsbDeviceImpl extends ArmableUsbDevice implements LynxUsbDevice
             Thread.sleep(msWait, (int) nsWait);
             RobotLog.vv(TAG, "discovery waiting complete: #modules=%d", discoveredModules.size());
 
-            if (checkForImus)
+            RobotLog.vv(TAG, "Checking type of discovered modules");
+            LynxModuleMeta[] parents = discoveredModules.values().stream()
+                    .filter(LynxModuleMeta::isParent)
+                    .toArray(LynxModuleMeta[]::new);
+            if (parents.length > 0)
                 {
-                RobotLog.vv(TAG, "Checking if discovered modules have onboard IMUs");
-                LynxModuleMeta[] parents = discoveredModules.values().stream()
-                        .filter(LynxModuleMeta::isParent)
-                        .toArray(LynxModuleMeta[]::new);
-                if (parents.length > 0)
+                LynxModuleMeta parentInfo = parents[0];
+                for (final LynxModuleMeta moduleMeta: discoveredModules.values())
                     {
-                    LynxModuleMeta parentInfo = parents[0];
-                    for (final LynxModuleMeta moduleMeta: discoveredModules.values())
+                    try
                         {
-                        try
-                            {
-                            performSystemOperationOnConnectedModule(
-                                    moduleMeta.getModuleAddress(),
-                                    parentInfo.getModuleAddress(),
-                                    module -> moduleMeta.setImuType(module.getImuType()),
-                                    250,
-                                    TimeUnit.MILLISECONDS);
-                            }
-                        catch (TimeoutException e)
-                            {
-                            RobotLog.ee(TAG, e, "Timeout expired while getting IMU type");
-                            }
+                        performSystemOperationOnConnectedModule(
+                                moduleMeta.getModuleAddress(),
+                                parentInfo.getModuleAddress(),
+                                module -> {
+                                    final int revProductNumber = module.getRevProductNumber();
+                                    moduleMeta.setRevProductNumber(revProductNumber);
+                                    if (checkForImus)
+                                        {
+                                        moduleMeta.setImuType(module.getImuType());
+                                        }
+                                    else
+                                        {
+                                        moduleMeta.setImuType(LynxModuleImuType.UNKNOWN);
+                                        }
+                                },
+                                250,
+                                TimeUnit.MILLISECONDS);
+                        }
+                    catch (TimeoutException e)
+                        {
+                        RobotLog.ee(TAG, e, "Timeout expired while getting IMU type");
                         }
                     }
-                else
-                    {
-                    RobotLog.ee(TAG, "Unable to check for onboard IMUs as the parent module was not found");
-                    }
+                }
+            else
+                {
+                RobotLog.ee(TAG, "Unable to check for onboard IMUs as the parent module was not found");
                 }
             }
         catch (LynxNackException e)
