@@ -5,7 +5,12 @@ apply plugin: 'com.android.library'
 def versionNumbers = new Properties()
 file("versionNumbers.properties").withInputStream { versionNumbers.load(it) }
 
+android.buildFeatures.buildConfig true
+
 android {
+
+    namespace 'com.qualcomm.robotcore'
+
     compileSdkVersion 29
 
     defaultConfig {

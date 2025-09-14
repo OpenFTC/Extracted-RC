@@ -1,6 +1,11 @@
 apply plugin: 'com.android.library'
 
+android.buildFeatures.buildConfig true
+
 android {
+
+    namespace 'org.firstinspires.ftc.vision'
+
     compileSdkVersion 29
 
     defaultConfig {

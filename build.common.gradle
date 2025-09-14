@@ -21,6 +21,8 @@ apply plugin: 'com.android.application'
 
 android {
 
+    namespace 'org.firstinspires.ftc.teamcode'
+
     compileSdkVersion 29
 
     signingConfigs {
