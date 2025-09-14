@@ -5,6 +5,8 @@
 */
 package com.qualcomm.hardware.sparkfun;
 
+import androidx.annotation.NonNull;
+
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
@@ -161,6 +163,10 @@ public class SparkFunOTOS extends I2cDeviceSynchDevice<I2cDeviceSynch> {
             this.x = pose.x;
             this.y = pose.y;
             this.h = pose.h;
+        }
+        @NonNull
+        public String toString(){
+            return "(SparkFunOTOS.Pose2D) X: " + x + " Y: " + y + " H: " + h;
         }
     }
 

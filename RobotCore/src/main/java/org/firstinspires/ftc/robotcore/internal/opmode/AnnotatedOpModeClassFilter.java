@@ -281,6 +281,13 @@ public class AnnotatedOpModeClassFilter implements ClassFilter
             return false;
             }
 
+        // If the class is an inner class it can't be instantiated and will fail silently.
+        if (isNonStaticInnerClass(clazz))
+            {
+            reportOpModeConfigurationError("'%s' class is an inner class.  Inner classes can not be run as OpModes", clazz.getSimpleName());
+            return false;
+            }
+
         // If it's not 'public', it can't be loaded by the system and won't work. We report
         // the error and ignore the class
         if (!Modifier.isPublic(clazz.getModifiers()))
@@ -682,6 +689,16 @@ public class AnnotatedOpModeClassFilter implements ClassFilter
     private boolean isOpMode(Class clazz)
         {
         return ClassUtil.inheritsFrom(clazz, OpMode.class);
+        }
+
+    private boolean isNonStaticInnerClass(Class clazz)
+        {
+        if (clazz.getEnclosingClass() != null)
+            {
+            return !Modifier.isStatic(clazz.getModifiers());
+            }
+
+        return false;
         }
 
     }

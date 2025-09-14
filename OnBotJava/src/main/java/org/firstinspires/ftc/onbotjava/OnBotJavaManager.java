@@ -170,7 +170,7 @@ public class OnBotJavaManager implements Closeable
 
     public static final File assetRoot              = new File("java");
     public static final String[] platformClassPathLibs = new String[] { "android.jar", "androidx-rs.jar" };
-    private static final String[] ftcClassPathLibs      = new String[] { "onbotjava-classes.jar", "desugar_jdk_libs-1.1.1.jar", "core-lambda-stubs-30.0.3.jar" };
+    private static final String[] ftcClassPathLibs      = new String[] { "onbotjava-classes.jar", "desugar_jdk_libs-2.1.2.jar", "core-lambda-stubs-30.0.3.jar" };
 
     //----------------------------------------------------------------------------------------------
     // State

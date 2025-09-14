@@ -50,6 +50,8 @@ import java.util.concurrent.Semaphore;
  * every time you need one, the same is not true for {@link LockingRunner}.
  */
 public final class LockingRunner {
+    // package-private
+    static final String ATTEMPTED_REENTRANT_USAGE_ERROR_MESSAGE = "The thread currently holding the lock tried to obtain the lock. This is invalid behavior, as LockingRunner does not (currently) support re-entrant locking, to preserve full compatibility with file-based locking.";
     private static final int MAX_CONCURRENT_EXECUTIONS = 1;
     private static class NeverThrown extends Exception {}
 
@@ -92,7 +94,7 @@ public final class LockingRunner {
 
     private void lock() throws InterruptedException {
         if (lockingThreadReference != null && lockingThreadReference.get().equals(Thread.currentThread())) {
-            throw new RuntimeException("The thread currently holding the lock tried to obtain the lock. This is invalid behavior, as LockingRunner does not (currently) support re-entrant locking, to preserve full compatibility with file-based locking.");
+            throw new RuntimeException(ATTEMPTED_REENTRANT_USAGE_ERROR_MESSAGE);
         }
         semaphore.acquire();
         lockingThreadReference = new WeakReference<>(Thread.currentThread());

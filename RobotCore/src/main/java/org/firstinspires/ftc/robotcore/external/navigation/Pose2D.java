@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.robotcore.external.navigation;
 
+import androidx.annotation.NonNull;
+
 /**
  * Pose2D represents the position and heading of an object in 2D space.
  */
@@ -53,5 +55,15 @@ public class Pose2D {
      */
     public double getHeading(AngleUnit unit) {
         return unit.fromUnit(this.headingUnit, heading);
+    }
+
+    /**
+     * This returns a string representation of the object in a human readable format for debugging purposes.
+     * @return a string representation of the object
+     */
+    @NonNull
+    @Override
+    public String toString() {
+        return "(Pose2D) x=" + x + ", y=" + y + " " + distanceUnit + ", heading=" + heading + " " + headingUnit;
     }
 }

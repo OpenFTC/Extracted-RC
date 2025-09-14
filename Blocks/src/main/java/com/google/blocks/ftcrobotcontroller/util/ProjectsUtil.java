@@ -32,7 +32,6 @@ import com.google.blocks.ftcrobotcontroller.IOExceptionWithUserVisibleMessage;
 import com.google.blocks.ftcrobotcontroller.hardware.HardwareItem;
 import com.google.blocks.ftcrobotcontroller.hardware.HardwareItemMap;
 import com.google.blocks.ftcrobotcontroller.hardware.HardwareType;
-import com.google.blocks.ftcrobotcontroller.hardware.HardwareUtil;
 import com.qualcomm.robotcore.util.ReadWriteFile;
 import com.qualcomm.robotcore.util.RobotLog;
 
@@ -45,13 +44,11 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlSerializer;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -67,8 +64,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 /**
  * A class that provides utility methods related to blocks projects.
@@ -139,8 +134,10 @@ public class ProjectsUtil {
                   .append("\"enabled\":").append(enabled)
                   .append("}");
               delimiter = ",";
+            } catch (CorruptFileException e) {
+              RobotLog.ee(TAG, "While fetching projects with blocks, " + projectName + " could not be read, skipping");
             } catch (IOException e) {
-              RobotLog.e("ProjectsUtil.fetchProjectsWithBlocks() - problem with project " + projectName);
+              RobotLog.ee(TAG, "fetchProjectsWithBlocks() - problem with project " + projectName);
               RobotLog.logStackTrace(e);
             }
           }
@@ -175,16 +172,19 @@ public class ProjectsUtil {
           for (File file : files) {
             String filename = file.getName();
             String projectName = filename.substring(0, filename.length() - BLOCKS_BLK_EXT.length());
-            String blkFileContent = fetchBlkFileContent(projectName);
-            // The extraXml is after the first </xml>.
-            int iXmlEndTag = blkFileContent.indexOf(XML_END_TAG);
-            if (iXmlEndTag == -1) {
-              // File is empty or corrupt.
-              continue;
+            try {
+              String blkFileContent = fetchBlkFileContent(projectName);
+              // The extraXml is after the first </xml>.
+              int iXmlEndTag = blkFileContent.indexOf(XML_END_TAG);
+              if (iXmlEndTag == -1) {
+                continue;
+              }
+              String extraXml = blkFileContent.substring(iXmlEndTag + XML_END_TAG.length());
+              offlineBlocksProjects.add(new OfflineBlocksProject(filename, blkFileContent,
+                      projectName, file.lastModified(), isProjectEnabled(projectName, extraXml)));
+            } catch (CorruptFileException e) {
+              RobotLog.ee(TAG, "Block file," + projectName + ", for offline blocks editor could not be read, skipping");
             }
-            String extraXml = blkFileContent.substring(iXmlEndTag + XML_END_TAG.length());
-            offlineBlocksProjects.add(new OfflineBlocksProject(filename, blkFileContent,
-                projectName, file.lastModified(), isProjectEnabled(projectName, extraXml)));
           }
         }
         return null;
@@ -207,8 +207,12 @@ public class ProjectsUtil {
           for (File file : files) {
             String filename = file.getName();
             String projectName = filename.substring(0, filename.length() - BLOCKS_BLK_EXT.length());
-            String blkFileContent = fetchBlkFileContent(projectName);
-            blocksProjects.add(new BlocksProject(filename, blkFileContent, file.lastModified()));
+            try {
+              String blkFileContent = fetchBlkFileContent(projectName);
+              blocksProjects.add(new BlocksProject(filename, blkFileContent, file.lastModified()));
+            } catch (CorruptFileException e) {
+              RobotLog.ee(TAG, "While fetching blocks projects, block file " + projectName + " could not be read, skipping");
+            }
           }
         }
         return null;
@@ -321,9 +325,13 @@ public class ProjectsUtil {
         if (filenames != null) {
           for (String filename : filenames) {
             String projectName = filename.substring(0, filename.length() - BLOCKS_JS_EXT.length());
-            OpModeMeta opModeMeta = fetchOpModeMeta(projectName);
-            if (opModeMeta != null) {
-              projects.add(opModeMeta);
+            try {
+              OpModeMeta opModeMeta = fetchOpModeMeta(projectName);
+              if (opModeMeta != null) {
+                projects.add(opModeMeta);
+            }
+            } catch (CorruptFileException e) {
+              RobotLog.ee(TAG, "While fetching enabled projects with js, block file," + projectName + ", could not be read, skipping");
             }
           }
         }
@@ -333,7 +341,7 @@ public class ProjectsUtil {
   }
 
   @Nullable
-  private static OpModeMeta fetchOpModeMeta(String projectName) {
+  private static OpModeMeta fetchOpModeMeta(String projectName) throws CorruptFileException {
     if (!isValidProjectName(projectName)) {
       throw new IllegalArgumentException();
     }
