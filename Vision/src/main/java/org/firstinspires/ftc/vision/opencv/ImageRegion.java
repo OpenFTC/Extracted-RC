@@ -64,6 +64,21 @@ public class ImageRegion
         this.right = right;
         this.bottom = bottom;
         this.imageCoords = imageCoords;
+
+        if (imageCoords)
+        {
+            if (left >= right || top >= bottom || left < 0 || top < 0)
+            {
+                throw new IllegalArgumentException("Malformed ImageRegion boundaries!");
+            }
+        }
+        else // unity center
+        {
+            if (left >= right || top <= bottom || left < -1.0 || right > 1.0 || top > 1.0 || bottom < -1.0)
+            {
+                throw new IllegalArgumentException("Malformed ImageRegion boundaries!");
+            }
+        }
     }
 
     /**

@@ -18,6 +18,8 @@ package com.google.blocks.ftcrobotcontroller.hardware;
 
 import static com.google.blocks.ftcrobotcontroller.util.CurrentGame.CURRENT_GAME_NAME;
 import static com.google.blocks.ftcrobotcontroller.util.CurrentGame.CURRENT_GAME_NAME_NO_SPACES;
+import static com.google.blocks.ftcrobotcontroller.util.ProjectsUtil.XML_END_TAG;
+import static com.google.blocks.ftcrobotcontroller.util.ProjectsUtil.XML_EXTRA_START;
 import static com.google.blocks.ftcrobotcontroller.util.ProjectsUtil.escapeSingleQuotes;
 import static com.google.blocks.ftcrobotcontroller.util.ToolboxUtil.escapeForXml;
 
@@ -88,6 +90,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.firstinspires.ftc.robotcore.external.ExportAprilTagLibraryToBlocks;
+import org.firstinspires.ftc.robotcore.external.ExportEnumToBlocks;
 import org.firstinspires.ftc.robotcore.external.ExportToBlocks;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.android.AndroidSoundPool;
@@ -111,6 +114,8 @@ import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
  */
 public class HardwareUtil {
   private static final SensorManager sensorManager = (SensorManager) AppUtil.getDefContext().getSystemService(Context.SENSOR_SERVICE);
+
+  private static final BlocksClassFilter blocksClassFilter = BlocksClassFilter.getInstance();
 
   private static final String DC_MOTOR_EX_CATEGORY_NAME = "Extended";
   private static final String DC_MOTOR_DUAL_CATEGORY_NAME = "Dual";
@@ -234,6 +239,10 @@ public class HardwareUtil {
         .append("  ];\n\n");
 
     jsHardware.append("var IDENTIFIERS_USED_PREFIX = '").append(IDENTIFIERS_USED_PREFIX).append("';\n\n");
+
+    jsHardware
+        .append("var XML_END_TAG = '").append(escapeSingleQuotes(XML_END_TAG)).append("';\n")
+        .append("var XML_EXTRA_START = '").append(escapeSingleQuotes(XML_EXTRA_START)).append("';\n\n");
 
     jsHardware.append("var AUTO_TRANSITION_OPTIONS = [\n");
     for (String teleOpName : teleOpNames) {
@@ -791,9 +800,9 @@ public class HardwareUtil {
 
     addAndroidCategoriesToToolbox(xmlToolbox, assetManager);
 
-    addExportedHardware(xmlToolbox, additionalReservedWordsForFtcJava, methodLookupStrings, jsHardware);
+    addExportedHardwareAndEnums(xmlToolbox, additionalReservedWordsForFtcJava, methodLookupStrings, jsHardware);
 
-    addExportedStaticMethods(xmlToolbox, additionalReservedWordsForFtcJava, methodLookupStrings);
+    addExportedStaticMethodsAndEnums(xmlToolbox, additionalReservedWordsForFtcJava, methodLookupStrings);
 
     if (assetManager != null) {
       addAssetWithPlaceholders(xmlToolbox,
@@ -807,11 +816,11 @@ public class HardwareUtil {
     return xmlToolbox.toString();
   }
 
-  private static void addExportedHardware(StringBuilder xmlToolbox,
+  private static void addExportedHardwareAndEnums(StringBuilder xmlToolbox,
       Set<String> additionalReservedWordsForFtcJava,
       Set<String> methodLookupStrings,
       StringBuilder jsHardware) {
-    Map<Class<? extends HardwareDevice>, Set<Method>> methodsByClass = BlocksClassFilter.getInstance().getHardwareMethodsByClass();
+    Map<Class<? extends HardwareDevice>, Set<Method>> methodsByClass = blocksClassFilter.getHardwareMethodsByClass();
     if (methodsByClass.isEmpty()) {
       return;
     }
@@ -842,7 +851,10 @@ public class HardwareUtil {
       return;
     }
 
-    boolean addedParentCategory = false;
+    boolean addedAdditionalHardwareCategory = false;
+
+    Map<Class, Set<Class<? extends Enum>>> enumClassesByEnclosingClass = blocksClassFilter.getEnumClassesByEnclosingClass();
+
     for (Map.Entry<Class<? extends HardwareDevice>, Set<Method>> entry : methodsByClass.entrySet()) {
       Class<? extends HardwareDevice> clazz = entry.getKey();
 
@@ -852,9 +864,9 @@ public class HardwareUtil {
         continue;
       }
 
-      if (!addedParentCategory) {
+      if (!addedAdditionalHardwareCategory) {
         xmlToolbox.append("<category name=\"Additional Hardware\">\n");
-        addedParentCategory = true;
+        addedAdditionalHardwareCategory = true;
       }
 
       DeviceProperties deviceProperties = clazz.getAnnotation(DeviceProperties.class);
@@ -862,13 +874,10 @@ public class HardwareUtil {
           jsHardware, deviceProperties, deviceNames);
 
       String fullClassName = clazz.getName();
-      String className = fullClassName;
-      if (className.startsWith("org.firstinspires.ftc.teamcode.") && className.lastIndexOf('.') == 30) {
-        className = className.substring(31);
-        additionalReservedWordsForFtcJava.add(className);
-      }
-
+      getUserVisibleClassName(fullClassName, additionalReservedWordsForFtcJava);
       xmlToolbox.append("<category name=\"").append(deviceProperties.name()).append("\">\n");
+
+      // Add blocks for methods.
       Set<Method> methods = entry.getValue();
       for (Method method : methods) {
         ExportToBlocks exportToBlocks = method.getAnnotation(ExportToBlocks.class);
@@ -903,9 +912,18 @@ public class HardwareUtil {
         processMethodArguments(xmlToolbox, parameterTypes, getParameterLabels(method), getParameterDefaultValues(method));
         // Note that processMethodArguments terminates the mutation and block tags.
       }
+
+      // Add blocks for enums.
+      Set<Class<? extends Enum>> enumClasses = enumClassesByEnclosingClass.get(clazz);
+      if (enumClasses != null) {
+        for (Class<? extends Enum> enumClass : enumClasses) {
+          addExportedEnum(enumClass, xmlToolbox, additionalReservedWordsForFtcJava);
+        }
+      }
+
       xmlToolbox.append("</category>\n");
     }
-    if (addedParentCategory) {
+    if (addedAdditionalHardwareCategory) {
       xmlToolbox.append("</category>\n");
     }
   }
@@ -942,61 +960,166 @@ public class HardwareUtil {
     return functionName;
   }
 
-  private static void addExportedStaticMethods(StringBuilder xmlToolbox,
+  private static void addExportedStaticMethodsAndEnums(StringBuilder xmlToolbox,
       Set<String> additionalReservedWordsForFtcJava,
       Set<String> methodLookupStrings) {
-    Map<Class, Set<Method>> methodsByClass = BlocksClassFilter.getInstance().getStaticMethodsByClass();
-    if (!methodsByClass.isEmpty()) {
-      xmlToolbox.append("<category name=\"Java Classes\">\n");
-      for (Map.Entry<Class, Set<Method>> entry : methodsByClass.entrySet()) {
-        Class clazz = entry.getKey();
-        String fullClassName = clazz.getName();
-        String className = fullClassName;
-        if (className.startsWith("org.firstinspires.ftc.teamcode.") && className.lastIndexOf('.') == 30) {
-          className = className.substring(31);
-          additionalReservedWordsForFtcJava.add(className);
-        }
-        String userVisibleClassName = className.replace('$', '.');
-        xmlToolbox.append("<category name=\"").append(userVisibleClassName).append("\">\n");
-        Set<Method> methods = entry.getValue();
-        for (Method method : methods) {
-          ExportToBlocks exportToBlocks = method.getAnnotation(ExportToBlocks.class);
-          if (exportToBlocks == null) {
-            continue;
-          }
-          String returnType = method.getReturnType().getName();
-          String blockType = returnType.equals("void") ? "misc_callJava_noReturn" : "misc_callJava_return";
-          String methodName = method.getName();
-          Class[] parameterTypes = method.getParameterTypes();
-          int color = exportToBlocks.color();
-          String heading = exportToBlocks.heading();
-          String comment = exportToBlocks.comment();
-          String tooltip = exportToBlocks.tooltip();
-          String methodLookupString = BlocksClassFilter.getLookupString(method);
-          methodLookupStrings.add(methodLookupString);
-          xmlToolbox
-              .append("<block type=\"").append(blockType).append("\">\n")
-              .append("<field name=\"CLASS_NAME\">").append(userVisibleClassName).append("</field>")
-              .append("<field name=\"METHOD_NAME\">").append(methodName).append("</field>")
-              .append("<mutation")
-              .append(" methodLookupString=\"").append(methodLookupString).append("\"")
-              .append(" fullClassName=\"").append(fullClassName).append("\"")
-              .append(" simpleName=\"").append(clazz.getSimpleName()).append("\"")
-              .append(" parameterCount=\"").append(parameterTypes.length).append("\"")
-              .append(" returnType=\"").append(returnType).append("\"")
-              .append(" color=\"").append(color).append("\"")
-              .append(" heading=\"").append(escapeForXml(heading)).append("\"")
-              .append(" comment=\"").append(escapeForXml(comment)).append("\"")
-              .append(" tooltip=\"").append(escapeForXml(tooltip)).append("\"")
-              .append(" accessMethod=\"").append(accessMethod(false, method.getReturnType())).append("\"")
-              .append(" convertReturnValue=\"").append(convertReturnValue(method.getReturnType())).append("\"");
-          processMethodArguments(xmlToolbox, parameterTypes, getParameterLabels(method), getParameterDefaultValues(method));
-          // Note that processMethodArguments terminates the mutation and block tags.
-        }
-        xmlToolbox.append("</category>\n");
+    boolean addedJavaClassesCategory = false;
+
+    Map<Class, Set<Method>> methodsByClass = blocksClassFilter.getStaticMethodsByClass();
+    Map<Class, Set<Class<? extends Enum>>> enumClassesByEnclosingClass = blocksClassFilter.getEnumClassesByEnclosingClass();
+
+    for (Map.Entry<Class, Set<Method>> entry : methodsByClass.entrySet()) {
+      if (!addedJavaClassesCategory) {
+        xmlToolbox.append("<category name=\"Java Classes\">\n");
+        addedJavaClassesCategory = true;
       }
+      Class enclosingClass = entry.getKey();
+      // Add a category for the enclosing class.
+      String fullClassName = enclosingClass.getName();
+      String userVisibleClassName = getUserVisibleClassName(
+          fullClassName, additionalReservedWordsForFtcJava);
+      xmlToolbox.append("<category name=\"").append(userVisibleClassName).append("\">\n");
+
+      // Add blocks for methods.
+      Set<Method> methods = entry.getValue();
+      for (Method method : methods) {
+        ExportToBlocks exportToBlocks = method.getAnnotation(ExportToBlocks.class);
+        if (exportToBlocks == null) {
+          continue;
+        }
+        String returnType = method.getReturnType().getName();
+        String blockType = returnType.equals("void") ? "misc_callJava_noReturn" : "misc_callJava_return";
+        String methodName = method.getName();
+        Class[] parameterTypes = method.getParameterTypes();
+        int color = exportToBlocks.color();
+        String heading = exportToBlocks.heading();
+        String comment = exportToBlocks.comment();
+        String tooltip = exportToBlocks.tooltip();
+        String methodLookupString = BlocksClassFilter.getLookupString(method);
+        methodLookupStrings.add(methodLookupString);
+        xmlToolbox
+            .append("<block type=\"").append(blockType).append("\">\n")
+            .append("<field name=\"CLASS_NAME\">").append(userVisibleClassName).append("</field>")
+            .append("<field name=\"METHOD_NAME\">").append(methodName).append("</field>")
+            .append("<mutation")
+            .append(" methodLookupString=\"").append(methodLookupString).append("\"")
+            .append(" fullClassName=\"").append(fullClassName).append("\"")
+            .append(" simpleName=\"").append(enclosingClass.getSimpleName()).append("\"")
+            .append(" parameterCount=\"").append(parameterTypes.length).append("\"")
+            .append(" returnType=\"").append(returnType).append("\"")
+            .append(" color=\"").append(color).append("\"")
+            .append(" heading=\"").append(escapeForXml(heading)).append("\"")
+            .append(" comment=\"").append(escapeForXml(comment)).append("\"")
+            .append(" tooltip=\"").append(escapeForXml(tooltip)).append("\"")
+            .append(" accessMethod=\"").append(accessMethod(false, method.getReturnType())).append("\"")
+            .append(" convertReturnValue=\"").append(convertReturnValue(method.getReturnType())).append("\"");
+        processMethodArguments(xmlToolbox, parameterTypes, getParameterLabels(method), getParameterDefaultValues(method));
+        // Note that processMethodArguments terminates the mutation and block tags.
+      }
+
+      // Add blocks for enums.
+      Set<Class<? extends Enum>> enumClasses = enumClassesByEnclosingClass.get(enclosingClass);
+      if (enumClasses != null) {
+        for (Class<? extends Enum> enumClass : enumClasses) {
+          addExportedEnum(enumClass, xmlToolbox, additionalReservedWordsForFtcJava);
+        }
+      }
+
       xmlToolbox.append("</category>\n");
     }
+
+    Set<Class> exportedClasses = methodsByClass.keySet();
+    Set<Class<? extends HardwareDevice>> hardwareClasses = blocksClassFilter.getHardwareMethodsByClass().keySet();
+    for (Map.Entry<Class, Set<Class<? extends Enum>>> entry : enumClassesByEnclosingClass.entrySet()) {
+      Class enclosingClass = entry.getKey();
+      if (exportedClasses.contains(enclosingClass) || hardwareClasses.contains(enclosingClass)) {
+        // We already added the enums in this enclosing class because it also had exported methods.
+        continue;
+      }
+      if (!addedJavaClassesCategory) {
+        xmlToolbox.append("<category name=\"Java Classes\">\n");
+        addedJavaClassesCategory = true;
+      }
+      // Add a category for the enclosing class (which might be the enum class).
+      String fullClassName = enclosingClass.getName();
+      String userVisibleClassName = getUserVisibleClassName(
+          fullClassName, additionalReservedWordsForFtcJava);
+      xmlToolbox.append("<category name=\"").append(userVisibleClassName).append("\">\n");
+
+      Set<Class<? extends Enum>> enumClasses = entry.getValue();
+      for (Class<? extends Enum> enumClass : enumClasses) {
+        addExportedEnum(enumClass, xmlToolbox, additionalReservedWordsForFtcJava);
+      }
+
+      xmlToolbox.append("</category>\n");
+    }
+
+    if (addedJavaClassesCategory) {
+      xmlToolbox.append("</category>\n");
+    }
+  }
+
+  private static void addExportedEnum(Class<? extends Enum> enumClass, StringBuilder xmlToolbox, Set<String> additionalReservedWordsForFtcJava) {
+    ExportEnumToBlocks exportEnumToBlocks = enumClass.getAnnotation(ExportEnumToBlocks.class);
+    if (exportEnumToBlocks == null) {
+      return;
+    }
+    String fullClassName = enumClass.getName();
+    String userVisibleEnumName = getUserVisibleEnumName(
+        fullClassName, additionalReservedWordsForFtcJava);
+    int color = exportEnumToBlocks.color();
+    Object[] enumValues = enumClass.getEnumConstants();
+
+    StringBuilder sb = new StringBuilder()
+        .append("<block type=\"").append("misc_enumJava").append("\">\n")
+        .append("<field name=\"ENUM_NAME\">").append(userVisibleEnumName).append("</field>")
+        .append("<mutation")
+        .append(" fullClassName=\"").append(fullClassName).append("\"")
+        .append(" color=\"").append(color).append("\"")
+        .append(" enumValueCount=\"").append(enumValues.length).append("\"");
+    for (int i = 0; i < enumValues.length; i++) {
+      sb.append(" enumValue").append(i).append("=\"").append(enumValues[i].toString()).append("\"");
+    }
+    sb.append("/>"); // end of mutation
+    String blockDefinitionStart = sb.toString();
+    String blockDefinitionEnd = "</block>\n";
+
+    for (Object enumValue : enumValues) {
+      xmlToolbox
+          .append(blockDefinitionStart)
+          .append("<field name=\"ENUM_VALUE\">")
+          .append(enumValue)
+          .append("</field>\n")
+          .append(blockDefinitionEnd);
+
+      if (enumValues.length > 4) {
+        // If there are more than 4 enum values, we only put one block in the toolbox.
+        break;
+      }
+    }
+  }
+
+  private static String getUserVisibleClassName(String fullClassName, Set<String> additionalReservedWordsForFtcJava) {
+    String className = fullClassName;
+    if (className.startsWith("org.firstinspires.ftc.teamcode.") && className.lastIndexOf('.') == 30) {
+      className = className.substring(31);
+      additionalReservedWordsForFtcJava.add(className);
+    }
+    return className.replace('$', '.');
+  }
+
+  private static String getUserVisibleEnumName(String fullClassName, Set<String> additionalReservedWordsForFtcJava) {
+    String className = fullClassName;
+    int lastDot = className.lastIndexOf('.');
+    if (lastDot != -1) {
+      className = className.substring(lastDot + 1);
+      int firstDollar = className.indexOf('$');
+      if (firstDollar != -1) {
+        String outerClassName = className.substring(0, firstDollar);
+        additionalReservedWordsForFtcJava.add(outerClassName);
+      }
+    }
+    return className.replace('$', '.');
   }
 
   private static void processMethodArguments(StringBuilder xmlToolbox, Class[] parameterTypes, String[] parameterLabels,
@@ -1496,17 +1619,12 @@ public class HardwareUtil {
 
   private static String getExportedAprilTagLibraryBlocks(Set<String> additionalReservedWordsForFtcJava, Set<String> methodLookupStrings) {
     StringBuilder sb = new StringBuilder();
-    Map<Class, Set<Method>> methodsByClass = BlocksClassFilter.getInstance().getAprilTagLibraryMethodsByClass();
+    Map<Class, Set<Method>> methodsByClass = blocksClassFilter.getAprilTagLibraryMethodsByClass();
     if (!methodsByClass.isEmpty()) {
       for (Map.Entry<Class, Set<Method>> entry : methodsByClass.entrySet()) {
-        Class clazz = entry.getKey();
-        String fullClassName = clazz.getName();
-        String className = fullClassName;
-        if (className.startsWith("org.firstinspires.ftc.teamcode.") && className.lastIndexOf('.') == 30) {
-          className = className.substring(31);
-          additionalReservedWordsForFtcJava.add(className);
-        }
-        String userVisibleClassName = className.replace('$', '.');
+        Class enclosingClass = entry.getKey();
+        String fullClassName = enclosingClass.getName();
+        String userVisibleClassName =  getUserVisibleClassName(fullClassName, additionalReservedWordsForFtcJava);
         Set<Method> methods = entry.getValue();
         for (Method method : methods) {
           ExportAprilTagLibraryToBlocks exportAprilTagLibraryToBlocks = method.getAnnotation(ExportAprilTagLibraryToBlocks.class);
@@ -1531,7 +1649,7 @@ public class HardwareUtil {
               .append("<mutation")
               .append(" methodLookupString=\"").append(methodLookupString).append("\"")
               .append(" fullClassName=\"").append(fullClassName).append("\"")
-              .append(" simpleName=\"").append(clazz.getSimpleName()).append("\"")
+              .append(" simpleName=\"").append(enclosingClass.getSimpleName()).append("\"")
               .append(" parameterCount=\"").append(parameterTypes.length).append("\"")
               .append(" returnType=\"").append(returnType).append("\"")
               .append(" color=\"").append(color).append("\"")
@@ -3031,6 +3149,7 @@ public class HardwareUtil {
     set.add("DistanceUnit");
     set.add("MagneticFlux");
     set.add("Orientation");
+    set.add("Pose2D");
     set.add("Position");
     set.add("Quaternion");
     set.add("Temperature");

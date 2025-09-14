@@ -155,8 +155,8 @@ public class LynxDcMotorController extends LynxController implements DcMotorCont
 
     @Override public void initializeHardware() throws RobotCoreException, InterruptedException
         {
-        floatHardware();
         runWithoutEncoders();
+        floatHardware();
         //
         forgetLastKnown();
         //

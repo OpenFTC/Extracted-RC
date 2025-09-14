@@ -562,8 +562,8 @@ Blockly.FtcJava['misc_evaluateButIgnoreResult'] = function(block) {
 //................................................................................
 // MyBlocks
 
-var MY_BLOCKS_DEFAULT_HEADING = 'call Java method';
-var MY_BLOCKS_DEFAULT_COLOR = 289;
+var MY_BLOCKS_CALL_DEFAULT_HEADING = 'call Java method';
+var MY_BLOCKS_CALL_DEFAULT_COLOR = 289;
 
 function misc_call_mutationToDom(block) {
   var xmlElement = Blockly.utils.xml.createElement('mutation');
@@ -601,9 +601,9 @@ function misc_call_domToMutation(block, xmlElement) {
 
   // Attributes added for 2021-2022 season.
   block.ftcAttributes_.heading = xmlElement.hasAttribute('heading')
-      ? xmlElement.getAttribute('heading') : MY_BLOCKS_DEFAULT_HEADING;
+      ? xmlElement.getAttribute('heading') : MY_BLOCKS_CALL_DEFAULT_HEADING;
   block.ftcAttributes_.color = xmlElement.hasAttribute('color')
-      ? Number(xmlElement.getAttribute('color')) : MY_BLOCKS_DEFAULT_COLOR;
+      ? Number(xmlElement.getAttribute('color')) : MY_BLOCKS_CALL_DEFAULT_COLOR;
   block.ftcAttributes_.createDropdownFunctionName = xmlElement.hasAttribute('createDropdownFunctionName')
       ? xmlElement.getAttribute('createDropdownFunctionName') : '';
   block.ftcAttributes_.fullClassName = xmlElement.hasAttribute('fullClassName')
@@ -889,12 +889,12 @@ Blockly.Blocks['misc_callJava_return'] = {
   init: function() {
     this.setOutput(true);
     this.appendDummyInput('HEADING')
-        .appendField(MY_BLOCKS_DEFAULT_HEADING, 'HEADING');
+        .appendField(MY_BLOCKS_CALL_DEFAULT_HEADING, 'HEADING');
     this.appendDummyInput('CLASS_METHOD')
         .appendField(createNonEditableField(''), 'CLASS_NAME')
         .appendField('.')
         .appendField(createNonEditableField(''), 'METHOD_NAME');
-    this.setColour(MY_BLOCKS_DEFAULT_COLOR);
+    this.setColour(MY_BLOCKS_CALL_DEFAULT_COLOR);
     // Assign 'this' to a variable for use in the tooltip closure below.
     var thisBlock = this;
     this.setTooltip(function() {
@@ -985,14 +985,14 @@ Blockly.FtcJava['misc_callJava_return'] = function(block) {
 Blockly.Blocks['misc_callJava_noReturn'] = {
   init: function() {
     this.appendDummyInput('HEADING')
-        .appendField(MY_BLOCKS_DEFAULT_HEADING, 'HEADING');
+        .appendField(MY_BLOCKS_CALL_DEFAULT_HEADING, 'HEADING');
     this.appendDummyInput('CLASS_METHOD')
         .appendField(createNonEditableField(''), 'CLASS_NAME')
         .appendField('.')
         .appendField(createNonEditableField(''), 'METHOD_NAME');
     this.setPreviousStatement(true);
     this.setNextStatement(true);
-    this.setColour(MY_BLOCKS_DEFAULT_COLOR);
+    this.setColour(MY_BLOCKS_CALL_DEFAULT_COLOR);
     // Assign 'this' to a variable for use in the tooltip closure below.
     var thisBlock = this;
     this.setTooltip(function() {
@@ -1032,7 +1032,7 @@ Blockly.Blocks['misc_callHardware_return'] = {
         .appendField(createNonEditableField(''), 'DEVICE_NAME')
         .appendField('.')
         .appendField(createNonEditableField(''), 'METHOD_NAME');
-    this.setColour(MY_BLOCKS_DEFAULT_COLOR);
+    this.setColour(MY_BLOCKS_CALL_DEFAULT_COLOR);
     // Assign 'this' to a variable for use in the tooltip closure below.
     var thisBlock = this;
     this.setTooltip(function() {
@@ -1136,7 +1136,7 @@ Blockly.Blocks['misc_callHardware_noReturn'] = {
         .appendField(createNonEditableField(''), 'METHOD_NAME');
     this.setPreviousStatement(true);
     this.setNextStatement(true);
-    this.setColour(MY_BLOCKS_DEFAULT_COLOR);
+    this.setColour(MY_BLOCKS_CALL_DEFAULT_COLOR);
     // Assign 'this' to a variable for use in the tooltip closure below.
     var thisBlock = this;
     this.setTooltip(function() {
@@ -1163,4 +1163,97 @@ Blockly.JavaScript['misc_callHardware_noReturn'] = function(block) {
 
 Blockly.FtcJava['misc_callHardware_noReturn'] = function(block) {
   return generateFtcJavaCallHardware(block) + ';\n';
+};
+
+//................................................................................
+// MyBlocks for enums
+
+var MY_BLOCKS_ENUM_DEFAULT_COLOR = 151;
+
+function misc_enum_mutationToDom(block) {
+  var xmlElement = Blockly.utils.xml.createElement('mutation');
+  xmlElement.setAttribute('fullClassName', block.ftcAttributes_.fullClassName);
+  xmlElement.setAttribute('color', String(block.ftcAttributes_.color));
+  xmlElement.setAttribute('enumValueCount', block.ftcAttributes_.enumValueCount);
+  for (var i = 0; i < block.ftcAttributes_.enumValueCount; i++) {
+    xmlElement.setAttribute('enumValue' + i, block.ftcAttributes_.enumValues[i]);
+  }
+  return xmlElement;
+}
+
+function misc_enum_domToMutation(block, xmlElement) {
+  if (!block.ftcAttributes_) {
+    block.ftcAttributes_ = Object.create(null);
+  }
+  block.ftcAttributes_.fullClassName =  xmlElement.getAttribute('fullClassName');
+  block.ftcAttributes_.color = xmlElement.getAttribute('color');
+  block.ftcAttributes_.enumValueCount = parseInt(xmlElement.getAttribute('enumValueCount'), 10);
+  block.ftcAttributes_.enumValues = [];
+  for (var i = 0; i < block.ftcAttributes_.enumValueCount; i++) {
+    block.ftcAttributes_.enumValues[i] = xmlElement.getAttribute('enumValue' + i);
+  }
+  // Update the block.
+  var outputCheck = classTypeToCheck(block.ftcAttributes_.fullClassName, false);
+  if (outputCheck) {
+    if (block.outputConnection) {
+      block.outputConnection.setCheck(outputCheck)
+    }
+  }
+  block.outputType_ = classTypeToFtcJavaInputOutputType(block.ftcAttributes_.fullClassName, outputCheck, false);
+  block.getFtcJavaOutputType = function() {
+    return block.outputType_;
+  }
+  // Set the block's color.
+  block.setColour(block.ftcAttributes_.color);
+  // Set the block's ENUM_VALUE dropdown
+  var input = block.getInput('ENUM_VALUE');
+  if (input) {
+    var choices = [];
+    for (var i = 0; i < block.ftcAttributes_.enumValueCount; i++) {
+      var value = block.ftcAttributes_.enumValues[i];
+      choices.push([value, value]);
+    }
+    input.removeField('ENUM_VALUE');
+    input.appendField(createFieldDropdown(choices), 'ENUM_VALUE');
+  }
+}
+
+Blockly.Blocks['misc_enumJava'] = {
+  init: function() {
+    this.setOutput(true);
+    this.appendDummyInput('ENUM_VALUE')
+        .appendField(createNonEditableField(''), 'ENUM_NAME')
+        .appendField('.')
+        .appendField(createNonEditableField(''), 'ENUM_VALUE');
+    this.setColour(MY_BLOCKS_ENUM_DEFAULT_COLOR);
+    // Assign 'this' to a variable for use in the tooltip closure below.
+    var thisBlock = this;
+    this.setTooltip(function() {
+      var enumName = thisBlock.getFieldValue('ENUM_NAME');
+      var enumValue = thisBlock.getFieldValue('ENUM_VALUE');
+      return 'The ' + enumName + ' value ' + enumValue + '.';
+    });
+  },
+  mutationToDom: function() {
+    return misc_enum_mutationToDom(this);
+  },
+  domToMutation: function(xmlElement) {
+    misc_enum_domToMutation(this, xmlElement);
+  },
+};
+
+Blockly.JavaScript['misc_enumJava'] = function(block) {
+  var code = '"' + block.getFieldValue('ENUM_VALUE') + '"';
+  return [code, Blockly.JavaScript.ORDER_ATOMIC];
+};
+
+Blockly.FtcJava['misc_enumJava'] = function(block) {
+  if (block.ftcAttributes_.fullClassName.startsWith("org.firstinspires.ftc.teamcode.") &&
+      block.ftcAttributes_.fullClassName.lastIndexOf('.') == 30) {
+  } else {
+    generateFtcImport(block.ftcAttributes_.fullClassName);
+  }
+
+  var code = block.getFieldValue('ENUM_NAME') + '.' + block.getFieldValue('ENUM_VALUE');
+  return [code, Blockly.FtcJava.ORDER_MEMBER];
 };

@@ -76,6 +76,7 @@
   <script type="text/javascript" src="blocks/optical_distance_sensor.js"></script>
   <script type="text/javascript" src="blocks/orientation.js"></script>
   <script type="text/javascript" src="blocks/pidf_coefficients.js"></script>
+  <script type="text/javascript" src="blocks/pose2d.js"></script>
   <script type="text/javascript" src="blocks/position.js"></script>
   <script type="text/javascript" src="blocks/predominant_color.js"></script>
   <script type="text/javascript" src="blocks/project_util.js"></script>
@@ -237,6 +238,7 @@
   function initialize() {
     titlePrefix = 'FTC - ' + getOfflineConfigurationName();
     document.title = titlePrefix;
+    setOnline(false);
     initializeFtcBlocksProjects();
   }
 </script>

@@ -1148,8 +1148,8 @@
       };
       var debugs = {};
       var debugEnvRegex = /^$/;
-      if ("false") {
-        debugEnv = "false";
+      if (false) {
+        debugEnv = false;
         debugEnv = debugEnv.replace(/[|\\{}()[\]^$+?.]/g, "\\$&").replace(/\*/g, ".*").replace(/,/g, "$|^").toUpperCase();
         debugEnvRegex = new RegExp("^" + debugEnv + "$", "i");
       }

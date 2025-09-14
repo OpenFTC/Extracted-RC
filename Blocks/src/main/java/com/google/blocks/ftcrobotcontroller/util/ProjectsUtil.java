@@ -80,7 +80,8 @@ public class ProjectsUtil {
   // not show up in the list of blocks projects and the user won't be able to rename them.
   public static final String VALID_PROJECT_REGEX =
       "^[a-zA-Z0-9 \\!\\#\\$\\%\\&\\'\\(\\)\\+\\,\\-\\.\\;\\=\\@\\[\\]\\^_\\{\\}\\~]+$";
-  private static final String XML_END_TAG = "</xml>";
+  public static final String XML_END_TAG = "</xml>";
+  public static final String XML_EXTRA_START = "<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>";
   private static final String XML_TAG_EXTRA = "Extra";
   private static final String XML_TAG_OP_MODE_META = "OpModeMeta";
   private static final String XML_ATTRIBUTE_FLAVOR = "flavor";
@@ -157,6 +158,22 @@ public class ProjectsUtil {
     return s.replace("\"", "\\\"");
   }
 
+  private static int findExtraXml(String blkFileContent) {
+    // The blocks file content contains the blocks xml followed by the extra xml.
+    int i = blkFileContent.indexOf(XML_END_TAG);
+    if (i != -1) {
+      return i + XML_END_TAG.length();
+    }
+    // Handle the case where the blocks xml has a self-closing tag, although
+    // this would mean that the blk file has been modified outside of the blocks
+    // editor.
+    i = blkFileContent.lastIndexOf(XML_EXTRA_START);
+    if (i != -1) {
+      return i;
+    }
+    return -1;
+  }
+
   /**
    * Collects information about the existing blocks projects, for the offline blocks editor.
    */
@@ -174,16 +191,21 @@ public class ProjectsUtil {
             String projectName = filename.substring(0, filename.length() - BLOCKS_BLK_EXT.length());
             try {
               String blkFileContent = fetchBlkFileContent(projectName);
-              // The extraXml is after the first </xml>.
-              int iXmlEndTag = blkFileContent.indexOf(XML_END_TAG);
-              if (iXmlEndTag == -1) {
-                continue;
+              boolean isProjectEnabled;
+              // The blocks file content contains the blocks xml followed by the extra xml.
+              int iExtraXml = findExtraXml(blkFileContent);
+              if (iExtraXml != -1) {
+                String extraXml = blkFileContent.substring(iExtraXml);
+                isProjectEnabled = isProjectEnabled(projectName, extraXml);
+              } else {
+                // Be tolerant if the extra xml is missing.
+                RobotLog.ee(TAG, "Block file, " + projectName + ", for offline blocks editor is missing extra xml.");
+                isProjectEnabled = true;
               }
-              String extraXml = blkFileContent.substring(iXmlEndTag + XML_END_TAG.length());
               offlineBlocksProjects.add(new OfflineBlocksProject(filename, blkFileContent,
-                      projectName, file.lastModified(), isProjectEnabled(projectName, extraXml)));
+                      projectName, file.lastModified(), isProjectEnabled));
             } catch (CorruptFileException e) {
-              RobotLog.ee(TAG, "Block file," + projectName + ", for offline blocks editor could not be read, skipping");
+              RobotLog.ee(TAG, "Block file, " + projectName + ", for offline blocks editor could not be read, skipping");
             }
           }
         }
@@ -329,9 +351,9 @@ public class ProjectsUtil {
               OpModeMeta opModeMeta = fetchOpModeMeta(projectName);
               if (opModeMeta != null) {
                 projects.add(opModeMeta);
-            }
-            } catch (CorruptFileException e) {
-              RobotLog.ee(TAG, "While fetching enabled projects with js, block file," + projectName + ", could not be read, skipping");
+              }
+            } catch (Exception e) {
+              RobotLog.ee(TAG, "While fetching enabled projects with js, block file, " + projectName + ", could not be read, skipping");
             }
           }
         }
@@ -341,7 +363,7 @@ public class ProjectsUtil {
   }
 
   @Nullable
-  private static OpModeMeta fetchOpModeMeta(String projectName) throws CorruptFileException {
+  private static OpModeMeta fetchOpModeMeta(String projectName) {
     if (!isValidProjectName(projectName)) {
       throw new IllegalArgumentException();
     }
@@ -349,16 +371,19 @@ public class ProjectsUtil {
       ensureChangesAreCommitted(projectName);
       File blkFile = new File(BLOCK_OPMODES_DIR, projectName + BLOCKS_BLK_EXT);
       String blkFileContent = FileUtil.readFile(blkFile);
-      // The extraXml is after the first </xml>.
-      int iXmlEndTag = blkFileContent.indexOf(XML_END_TAG);
-      if (iXmlEndTag == -1) {
-        // File is empty or corrupt.
-        throw new CorruptFileException("File " + blkFile.getName() + " is empty or corrupt.");
-      }
-      String extraXml = blkFileContent.substring(iXmlEndTag + XML_END_TAG.length());
-      // Return null if the project is not enabled.
-      if (!isProjectEnabled(projectName, extraXml)) {
-        return null;
+      String extraXml;
+      // The blocks file content contains the blocks xml followed by the extra xml.
+      int iExtraXml = findExtraXml(blkFileContent);
+      if (iExtraXml != -1) {
+        extraXml = blkFileContent.substring(iExtraXml);
+        // Return null if the project is not enabled.
+        if (!isProjectEnabled(projectName, extraXml)) {
+          return null;
+        }
+      } else {
+        // Be tolerant if the extra xml is missing.
+        RobotLog.ee(TAG, "Block file, " + projectName + ", is missing extra xml.");
+        extraXml = "";
       }
       return createOpModeMeta(projectName, extraXml);
     } catch (IOException e) {
@@ -396,14 +421,20 @@ public class ProjectsUtil {
     String blkFileContent = FileUtil.readFile(blkFile);
 
     // Separate the blocksContent from the extraXml, so we can upgrade the blocksContent.
-    // The extraXml is after the first </xml>.
-    int iXmlEndTag = blkFileContent.indexOf(XML_END_TAG);
-    if (iXmlEndTag == -1) {
-      // File is empty or corrupt.
-      throw new CorruptFileException("File " + blkFile.getName() + " is empty or corrupt.");
+    String blocksContent;
+    String extraXml;
+    
+    // The blocks file content contains the blocks xml followed by the extra xml.
+    int iExtraXml = findExtraXml(blkFileContent);
+    if (iExtraXml != -1) {
+      blocksContent = blkFileContent.substring(0, iExtraXml);
+      extraXml = blkFileContent.substring(iExtraXml);
+    } else {
+      // Be tolerant if the extra xml is missing.
+      RobotLog.ee(TAG, "Block file, " + projectName + ", is missing extra xml.");
+      blocksContent = blkFileContent;
+      extraXml = "";
     }
-    String blocksContent = blkFileContent.substring(0, iXmlEndTag + XML_END_TAG.length());
-    String extraXml = blkFileContent.substring(iXmlEndTag + XML_END_TAG.length());
 
     String upgradedBlocksContent = upgradeBlocks(blocksContent, HardwareItemMap.newHardwareItemMap());
     if (!upgradedBlocksContent.equals(blocksContent)) {
@@ -913,14 +944,20 @@ public class ProjectsUtil {
         String blkFileContent = FileUtil.readFile(blkFile);
 
         // Separate the blocksContent from the extraXml, so we can extract the OpModeMeta from the extraXml.
-        // The extraXml is after the first </xml>.
-        int iXmlEndTag = blkFileContent.indexOf(XML_END_TAG);
-        if (iXmlEndTag == -1) {
-          // File is empty or corrupt.
-          throw new CorruptFileException("File " + blkFile.getName() + " is empty or corrupt.");
+        String blocksContent;
+        String extraXml;
+    
+        // The blocks file content contains the blocks xml followed by the extra xml.
+        int iExtraXml = findExtraXml(blkFileContent);
+        if (iExtraXml != -1) {
+          blocksContent = blkFileContent.substring(0, iExtraXml);
+          extraXml = blkFileContent.substring(iExtraXml);
+        } else {
+          // Be tolerant if the extra xml is missing.
+          RobotLog.ee(TAG, "Block file, " + projectName + ", is missing extra xml.");
+          blocksContent = blkFileContent;
+          extraXml = "";
         }
-        String blocksContent = blkFileContent.substring(0, iXmlEndTag + XML_END_TAG.length());
-        String extraXml = blkFileContent.substring(iXmlEndTag + XML_END_TAG.length());
         OpModeMeta opModeMeta = createOpModeMeta(projectName, extraXml);
 
         // Regenerate the extra xml with the enable argument.
@@ -1108,13 +1145,16 @@ public class ProjectsUtil {
     ensureChangesAreCommitted(projectName);
     File blkFile = new File(BLOCK_OPMODES_DIR, projectName + BLOCKS_BLK_EXT);
     String blkFileContent = FileUtil.readFile(blkFile);
-    // The extraXml is after the first </xml>.
-    int iXmlEndTag = blkFileContent.indexOf(XML_END_TAG);
-    if (iXmlEndTag == -1) {
-      // File is empty or corrupt.
-      throw new CorruptFileException("File " + blkFile.getName() + " is empty or corrupt.");
+    String extraXml;
+    // The blocks file content contains the blocks xml followed by the extra xml.
+    int iExtraXml = findExtraXml(blkFileContent);
+    if (iExtraXml != -1) {
+      extraXml = blkFileContent.substring(iExtraXml);
+    } else {
+      // Be tolerant if the extra xml is missing.
+      RobotLog.ee(TAG, "Block file, " + projectName + ", is missing extra xml.");
+      extraXml = "";
     }
-    String extraXml = blkFileContent.substring(iXmlEndTag + XML_END_TAG.length());
     return isProjectEnabled(projectName, extraXml);
   }
 

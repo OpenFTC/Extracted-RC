@@ -137,6 +137,7 @@ public class OfflineBlocksUtil {
     assetsToInclude.add("blocks/optical_distance_sensor.js");
     assetsToInclude.add("blocks/orientation.js");
     assetsToInclude.add("blocks/pidf_coefficients.js");
+    assetsToInclude.add("blocks/pose2d.js");
     assetsToInclude.add("blocks/position.js");
     assetsToInclude.add("blocks/predominant_color.js");
     assetsToInclude.add("blocks/project_util.js");

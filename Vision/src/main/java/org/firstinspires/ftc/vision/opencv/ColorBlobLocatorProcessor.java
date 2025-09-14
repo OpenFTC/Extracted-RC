@@ -62,7 +62,7 @@ public abstract class ColorBlobLocatorProcessor implements VisionProcessor
     {
         private ColorRange colorRange;
         private ContourMode contourMode;
-        private ImageRegion imageRegion;
+        private ImageRegion imageRegion = ImageRegion.entireFrame();
         private int erodeSize = -1;
         private int dilateSize = -1;
         private boolean drawContours = false;
@@ -203,6 +203,11 @@ public abstract class ColorBlobLocatorProcessor implements VisionProcessor
          */
         public ColorBlobLocatorProcessor build()
         {
+            if (imageRegion == null)
+            {
+                throw new IllegalArgumentException("You must set a region of interest!");
+            }
+
             if (colorRange == null)
             {
                 throw new IllegalArgumentException("You must set a color range!");

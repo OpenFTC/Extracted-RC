@@ -24,11 +24,9 @@
  * Saves the clipboard content and calls the callback.
  */
 function saveClipboardContent(clipboardContent, callback) {
-  if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
-    // html/js is in a browser, loaded as an http:// URL.
+  if (isOnline()) {
     saveClipboardContentViaHttp(clipboardContent, callback);
-  } else if (window.location.protocol === 'file:') {
-    // html/js is in a browser, loaded as an file:// URL.
+  } else {
     saveClipboardContentViaFile(clipboardContent, callback);
   }
 }
@@ -37,11 +35,9 @@ function saveClipboardContent(clipboardContent, callback) {
  * Fetches the previously saved clipboard content and calls the callback.
  */
 function fetchClipboardContent(callback) {
-  if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
-    // html/js is in a browser, loaded as an http:// URL.
+  if (isOnline()) {
     fetchClipboardContentViaHttp(callback);
-  } else if (window.location.protocol === 'file:') {
-    // html/js is in a browser, loaded as an file:// URL.
+  } else {
     fetchClipboardContentViaFile(callback);
   }
 }

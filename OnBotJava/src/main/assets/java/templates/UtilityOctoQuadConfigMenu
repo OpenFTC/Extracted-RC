@@ -462,7 +462,7 @@ public class UtilityOctoQuadConfigMenu extends LinearOpMode
                 // If the selection pointer is at this index, put a green dot in the box :)
                 if (selectedIdx == i)
                 {
-                    builder.append("[<font color=green face=monospace>•</font>] ");
+                    builder.append("[<font color=green face=monospace>???</font>] ");
                 }
                 // Otherwise, just put an empty box
                 else
@@ -805,7 +805,7 @@ public class UtilityOctoQuadConfigMenu extends LinearOpMode
             @Override
             protected String getDisplayText()
             {
-                return "<font color='#119af5' face=monospace>.. ↰ Up One Level</font>";
+                return "<font color='#119af5' face=monospace>.. ??? Up One Level</font>";
             }
         }
     }

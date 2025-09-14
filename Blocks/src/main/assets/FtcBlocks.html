@@ -118,6 +118,7 @@
       "blocks/optical_distance_sensor.js",
       "blocks/orientation.js",
       "blocks/pidf_coefficients.js",
+      "blocks/pose2d.js",
       "blocks/position.js",
       "blocks/predominant_color.js",
       "blocks/project_util.js",
@@ -269,6 +270,7 @@
   less.pageLoadFinished.then(function() {
     loadBlocklyScripts(function() {
       Blockly.prompt = parent.showPrompt; // https://blockly-demo.appspot.com/static/demos/custom-dialogs/index.html
+      setOnline(true);
       initializeFtcBlocks();
     });
   });

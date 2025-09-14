@@ -375,9 +375,7 @@ function makeUploadProjectName(uploadFileName) {
 }
 
 function finishNewOrUploadProject(projectName, blkFileContent, errorElement, dialogElement) {
-  // The blocks content is up to and including the first </xml>.
-  var i = blkFileContent.indexOf('</xml>');
-  var blocksContent = blkFileContent.substring(0, i + 6);
+  const blocksContent = extractBlockContent(blkFileContent);
   var dom = '';
   try {
     dom = Blockly.Xml.textToDom(blocksContent);

@@ -32,6 +32,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.firstinspires.ftc.robotcore.external.ExportAprilTagLibraryToBlocks;
 import org.firstinspires.ftc.robotcore.external.ExportClassToBlocks;
+import org.firstinspires.ftc.robotcore.external.ExportEnumToBlocks;
 import org.firstinspires.ftc.robotcore.external.ExportToBlocks;
 
 /**
@@ -86,6 +87,10 @@ public class BlocksClassFilter implements ClassFilter {
   private final Map<Class<? extends HardwareDevice>, Set<Method>> hardwareMethodsByClass = new TreeMap<>(classComparator);
   private final Map<String, Method> hardwareMethods = new HashMap<>();
 
+  // enumClassesByEnclosingClass is used for enums with the ExportEnumToBlocks annotation.
+  // If an enum class does not have an enclosing class, the key is the enum class itself.
+  private final Map<Class, Set<Class<? extends Enum>>> enumClassesByEnclosingClass = new TreeMap<>(classComparator);
+
   // Singleton
 
   private static class InstanceHolder {
@@ -108,6 +113,7 @@ public class BlocksClassFilter implements ClassFilter {
     staticMethods.clear();
     hardwareMethodsByClass.clear();
     hardwareMethods.clear();
+    enumClassesByEnclosingClass.clear();
   }
 
   @Override
@@ -141,6 +147,13 @@ public class BlocksClassFilter implements ClassFilter {
           hardwareMethods.remove(getLookupString(method));
         }
         iter2.remove();
+      }
+    }
+    Iterator<Map.Entry<Class, Set<Class<? extends Enum>>>> iter3 = enumClassesByEnclosingClass.entrySet().iterator();
+    while (iter3.hasNext()) {
+      Map.Entry<Class, Set<Class<? extends Enum>>> entry = iter3.next();
+      if (OnBotJavaDeterminer.isOnBotJava(entry.getKey())) {
+        iter3.remove();
       }
     }
   }
@@ -177,6 +190,13 @@ public class BlocksClassFilter implements ClassFilter {
           hardwareMethods.remove(getLookupString(method));
         }
         iter2.remove();
+      }
+    }
+    Iterator<Map.Entry<Class, Set<Class<? extends Enum>>>> iter3 = enumClassesByEnclosingClass.entrySet().iterator();
+    while (iter3.hasNext()) {
+      Map.Entry<Class, Set<Class<? extends Enum>>> entry = iter3.next();
+      if (OnBotJavaDeterminer.isExternalLibraries(entry.getKey())) {
+        iter3.remove();
       }
     }
   }
@@ -221,6 +241,9 @@ public class BlocksClassFilter implements ClassFilter {
           lookForHardwareMethods((Class<? extends HardwareDevice>) clazz);
         }
       }
+    }
+    if (clazz.isEnum() && clazz.isAnnotationPresent(ExportEnumToBlocks.class)) {
+      addEnumClass(clazz);
     }
   }
 
@@ -319,6 +342,20 @@ public class BlocksClassFilter implements ClassFilter {
     }
   }
 
+  private void addEnumClass(Class enumClass) {
+    Class enclosingClass = enumClass.getEnclosingClass();
+    if (enclosingClass == null) {
+      enclosingClass = enumClass;
+    }
+
+    Set<Class<? extends Enum>> enumClasses = enumClassesByEnclosingClass.get(enclosingClass);
+    if (enumClasses == null) {
+      enumClasses = new TreeSet<>(classComparator);
+      enumClassesByEnclosingClass.put(enclosingClass, enumClasses);
+    }
+    enumClasses.add(enumClass);
+  }
+
   // other public methods
 
   /**
@@ -354,6 +391,14 @@ public class BlocksClassFilter implements ClassFilter {
    */
   public Method findHardwareMethod(String lookupString) {
     return hardwareMethods.get(lookupString);
+  }
+
+  /**
+   * Returns the enum classess, keyed by the enclosing class. If an enum class does not have an
+   * enclosing class, the key is the enum class itself. The caller should not modify the collection.
+   */
+  public Map<Class, Set<Class<? extends Enum>>> getEnumClassesByEnclosingClass() {
+    return enumClassesByEnclosingClass;
   }
 
   /**

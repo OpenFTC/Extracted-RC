@@ -29,6 +29,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Quaternion;
@@ -120,6 +121,14 @@ public abstract class Access {
 
   protected Orientation checkOrientation(Object orientationArg, String socketName) {
     return checkArg(orientationArg, Orientation.class, socketName);
+  }
+
+  protected Pose2D checkPose2D(Object pose2DArg) {
+    return checkArg(pose2DArg, Pose2D.class, "pose2D");
+  }
+
+  protected Pose2D checkPose2D(Object pose2DArg, String socketName) {
+    return checkArg(pose2DArg, Pose2D.class, socketName);
   }
 
   protected Position checkPosition(Object positionArg) {

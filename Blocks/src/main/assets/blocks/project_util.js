@@ -24,11 +24,9 @@
  * Fetches the list of projects (as json) and calls the callback.
  */
 function fetchProjects(callback) {
-  if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
-    // html/js is in a browser, loaded as an http:// URL.
+  if (isOnline()) {
     fetchProjectsViaHttp(callback);
-  } else if  (window.location.protocol === 'file:') {
-    // html/js is in a browser, loaded as an file:// URL.
+  } else {
     fetchProjectsViaFile(callback);
   }
 }
@@ -37,11 +35,9 @@ function fetchProjects(callback) {
  * Fetches the list of samples (as json) and calls the callback.
  */
 function fetchSamples(callback) {
-  if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
-    // html/js is in a browser, loaded as an http:// URL.
+  if (isOnline()) {
     fetchSamplesViaHttp(callback);
-  } else if (window.location.protocol === 'file:') {
-    // html/js is in a browser, loaded as an file:// URL.
+  } else {
     fetchSamplesViaFile(callback);
   }
 }
@@ -50,11 +46,9 @@ function fetchSamples(callback) {
  * Opens the project with the given name.
  */
 function openProjectBlocks(projectName) {
-  if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
-    // html/js is in a browser, loaded as an http:// URL.
+  if (isOnline()) {
     openProjectBlocksViaHttp(projectName);
-  } else if (window.location.protocol === 'file:') {
-    // html/js is in a browser, loaded as an file:// URL.
+  } else {
     openProjectBlocksViaFile(projectName);
   }
 }
@@ -63,91 +57,73 @@ function openProjectBlocks(projectName) {
  * Fetches the blocks of an existing project and calls the callback
  */
 function fetchBlkFileContent(projectName, callback) {
-  if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
-    // html/js is in a browser, loaded as an http:// URL.
+  if (isOnline()) {
     fetchBlkFileContentViaHttp(projectName, callback);
-  } else if (window.location.protocol === 'file:') {
-    // html/js is in a browser, loaded as an file:// URL.
+  } else {
     fetchBlkFileContentViaFile(projectName, callback);
   }
 }
 
 function newProject(projectName, sampleName, callback) {
-  if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
-    // html/js is in a browser, loaded as an http:// URL.
+  if (isOnline()) {
     newProjectViaHttp(projectName, sampleName, callback);
-  } else if (window.location.protocol === 'file:') {
-    // html/js is in a browser, loaded as an file:// URL.
+  } else {
     newProjectViaFile(projectName, sampleName, callback);
   }
 }
 
 function saveProject(projectName, blkFileContent, jsFileContent, callback) {
-  if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
-    // html/js is in a browser, loaded as an http:// URL.
+  if (isOnline()) {
     saveProjectViaHttp(projectName, blkFileContent, jsFileContent, callback);
-  } else if (window.location.protocol === 'file:') {
-    // html/js is in a browser, loaded as an file:// URL.
+  } else {
     saveProjectViaFile(projectName, blkFileContent, jsFileContent, callback);
   }
 }
 
 function renameProject(oldProjectName, newProjectName, callback) {
-  if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
-    // html/js is in a browser, loaded as an http:// URL.
+  if (isOnline()) {
     renameProjectViaHttp(oldProjectName, newProjectName, callback);
-  } else if (window.location.protocol === 'file:') {
-    // html/js is in a browser, loaded as an file:// URL.
+  } else {
     renameProjectViaFile(oldProjectName, newProjectName, callback);
   }
 }
 
 function copyProject(oldProjectName, newProjectName, callback) {
-  if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
-    // html/js is in a browser, loaded as an http:// URL.
+  if (isOnline()) {
     copyProjectViaHttp(oldProjectName, newProjectName, callback);
-  } else if (window.location.protocol === 'file:') {
-    // html/js is in a browser, loaded as an file:// URL.
+  } else {
     copyProjectViaFile(oldProjectName, newProjectName, callback);
   }
 }
 
 function enableProject(projectName, enable, callback) {
-  if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
-    // html/js is in a browser, loaded as an http:// URL.
+  if (isOnline()) {
     enableProjectViaHttp(projectName, enable, callback);
-  } else if (window.location.protocol === 'file:') {
-    // html/js is in a browser, loaded as an file:// URL.
+  } else {
     enableProjectViaFile(projectName, enable, callback);
   }
 }
 
 function deleteProjects(starDelimitedProjectNames, callback) {
-  if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
-    // html/js is in a browser, loaded as an http:// URL.
+  if (isOnline()) {
     deleteProjectsViaHttp(starDelimitedProjectNames, callback);
-  } else if (window.location.protocol === 'file:') {
-    // html/js is in a browser, loaded as an file:// URL.
+  } else {
     deleteProjectsViaFile(starDelimitedProjectNames, callback);
   }
 }
 
 function getBlocksJavaClassName(projectName, callback) {
-  if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
-    // html/js is in a browser, loaded as an http:// URL.
+  if (isOnline()) {
     getBlocksJavaClassNameViaHttp(projectName, callback);
-  } else if (window.location.protocol === 'file:') {
-    // html/js is in a browser, loaded as an file:// URL.
+  } else {
     getBlocksJavaClassNameViaFile(projectName, callback);
   }
 }
 
 function saveBlocksJava(relativeFileName, javaCode, callback) {
-  if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
-    // html/js is in a browser, loaded as an http:// URL.
+  if (isOnline()) {
     saveBlocksJavaViaHttp(relativeFileName, javaCode, callback);
-  } else if (window.location.protocol === 'file:') {
-    // html/js is in a browser, loaded as an file:// URL.
+  } else {
     saveBlocksJavaViaFile(relativeFileName, javaCode, callback);
   }
 }

@@ -503,6 +503,8 @@ public final class BlocksOpMode extends LinearOpMode {
         new OrientationAccess(this, Identifier.ORIENTATION.identifierForJavaScript));
     addJavascriptInterface(Identifier.PIDF_COEFFICIENTS.identifierForJavaScript,
         new PIDFCoefficientsAccess(this, Identifier.PIDF_COEFFICIENTS.identifierForJavaScript));
+    addJavascriptInterface(Identifier.POSE2D.identifierForJavaScript,
+        new Pose2DAccess(this, Identifier.POSE2D.identifierForJavaScript));
     addJavascriptInterface(Identifier.POSITION.identifierForJavaScript,
         new PositionAccess(this, Identifier.POSITION.identifierForJavaScript));
     addJavascriptInterface(Identifier.PREDOMINANT_COLOR.identifierForJavaScript,

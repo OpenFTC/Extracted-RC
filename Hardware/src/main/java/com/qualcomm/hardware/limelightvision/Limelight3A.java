@@ -433,6 +433,18 @@ public class Limelight3A implements HardwareDevice
     }
 
     /**
+     * Uploads a pipeline to a specific slot.
+     *
+     * @param jsonString The new pipeline configuration as a String containing JSON.
+     * @param index The index at which to upload the pipeline (null for default).
+     * @return true if successful, false otherwise.
+     */
+    public boolean uploadPipeline(String jsonString, Integer index){
+        String url = "/upload-pipeline" + (index != null ? "?index=" + index : "");
+        return sendPostRequest(url, jsonString);
+    }
+
+    /**
      * Uploads a new fiducial field map. Early exits if map is empty or doesn't specify a type
      *
      * @param fieldmap The new field map configuration.

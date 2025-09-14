@@ -669,6 +669,33 @@
       <value name="PIDF_COEFFICIENTS"><block type="variables_get"><field name="VAR">myPidfCoefficients</field></block></value>
     </block>
   </category>
+  <category name="Pose2D">
+    <block type="pose2D_getPropertyWithDistanceUnit_Number">
+      <field name="PROP">X</field>
+      <value name="POSE2D"><block type="variables_get"><field name="VAR">myPose2D</field></block></value>
+      <value name="UNIT"><shadow type="navigation_typedEnum_distanceUnit"></shadow></value>
+    </block>
+    <block type="pose2D_getPropertyWithDistanceUnit_Number">
+      <field name="PROP">Y</field>
+      <value name="POSE2D"><block type="variables_get"><field name="VAR">myPose2D</field></block></value>
+      <value name="UNIT"><shadow type="navigation_typedEnum_distanceUnit"></shadow></value>
+    </block>
+    <block type="pose2D_getPropertyWithAngleUnit_Number">
+      <field name="PROP">Heading</field>
+      <value name="POSE2D"><block type="variables_get"><field name="VAR">myPose2D</field></block></value>
+      <value name="UNIT"><shadow type="navigation_typedEnum_angleUnit"></shadow></value>
+    </block>
+    <block type="pose2D_toText">
+      <value name="POSE2D"><block type="variables_get"><field name="VAR">myPose2D</field></block></value>
+    </block>
+    <block type="pose2D_create">
+      <value name="DISTANCE_UNIT"><shadow type="navigation_typedEnum_distanceUnit"></shadow></value>
+      <value name="X"><shadow type="math_number"><field name="NUM">10</field></shadow></value>
+      <value name="Y"><shadow type="math_number"><field name="NUM">20</field></shadow></value>
+      <value name="HEADING_UNIT"><shadow type="navigation_typedEnum_angleUnit"></shadow></value>
+      <value name="HEADING"><shadow type="math_number"><field name="NUM">30</field></shadow></value>
+    </block>
+  </category>
   <category name="Position">
     <block type="position_getProperty_DistanceUnit">
       <field name="PROP">DistanceUnit</field>

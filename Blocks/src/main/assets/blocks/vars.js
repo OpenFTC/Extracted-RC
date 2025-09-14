@@ -59,6 +59,20 @@ var commentColor = 200;
 
 var identifierFieldNames = ['IDENTIFIER', 'IDENTIFIER1', 'IDENTIFIER2'];
 
+var isOnlineVariable = true;
+
+/**
+  * This returns true if the blocks environment is being served by the on-robot server.
+  */
+function isOnline() {
+    return isOnlineVariable;
+}
+/**
+  * this specifies whether the blocks environment is being served by the on-robot server.
+  */
+function setOnline(value) {
+    isOnlineVariable = value;
+}
 
 // TODO(Noah): Replace this placeholder function used to enable time syncing with correct implementation
 function setUpWebSocket() {
@@ -152,11 +166,24 @@ function escapeHtml(text) {
 }
 
 function formatExtraXml(flavor, group, autoTransition, enabled) {
-  return '<?xml version=\'1.0\' encoding=\'UTF-8\' standalone=\'yes\' ?>' +
+  return XML_EXTRA_START +
       '<Extra>' +
       '<OpModeMeta flavor="' + flavor + '" group="' + group + '" autoTransition="' + autoTransition + '" />' +
       '<Enabled value="' + enabled + '" />' +
       '</Extra> ';
+}
+
+function findExtraXml(blkFileContent) {
+  // The blocks file content contains the blocks xml followed by the extra xml.
+  let i = blkFileContent.indexOf(XML_END_TAG);
+  if (i !== -1) {
+    return i + XML_END_TAG.length;
+  }
+  i = blkFileContent.lastIndexOf(XML_EXTRA_START);
+  if (i !== -1) {
+    return i;
+  }
+  return -1;
 }
 
 function parseExtraXml(blkFileContent) {
@@ -166,29 +193,49 @@ function parseExtraXml(blkFileContent) {
   extra['autoTransition'] = '';
   extra['enabled'] = true;
 
-  // The blocks content is up to and including the first </xml>.
-  var i = blkFileContent.indexOf('</xml>');
-  // The extra xml content is after the first </xml>.
-  // Set OpModeMeta and Enabled UI components.
-  var extraXml = blkFileContent.substring(i + 6); // 6 is length of </xml>
-  if (extraXml.length > 0) {
-    var parser = new DOMParser();
-    var xmlDoc = parser.parseFromString(extraXml.trim(), 'text/xml');
-    var opModeMetaElements = xmlDoc.getElementsByTagName('OpModeMeta');
-    if (opModeMetaElements.length >= 1) {
-      extra['flavor'] = opModeMetaElements[0].getAttribute('flavor');
-      extra['group'] = opModeMetaElements[0].getAttribute('group');
-      extra['autoTransition'] = opModeMetaElements[0].getAttribute('autoTransition');
-    }
-    var enabledElements = xmlDoc.getElementsByTagName('Enabled');
-    if (enabledElements.length >= 1) {
-      var enabledString = enabledElements[0].getAttribute('value');
-      if (enabledString) {
-        extra['enabled'] = (enabledString == 'true');
+  try {
+    // The blocks file content contains the blocks xml followed by the extra xml.
+    var i = findExtraXml(blkFileContent);
+    if (i !== -1) {
+      var extraXml = blkFileContent.substring(i);
+      if (extraXml.length > 0) {
+        var parser = new DOMParser();
+        var xmlDoc = parser.parseFromString(extraXml.trim(), 'text/xml');
+        // Set OpModeMeta and Enabled UI components.
+        var opModeMetaElements = xmlDoc.getElementsByTagName('OpModeMeta');
+        if (opModeMetaElements.length >= 1) {
+          extra['flavor'] = opModeMetaElements[0].getAttribute('flavor');
+          extra['group'] = opModeMetaElements[0].getAttribute('group');
+          extra['autoTransition'] = opModeMetaElements[0].getAttribute('autoTransition');
+        }
+        var enabledElements = xmlDoc.getElementsByTagName('Enabled');
+        if (enabledElements.length >= 1) {
+          var enabledString = enabledElements[0].getAttribute('value');
+          if (enabledString) {
+            extra['enabled'] = (enabledString == 'true');
+          }
+        }
       }
+    } else {
+      // Be tolerant if the extra xml is missing.
+      console.log('Warning: Block file is missing extra xml.');
     }
+  } catch (e) {
+    console.log('Unable to parseExtraXml.');
+    console.log(e);
   }
   return extra;
+}
+
+function extractBlockContent(blkFileContent) {
+  // The blocks file content contains the blocks xml followed by the extra xml.
+  var i = findExtraXml(blkFileContent);
+  if (i !== -1) {
+    return blkFileContent.substring(0, i);
+  }
+  // Be tolerant if the extra xml is missing.
+  console.log('Warning: Block file is missing extra xml.');
+  return blkFileContent;
 }
 
 function knownTypeToClassName(type) {
@@ -388,6 +435,7 @@ function knownTypeToClassName(type) {
     case 'DistanceUnit':
     case 'MagneticFlux':
     case 'Orientation':
+    case 'Pose2D':
     case 'Position':
     case 'Quaternion':
     case 'Temperature':

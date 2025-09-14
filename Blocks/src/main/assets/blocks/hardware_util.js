@@ -27,21 +27,17 @@
  * callback.
  */
 function fetchJavaScriptForHardware(callback) {
-  if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
-    // html/js is in a browser, loaded as an http:// URL.
+  if (isOnline()) {
     fetchJavaScriptForHardwareViaHttp(callback);
-  } else if (window.location.protocol === 'file:') {
-    // html/js is in a browser, loaded as an file:// URL.
+  } else {
     fetchJavaScriptForHardwareViaFile(callback);
   }
 }
 
 function getConfigurationName(callback) {
-  if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
-    // html/js is in a browser, loaded as an http:// URL.
+  if (isOnline()) {
     getConfigurationNameViaHttp(callback);
-  } else if (window.location.protocol === 'file:') {
-    // html/js is in a browser, loaded as an file:// URL.
+  } else {
     getConfigurationNameViaFile(callback);
   }
 }
