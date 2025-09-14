@@ -18,7 +18,8 @@ If there are no errors, the OpModes will be stored on the Robot for immediate us
 
 ## Samples
 
-There are a range of different samples to choose from.
+Samples may be chosen by selecting 'Example OpMode' from the 'File type:' dropdown.  Doing so
+will populate the dropdown to the immediate right with a list of samples to choose from.
 Sample names use a convention which helps to indicate their general, and specific, purpose.
 
 eg: The name's prefix describes the general purpose, which can be one of the following:
@@ -38,6 +39,19 @@ eg: The name's prefix describes the general purpose, which can be one of the fol
 For more help, visit the FTC Control System Wiki (https://github.com/FIRST-Tech-Challenge/FtcRobotController/wiki)
 
 Please report any encountered issues on [GitHub](https://github.com/FIRST-Tech-Challenge/FtcRobotController).
+
+## Projects
+
+A project is a collection of related files.  A project may be chosen by selecting 'Example Project'
+from the 'File type:' dropdown.  Doing so will populate the dropdown to the immediate right with 
+a list of projects to choose from.
+
+When selecting a project all of the related files appear in the left pane of the workspace 
+underneath a directory with the chosen project name.
+
+This is useful for example for ConceptExternalHardwareClass which has a dependency upon
+RobotHardware.  This feature simplifies the usage of this Concept example by automatically
+pulling in dependent classes.
 
 ## What's Java 8?
 

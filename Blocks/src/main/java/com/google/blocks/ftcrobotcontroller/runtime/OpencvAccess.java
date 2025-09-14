@@ -45,11 +45,15 @@ class OpencvAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
-  @Block(classes = ColorRange.class, fieldName = {"BLUE", "RED", "YELLOW", "GREEN"})
+  @Block(classes = ColorRange.class, fieldName = {"ARTIFACT_GREEN", "ARTIFACT_PURPLE", "BLUE", "RED", "YELLOW", "GREEN"})
   public ColorRange colorRange(String color) {
     try {
       startBlockExecution(BlockType.GETTER, "ColorRange", "." + color);
-      if (color.equals("BLUE")) {
+      if (color.equals("ARTIFACT_GREEN")) {
+        return ColorRange.ARTIFACT_GREEN;
+      } else if (color.equals("ARTIFACT_PURPLE")) {
+        return ColorRange.ARTIFACT_PURPLE;
+      } else if (color.equals("BLUE")) {
         return ColorRange.BLUE;
       } else if (color.equals("RED")) {
         return ColorRange.RED;

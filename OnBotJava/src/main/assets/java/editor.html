@@ -161,9 +161,9 @@
                     </li>
                     <li ng-click="tools.add()">
                         <a class="nav-item nav-link" href="javascript:void(0)" data-toggle="tooltip"
-                           data-placement="bottom" title="Add File">
+                           data-placement="bottom" title="Add">
                             <i id="add-button" class="file-task fa fa-plus"></i>
-                            <span class="help-text">New File</span>
+                            <span class="help-text">New</span>
                         </a>
                     </li>
                     <!-- If we again allow zip uploads in the future: ,.zip,application/x-compressed,application/x-zip-compressed,application/zip,multipart/x-zip -->
@@ -245,7 +245,7 @@
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                             aria-hidden="true"><i class="fa fa-window-close-o" aria-hidden="true"></i></span></button>
-                    <h4 class="modal-title" id="new-file-modal-label">New File</h4>
+                    <h4 class="modal-title" id="new-file-modal-label">New</h4>
                 </div>
                 <div class="modal-body">
                     <form class="form-horizontal" name="newFileForm" novalidate>
@@ -283,6 +283,7 @@
                                     <select id="new-file-guide-mode" class="form-control new-file-text-input" ng-model="newFile.guideMode">
                                         <option value="blank">Blank OpMode</option>
                                         <option value="example">Example OpMode</option>
+                                        <option value="example-project">Example Project</option>
                                         <option value="class">Java Class</option>
                                         <option value="text">Text File</option>
                                     </select>
@@ -299,19 +300,39 @@
                                             {{ template.name }}</option>
                                     </select>
                                 </div>
+                                <div ng-show="newFile.guideMode === 'example-project'" class="col-sm-5 tight-col-left">
+                                    <select id="new-file-project-example" class="form-control new-file-text-input col-sm-9" ng-model="newFile.file.templateExampleProject" ng-change="updateDefaultTemplateSelections()">
+                                        <option ng-repeat="template in newFile.exampleProjects" value="{{ template.value}}">
+                                            {{ template.name }}</option>
+                                    </select>
+                                </div>
                             </div>
                             <div class="form-group row" ng-class="{ 'has-error' : (newFileForm.fileName.$invalid && !newFileForm.fileName.$pristine) ||
-                                            (newFileForm.fileExt.$invalid && !newFileForm.fileExt.$pristine) }">
+                                            (newFileForm.fileExt.$invalid && !newFileForm.fileExt.$pristine) }" ng-show="newFile.guideMode !== 'example-project'">
                                     <label for="new-file-name" class="control-label col-sm-3 tight-col-right">File name:</label>
                                     <div class="col-sm-9 tight-col-left">
                                         <input type="text" name="fileName" id="new-file-name" class="form-control new-file-text-input tight-col-left"
-                                               ng-model="newFile.file.name" required ng-pattern="/^[a-zA-Z_$]([\w\d.]+)\.\w+$/">
+                                               ng-model="newFile.file.name" required ng-pattern="/^[a-zA-Z_$]([\w\d.]+)(\.\w+)$/">
                                         <div ng-messages="newFileForm.fileName.$error" class="help-block" ng-show="newFileForm.fileName.$dirty">
                                             <p ng-message="required">A file name is required</p>
                                             <p ng-message="pattern">
                                                 A filename should be start with letter, contain a period, and end with a valid file extension, like <code>MyExample.java</code>
                                             </p>
                                         </div>
+                                </div>
+                            </div>
+                            <div class="form-group row" ng-class="{ 'has-error' : (newFileForm.fileName.$invalid && !newFileForm.fileName.$pristine) ||
+                                            (newFileForm.fileExt.$invalid && !newFileForm.fileExt.$pristine) }" ng-show="newFile.guideMode === 'example-project'">
+                                <label for="new-file-name" class="control-label col-sm-3 tight-col-right">Directory name:</label>
+                                <div class="col-sm-9 tight-col-left">
+                                    <input type="text" name="directoryName" id="new-project-name" class="form-control new-file-text-input tight-col-left"
+                                           ng-model="newFile.file.directoryName" required ng-pattern="/^[a-zA-Z\d_][\w\d.]+$/">
+                                    <div ng-messages="newFileForm.directoryName.$error" class="help-block" ng-show="newFileForm.directoryName.$dirty">
+                                        <p ng-message="required">A folder name is required</p>
+                                        <p ng-message="pattern">
+                                            A folder name should contain at least 1 character and only contain alphanumeric characters or underscores <code>sample_directory</code>
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -348,7 +369,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="new-file-okay" ng-disabled="newFileForm.$invalid" ng-click="newFile.createFile()">Create</button>
+                    <button type="button" class="btn btn-primary" id="new-file-okay" ng-click="newFile.createFile()">Create</button>
                 </div>
             </div>
         </div>

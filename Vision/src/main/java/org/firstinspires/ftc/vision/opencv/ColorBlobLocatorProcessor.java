@@ -64,11 +64,13 @@ public abstract class ColorBlobLocatorProcessor implements VisionProcessor
         private ColorRange colorRange;
         private ContourMode contourMode;
         private ImageRegion imageRegion = ImageRegion.entireFrame();
+        private MorphOperationType morphOperationType = MorphOperationType.OPENING;
         private int erodeSize = -1;
         private int dilateSize = -1;
         private boolean drawContours = false;
         private int blurSize = -1;
         private int boundingBoxColor = Color.rgb(255, 120, 31);
+        private int circleFitColor = 0;
         private int roiColor = Color.rgb(255, 255, 255);
         private int contourColor = Color.rgb(3, 227, 252);
 
@@ -87,12 +89,23 @@ public abstract class ColorBlobLocatorProcessor implements VisionProcessor
 
         /**
          * Set the color used to draw the "best fit" bounding boxes for blobs
-         * @param color Android color int
+         * @param color Android color int or 0 to disable
          * @return Builder object, to allow for method chaining
          */
         public Builder setBoxFitColor(@ColorInt int color)
         {
             this.boundingBoxColor = color;
+            return this;
+        }
+
+        /**
+         * Set the color used to draw the enclosing circle around blobs
+         * @param color Android color int or 0 to disable
+         * @return Builder object, to allow for method chaining
+         */
+        public Builder setCircleFitColor(@ColorInt int color)
+        {
+            this.circleFitColor = color;
             return this;
         }
 
@@ -167,6 +180,20 @@ public abstract class ColorBlobLocatorProcessor implements VisionProcessor
         }
 
         /**
+         * Set the type of morph operation to perform. Only relevant
+         * if using both erosion and dilation.
+         * @param morphOperationType type of morph operation to perform
+         * @return Builder object, to allow for method chaining
+         * @see #setErodeSize(int)
+         * @see #setDilateSize(int)
+         */
+        public Builder setMorphOperationType(MorphOperationType morphOperationType)
+        {
+            this.morphOperationType = morphOperationType;
+            return this;
+        }
+
+        /**
          * Set the size of the Erosion operation performed after applying
          * the color threshold. Erosion eats away at the mask, reducing
          * noise by eliminating super small areas, but also reduces the
@@ -219,7 +246,7 @@ public abstract class ColorBlobLocatorProcessor implements VisionProcessor
                 throw new IllegalArgumentException("You must set a contour mode!");
             }
 
-            return new ColorBlobLocatorProcessorImpl(colorRange, imageRegion, contourMode, erodeSize, dilateSize, drawContours, blurSize, boundingBoxColor, roiColor, contourColor);
+            return new ColorBlobLocatorProcessorImpl(colorRange, imageRegion, contourMode, morphOperationType, erodeSize, dilateSize, drawContours, blurSize, boundingBoxColor, circleFitColor, roiColor, contourColor);
         }
     }
 
@@ -237,6 +264,21 @@ public abstract class ColorBlobLocatorProcessor implements VisionProcessor
          * Return blobs which may be from nested contours
          */
         ALL_FLATTENED_HIERARCHY
+    }
+
+    /**
+     * Determines which compound morphological operation to perform on blobs
+     */
+    public enum MorphOperationType
+    {
+        /**
+         * Performs erosion followed by dilation
+         */
+        OPENING,
+        /**
+         * Performs dilation followed by erosion
+         */
+        CLOSING
     }
 
     /**

@@ -41,12 +41,13 @@ import com.google.blocks.ftcrobotcontroller.util.ToolboxUtil;
 import com.qualcomm.ftccommon.SoundPlayer;
 import com.qualcomm.ftccommon.configuration.RobotConfigFile;
 import com.qualcomm.ftccommon.configuration.RobotConfigFileManager;
+import com.qualcomm.hardware.andymark.AndyMarkIMU;
+import com.qualcomm.hardware.andymark.AndyMarkIMUOrientationOnRobot;
+import com.qualcomm.hardware.andymark.AndyMarkColorSensor;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
-import com.qualcomm.hardware.digitalchickenlabs.CachingOctoQuad;
 import com.qualcomm.hardware.digitalchickenlabs.OctoQuad;
-import com.qualcomm.hardware.digitalchickenlabs.OctoQuadBase;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.limelightvision.LLResult;
@@ -192,6 +193,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagMetadata;
 import org.firstinspires.ftc.vision.apriltag.AprilTagPoseFtc;
 import org.firstinspires.ftc.vision.apriltag.AprilTagPoseRaw;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
+import org.firstinspires.ftc.vision.opencv.Circle;
 import org.firstinspires.ftc.vision.opencv.ColorBlobLocatorProcessor;
 import org.firstinspires.ftc.vision.opencv.ColorRange;
 import org.firstinspires.ftc.vision.opencv.ColorSpace;
@@ -371,23 +373,23 @@ public class HardwareUtil {
         .append("function getOctoQuadConstant(constantIdentifier) {\n")
         .append("  switch (constantIdentifier) {\n")
 	.append("    case 'OCTOQUAD_CHIP_ID':\n")
-        .append("      return '").append("0x").append(Integer.toHexString(OctoQuadBase.OCTOQUAD_CHIP_ID).toUpperCase()).append("';\n")
+        .append("      return '").append("0x").append(Integer.toHexString(OctoQuad.OCTOQUAD_CHIP_ID).toUpperCase()).append("';\n")
 	.append("    case 'SUPPORTED_FW_VERSION_MAJ':\n")
-        .append("      return '").append(OctoQuadBase.SUPPORTED_FW_VERSION_MAJ).append("';\n")
+        .append("      return '").append(OctoQuad.SUPPORTED_FW_VERSION_MAJ).append("';\n")
 	.append("    case 'ENCODER_FIRST':\n")
-        .append("      return '").append(OctoQuadBase.ENCODER_FIRST).append("';\n")
+        .append("      return '").append(OctoQuad.ENCODER_FIRST).append("';\n")
 	.append("    case 'ENCODER_LAST':\n")
-        .append("      return '").append(OctoQuadBase.ENCODER_LAST).append("';\n")
+        .append("      return '").append(OctoQuad.ENCODER_LAST).append("';\n")
 	.append("    case 'NUM_ENCODERS':\n")
-        .append("      return '").append(OctoQuadBase.NUM_ENCODERS).append("';\n")
+        .append("      return '").append(OctoQuad.NUM_ENCODERS).append("';\n")
 	.append("    case 'MIN_VELOCITY_MEASUREMENT_INTERVAL_MS':\n")
-        .append("      return '").append(OctoQuadBase.MIN_VELOCITY_MEASUREMENT_INTERVAL_MS).append("';\n")
+        .append("      return '").append(OctoQuad.MIN_VELOCITY_MEASUREMENT_INTERVAL_MS).append("';\n")
 	.append("    case 'MAX_VELOCITY_MEASUREMENT_INTERVAL_MS':\n")
-        .append("      return '").append(OctoQuadBase.MAX_VELOCITY_MEASUREMENT_INTERVAL_MS).append("';\n")
+        .append("      return '").append(OctoQuad.MAX_VELOCITY_MEASUREMENT_INTERVAL_MS).append("';\n")
 	.append("    case 'MIN_PULSE_WIDTH_US':\n")
-        .append("      return '").append(OctoQuadBase.MIN_PULSE_WIDTH_US).append("';\n")
+        .append("      return '").append(OctoQuad.MIN_PULSE_WIDTH_US).append("';\n")
 	.append("    case 'MAX_PULSE_WIDTH_US':\n")
-        .append("      return '").append("0x").append(Integer.toHexString(OctoQuadBase.MAX_PULSE_WIDTH_US).toUpperCase()).append("';\n")
+        .append("      return '").append("0x").append(Integer.toHexString(OctoQuad.MAX_PULSE_WIDTH_US).toUpperCase()).append("';\n")
         .append("  }\n")
         .append("  return '';\n")
         .append("}\n\n");
@@ -1359,6 +1361,16 @@ public class HardwareUtil {
         shadow = (defaultValue == null)
             ? ToolboxUtil.makeTypedEnumShadow("navigation", "axis")
             : ToolboxUtil.makeTypedEnumShadow("navigation", "axis", "AXIS", defaultValue);
+      } else if (argType.equals(AndyMarkIMUOrientationOnRobot.LogoFacingDirection.class.getName())) {
+        String defaultValue = parseEnumDefaultValue(parameterDefaultValues[i], AndyMarkIMUOrientationOnRobot.LogoFacingDirection.class);
+        shadow = (defaultValue == null)
+            ? ToolboxUtil.makeTypedEnumShadow("andyMarkImuOrientationOnRobot", "logoFacingDirection")
+            : ToolboxUtil.makeTypedEnumShadow("andyMarkImuOrientationOnRobot", "logoFacingDirection", "LOGO_FACING_DIRECTION", defaultValue);
+      } else if (argType.equals(AndyMarkIMUOrientationOnRobot.I2cPortFacingDirection.class.getName())) {
+        String defaultValue = parseEnumDefaultValue(parameterDefaultValues[i], AndyMarkIMUOrientationOnRobot.I2cPortFacingDirection.class);
+        shadow = (defaultValue == null)
+            ? ToolboxUtil.makeTypedEnumShadow("andyMarkImuOrientationOnRobot", "i2cPortFacingDirection")
+            : ToolboxUtil.makeTypedEnumShadow("andyMarkImuOrientationOnRobot", "i2cPortFacingDirection", "I2C_PORT_FACING_DIRECTION", defaultValue);
       } else if (argType.equals(BNO055IMU.AccelUnit.class.getName())) {
         String defaultValue = parseEnumDefaultValue(parameterDefaultValues[i], BNO055IMU.AccelUnit.class);
         shadow = (defaultValue == null)
@@ -1374,8 +1386,8 @@ public class HardwareUtil {
           shadow = (defaultValue == null)
               ? ToolboxUtil.makeTypedEnumShadow("bno055imu", "systemStatus")
               : ToolboxUtil.makeTypedEnumShadow("bno055imu", "systemStatus", "SYSTEM_STATUS", defaultValue);
-      } else if (argType.equals(CachingOctoQuad.CachingMode.class.getName())) {
-        String defaultValue = parseEnumDefaultValue(parameterDefaultValues[i], CachingOctoQuad.CachingMode.class);
+      } else if (argType.equals(OctoQuad.CachingMode.class.getName())) {
+        String defaultValue = parseEnumDefaultValue(parameterDefaultValues[i], OctoQuad.CachingMode.class);
         shadow = (defaultValue == null)
             ? ToolboxUtil.makeTypedEnumShadow("octoquad", "cachingMode")
             : ToolboxUtil.makeTypedEnumShadow("octoquad", "cachingMode", "CACHING_MODE", defaultValue);
@@ -1459,21 +1471,31 @@ public class HardwareUtil {
         shadow = (defaultValue == null)
             ? ToolboxUtil.makeTypedEnumShadow("pidfCoefficients", "motorControlAlgorithm")
             : ToolboxUtil.makeTypedEnumShadow("pidfCoefficients", "motorControlAlgorithm", "MOTOR_CONTROL_ALGORITHM", defaultValue);
-      } else if (argType.equals(OctoQuadBase.ChannelBankConfig.class.getName())) {
-        String defaultValue = parseEnumDefaultValue(parameterDefaultValues[i], OctoQuadBase.ChannelBankConfig.class);
+      } else if (argType.equals(OctoQuad.ChannelBankConfig.class.getName())) {
+        String defaultValue = parseEnumDefaultValue(parameterDefaultValues[i], OctoQuad.ChannelBankConfig.class);
         shadow = (defaultValue == null)
             ? ToolboxUtil.makeTypedEnumShadow("octoquad", "channelBankConfig")
             : ToolboxUtil.makeTypedEnumShadow("octoquad", "channelBankConfig", "CHANNEL_BANK_CONFIG", defaultValue);
-      } else if (argType.equals(OctoQuadBase.EncoderDirection.class.getName())) {
-        String defaultValue = parseEnumDefaultValue(parameterDefaultValues[i], OctoQuadBase.EncoderDirection.class);
+      } else if (argType.equals(OctoQuad.EncoderDirection.class.getName())) {
+        String defaultValue = parseEnumDefaultValue(parameterDefaultValues[i], OctoQuad.EncoderDirection.class);
         shadow = (defaultValue == null)
             ? ToolboxUtil.makeTypedEnumShadow("octoquad", "encoderDirection")
             : ToolboxUtil.makeTypedEnumShadow("octoquad", "encoderDirection", "ENCODER_DIRECTION", defaultValue);
-      } else if (argType.equals(OctoQuadBase.I2cRecoveryMode.class.getName())) {
-        String defaultValue = parseEnumDefaultValue(parameterDefaultValues[i], OctoQuadBase.I2cRecoveryMode.class);
+      } else if (argType.equals(OctoQuad.I2cRecoveryMode.class.getName())) {
+        String defaultValue = parseEnumDefaultValue(parameterDefaultValues[i], OctoQuad.I2cRecoveryMode.class);
         shadow = (defaultValue == null)
             ? ToolboxUtil.makeTypedEnumShadow("octoquad", "i2cRecoveryMode")
             : ToolboxUtil.makeTypedEnumShadow("octoquad", "i2cRecoveryMode", "I2C_RECOVERY_MODE", defaultValue);
+      } else if (argType.equals(OctoQuad.LocalizerYawAxis.class.getName())) {
+        String defaultValue = parseEnumDefaultValue(parameterDefaultValues[i], OctoQuad.LocalizerYawAxis.class);
+        shadow = (defaultValue == null)
+            ? ToolboxUtil.makeTypedEnumShadow("octoquad", "localizerYawAxis")
+            : ToolboxUtil.makeTypedEnumShadow("octoquad", "localizerYawAxis", "LOCALIZER_YAW_AXIS", defaultValue);
+      } else if (argType.equals(OctoQuad.LocalizerStatus.class.getName())) {
+        String defaultValue = parseEnumDefaultValue(parameterDefaultValues[i], OctoQuad.LocalizerStatus.class);
+        shadow = (defaultValue == null)
+            ? ToolboxUtil.makeTypedEnumShadow("octoquad", "localizerStatus")
+            : ToolboxUtil.makeTypedEnumShadow("octoquad", "localizerStatus", "LOCALIZER_STATUS", defaultValue);
       } else if (argType.equals(Servo.Direction.class.getName())) {
         String defaultValue = parseEnumDefaultValue(parameterDefaultValues[i], Servo.Direction.class);
         shadow = (defaultValue == null)
@@ -1905,6 +1927,9 @@ public class HardwareUtil {
         case ANALOG_INPUT:
           addAnalogInputCategoryToToolbox(xmlToolbox, hardwareType, hardwareItems);
           break;
+        case ANDY_MARK_COLOR_SENSOR:
+          addAndyMarkColorSensorCategoryToToolbox(xmlToolbox, hardwareType, hardwareItems);
+          break;
         case BNO055IMU:
           addBNO055IMUCategoryToToolbox(xmlToolbox, hardwareType, hardwareItems);
           break;
@@ -2175,6 +2200,55 @@ public class HardwareUtil {
     Map<String, String> setAnalogOutputModeArgs = new LinkedHashMap<String, String>();
     setAnalogOutputModeArgs.put("MODE", ToolboxUtil.makeNumberShadow(0));
     functions.put("setAnalogOutputMode_Number", setAnalogOutputModeArgs);
+    ToolboxUtil.addFunctions(xmlToolbox, hardwareType, identifier, functions);
+  }
+
+  /**
+   * Adds the category for AndyMark Color Sensor to the toolbox.
+   */
+  private static void addAndyMarkColorSensorCategoryToToolbox(
+      StringBuilder xmlToolbox, HardwareType hardwareType, List<HardwareItem> hardwareItems) {
+    String identifier = hardwareItems.get(0).identifier;
+    String gain4x =
+        ToolboxUtil.makeTypedEnumShadow(hardwareType, "proximityGain", "PROXIMITY_GAIN", "GAIN_4X");
+    String six = ToolboxUtil.makeNumberShadow(6);
+    String length8us =
+        ToolboxUtil.makeTypedEnumShadow(hardwareType, "proximityPulseLength", "PROXIMITY_PULSE_LENGTH", "LENGTH_8US");
+
+    // Properties
+    SortedMap<String, String> properties = new TreeMap<String, String>();
+    properties.put("Alpha", "Number");
+    properties.put("Argb", "Number");
+    properties.put("Red", "Number");
+    properties.put("Green", "Number");
+    properties.put("Blue", "Number");
+    properties.put("LightDetected", "Number");
+    properties.put("I2cAddress7Bit", "Number");
+    Map<String, String[]> setterValues = new HashMap<String, String[]>();
+    setterValues.put("I2cAddress7Bit", new String[] { ToolboxUtil.makeNumberShadow(0x39) });
+    ToolboxUtil.addProperties(xmlToolbox, hardwareType, identifier, properties,
+        setterValues, null /* enumBlocks */);
+
+    // Functions
+    Map<String, Map<String, String>> functions = new TreeMap<String, Map<String, String>>();
+    Map<String, String> getDistanceArgs = new LinkedHashMap<String, String>();
+    getDistanceArgs.put("UNIT", ToolboxUtil.makeTypedEnumShadow("navigation", "distanceUnit"));
+    functions.put("getDistance", getDistanceArgs);
+    functions.put("getNormalizedColors", null);
+    Map<String, String> setProximityGainArgs = new LinkedHashMap<String, String>();
+    setProximityGainArgs.put("GAIN", gain4x);
+    functions.put("setProximityGain", setProximityGainArgs);
+    Map<String, String> setProximityLedPulsesArgs = new LinkedHashMap<String, String>();
+    setProximityLedPulsesArgs.put("PULSES", six);
+    functions.put("setProximityLedPulses", setProximityLedPulsesArgs);
+    Map<String, String> setProximityLedPulseLengthArgs = new LinkedHashMap<String, String>();
+    setProximityLedPulseLengthArgs.put("PULSE_LENGTH", length8us);
+    functions.put("setProximityLedPulseLength", setProximityLedPulseLengthArgs);
+    Map<String, String> configureProximitySettingsArgs = new LinkedHashMap<String, String>();
+    configureProximitySettingsArgs.put("GAIN", gain4x);
+    configureProximitySettingsArgs.put("PULSES", six);
+    configureProximitySettingsArgs.put("PULSE_LENGTH", length8us);
+    functions.put("configureProximitySettings", configureProximitySettingsArgs);
     ToolboxUtil.addFunctions(xmlToolbox, hardwareType, identifier, functions);
   }
 
@@ -2912,6 +2986,10 @@ public class HardwareUtil {
     String identifier = hardwareItems.get(0).identifier;
     String channelBankConfig = ToolboxUtil.makeTypedEnumShadow(hardwareType, "channelBankConfig");
     String i2cRecoveryMode = ToolboxUtil.makeTypedEnumShadow(hardwareType, "i2cRecoveryMode");
+    String zero = ToolboxUtil.makeNumberShadow(0);
+    String one = ToolboxUtil.makeNumberShadow(1);
+    String ticks = ToolboxUtil.makeNumberShadow(2.9917);
+    String offset = ToolboxUtil.makeNumberShadow(1.2345);
 
     // Constants
     if (assetManager != null) {
@@ -2920,14 +2998,18 @@ public class HardwareUtil {
 
     // Properties
     SortedMap<String, String> properties = new TreeMap<String, String>();
+    Map<String, String> enumBlocks = new HashMap<String, String>();
+    Map<String, String[]> setterValues = new HashMap<String, String[]>();
     properties.put("ChipId", "Number");
     properties.put("FirmwareVersionString", "String");
     properties.put("ChannelBankConfig", "ChannelBankConfig");
-    properties.put("I2cRecoveryMode", "I2cRecoveryMode");
-    Map<String, String> enumBlocks = new HashMap<String, String>();
     enumBlocks.put("ChannelBankConfig", ToolboxUtil.makeTypedEnumBlock(hardwareType, "channelBankConfig"));
+    properties.put("I2cRecoveryMode", "I2cRecoveryMode");
     enumBlocks.put("I2cRecoveryMode", ToolboxUtil.makeTypedEnumBlock(hardwareType, "i2cRecoveryMode"));
-    Map<String, String[]> setterValues = new HashMap<String, String[]>();
+    properties.put("LocalizerHeadingAxisChoice", "LocalizerYawAxis");
+    enumBlocks.put("LocalizerHeadingAxisChoice", ToolboxUtil.makeTypedEnumBlock(hardwareType, "localizerYawAxis", "LOCALIZER_YAW_AXIS", "X"));
+    properties.put("LocalizerStatus", "LocalizerStatus");
+    enumBlocks.put("LocalizerStatus", ToolboxUtil.makeTypedEnumBlock(hardwareType, "localizerStatus", "LOCALIZER_STATUS", "RUNNING"));
     setterValues.put("ChannelBankConfig", new String[] { channelBankConfig });
     setterValues.put("I2cRecoveryMode", new String[] { i2cRecoveryMode });
     ToolboxUtil.addProperties(xmlToolbox, hardwareType, identifier, properties,
@@ -2936,18 +3018,21 @@ public class HardwareUtil {
     // Functions
     enumBlocks.clear();
     Map<String, Map<String, String>> functions = new TreeMap<String, Map<String, String>>();
+    Map<String, String> variableSetters = new HashMap<String, String>();
+
     functions.put("resetAllPositions", null);
+
     Map<String, String> resetSinglePositionArgs = new LinkedHashMap<String, String>();
-    resetSinglePositionArgs.put("INDEX", ToolboxUtil.makeNumberShadow(0));
+    resetSinglePositionArgs.put("INDEX", zero);
     functions.put("resetSinglePosition", resetSinglePositionArgs);
 
     Map<String, String> setSingleEncoderDirectionArgs = new LinkedHashMap<String, String>();
-    setSingleEncoderDirectionArgs.put("INDEX", ToolboxUtil.makeNumberShadow(0));
+    setSingleEncoderDirectionArgs.put("INDEX", zero);
     setSingleEncoderDirectionArgs.put("DIRECTION", ToolboxUtil.makeTypedEnumShadow(hardwareType, "encoderDirection"));
     functions.put("setSingleEncoderDirection", setSingleEncoderDirectionArgs);
 
     Map<String, String> getSingleEncoderDirectionArgs = new LinkedHashMap<String, String>();
-    getSingleEncoderDirectionArgs.put("INDEX", ToolboxUtil.makeNumberShadow(0));
+    getSingleEncoderDirectionArgs.put("INDEX", zero);
     enumBlocks.put("getSingleEncoderDirection", ToolboxUtil.makeTypedEnumBlock(hardwareType, "encoderDirection"));
     functions.put("getSingleEncoderDirection", getSingleEncoderDirectionArgs);
 
@@ -2956,38 +3041,79 @@ public class HardwareUtil {
     functions.put("setAllVelocitySampleIntervals", setAllVelocitySampleIntervalsArgs);
 
     Map<String, String> setSingleVelocitySampleIntervalArgs = new LinkedHashMap<String, String>();
-    setSingleVelocitySampleIntervalArgs.put("INDEX", ToolboxUtil.makeNumberShadow(0));
+    setSingleVelocitySampleIntervalArgs.put("INDEX", zero);
     setSingleVelocitySampleIntervalArgs.put("INTERVAL_MS", ToolboxUtil.makeNumberShadow(25));
     functions.put("setSingleVelocitySampleInterval", setSingleVelocitySampleIntervalArgs);
 
     Map<String, String> getSingleVelocitySampleIntervalArgs = new LinkedHashMap<String, String>();
-    getSingleVelocitySampleIntervalArgs.put("INDEX", ToolboxUtil.makeNumberShadow(0));
+    getSingleVelocitySampleIntervalArgs.put("INDEX", zero);
     functions.put("getSingleVelocitySampleInterval", getSingleVelocitySampleIntervalArgs);
 
     Map<String, String> setSingleChannelPulseWidthParamsArgs = new LinkedHashMap<String, String>();
-    setSingleChannelPulseWidthParamsArgs.put("INDEX", ToolboxUtil.makeNumberShadow(0));
+    setSingleChannelPulseWidthParamsArgs.put("INDEX", zero);
     setSingleChannelPulseWidthParamsArgs.put("MIN_WIDTH_US", ToolboxUtil.makeNumberShadow(1));
     setSingleChannelPulseWidthParamsArgs.put("MAX_WIDTH_US", ToolboxUtil.makeNumberShadow(1024));
     functions.put("setSingleChannelPulseWidthParams", setSingleChannelPulseWidthParamsArgs);
 
     functions.put("resetEverything", null);
+
     functions.put("saveParametersToFlash", null);
 
     Map<String, String> setCachingModeArgs = new LinkedHashMap<String, String>();
-    setCachingModeArgs.put("MODE", ToolboxUtil.makeTypedEnumShadow(hardwareType, "cachingMode"));
+    setCachingModeArgs.put("MODE", ToolboxUtil.makeTypedEnumShadow(hardwareType, "cachingMode", "CACHING_MODE", "AUTO"));
     functions.put("setCachingMode", setCachingModeArgs);
 
     functions.put("refreshCache", null);
 
     Map<String, String> readSinglePosition_CachingArgs = new LinkedHashMap<String, String>();
-    readSinglePosition_CachingArgs.put("INDEX", ToolboxUtil.makeNumberShadow(0));
+    readSinglePosition_CachingArgs.put("INDEX", zero);
     functions.put("readSinglePosition_Caching", readSinglePosition_CachingArgs);
 
     Map<String, String> readSingleVelocity_CachingArgs = new LinkedHashMap<String, String>();
-    readSingleVelocity_CachingArgs.put("INDEX", ToolboxUtil.makeNumberShadow(0));
+    readSingleVelocity_CachingArgs.put("INDEX", zero);
     functions.put("readSingleVelocity_Caching", readSingleVelocity_CachingArgs);
+
+    Map<String, String> setSingleChannelPulseWidthTracksWrapArgs = new LinkedHashMap<String, String>();
+    setSingleChannelPulseWidthTracksWrapArgs.put("INDEX", zero);
+    setSingleChannelPulseWidthTracksWrapArgs.put("TRACK_WRAP", ToolboxUtil.makeBooleanShadow(true));
+    functions.put("setSingleChannelPulseWidthTracksWrap", setSingleChannelPulseWidthTracksWrapArgs);
+
+    Map<String, String> getSingleChannelPulseWidthTracksWrapArgs = new LinkedHashMap<String, String>();
+    getSingleChannelPulseWidthTracksWrapArgs.put("INDEX", zero);
+    functions.put("getSingleChannelPulseWidthTracksWrap", getSingleChannelPulseWidthTracksWrapArgs);
+
+    Map<String, String> setAllLocalizerParametersArgs = new LinkedHashMap<String, String>();
+    setAllLocalizerParametersArgs.put("PORT_X", zero);
+    setAllLocalizerParametersArgs.put("PORT_Y", zero);
+    setAllLocalizerParametersArgs.put("TICKS_PER_MM_X", ticks);
+    setAllLocalizerParametersArgs.put("TICKS_PER_MM_Y", ticks);
+    setAllLocalizerParametersArgs.put("TCP_OFFSET_MM_X", offset);
+    setAllLocalizerParametersArgs.put("TCP_OFFSET_MM_Y", offset);
+    setAllLocalizerParametersArgs.put("HEADING_SCALAR", one);
+    setAllLocalizerParametersArgs.put("VELOCITY_INTERVAL_MS", ToolboxUtil.makeNumberShadow(128));
+    functions.put("setAllLocalizerParameters", setAllLocalizerParametersArgs);
+
+    functions.put("readLocalizerData", null);
+    variableSetters.put("readLocalizerData", "myLocalizerDataBlock");
+
+    Map<String, String> setLocalizerPoseArgs = new LinkedHashMap<String, String>();
+    setLocalizerPoseArgs.put("POS_X_MM", zero);
+    setLocalizerPoseArgs.put("POS_Y_MM", zero);
+    setLocalizerPoseArgs.put("HEADING_RAD", one);
+    functions.put("setLocalizerPose", setLocalizerPoseArgs);
+
+    Map<String, String> setLocalizerHeadingArgs = new LinkedHashMap<String, String>();
+    setLocalizerHeadingArgs.put("HEADING_RAD", one);
+    functions.put("setLocalizerHeading", setLocalizerHeadingArgs);
+
+    functions.put("resetLocalizerAndCalibrateIMU", null);
+
     ToolboxUtil.addFunctions(xmlToolbox, hardwareType, identifier, functions,
-                 null /* functionComments */, null /* variableSetters */, enumBlocks);
+                 null /* functionComments */, variableSetters, enumBlocks);
+
+    if (assetManager != null) {
+      addAsset(xmlToolbox, assetManager, "toolbox/octoquad_localizer_data_block.xml");
+    }
   }
 
   /**
@@ -3293,6 +3419,13 @@ public class HardwareUtil {
     KNOWN_TYPES_FOR_FTCJAVA.put("com.qualcomm.ftccommon", new Class<?>[] {
         SoundPlayer.class,
       });
+    KNOWN_TYPES_FOR_FTCJAVA.put("com.qualcomm.hardware.andymark", new Class<?>[] {
+        AndyMarkIMU.class,
+        AndyMarkIMUOrientationOnRobot.class,
+        AndyMarkIMUOrientationOnRobot.I2cPortFacingDirection.class,
+        AndyMarkIMUOrientationOnRobot.LogoFacingDirection.class,
+        AndyMarkColorSensor.class,
+      });
     KNOWN_TYPES_FOR_FTCJAVA.put("com.qualcomm.hardware.bosch", new Class<?>[] {
         BNO055IMU.class,
         BNO055IMU.AccelerationIntegrator.class,
@@ -3306,9 +3439,7 @@ public class HardwareUtil {
         HuskyLens.class,
       });
     KNOWN_TYPES_FOR_FTCJAVA.put("com.qualcomm.hardware.digitalchickenlabs", new Class<?>[] {
-        CachingOctoQuad.class,
         OctoQuad.class,
-        OctoQuadBase.class,
       });
     KNOWN_TYPES_FOR_FTCJAVA.put("com.qualcomm.hardware.gobilda", new Class<?>[] {
         GoBildaPinpointDriver.class,
@@ -3516,6 +3647,7 @@ public class HardwareUtil {
         AprilTagProcessor.class,
       });
     KNOWN_TYPES_FOR_FTCJAVA.put("org.firstinspires.ftc.vision.opencv", new Class<?>[] {
+        Circle.class,
         ColorBlobLocatorProcessor.class,
         ColorRange.class,
         ColorSpace.class,

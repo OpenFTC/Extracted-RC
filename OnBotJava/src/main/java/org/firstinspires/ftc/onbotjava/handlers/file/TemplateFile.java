@@ -124,6 +124,14 @@ public class TemplateFile {
         return !isPureTemplate();
     }
 
+    public boolean isExampleProject() {
+        return file.isDirectory();
+    }
+
+    public boolean isExampleFileOrTemplate() {
+        return !isExampleProject();
+    }
+
     public File getFile() {
         return file;
     }

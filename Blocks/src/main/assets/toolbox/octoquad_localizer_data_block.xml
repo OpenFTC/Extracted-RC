@@ -1,0 +1,47 @@
+<category name="OctoQuad.LocalizerDataBlock">
+  <block type="logic_compare">
+    <field name="OP">EQ</field>
+    <value name="A">
+      <block type="octoquadLocalizerDataBlock_getProperty_LocalizerStatus">
+        <field name="PROP">localizerStatus</field>
+        <value name="LOCALIZER_DATA_BLOCK"><block type="variables_get"><field name="VAR">myLocalizerDataBlock</field></block></value>
+      </block>
+    </value>
+    <value name="B">
+      <block type="octoquad_typedEnum_localizerStatus">
+        <field name="LOCALIZER_STATUS">RUNNING</field>
+      </block>
+    </value>
+  </block>
+  <block type="octoquadLocalizerDataBlock_getProperty_Boolean">
+    <field name="PROP">crcOk</field>
+    <value name="LOCALIZER_DATA_BLOCK"><block type="variables_get"><field name="VAR">myLocalizerDataBlock</field></block></value>
+  </block>
+  <block type="octoquadLocalizerDataBlock_getProperty_Number">
+    <field name="PROP">heading_rad</field>
+    <value name="LOCALIZER_DATA_BLOCK"><block type="variables_get"><field name="VAR">myLocalizerDataBlock</field></block></value>
+  </block>
+  <block type="octoquadLocalizerDataBlock_getProperty_Number">
+    <field name="PROP">posX_mm</field>
+    <value name="LOCALIZER_DATA_BLOCK"><block type="variables_get"><field name="VAR">myLocalizerDataBlock</field></block></value>
+  </block>
+  <block type="octoquadLocalizerDataBlock_getProperty_Number">
+    <field name="PROP">posY_mm</field>
+    <value name="LOCALIZER_DATA_BLOCK"><block type="variables_get"><field name="VAR">myLocalizerDataBlock</field></block></value>
+  </block>
+  <block type="octoquadLocalizerDataBlock_getProperty_Number">
+    <field name="PROP">velX_mmS</field>
+    <value name="LOCALIZER_DATA_BLOCK"><block type="variables_get"><field name="VAR">myLocalizerDataBlock</field></block></value>
+  </block>
+  <block type="octoquadLocalizerDataBlock_getProperty_Number">
+    <field name="PROP">velY_mmS</field>
+    <value name="LOCALIZER_DATA_BLOCK"><block type="variables_get"><field name="VAR">myLocalizerDataBlock</field></block></value>
+  </block>
+  <block type="octoquadLocalizerDataBlock_getProperty_Number">
+    <field name="PROP">velHeading_radS</field>
+    <value name="LOCALIZER_DATA_BLOCK"><block type="variables_get"><field name="VAR">myLocalizerDataBlock</field></block></value>
+  </block>
+  <block type="octoquadLocalizerDataBlock_isDataValid">
+    <value name="LOCALIZER_DATA_BLOCK"><block type="variables_get"><field name="VAR">myLocalizerDataBlock</field></block></value>
+  </block>
+</category>

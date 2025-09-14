@@ -465,6 +465,22 @@ class AprilTagAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = AprilTagGameDatabase.class, methodName = "getDecodeTagLibrary")
+  public AprilTagLibrary getDecodeTagLibrary() {
+    try {
+      startBlockExecution(BlockType.FUNCTION, "AprilTagGameDatabase", ".getDecodeTagLibrary");
+      return AprilTagGameDatabase.getDecodeTagLibrary();
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
   @Block(classes = AprilTagGameDatabase.class, methodName = "getSampleTagLibrary")
   public AprilTagLibrary getSampleTagLibrary() {
     try {

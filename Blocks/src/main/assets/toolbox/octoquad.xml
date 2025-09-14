@@ -2,9 +2,6 @@
         <field name="CONSTANT">OCTOQUAD_CHIP_ID</field>
     </block>
     <block type="octoquad_constant_Number">
-        <field name="CONSTANT">SUPPORTED_FW_VERSION_MAJ</field>
-    </block>
-    <block type="octoquad_constant_Number">
         <field name="CONSTANT">ENCODER_FIRST</field>
     </block>
     <block type="octoquad_constant_Number">

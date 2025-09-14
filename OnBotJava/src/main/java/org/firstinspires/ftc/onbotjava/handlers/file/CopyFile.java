@@ -33,7 +33,6 @@
 
 package org.firstinspires.ftc.onbotjava.handlers.file;
 
-import com.qualcomm.robotcore.util.ClassUtil;
 import org.firstinspires.ftc.onbotjava.JavaSourceFile;
 import org.firstinspires.ftc.onbotjava.OnBotJavaFileSystemUtils;
 import org.firstinspires.ftc.onbotjava.OnBotJavaManager;
@@ -53,8 +52,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fi.iki.elonen.NanoHTTPD;
-
-import static org.firstinspires.ftc.onbotjava.StandardResponses.badRequest;
 
 @RegisterWebHandler(uri = OnBotJavaProgrammingMode.URI_FILE_COPY)
 public class CopyFile implements WebHandler {
@@ -84,16 +81,18 @@ public class CopyFile implements WebHandler {
         File dest = new File(OnBotJavaManager.javaRoot, destFileName);
         try {
             List<RecursiveCopyOperation> opsList = new ArrayList<>();
-            generateRecursiveCopyList(origin, dest, opsList);
+            dest = generateRecursiveCopyList(origin, dest, opsList);
             executeRecursiveCopy(opsList);
         } catch (IOException ex) {
             return StandardResponses.badRequest("cannot copy files");
         }
 
-        return StandardResponses.successfulRequest();
+        String absoluteJavaRoot = OnBotJavaManager.javaRoot.getAbsolutePath();
+        String relativeDestination = dest.getAbsolutePath().substring(absoluteJavaRoot.length());
+        return StandardResponses.successfulRequest(relativeDestination);
     }
 
-    private void generateRecursiveCopyList(File origin, File dest, List<? super RecursiveCopyOperation> filesToCopy) throws IOException {
+    private File generateRecursiveCopyList(File origin, File dest, List<? super RecursiveCopyOperation> filesToCopy) throws IOException {
         if (origin.isDirectory()) {
             //if (dest.exists() && !dest.isDirectory()) throw new IOException("Cannot merge origin and destination");
             dest = checkForSameNameConflicts(dest);
@@ -114,8 +113,11 @@ public class CopyFile implements WebHandler {
 
                 generateRecursiveCopyList(src, destFile, filesToCopy);
             }
+            return dest;
         } else {
+            dest = checkForSameNameConflicts(dest);
             filesToCopy.add(new RecursiveCopyOperation(origin, dest));
+            return dest;
         }
     }
 

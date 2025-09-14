@@ -35,7 +35,7 @@ package org.firstinspires.ftc.onbotjava;
 
 public final class OnBotJavaSecurityManager {
     private final static String VALID_TEMPLATE_FILE_REGEX =
-            "templates/([\\w.\\d/_]+/)*([\\w.\\d_]+\\.(?:java|txt|md|properties|groovy|/)|[\\w\\d_]+)$";
+            "templates/([\\w.\\d/_]+/)*([\\w.\\d_]+(?:\\.java|\\.txt|\\.md|\\.properties|\\.groovy|/)|[\\w\\d_]+)$";
     private final static String VALID_SRC_FILE_REGEX =
             "/(?:src|jars)[\\w.\\d/_$]+[\\w.\\d_$]+\\.(?:java|aar|jar|zip|txt|md|properties|groovy|json)$";
     private final static String VALID_SRC_FILE_OR_FOLDER_REGEX =

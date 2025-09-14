@@ -1,5 +1,8 @@
 <xml xmlns="https://developers.google.com/blockly/xml">
 <variables>
+<variable id="l4u_t,8(NrM,1//Wh@i~">myText</variable>
+<variable id="zT9$bXptkhP7|y|WD0S?">stringToSearch</variable>
+<variable id="S|Wd0ogYx;Zar4Q[5PtM">containText</variable>
 <variable id="3.)/eLHm(iRl1^Qsq;Hb">USE_WEBCAM</variable>
 <variable id="l)/,LjA`jR!1Nc@Z:`l!">myAprilTagDetections</variable>
 <variable type="AprilTagProcessor.Builder" id="NYqOu)Ei(Q{C!f;y!a^O">myAprilTagProcessorBuilder</variable>
@@ -534,6 +537,37 @@ https://ftc-docs.firstinspires.org/en/latest/game_specific_resources/field_coord
 </block>
 </value>
 <next>
+<block type="controls_if" id="K|V2)U{oh`Dctcy)~a_x">
+<comment pinned="true" h="73.58892822265625" w="358.735595703125">Only use tags that don't have Obelisk in them since Obelisk tags don't have valid location data</comment>
+<data>{"commentPositionLeft":-53,"commentPositionTop":-99}</data>
+<value name="IF0">
+<block type="logic_negate" id="YNyDexcnx#ovx-Zx-{HA">
+<value name="BOOL">
+<block type="procedures_callreturn" id="%McY,/.xCkX4/^uoua!B">
+<mutation name="contains">
+<arg name="stringToSearch"/>
+<arg name="containText"/>
+</mutation>
+<value name="ARG0">
+<block type="aprilTagDetection_getProperty_String" id="X}jMPfgNnTOFAWCZTh5+">
+<field name="PROP">metadata.name</field>
+<value name="APRIL_TAG_DETECTION">
+<block type="variables_get" id="QC5qf!/PvQR$a_g=UV-Q">
+<field name="VAR" id="vP~n9zf$lW%hYD/C.j_-">myAprilTagDetection</field>
+</block>
+</value>
+</block>
+</value>
+<value name="ARG1">
+<block type="text" id="$eg^N=ED$|W#(3-ML]R{">
+<field name="TEXT">Obelisk</field>
+</block>
+</value>
+</block>
+</value>
+</block>
+</value>
+<statement name="DO0">
 <block type="telemetry_addLine" id=";grqK`+-g7;g50c=|L0l">
 <value name="TEXT">
 <shadow type="text" id="!y]i-sUsabeyV/)u=6D5">
@@ -758,6 +792,8 @@ https://ftc-docs.firstinspires.org/en/latest/game_specific_resources/field_coord
 </block>
 </next>
 </block>
+</statement>
+</block>
 </next>
 </block>
 </statement>
@@ -922,6 +958,61 @@ https://ftc-docs.firstinspires.org/en/latest/game_specific_resources/field_coord
 </next>
 </block>
 </statement>
+</block>
+<block type="procedures_defreturn" id="mc!=|)1g+}o~pXq!hhQj" x="950" y="2393">
+<mutation>
+<arg name="stringToSearch" varid="zT9$bXptkhP7|y|WD0S?"/>
+<arg name="containText" varid="S|Wd0ogYx;Zar4Q[5PtM"/>
+</mutation>
+<field name="NAME">contains</field>
+<comment pinned="true" h="80" w="160">returns if the containText is inside of the stringToSearch</comment>
+<data>{"commentPositionLeft":-40,"commentPositionTop":-105}</data>
+<statement name="STACK">
+<block type="procedures_ifreturn" id="BBAcPU.SWa5]+xvx$C3D">
+<mutation value="1"/>
+<value name="CONDITION">
+<block type="logic_compare" id="qzJn`2tnACWZeyvCNeTn">
+<field name="OP">EQ</field>
+<value name="A">
+<block type="text_indexOf" id="Dh0FJES}`JjdA,4uBr6v">
+<field name="END">FIRST</field>
+<value name="VALUE">
+<block type="variables_get" id="6wJy`SkCC#y?~D-fpp@}">
+<field name="VAR" id="zT9$bXptkhP7|y|WD0S?">stringToSearch</field>
+</block>
+</value>
+<value name="FIND">
+<shadow type="text" id="}83j17|Zjdu`JrZ)NJE]">
+<field name="TEXT">Obelisk</field>
+</shadow>
+<block type="variables_get" id="=gL9UTpWOA)[EJjz|3sF">
+<field name="VAR" id="S|Wd0ogYx;Zar4Q[5PtM">containText</field>
+</block>
+</value>
+</block>
+</value>
+<value name="B">
+<block type="math_number" id=":fC3a~t2_T{J1p+:gQA9">
+<field name="NUM">0</field>
+</block>
+</value>
+</block>
+</value>
+<value name="VALUE">
+<block type="logic_boolean" id="$xx[.to#y^7^V.pmUi*n">
+<field name="BOOL">FALSE</field>
+</block>
+</value>
+</block>
+</statement>
+<value name="RETURN">
+<block type="logic_boolean" id="84$mzUZVvdWV=AJTrH$T">
+<field name="BOOL">TRUE</field>
+</block>
+</value>
+</block>
+<block type="variables_get" id="WzQ-nXkwb(.~MYOb1r2Z" x="312" y="2933">
+<field name="VAR" id="l4u_t,8(NrM,1//Wh@i~">myText</field>
 </block>
 </xml>
 <?xml version='1.0' encoding='UTF-8' standalone='yes' ?>

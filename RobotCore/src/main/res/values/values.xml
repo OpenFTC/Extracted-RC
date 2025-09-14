@@ -74,6 +74,7 @@
     <attr format="color" name="colorMedium"/>
     <attr format="color" name="colorMediumLight"/>
     <attr format="color" name="colorMediumMedium"/>
+    <attr format="color" name="colorReady"/>
     <attr format="color" name="colorVeryVeryDark"/>
     <attr format="color" name="feedbackBackground"/>
     <attr format="color" name="feedbackBorder"/>
@@ -527,6 +528,7 @@
         <item name="android:textViewStyle">@style/FtcTextViewStyle</item>
         <item name="android:buttonStyle">@style/FtcButtonStyle</item>
         <item name="textWhite">@color/text_white</item>
+        <item name="colorReady">@color/light_green</item>
     </style>
     <style name="AppTheme.Blue">
         <item name="textBright">@color/bright_blue</item>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 DigitalChickenLabs
+ * Copyright (c) 2025 DigitalChickenLabs
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,6 @@ package com.qualcomm.hardware.digitalchickenlabs;
 
 import com.qualcomm.hardware.lynx.LynxI2cDeviceSynch;
 import com.qualcomm.robotcore.hardware.I2cAddr;
-import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynchDevice;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynchSimple;
 import com.qualcomm.robotcore.hardware.configuration.annotations.DeviceProperties;
@@ -37,9 +36,11 @@ import java.util.Arrays;
 
 @I2cDeviceType
 @DeviceProperties(xmlTag = "OctoQuadFTC", name = "OctoQuadFTC")
-public class OctoQuadImpl extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> implements OctoQuad, CachingOctoQuad
+public class OctoQuadImpl extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> implements OctoQuad
 {
     private static final int I2C_ADDRESS = 0x30;
+    private static final int SUPPORTED_FW_VERSION_MAJ = 3;
+    private static final int SUPPORTED_FW_VERSION_MIN = 0;
     private static final ByteOrder OCTOQUAD_ENDIAN = ByteOrder.LITTLE_ENDIAN;
 
     private static final byte CMD_SET_PARAM = 1;
@@ -49,23 +50,28 @@ public class OctoQuadImpl extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> imp
     private static final byte CMD_RESET_EVERYTHING = 20;
     private static final byte CMD_RESET_ENCODERS = 21;
 
+    private static final byte CMD_RESET_LOCALIZER = 40;
+
     private static final byte PARAM_ENCODER_DIRECTIONS = 0;
     private static final byte PARAM_I2C_RECOVERY_MODE = 1;
     private static final byte PARAM_CHANNEL_BANK_CONFIG = 2;
     private static final byte PARAM_CHANNEL_VEL_INTVL = 3;
     private static final byte PARAM_CHANNEL_PULSE_WIDTH_MIN_MAX = 4;
+    private static final byte PARAM_CHANNEL_PULSE_WIDTH_TRACKS_WRAP = 5;
 
-    private byte directionRegisterData = 0;
+    private static final byte PARAM_LOCALIZER_X_TICKS_PER_MM = 50;
+    private static final byte PARAM_LOCALIZER_Y_TICKS_PER_MM = 51;
+    private static final byte PARAM_LOCALIZER_TCP_OFFSET_X_MM = 52;
+    private static final byte PARAM_LOCALIZER_TCP_OFFSET_Y_MM = 53;
+    private static final byte PARAM_LOCALIZER_IMU_HEADING_SCALAR = 54;
+    private static final byte PARAM_LOCALIZER_PORT_X = 55;
+    private static final byte PARAM_LOCALIZER_PORT_Y = 56;
+    private static final byte PARAM_LOCALIZER_VEL_INTVL = 57;
+
+    private static final float SCALAR_LOCALIZER_HEADING_VELOCITY = 1/600f;
+    private static final float SCALAR_LOCALIZER_HEADING = 1/5000f;
 
     private boolean isInitialized = false;
-
-    public class OctoQuadException extends RuntimeException
-    {
-        public OctoQuadException(String msg)
-        {
-            super(msg);
-        }
-    }
 
     public OctoQuadImpl(I2cDeviceSynchSimple deviceClient, boolean deviceClientIsOwned)
     {
@@ -100,7 +106,9 @@ public class OctoQuadImpl extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> imp
     {
         uint8_t(1),
         int32_t(4),
-        int16_t(2);
+        int16_t(2),
+        uint16_t(2),
+        float32(4);
 
         public final int length;
 
@@ -125,23 +133,35 @@ public class OctoQuadImpl extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> imp
         COMMAND_DAT_5                     (0x0A, RegisterType.uint8_t),
         COMMAND_DAT_6                     (0x0B, RegisterType.uint8_t),
 
-        ENCODER_0_POSITION                (0x0C, RegisterType.int32_t),
-        ENCODER_1_POSITION                (0x10, RegisterType.int32_t),
-        ENCODER_2_POSITION                (0x14, RegisterType.int32_t),
-        ENCODER_3_POSITION                (0x18, RegisterType.int32_t),
-        ENCODER_4_POSITION                (0x1C, RegisterType.int32_t),
-        ENCODER_5_POSITION                (0x20, RegisterType.int32_t),
-        ENCODER_6_POSITION                (0x24, RegisterType.int32_t),
-        ENCODER_7_POSITION                (0x28, RegisterType.int32_t),
+        LOCALIZER_YAW_AXIS                (0x0C, RegisterType.uint8_t),
+        LOCALIZER_STATUS                  (0x0D, RegisterType.uint8_t),
+        LOCALIZER_VX                      (0x0E, RegisterType.int16_t),
+        LOCALIZER_VY                      (0x10, RegisterType.int16_t),
+        LOCALIZER_VH                      (0x12, RegisterType.int16_t),
+        LOCALIZER_X                       (0x14, RegisterType.int16_t),
+        LOCALIZER_Y                       (0x16, RegisterType.int16_t),
+        LOCALIZER_H                       (0x18, RegisterType.int16_t),
+        LOCALIZER_CRC16                   (0x1A, RegisterType.uint16_t), // LOCALIZER_STATUS --> LOCALIZER_H
 
-        ENCODER_0_VELOCITY                (0x2C, RegisterType.int16_t),
-        ENCODER_1_VELOCITY                (0x2E, RegisterType.int16_t),
-        ENCODER_2_VELOCITY                (0x30, RegisterType.int16_t),
-        ENCODER_3_VELOCITY                (0x32, RegisterType.int16_t),
-        ENCODER_4_VELOCITY                (0x34, RegisterType.int16_t),
-        ENCODER_5_VELOCITY                (0x36, RegisterType.int16_t),
-        ENCODER_6_VELOCITY                (0x38, RegisterType.int16_t),
-        ENCODER_7_VELOCITY                (0x3A, RegisterType.int16_t);
+        ENCODER_0_POSITION                (0x1C, RegisterType.int32_t),
+        ENCODER_1_POSITION                (0x20, RegisterType.int32_t),
+        ENCODER_2_POSITION                (0x24, RegisterType.int32_t),
+        ENCODER_3_POSITION                (0x28, RegisterType.int32_t),
+        ENCODER_4_POSITION                (0x2C, RegisterType.int32_t),
+        ENCODER_5_POSITION                (0x30, RegisterType.int32_t),
+        ENCODER_6_POSITION                (0x34, RegisterType.int32_t),
+        ENCODER_7_POSITION                (0x38, RegisterType.int32_t),
+
+        ENCODER_0_VELOCITY                (0x3C, RegisterType.int16_t),
+        ENCODER_1_VELOCITY                (0x3E, RegisterType.int16_t),
+        ENCODER_2_VELOCITY                (0x40, RegisterType.int16_t),
+        ENCODER_3_VELOCITY                (0x42, RegisterType.int16_t),
+        ENCODER_4_VELOCITY                (0x44, RegisterType.int16_t),
+        ENCODER_5_VELOCITY                (0x46, RegisterType.int16_t),
+        ENCODER_6_VELOCITY                (0x48, RegisterType.int16_t),
+        ENCODER_7_VELOCITY                (0x4A, RegisterType.int16_t),
+
+        ENCODER_DATA_CRC16                (0x4C, RegisterType.uint16_t); // ENC0 --> VEL7
 
         public final byte addr;
         public final int length;
@@ -151,8 +171,6 @@ public class OctoQuadImpl extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> imp
             this.addr = (byte) addr;
             this.length = type.length;
         }
-
-        public static final Register[] all = Register.values();
     }
 
     // --------------------------------------------------------------------------------------------------------------------------------
@@ -182,69 +200,9 @@ public class OctoQuadImpl extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> imp
 
     public int readSinglePosition(int idx)
     {
-        verifyInitialization();
-
-        Range.throwIfRangeIsInvalid(idx, ENCODER_FIRST, ENCODER_LAST);
-
-        Register register = Register.all[Register.ENCODER_0_POSITION.ordinal()+idx];
-        return intFromBytes(readRegister(register));
+        return readSinglePosition_Caching(idx);
     }
 
-    public void readAllPositions(int[] out)
-    {
-        verifyInitialization();
-
-        if(out.length != NUM_ENCODERS)
-        {
-            throw new IllegalArgumentException("out.length != 8");
-        }
-
-        byte[] bytes = readContiguousRegisters(Register.ENCODER_0_POSITION, Register.ENCODER_7_POSITION);
-
-        ByteBuffer buffer = ByteBuffer.wrap(bytes);
-        buffer.order(OCTOQUAD_ENDIAN);
-
-        for(int i = 0; i < NUM_ENCODERS; i++)
-        {
-            out[i] = buffer.getInt();
-        }
-    }
-
-    public int[] readAllPositions()
-    {
-        verifyInitialization();
-
-        int[] block = new int[NUM_ENCODERS];
-        readAllPositions(block);
-        return block;
-    }
-
-    public int[] readPositionRange(int idxFirst, int idxLast)
-    {
-        verifyInitialization();
-
-        Range.throwIfRangeIsInvalid(idxFirst, ENCODER_FIRST, ENCODER_LAST);
-        Range.throwIfRangeIsInvalid(idxLast, ENCODER_FIRST, ENCODER_LAST);
-
-        Register registerFirst = Register.all[Register.ENCODER_0_POSITION.ordinal()+idxFirst];
-        Register registerLast = Register.all[Register.ENCODER_0_POSITION.ordinal()+idxLast];
-
-        byte[] data = readContiguousRegisters(registerFirst, registerLast);
-        ByteBuffer buffer = ByteBuffer.wrap(data);
-        buffer.order(ByteOrder.LITTLE_ENDIAN);
-
-        int numEncodersRead = idxLast-idxFirst+1;
-        int[] encoderCounts = new int[numEncodersRead];
-
-        for(int i = 0; i < numEncodersRead; i++)
-        {
-            encoderCounts[i] = buffer.getInt();
-        }
-
-        return encoderCounts;
-    }
-
-    // ALSO USED BY CACHING API !
     public void resetSinglePosition(int idx)
     {
         verifyInitialization();
@@ -260,7 +218,6 @@ public class OctoQuadImpl extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> imp
         }
     }
 
-    // ALSO USED BY CACHING API !
     public void resetAllPositions()
     {
         verifyInitialization();
@@ -289,6 +246,11 @@ public class OctoQuadImpl extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> imp
         }
 
         writeContiguousRegisters(Register.COMMAND, Register.COMMAND_DAT_0, new byte[] {CMD_RESET_ENCODERS, dat});
+
+        if (cachingMode == CachingMode.AUTO)
+        {
+            refreshCache();
+        }
     }
 
     public void resetMultiplePositions(int... indices)
@@ -304,10 +266,15 @@ public class OctoQuadImpl extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> imp
 
         for(int idx : indices)
         {
-            dat |= 1 << idx;
+            dat |= (byte) (1 << idx);
         }
 
         writeContiguousRegisters(Register.COMMAND, Register.COMMAND_DAT_0, new byte[] {CMD_RESET_ENCODERS, dat});
+
+        if (cachingMode == CachingMode.AUTO)
+        {
+            refreshCache();
+        }
     }
 
     public void setSingleEncoderDirection(int idx, EncoderDirection direction)
@@ -315,6 +282,9 @@ public class OctoQuadImpl extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> imp
         verifyInitialization();
 
         Range.throwIfRangeIsInvalid(idx, ENCODER_FIRST, ENCODER_LAST);
+
+        writeContiguousRegisters(Register.COMMAND, Register.COMMAND_DAT_0, new byte[]{CMD_READ_PARAM, PARAM_ENCODER_DIRECTIONS});
+        byte directionRegisterData = readRegister(Register.COMMAND_DAT_0)[0];
 
         if(direction == EncoderDirection.REVERSE)
         {
@@ -350,7 +320,7 @@ public class OctoQuadImpl extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> imp
             throw new IllegalArgumentException("reverse.length != 8");
         }
 
-        directionRegisterData = 0;
+        byte directionRegisterData = 0;
 
         for(int i = ENCODER_FIRST; i <= ENCODER_LAST; i++)
         {
@@ -365,66 +335,35 @@ public class OctoQuadImpl extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> imp
 
     public short readSingleVelocity(int idx)
     {
-        verifyInitialization();
-
-        Range.throwIfRangeIsInvalid(idx, ENCODER_FIRST, ENCODER_LAST);
-
-        Register register = Register.all[Register.ENCODER_0_VELOCITY.ordinal()+idx];
-        return shortFromBytes(readRegister(register));
+        return readSingleVelocity_Caching(idx);
     }
 
-    public void readAllVelocities(short[] out)
+    private void unpackAllEncoderData(ByteBuffer buffer, EncoderDataBlock out)
     {
-        verifyInitialization();
-
-        if(out.length != NUM_ENCODERS)
-        {
-            throw new IllegalArgumentException("out.length != 8");
-        }
-
-        byte[] bytes = readContiguousRegisters(Register.ENCODER_0_VELOCITY, Register.ENCODER_7_VELOCITY);
-
-        ByteBuffer buffer = ByteBuffer.wrap(bytes);
-        buffer.order(OCTOQUAD_ENDIAN);
+        buffer.mark(); // mark our current position
+        byte[] asArray = new byte[(RegisterType.int32_t.length + RegisterType.int16_t.length) * NUM_ENCODERS]; // only the encoder data itself
+        buffer.get(asArray); // read data as array (needed for CRC)
+        buffer.reset(); // rewind back to mark
 
         for(int i = 0; i < NUM_ENCODERS; i++)
         {
-            out[i] = buffer.getShort();
+            out.positions[i] = buffer.getInt();
         }
-    }
 
-    public short[] readAllVelocities()
-    {
-        verifyInitialization();
-
-        short[] block = new short[NUM_ENCODERS];
-        readAllVelocities(block);
-        return block;
-    }
-
-    public short[] readVelocityRange(int idxFirst, int idxLast)
-    {
-        verifyInitialization();
-
-        Range.throwIfRangeIsInvalid(idxFirst, ENCODER_FIRST, ENCODER_LAST);
-        Range.throwIfRangeIsInvalid(idxLast, ENCODER_FIRST, ENCODER_LAST);
-
-        Register registerFirst = Register.all[Register.ENCODER_0_VELOCITY.ordinal()+idxFirst];
-        Register registerLast = Register.all[Register.ENCODER_0_VELOCITY.ordinal()+idxLast];
-
-        byte[] data = readContiguousRegisters(registerFirst, registerLast);
-        ByteBuffer buffer = ByteBuffer.wrap(data);
-        buffer.order(ByteOrder.LITTLE_ENDIAN);
-
-        int numVelocitiesRead = idxLast-idxFirst+1;
-        short[] velocities = new short[numVelocitiesRead];
-
-        for(int i = 0; i < numVelocitiesRead; i++)
+        for(int i = 0; i < NUM_ENCODERS; i++)
         {
-            velocities[i] = buffer.getShort();
+            out.velocities[i] = buffer.getShort();
         }
 
-        return velocities;
+        short crc = buffer.getShort();
+        short calculatedCrc = calc_crc16_profibus(asArray);
+
+        out.crcOk = calculatedCrc == crc;
+
+        if (!out.crcOk)
+        {
+            RobotLog.ee("OctoQuadImpl", String.format("Encoder data CRC error! Expect = 0x%x Actual = 0x%x", calculatedCrc, crc));
+        }
     }
 
     public void readAllEncoderData(EncoderDataBlock out)
@@ -441,26 +380,23 @@ public class OctoQuadImpl extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> imp
             throw new IllegalArgumentException("out.velocities.length != 8");
         }
 
-        byte[] bytes = readContiguousRegisters(Register.ENCODER_0_POSITION, Register.ENCODER_7_VELOCITY);
+        byte[] bytes = readContiguousRegisters(Register.ENCODER_0_POSITION, Register.ENCODER_DATA_CRC16);
 
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
         buffer.order(OCTOQUAD_ENDIAN);
 
-        for(int i = 0; i < NUM_ENCODERS; i++)
-        {
-            out.positions[i] = buffer.getInt();
-        }
+        unpackAllEncoderData(buffer, out);
 
-        for(int i = 0; i < NUM_ENCODERS; i++)
+        if (out.crcOk)
         {
-            out.velocities[i] = buffer.getShort();
+            out.copyTo(cachedData);
+            Arrays.fill(posHasBeenRead, false);
+            Arrays.fill(velHasBeenRead, false);
         }
     }
 
     public EncoderDataBlock readAllEncoderData()
     {
-        verifyInitialization();
-
         EncoderDataBlock block = new EncoderDataBlock();
         readAllEncoderData(block);
 
@@ -477,38 +413,6 @@ public class OctoQuadImpl extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> imp
         writeContiguousRegisters(Register.COMMAND, Register.COMMAND_DAT_2, new byte[]{CMD_SET_PARAM, PARAM_CHANNEL_VEL_INTVL, (byte)idx, (byte)intvlms});
     }
 
-    public void setAllVelocitySampleIntervals(int intvlms)
-    {
-        verifyInitialization();
-
-        Range.throwIfRangeIsInvalid(intvlms, MIN_VELOCITY_MEASUREMENT_INTERVAL_MS, MAX_VELOCITY_MEASUREMENT_INTERVAL_MS);
-
-        for(int i = ENCODER_FIRST; i <= ENCODER_LAST; i++)
-        {
-            writeContiguousRegisters(Register.COMMAND, Register.COMMAND_DAT_2, new byte[]{CMD_SET_PARAM, PARAM_CHANNEL_VEL_INTVL, (byte)i, (byte)intvlms});
-        }
-    }
-
-    public void setAllVelocitySampleIntervals(int[] intvlms)
-    {
-        verifyInitialization();
-
-        if(intvlms.length != NUM_ENCODERS)
-        {
-            throw new IllegalArgumentException("intvls.length != 8");
-        }
-
-        for(int i : intvlms)
-        {
-            Range.throwIfRangeIsInvalid(i, MIN_VELOCITY_MEASUREMENT_INTERVAL_MS, MAX_VELOCITY_MEASUREMENT_INTERVAL_MS);
-        }
-
-        for(int i = ENCODER_FIRST; i <= ENCODER_LAST; i++)
-        {
-            writeContiguousRegisters(Register.COMMAND, Register.COMMAND_DAT_2, new byte[]{CMD_SET_PARAM, PARAM_CHANNEL_VEL_INTVL, (byte)i, (byte)intvlms[i]});
-        }
-    }
-
     public int getSingleVelocitySampleInterval(int idx)
     {
         verifyInitialization();
@@ -520,20 +424,16 @@ public class OctoQuadImpl extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> imp
         return ms & 0xFF;
     }
 
-    public int[] getAllVelocitySampleIntervals()
+    public void setAllVelocitySampleIntervals(int intvlms)
     {
         verifyInitialization();
 
-        int[] ret = new int[NUM_ENCODERS];
+        Range.throwIfRangeIsInvalid(intvlms, MIN_VELOCITY_MEASUREMENT_INTERVAL_MS, MAX_VELOCITY_MEASUREMENT_INTERVAL_MS);
 
-        for(int i = ENCODER_FIRST; i <= ENCODER_FIRST; i++)
+        for(int i = ENCODER_FIRST; i <= ENCODER_LAST; i++)
         {
-            writeContiguousRegisters(Register.COMMAND, Register.COMMAND_DAT_1, new byte[]{CMD_READ_PARAM, PARAM_CHANNEL_VEL_INTVL, (byte)i});
-            byte ms = readRegister(Register.COMMAND_DAT_0)[0];
-            ret[i] = ms & 0xFF;
+            writeContiguousRegisters(Register.COMMAND, Register.COMMAND_DAT_2, new byte[]{CMD_SET_PARAM, PARAM_CHANNEL_VEL_INTVL, (byte)i, (byte)intvlms});
         }
-
-        return ret;
     }
 
     public void setSingleChannelPulseWidthParams(int idx, int min, int max)
@@ -582,6 +482,318 @@ public class OctoQuadImpl extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> imp
         params.max_length_us = buffer.getShort() & 0xFFFF;
 
         return params;
+    }
+
+    public void setSingleChannelPulseWidthTracksWrap(int idx, boolean trackWrap)
+    {
+        verifyInitialization();
+
+        Range.throwIfRangeIsInvalid(idx, ENCODER_FIRST, ENCODER_LAST);
+
+        writeContiguousRegisters(Register.COMMAND, Register.COMMAND_DAT_0, new byte[]{CMD_READ_PARAM, PARAM_CHANNEL_PULSE_WIDTH_TRACKS_WRAP});
+        byte absWrapTrackRegisterData = readRegister(Register.COMMAND_DAT_0)[0];
+
+        if(trackWrap)
+        {
+            absWrapTrackRegisterData |= (byte) (1 << idx);
+        }
+        else
+        {
+            absWrapTrackRegisterData &= (byte) ~(1 << idx);
+        }
+
+        writeContiguousRegisters(Register.COMMAND, Register.COMMAND_DAT_1, new byte[]{CMD_SET_PARAM, PARAM_CHANNEL_PULSE_WIDTH_TRACKS_WRAP, absWrapTrackRegisterData});
+    }
+
+    public boolean getSingleChannelPulseWidthTracksWrap(int idx)
+    {
+        verifyInitialization();
+
+        Range.throwIfRangeIsInvalid(idx, ENCODER_FIRST, ENCODER_LAST);
+
+        writeContiguousRegisters(Register.COMMAND, Register.COMMAND_DAT_0, new byte[]{CMD_READ_PARAM, PARAM_CHANNEL_PULSE_WIDTH_TRACKS_WRAP});
+        byte tracking = readRegister(Register.COMMAND_DAT_0)[0];
+
+        return (tracking & (1 << idx)) != 0;
+    }
+
+    public void setAllChannelsPulseWidthTracksWrap(boolean[] trackWrap)
+    {
+        verifyInitialization();
+
+        if(trackWrap.length != NUM_ENCODERS)
+        {
+            throw new IllegalArgumentException("trackWrap.length != 8");
+        }
+
+        byte absWrapTrackRegisterData = 0;
+
+        for(int i = ENCODER_FIRST; i <= ENCODER_LAST; i++)
+        {
+            if(trackWrap[i])
+            {
+                absWrapTrackRegisterData |= (byte) (1 << i);
+            }
+        }
+
+        writeContiguousRegisters(Register.COMMAND, Register.COMMAND_DAT_1, new byte[]{CMD_SET_PARAM, PARAM_CHANNEL_PULSE_WIDTH_TRACKS_WRAP, absWrapTrackRegisterData});
+    }
+
+    public void setLocalizerCountsPerMM_X(float ticksPerMM_x)
+    {
+        verifyInitialization();
+
+        Range.throwIfRangeIsInvalid(ticksPerMM_x, 0, Float.MAX_VALUE);
+
+        ByteBuffer buf = ByteBuffer.allocate(6);
+        buf.order(OCTOQUAD_ENDIAN);
+        buf.put(CMD_SET_PARAM);
+        buf.put(PARAM_LOCALIZER_X_TICKS_PER_MM);
+        buf.putFloat(ticksPerMM_x);
+
+        writeContiguousRegisters(Register.COMMAND, Register.COMMAND_DAT_4, buf.array());
+    }
+
+    public void setLocalizerCountsPerMM_Y(float ticksPerMM_y)
+    {
+        verifyInitialization();
+
+        Range.throwIfRangeIsInvalid(ticksPerMM_y, 0, Float.MAX_VALUE);
+
+        ByteBuffer buf = ByteBuffer.allocate(6);
+        buf.order(OCTOQUAD_ENDIAN);
+        buf.put(CMD_SET_PARAM);
+        buf.put(PARAM_LOCALIZER_Y_TICKS_PER_MM);
+        buf.putFloat(ticksPerMM_y);
+
+        writeContiguousRegisters(Register.COMMAND, Register.COMMAND_DAT_4, buf.array());
+    }
+
+    public void setLocalizerTcpOffsetMM_X(float tcpOffsetMM_X)
+    {
+        verifyInitialization();
+
+        ByteBuffer buf = ByteBuffer.allocate(6);
+        buf.order(OCTOQUAD_ENDIAN);
+        buf.put(CMD_SET_PARAM);
+        buf.put(PARAM_LOCALIZER_TCP_OFFSET_X_MM);
+        buf.putFloat(tcpOffsetMM_X);
+
+        writeContiguousRegisters(Register.COMMAND, Register.COMMAND_DAT_4, buf.array());
+    }
+
+    public void setLocalizerTcpOffsetMM_Y(float tcpOffsetMM_Y)
+    {
+        verifyInitialization();
+
+        ByteBuffer buf = ByteBuffer.allocate(6);
+        buf.order(OCTOQUAD_ENDIAN);
+        buf.put(CMD_SET_PARAM);
+        buf.put(PARAM_LOCALIZER_TCP_OFFSET_Y_MM);
+        buf.putFloat(tcpOffsetMM_Y);
+
+        writeContiguousRegisters(Register.COMMAND, Register.COMMAND_DAT_4, buf.array());
+    }
+
+    public void setLocalizerImuHeadingScalar(float headingScalar)
+    {
+        verifyInitialization();
+
+        Range.throwIfRangeIsInvalid(headingScalar, 0, Float.MAX_VALUE);
+
+        ByteBuffer buf = ByteBuffer.allocate(6);
+        buf.order(OCTOQUAD_ENDIAN);
+        buf.put(CMD_SET_PARAM);
+        buf.put(PARAM_LOCALIZER_IMU_HEADING_SCALAR);
+        buf.putFloat(headingScalar);
+
+        writeContiguousRegisters(Register.COMMAND, Register.COMMAND_DAT_4, buf.array());
+    }
+
+    public void setLocalizerPortX(int port)
+    {
+        verifyInitialization();
+
+        Range.throwIfRangeIsInvalid(port, ENCODER_FIRST, ENCODER_LAST);
+
+        writeContiguousRegisters(Register.COMMAND, Register.COMMAND_DAT_1, new byte[]{CMD_SET_PARAM, PARAM_LOCALIZER_PORT_X, (byte)port});
+    }
+
+    public void setLocalizerPortY(int port)
+    {
+        verifyInitialization();
+
+        Range.throwIfRangeIsInvalid(port, ENCODER_FIRST, ENCODER_LAST);
+
+        writeContiguousRegisters(Register.COMMAND, Register.COMMAND_DAT_1, new byte[]{CMD_SET_PARAM, PARAM_LOCALIZER_PORT_Y, (byte)port});
+    }
+
+    public void setLocalizerVelocityIntervalMS(int ms)
+    {
+        verifyInitialization();
+
+        Range.throwIfRangeIsInvalid(ms, MIN_VELOCITY_MEASUREMENT_INTERVAL_MS, MAX_VELOCITY_MEASUREMENT_INTERVAL_MS);
+
+        writeContiguousRegisters(Register.COMMAND, Register.COMMAND_DAT_1, new byte[]{CMD_SET_PARAM, PARAM_LOCALIZER_VEL_INTVL, (byte)ms});
+    }
+
+    public LocalizerStatus getLocalizerStatus()
+    {
+        verifyInitialization();
+        int state =  readRegister(Register.LOCALIZER_STATUS)[0] & 0xFF;
+
+        // Prevent crash if value out of expected range
+        if (state < LocalizerStatus.values().length)
+        {
+            return LocalizerStatus.values()[state];
+        }
+        else
+        {
+            return LocalizerStatus.INVALID;
+        }
+    }
+
+    public LocalizerYawAxis getLocalizerHeadingAxisChoice()
+    {
+        verifyInitialization();
+        int code = readRegister(Register.LOCALIZER_YAW_AXIS)[0] & 0xFF;
+
+        // Prevent crash if value out of expected range
+        if (code < LocalizerYawAxis.values().length)
+        {
+            return LocalizerYawAxis.values()[code];
+        }
+        else
+        {
+            return LocalizerYawAxis.UNDECIDED;
+        }
+    }
+
+    public void resetLocalizerAndCalibrateIMU()
+    {
+        verifyInitialization();
+        writeRegister(Register.COMMAND, new byte[] {CMD_RESET_LOCALIZER});
+    }
+
+    private void unpackLocalizerData(ByteBuffer buf, LocalizerDataBlock out)
+    {
+        buf.mark(); // mark our current position
+        byte[] asArray = new byte[RegisterType.uint16_t.length*6 + RegisterType.uint8_t.length];
+        buf.get(asArray); // read data as array (needed for CRC)
+        buf.reset(); // rewind back to mark
+
+        int localizerStatusCode = buf.get() & 0xFF;
+
+        // Prevent crash if value out of expected range
+        if (localizerStatusCode < LocalizerStatus.values().length)
+        {
+            out.localizerStatus = LocalizerStatus.values()[localizerStatusCode];
+        }
+        else
+        {
+            out.localizerStatus = LocalizerStatus.INVALID;
+        }
+
+        out.velX_mmS = buf.getShort();
+        out.velY_mmS = buf.getShort();
+        out.velHeading_radS = buf.getShort() * SCALAR_LOCALIZER_HEADING_VELOCITY;
+        out.posX_mm = buf.getShort();
+        out.posY_mm = buf.getShort();
+        out.heading_rad = buf.getShort() * SCALAR_LOCALIZER_HEADING;
+
+        short crc = buf.getShort();
+        short calculatedCrc = calc_crc16_profibus(asArray);
+
+        out.crcOk = calculatedCrc == crc;
+
+        if (!out.crcOk)
+        {
+            RobotLog.ee("OctoQuadImpl", String.format("Localizer data CRC error! Expect = 0x%x Actual = 0x%x", calculatedCrc, crc));
+
+            StringBuilder bld = new StringBuilder();
+            for (byte b : asArray)
+            {
+                bld.append(String.format(" 0x%x", b));
+            }
+            bld.append("\r\n");
+            System.err.print(bld);
+        }
+    }
+
+    public void readLocalizerData(LocalizerDataBlock out)
+    {
+        verifyInitialization();
+
+        byte[] bytes = readContiguousRegisters(Register.LOCALIZER_STATUS, Register.LOCALIZER_CRC16);
+
+        ByteBuffer buffer = ByteBuffer.wrap(bytes);
+        buffer.order(OCTOQUAD_ENDIAN);
+
+        unpackLocalizerData(buffer, out);
+    }
+
+    public LocalizerDataBlock readLocalizerData()
+    {
+        LocalizerDataBlock block = new LocalizerDataBlock();
+        readLocalizerData(block);
+        return block;
+    }
+
+    public void readLocalizerDataAndAllEncoderData(LocalizerDataBlock localizerOut, EncoderDataBlock encoderOut)
+    {
+        verifyInitialization();
+
+        byte[] bytes = readContiguousRegisters(Register.LOCALIZER_STATUS, Register.ENCODER_DATA_CRC16);
+
+        ByteBuffer buffer = ByteBuffer.wrap(bytes);
+        buffer.order(OCTOQUAD_ENDIAN);
+
+        unpackLocalizerData(buffer, localizerOut);
+        unpackAllEncoderData(buffer, encoderOut);
+    }
+
+    public void setAllLocalizerParameters(
+            int portX,
+            int portY,
+            float ticksPerMM_x,
+            float ticksPerMM_y,
+            float tcpOffsetMM_X,
+            float tcpOffsetMM_Y,
+            float headingScalar,
+            int velocityIntervalMs)
+    {
+        setLocalizerPortX(portX);
+        setLocalizerPortY(portY);
+        setLocalizerCountsPerMM_X(ticksPerMM_x);
+        setLocalizerCountsPerMM_Y(ticksPerMM_y);
+        setLocalizerTcpOffsetMM_X(tcpOffsetMM_X);
+        setLocalizerTcpOffsetMM_Y(tcpOffsetMM_Y);
+        setLocalizerImuHeadingScalar(headingScalar);
+        setLocalizerVelocityIntervalMS(velocityIntervalMs);
+    }
+
+    public void setLocalizerPose(int posX_mm, int posY_mm, float heading_rad)
+    {
+        verifyInitialization();
+
+        ByteBuffer buf = ByteBuffer.allocate(6);
+        buf.order(OCTOQUAD_ENDIAN);
+
+        buf.putShort((short)posX_mm);
+        buf.putShort((short)posY_mm);
+        buf.putShort((short) (heading_rad / SCALAR_LOCALIZER_HEADING));
+
+        writeContiguousRegisters(Register.LOCALIZER_X, Register.LOCALIZER_H, buf.array());
+    }
+
+    public void setLocalizerHeading(float headingRad)
+    {
+        verifyInitialization();
+
+        ByteBuffer buf = ByteBuffer.allocate(2);
+        buf.order(OCTOQUAD_ENDIAN);
+        buf.putShort((short) (headingRad / SCALAR_LOCALIZER_HEADING));
+        writeRegister(Register.LOCALIZER_H, buf.array());
     }
 
     public void resetEverything()
@@ -653,7 +865,6 @@ public class OctoQuadImpl extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> imp
         catch (InterruptedException e)
         {
             Thread.currentThread().interrupt();
-            e.printStackTrace();
         }
     }
 
@@ -669,10 +880,6 @@ public class OctoQuadImpl extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> imp
     public void setCachingMode(CachingMode mode)
     {
         this.cachingMode = mode;
-        if (cachingMode != CachingMode.NONE)
-        {
-            refreshCache();
-        }
     }
 
     public void refreshCache()
@@ -684,44 +891,26 @@ public class OctoQuadImpl extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> imp
 
     public int readSinglePosition_Caching(int idx)
     {
-        // If we're caching we're gonna want to read from the cache
-        if (cachingMode == CachingMode.AUTO || cachingMode == CachingMode.MANUAL)
+        // Update cache if this is the 2nd read
+        if (cachingMode == CachingMode.AUTO && posHasBeenRead[idx])
         {
-            // Update cache if this is the 2nd read
-            if (cachingMode == CachingMode.AUTO && posHasBeenRead[idx])
-            {
-                refreshCache();
-            }
+            refreshCache();
+        }
 
-            posHasBeenRead[idx] = true;
-            return cachedData.positions[idx];
-        }
-        // Not caching; read direct
-        else
-        {
-            return readSinglePosition(idx);
-        }
+        posHasBeenRead[idx] = true;
+        return cachedData.positions[idx];
     }
 
     public short readSingleVelocity_Caching(int idx)
     {
-        // If we're caching we're gonna want to read from the cache
-        if (cachingMode == CachingMode.AUTO || cachingMode == CachingMode.MANUAL)
+        // Update cache if this is the 2nd read
+        if (cachingMode == CachingMode.AUTO && velHasBeenRead[idx])
         {
-            // Update cache if this is the 2nd read
-            if (cachingMode == CachingMode.AUTO && velHasBeenRead[idx])
-            {
-                refreshCache();
-            }
+            refreshCache();
+        }
 
-            velHasBeenRead[idx] = true;
-            return cachedData.velocities[idx];
-        }
-        // Not caching; read direct
-        else
-        {
-            return readSingleVelocity(idx);
-        }
+        velHasBeenRead[idx] = true;
+        return cachedData.velocities[idx];
     }
 
     // --------------------------------------------------------------------------------------------------------------------------------
@@ -742,25 +931,22 @@ public class OctoQuadImpl extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> imp
 
             if(fw.maj != SUPPORTED_FW_VERSION_MAJ)
             {
-                RobotLog.addGlobalWarningMessage("OctoQuad is running a different major firmware version than this driver was built for (current=%d; expected=%d) IT IS HIGHLY LIKELY THAT NOTHING WILL WORK!", fw.maj, SUPPORTED_FW_VERSION_MAJ);
+                RobotLog.addGlobalWarningMessage("OctoQuad is running a different major firmware version than this driver was built for (current=%d; expected=%d) IT IS HIGHLY LIKELY THAT NOTHING WILL WORK! You should flash the firmware to a compatible version (Refer to the \"Field-Upgradable Firmware\" section in the OctoQuad datasheet).", fw.maj, SUPPORTED_FW_VERSION_MAJ);
+            }
+            else
+            {
+                if(fw.min < SUPPORTED_FW_VERSION_MIN)
+                {
+                    RobotLog.addGlobalWarningMessage("OctoQuad is running an older minor firmware revision than this driver was built for; certain features may not work (current=%d; expected=%d). You should update the firmware on your OctoQuad (Refer to Section 6 in the OctoQuad datasheet).", fw.min, SUPPORTED_FW_VERSION_MIN);
+                }
+                else if(fw.min > SUPPORTED_FW_VERSION_MIN)
+                {
+                    RobotLog.addGlobalWarningMessage("OctoQuad is running a newer minor firmware revision than this driver was built for; (current=%d; expected=%d). You will not be able to access new features in the updated firmware without an updated I2C driver.", fw.min, SUPPORTED_FW_VERSION_MIN);
+                }
             }
 
             isInitialized = true;
         }
-    }
-
-    private static int intFromBytes(byte[] bytes)
-    {
-        ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
-        byteBuffer.order(OCTOQUAD_ENDIAN);
-        return byteBuffer.getInt();
-    }
-
-    private static short shortFromBytes(byte[] bytes)
-    {
-        ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
-        byteBuffer.order(OCTOQUAD_ENDIAN);
-        return byteBuffer.getShort();
     }
 
     private byte[] readRegister(Register reg)
@@ -799,6 +985,65 @@ public class OctoQuadImpl extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> imp
         }
 
         deviceClient.write(addrStart, dat);
+    }
+
+    // --------------------------------------------------------------------------------------------------------------------------------
+    // PROFIBUS CRC
+    //---------------------------------------------------------------------------------------------------------------------------------
+
+    private static final short crc16_profibus_init = (short) 0xFFFF;
+    private static final short crc16_profibus_xor_out = (short) 0xFFFF;
+    private static final short[] crc16_profibus_table = {
+            (short) 0x0000, (short) 0x1DCF, (short) 0x3B9E, (short) 0x2651,   (short) 0x773C, (short) 0x6AF3, (short) 0x4CA2, (short) 0x516D,
+            (short) 0xEE78, (short) 0xF3B7, (short) 0xD5E6, (short) 0xC829,   (short) 0x9944, (short) 0x848B, (short) 0xA2DA, (short) 0xBF15,
+            (short) 0xC13F, (short) 0xDCF0, (short) 0xFAA1, (short) 0xE76E,   (short) 0xB603, (short) 0xABCC, (short) 0x8D9D, (short) 0x9052,
+            (short) 0x2F47, (short) 0x3288, (short) 0x14D9, (short) 0x0916,   (short) 0x587B, (short) 0x45B4, (short) 0x63E5, (short) 0x7E2A,
+            (short) 0x9FB1, (short) 0x827E, (short) 0xA42F, (short) 0xB9E0,   (short) 0xE88D, (short) 0xF542, (short) 0xD313, (short) 0xCEDC,
+            (short) 0x71C9, (short) 0x6C06, (short) 0x4A57, (short) 0x5798,   (short) 0x06F5, (short) 0x1B3A, (short) 0x3D6B, (short) 0x20A4,
+            (short) 0x5E8E, (short) 0x4341, (short) 0x6510, (short) 0x78DF,   (short) 0x29B2, (short) 0x347D, (short) 0x122C, (short) 0x0FE3,
+            (short) 0xB0F6, (short) 0xAD39, (short) 0x8B68, (short) 0x96A7,   (short) 0xC7CA, (short) 0xDA05, (short) 0xFC54, (short) 0xE19B,
+            (short) 0x22AD, (short) 0x3F62, (short) 0x1933, (short) 0x04FC,   (short) 0x5591, (short) 0x485E, (short) 0x6E0F, (short) 0x73C0,
+            (short) 0xCCD5, (short) 0xD11A, (short) 0xF74B, (short) 0xEA84,   (short) 0xBBE9, (short) 0xA626, (short) 0x8077, (short) 0x9DB8,
+            (short) 0xE392, (short) 0xFE5D, (short) 0xD80C, (short) 0xC5C3,   (short) 0x94AE, (short) 0x8961, (short) 0xAF30, (short) 0xB2FF,
+            (short) 0x0DEA, (short) 0x1025, (short) 0x3674, (short) 0x2BBB,   (short) 0x7AD6, (short) 0x6719, (short) 0x4148, (short) 0x5C87,
+            (short) 0xBD1C, (short) 0xA0D3, (short) 0x8682, (short) 0x9B4D,   (short) 0xCA20, (short) 0xD7EF, (short) 0xF1BE, (short) 0xEC71,
+            (short) 0x5364, (short) 0x4EAB, (short) 0x68FA, (short) 0x7535,   (short) 0x2458, (short) 0x3997, (short) 0x1FC6, (short) 0x0209,
+            (short) 0x7C23, (short) 0x61EC, (short) 0x47BD, (short) 0x5A72,   (short) 0x0B1F, (short) 0x16D0, (short) 0x3081, (short) 0x2D4E,
+            (short) 0x925B, (short) 0x8F94, (short) 0xA9C5, (short) 0xB40A,   (short) 0xE567, (short) 0xF8A8, (short) 0xDEF9, (short) 0xC336,
+            (short) 0x455A, (short) 0x5895, (short) 0x7EC4, (short) 0x630B,   (short) 0x3266, (short) 0x2FA9, (short) 0x09F8, (short) 0x1437,
+            (short) 0xAB22, (short) 0xB6ED, (short) 0x90BC, (short) 0x8D73,   (short) 0xDC1E, (short) 0xC1D1, (short) 0xE780, (short) 0xFA4F,
+            (short) 0x8465, (short) 0x99AA, (short) 0xBFFB, (short) 0xA234,   (short) 0xF359, (short) 0xEE96, (short) 0xC8C7, (short) 0xD508,
+            (short) 0x6A1D, (short) 0x77D2, (short) 0x5183, (short) 0x4C4C,   (short) 0x1D21, (short) 0x00EE, (short) 0x26BF, (short) 0x3B70,
+            (short) 0xDAEB, (short) 0xC724, (short) 0xE175, (short) 0xFCBA,   (short) 0xADD7, (short) 0xB018, (short) 0x9649, (short) 0x8B86,
+            (short) 0x3493, (short) 0x295C, (short) 0x0F0D, (short) 0x12C2,   (short) 0x43AF, (short) 0x5E60, (short) 0x7831, (short) 0x65FE,
+            (short) 0x1BD4, (short) 0x061B, (short) 0x204A, (short) 0x3D85,   (short) 0x6CE8, (short) 0x7127, (short) 0x5776, (short) 0x4AB9,
+            (short) 0xF5AC, (short) 0xE863, (short) 0xCE32, (short) 0xD3FD,   (short) 0x8290, (short) 0x9F5F, (short) 0xB90E, (short) 0xA4C1,
+            (short) 0x67F7, (short) 0x7A38, (short) 0x5C69, (short) 0x41A6,   (short) 0x10CB, (short) 0x0D04, (short) 0x2B55, (short) 0x369A,
+            (short) 0x898F, (short) 0x9440, (short) 0xB211, (short) 0xAFDE,   (short) 0xFEB3, (short) 0xE37C, (short) 0xC52D, (short) 0xD8E2,
+            (short) 0xA6C8, (short) 0xBB07, (short) 0x9D56, (short) 0x8099,   (short) 0xD1F4, (short) 0xCC3B, (short) 0xEA6A, (short) 0xF7A5,
+            (short) 0x48B0, (short) 0x557F, (short) 0x732E, (short) 0x6EE1,   (short) 0x3F8C, (short) 0x2243, (short) 0x0412, (short) 0x19DD,
+            (short) 0xF846, (short) 0xE589, (short) 0xC3D8, (short) 0xDE17,   (short) 0x8F7A, (short) 0x92B5, (short) 0xB4E4, (short) 0xA92B,
+            (short) 0x163E, (short) 0x0BF1, (short) 0x2DA0, (short) 0x306F,   (short) 0x6102, (short) 0x7CCD, (short) 0x5A9C, (short) 0x4753,
+            (short) 0x3979, (short) 0x24B6, (short) 0x02E7, (short) 0x1F28,   (short) 0x4E45, (short) 0x538A, (short) 0x75DB, (short) 0x6814,
+            (short) 0xD701, (short) 0xCACE, (short) 0xEC9F, (short) 0xF150,   (short) 0xA03D, (short) 0xBDF2, (short) 0x9BA3, (short) 0x866C
+    };
+
+    private static short calc_crc16_profibus(byte[] data, int len)
+    {
+        short crc = crc16_profibus_init;
+
+        for (int i = 0; i < len; i++)
+        {
+            // Need to & 0xFF because java 16-bit is signed
+            crc = (short) ((crc << 8) ^ crc16_profibus_table[((crc >> 8) ^ data[i & 0xFF]) & 0xFF]);
+        }
+
+        return (short) (crc ^ crc16_profibus_xor_out);
+    }
+
+    private static short calc_crc16_profibus(byte[] data)
+    {
+        return calc_crc16_profibus(data, data.length);
     }
 }
 

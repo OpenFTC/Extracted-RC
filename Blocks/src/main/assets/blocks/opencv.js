@@ -35,6 +35,8 @@
 Blockly.Blocks['colorRange_constant_ColorRange'] = {
   init: function() {
     var CONSTANT_CHOICES = [
+        ['ARTIFACT_GREEN', 'ARTIFACT_GREEN'],
+        ['ARTIFACT_PURPLE', 'ARTIFACT_PURPLE'],
         ['BLUE', 'BLUE'],
         ['RED', 'RED'],
         ['YELLOW', 'YELLOW'],
@@ -49,6 +51,8 @@ Blockly.Blocks['colorRange_constant_ColorRange'] = {
     // Assign 'this' to a variable for use in the closures below.
     var thisBlock = this;
     var TOOLTIPS = [
+        ['ARTIFACT_GREEN', 'The ARTIFACT_GREEN ColorRange object.'],
+        ['ARTIFACT_PURPLE', 'The ARTIFACT_PURPLE ColorRange object.'],
         ['BLUE', 'The BLUE ColorRange object.'],
         ['RED', 'The RED ColorRange object.'],
         ['YELLOW', 'The YELLOW ColorRange object.'],

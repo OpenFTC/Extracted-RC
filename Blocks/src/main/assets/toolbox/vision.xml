@@ -512,8 +512,8 @@ detections multiple times.
       <block type="variables_set">
         <field name="VAR">myAprilTagLibrary</field>
         <value name="VALUE">
-          <block type="aprilTagGameDatabase_getIntoTheDeepTagLibrary">
-            <comment pinned="false" h="150" w="325">Get the AprilTagLibrary for the Into The Deep FTC game.
+          <block type="aprilTagGameDatabase_DecodeTagLibrary">
+            <comment pinned="false" h="150" w="325">Get the AprilTagLibrary for the Decode FTC game.
             </comment>
           </block>
         </value>
@@ -675,6 +675,17 @@ detections multiple times.
           </block>
         </value>
       </block>
+      <block type="colorBlobLocatorProcessorBuilder_setCircleFitColor">
+        <field name="COLOR_BLOB_LOCATOR_PROCESSOR_BUILDER" variabletype="ColorBlobLocatorProcessor.Builder">myColorBlobLocatorProcessorBuilder</field>
+        <value name="COLOR">
+          <shadow type="color_constant_Number"><field name="CONSTANT">WHITE</field></shadow>
+          <block type="color_rgbToColor_Number">
+            <value name="RED"><shadow type="math_number"><field name="NUM">255</field></shadow></value>
+            <value name="GREEN"><shadow type="math_number"><field name="NUM">255</field></shadow></value>
+            <value name="BLUE"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
+          </block>
+        </value>
+      </block>
       <block type="colorBlobLocatorProcessorBuilder_setRoiColor">
         <field name="COLOR_BLOB_LOCATOR_PROCESSOR_BUILDER" variabletype="ColorBlobLocatorProcessor.Builder">myColorBlobLocatorProcessorBuilder</field>
         <value name="COLOR">
@@ -695,6 +706,18 @@ detections multiple times.
             <value name="GREEN"><shadow type="math_number"><field name="NUM">227</field></shadow></value>
             <value name="BLUE"><shadow type="math_number"><field name="NUM">252</field></shadow></value>
           </block>
+        </value>
+      </block>
+      <block type="colorBlobLocatorProcessorBuilder_setTargetColorRange">
+        <field name="COLOR_BLOB_LOCATOR_PROCESSOR_BUILDER" variabletype="ColorBlobLocatorProcessor.Builder">myColorBlobLocatorProcessorBuilder</field>
+        <value name="COLOR_RANGE">
+          <shadow type="colorRange_constant_ColorRange"><field name="CONSTANT">ARTIFACT_GREEN</field></shadow>
+        </value>
+      </block>
+      <block type="colorBlobLocatorProcessorBuilder_setTargetColorRange">
+        <field name="COLOR_BLOB_LOCATOR_PROCESSOR_BUILDER" variabletype="ColorBlobLocatorProcessor.Builder">myColorBlobLocatorProcessorBuilder</field>
+        <value name="COLOR_RANGE">
+          <shadow type="colorRange_constant_ColorRange"><field name="CONSTANT">ARTIFACT_PURPLE</field></shadow>
         </value>
       </block>
       <block type="colorBlobLocatorProcessorBuilder_setTargetColorRange">
@@ -737,6 +760,10 @@ detections multiple times.
       <block type="colorBlobLocatorProcessorBuilder_setBlurSize">
         <field name="COLOR_BLOB_LOCATOR_PROCESSOR_BUILDER" variabletype="ColorBlobLocatorProcessor.Builder">myColorBlobLocatorProcessorBuilder</field>
         <value name="BLUR_SIZE"><shadow type="math_number"><field name="NUM">5</field></shadow></value>
+      </block>
+      <block type="colorBlobLocatorProcessorBuilder_setMorphOperationType">
+        <field name="COLOR_BLOB_LOCATOR_PROCESSOR_BUILDER" variabletype="ColorBlobLocatorProcessor.Builder">myColorBlobLocatorProcessorBuilder</field>
+        <value name="MORPH_OPERATION_TYPE"><shadow type="colorBlobLocator_typedEnum_morphOperationType"><field name="MORPH_OPERATION_TYPE">EXTERNAL_ONLY</field></shadow></value>
       </block>
       <block type="colorBlobLocatorProcessorBuilder_setErodeSize">
         <field name="COLOR_BLOB_LOCATOR_PROCESSOR_BUILDER" variabletype="ColorBlobLocatorProcessor.Builder">myColorBlobLocatorProcessorBuilder</field>
@@ -1030,6 +1057,12 @@ detections multiple times.
             <field name="SWATCH">BLUE</field>
           </block>
         </value>
+      </block>
+      <block type="predominantColor_typedEnum_swatch">
+        <field name="SWATCH">ARTIFACT_GREEN</field>
+      </block>
+      <block type="predominantColor_typedEnum_swatch">
+        <field name="SWATCH">ARTIFACT_PURPLE</field>
       </block>
       <block type="predominantColor_typedEnum_swatch">
         <field name="SWATCH">RED</field>

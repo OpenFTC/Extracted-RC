@@ -1337,6 +1337,30 @@ Blockly.FtcJava['aprilTagGameDatabase_getIntoTheDeepTagLibrary'] = function(bloc
   return [code, Blockly.FtcJava.ORDER_FUNCTION_CALL];
 };
 
+Blockly.Blocks['aprilTagGameDatabase_getDecodeTagLibrary'] = {
+  init: function() {
+    this.setOutput(true, 'AprilTagLibrary');
+    this.appendDummyInput()
+        .appendField('call')
+        .appendField(createNonEditableField('AprilTagGameDatabase'))
+        .appendField('.')
+        .appendField(createNonEditableField('getDecodeTagLibrary'));
+    this.setColour(functionColor);
+    this.setTooltip('Returns the tag library for the Decode FTC game.');
+  }
+};
+
+Blockly.JavaScript['aprilTagGameDatabase_getDecodeTagLibrary'] = function(block) {
+  var code = aprilTagIdentifierForJavaScript + '.getDecodeTagLibrary()';
+  return [code, Blockly.JavaScript.ORDER_FUNCTION_CALL];
+};
+
+Blockly.FtcJava['aprilTagGameDatabase_getDecodeTagLibrary'] = function(block) {
+  Blockly.FtcJava.generateImport_('AprilTagGameDatabase');
+  var code = 'AprilTagGameDatabase.getDecodeTagLibrary()';
+  return [code, Blockly.FtcJava.ORDER_FUNCTION_CALL];
+};
+
 Blockly.Blocks['aprilTagGameDatabase_getSampleTagLibrary'] = {
   init: function() {
     this.setOutput(true, 'AprilTagLibrary');

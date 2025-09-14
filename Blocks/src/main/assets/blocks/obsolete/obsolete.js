@@ -16,6 +16,11 @@
  */
 
 function isObsolete(block) {
+  if (block.type == 'octoquad_typedEnum_cachingMode' &&
+      block.getFieldValue('CACHING_MODE') === 'NONE') {
+    return true;
+  }
+
   if (block.type == 'navigation_enum_cameraDirection' ||
       block.type == 'navigation_typedEnum_cameraDirection' ||
       block.type == 'navigation_enum_cameraMonitorFeedback' ||

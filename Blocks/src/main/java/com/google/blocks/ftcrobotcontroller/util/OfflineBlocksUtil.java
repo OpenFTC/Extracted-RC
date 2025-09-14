@@ -92,6 +92,8 @@ public class OfflineBlocksUtil {
     assetsToInclude.add("blocks/android_orientation.js");
     assetsToInclude.add("blocks/android_sound_pool.js");
     assetsToInclude.add("blocks/android_text_to_speech.js");
+    assetsToInclude.add("blocks/andymark_imu_orientation_on_robot.js");
+    assetsToInclude.add("blocks/andy_mark_color_sensor.js");
     assetsToInclude.add("blocks/angular_velocity.js");
     assetsToInclude.add("blocks/april_tag.js");
     assetsToInclude.add("blocks/blackboard.js");

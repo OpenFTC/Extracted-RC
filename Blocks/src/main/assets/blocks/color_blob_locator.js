@@ -135,6 +135,44 @@ Blockly.FtcJava['colorBlobLocatorProcessorBuilder_setBoxFitColor'] = function(bl
   return colorBlobLocatorProcessorBuilder + '.setBoxFitColor(' + color + ');\n';
 };
 
+Blockly.Blocks['colorBlobLocatorProcessorBuilder_setCircleFitColor'] = {
+  init: function() {
+    this.appendDummyInput('FIELD_VARIABLE')
+        .appendField('call')
+        .appendField(new Blockly.FieldVariable('myColorBlobLocatorProcessorBuilder', null,
+                                               ['ColorBlobLocatorProcessor.Builder'], 'ColorBlobLocatorProcessor.Builder'),
+                     'COLOR_BLOB_LOCATOR_PROCESSOR_BUILDER')
+        .appendField('.')
+        .appendField(createNonEditableField('setCircleFitColor'));
+    this.appendValueInput('COLOR').setCheck('Number');
+    this.setInputsInline(true);
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setColour(builderColor);
+    this.setTooltip('Sets the color used to draw the enclosing circle around blobs.');
+    this.getFtcJavaInputType = function(inputName) {
+        return 'int';
+    };
+  }
+};
+
+Blockly.JavaScript['colorBlobLocatorProcessorBuilder_setCircleFitColor'] = function(block) {
+  var colorBlobLocatorProcessorBuilder = Blockly.JavaScript.variableDB_.getName(
+      block.getFieldValue('COLOR_BLOB_LOCATOR_PROCESSOR_BUILDER'), Blockly.Variables.NAME_TYPE);
+  var color = Blockly.JavaScript.valueToCode(
+      block, 'COLOR', Blockly.JavaScript.ORDER_COMMA);
+  return colorBlobLocatorIdentifierForJavaScript + '.setCircleFitColor(' +
+      colorBlobLocatorProcessorBuilder + ', ' + color + ');\n';
+};
+
+Blockly.FtcJava['colorBlobLocatorProcessorBuilder_setCircleFitColor'] = function(block) {
+  var colorBlobLocatorProcessorBuilder = Blockly.FtcJava.variableDB_.getName(
+      block.getFieldValue('COLOR_BLOB_LOCATOR_PROCESSOR_BUILDER'), Blockly.Variables.NAME_TYPE);
+  var color = Blockly.FtcJava.valueToCode(
+      block, 'COLOR', Blockly.FtcJava.ORDER_NONE);
+  return colorBlobLocatorProcessorBuilder + '.setCircleFitColor(' + color + ');\n';
+};
+
 Blockly.Blocks['colorBlobLocatorProcessorBuilder_setRoiColor'] = {
   init: function() {
     this.appendDummyInput('FIELD_VARIABLE')
@@ -359,6 +397,43 @@ Blockly.FtcJava['colorBlobLocatorProcessorBuilder_setBlurSize'] = function(block
   var blurSize = Blockly.FtcJava.valueToCode(
       block, 'BLUR_SIZE', Blockly.FtcJava.ORDER_NONE);
   return colorBlobLocatorProcessorBuilder + '.setBlurSize(' + blurSize + ');\n';
+};
+
+Blockly.Blocks['colorBlobLocatorProcessorBuilder_setMorphOperationType'] = {
+  init: function() {
+    this.appendDummyInput('FIELD_VARIABLE')
+        .appendField('call')
+        .appendField(new Blockly.FieldVariable('myColorBlobLocatorProcessorBuilder', null,
+                                               ['ColorBlobLocatorProcessor.Builder'], 'ColorBlobLocatorProcessor.Builder'),
+                     'COLOR_BLOB_LOCATOR_PROCESSOR_BUILDER')
+        .appendField('.')
+        .appendField(createNonEditableField('setMorphOperationType'));
+    this.appendValueInput('MORPH_OPERATION_TYPE').setCheck('ColorBlobLocatorProcessor.MorphOperationType');
+    this.setInputsInline(true);
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setColour(builderColor);
+    this.setTooltip(
+        'Sets the type of morph operation to perform. Only relevant if using ' +
+        'both erosion and dilation.');
+  }
+};
+
+Blockly.JavaScript['colorBlobLocatorProcessorBuilder_setMorphOperationType'] = function(block) {
+  var colorBlobLocatorProcessorBuilder = Blockly.JavaScript.variableDB_.getName(
+      block.getFieldValue('COLOR_BLOB_LOCATOR_PROCESSOR_BUILDER'), Blockly.Variables.NAME_TYPE);
+  var morphOperationType = Blockly.JavaScript.valueToCode(
+      block, 'MORPH_OPERATION_TYPE', Blockly.JavaScript.ORDER_COMMA);
+  return colorBlobLocatorIdentifierForJavaScript + '.setMorphOperationType(' +
+      colorBlobLocatorProcessorBuilder + ', ' + morphOperationType + ');\n';
+};
+
+Blockly.FtcJava['colorBlobLocatorProcessorBuilder_setMorphOperationType'] = function(block) {
+  var colorBlobLocatorProcessorBuilder = Blockly.FtcJava.variableDB_.getName(
+      block.getFieldValue('COLOR_BLOB_LOCATOR_PROCESSOR_BUILDER'), Blockly.Variables.NAME_TYPE);
+  var morphOperationType = Blockly.FtcJava.valueToCode(
+      block, 'MORPH_OPERATION_TYPE', Blockly.FtcJava.ORDER_NONE);
+  return colorBlobLocatorProcessorBuilder + '.setMorphOperationType(' + morphOperationType + ');\n';
 };
 
 Blockly.Blocks['colorBlobLocatorProcessorBuilder_setErodeSize'] = {
@@ -702,6 +777,49 @@ Blockly.JavaScript['colorBlobLocator_typedEnum_contourMode'] = function(block) {
 
 Blockly.FtcJava['colorBlobLocator_typedEnum_contourMode'] = function(block) {
   var code = 'ColorBlobLocatorProcessor.ContourMode.' + block.getFieldValue('CONTOUR_MODE');
+  Blockly.FtcJava.generateImport_('ColorBlobLocatorProcessor');
+  return [code, Blockly.FtcJava.ORDER_MEMBER];
+};
+
+// ColorBlobLocatorProcessor.MorphOperationType
+
+Blockly.Blocks['colorBlobLocator_typedEnum_morphOperationType'] = {
+  init: function() {
+    var MORPH_OPERATION_TYPE_CHOICES = [
+        ['OPENING', 'OPENING'],
+        ['CLOSING', 'CLOSING'],
+    ];
+    this.setOutput(true, 'ColorBlobLocatorProcessor.MorphOperationType');
+    this.appendDummyInput()
+        .appendField(createNonEditableField('MorphOperationType'))
+        .appendField('.')
+        .appendField(new Blockly.FieldDropdown(MORPH_OPERATION_TYPE_CHOICES), 'MORPH_OPERATION_TYPE');
+    this.setColour(getPropertyColor);
+    // Assign 'this' to a variable for use in the tooltip closure below.
+    var thisBlock = this;
+    var TOOLTIPS = [
+        ['OPENING', 'The MorphOperationType value OPENING. Performs erosion followed by dilation.'],
+        ['CLOSING', 'The MorphOperationType value CLOSING. Performs dilation followed by erosion.'],
+    ];
+    this.setTooltip(function() {
+      var key = thisBlock.getFieldValue('MORPH_OPERATION_TYPE');
+      for (var i = 0; i < TOOLTIPS.length; i++) {
+        if (TOOLTIPS[i][0] == key) {
+          return TOOLTIPS[i][1];
+        }
+      }
+      return '';
+    });
+  }
+};
+
+Blockly.JavaScript['colorBlobLocator_typedEnum_morphOperationType'] = function(block) {
+  var code = '"' + block.getFieldValue('MORPH_OPERATION_TYPE') + '"';
+  return [code, Blockly.JavaScript.ORDER_ATOMIC];
+};
+
+Blockly.FtcJava['colorBlobLocator_typedEnum_morphOperationType'] = function(block) {
+  var code = 'ColorBlobLocatorProcessor.MorphOperationType.' + block.getFieldValue('MORPH_OPERATION_TYPE');
   Blockly.FtcJava.generateImport_('ColorBlobLocatorProcessor');
   return [code, Blockly.FtcJava.ORDER_MEMBER];
 };

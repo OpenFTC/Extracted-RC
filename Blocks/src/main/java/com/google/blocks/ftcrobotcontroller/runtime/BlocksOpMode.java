@@ -452,6 +452,8 @@ public final class BlocksOpMode extends LinearOpMode {
         new AndroidSoundPoolAccess(this, Identifier.ANDROID_SOUND_POOL.identifierForJavaScript));
     addJavascriptInterface(Identifier.ANDROID_TEXT_TO_SPEECH.identifierForJavaScript,
         new AndroidTextToSpeechAccess(this, Identifier.ANDROID_TEXT_TO_SPEECH.identifierForJavaScript));
+    addJavascriptInterface(Identifier.ANDYMARK_IMU_ORIENTATION_ON_ROBOT.identifierForJavaScript,
+        new AndyMarkIMUOrientationOnRobotAccess(this, Identifier.ANDYMARK_IMU_ORIENTATION_ON_ROBOT.identifierForJavaScript));
     addJavascriptInterface(Identifier.ANGULAR_VELOCITY.identifierForJavaScript,
         new AngularVelocityAccess(this, Identifier.ANGULAR_VELOCITY.identifierForJavaScript));
     addJavascriptInterface(Identifier.APRIL_TAG.identifierForJavaScript,

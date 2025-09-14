@@ -45,7 +45,6 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ReadWriteFile;
 import com.qualcomm.robotcore.util.RobotLog;
 
-import org.firstinspires.ftc.onbotjava.EditorSettings;
 import org.firstinspires.ftc.onbotjava.JavaSourceFile;
 import org.firstinspires.ftc.onbotjava.OnBotJavaFileSystemUtils;
 import org.firstinspires.ftc.onbotjava.OnBotJavaManager;
@@ -58,7 +57,12 @@ import org.firstinspires.ftc.onbotjava.StandardResponses;
 import org.firstinspires.ftc.robotcore.internal.webserver.WebHandler;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -96,8 +100,18 @@ import static org.firstinspires.ftc.onbotjava.OnBotJavaFileSystemUtils.PATH_SEPA
  */
 @RegisterWebHandler(uri = OnBotJavaProgrammingMode.URI_FILE_NEW)
 public class NewFile implements WebHandler {
-    private static final String TAG = NewFile.class.getName();
+    private static final String TAG = "OnBotJavaNewFile";
     private static final List<Class<? extends HardwareDevice>> HARDWARE_TYPES_PREVENTED_FROM_HARDWARE_SETUP = Arrays.asList(DcMotorController.class,ServoController.class,VoltageSensor.class);
+
+    private static class RecursiveCopyOperation {
+        private final File src;
+        private final File dest;
+
+        private RecursiveCopyOperation(File src, File dest) {
+            this.src = src;
+            this.dest = dest;
+        }
+    }
 
     @Override
     public NanoHTTPD.Response getResponse(NanoHTTPD.IHTTPSession session) {
@@ -108,31 +122,53 @@ public class NewFile implements WebHandler {
 
         final String fileNameUri = RequestConditions.dataForParameter(session, RequestConditions.REQUEST_KEY_FILE);
         File file = new File(OnBotJavaManager.javaRoot, fileNameUri);
-        if (fileNameUri.endsWith(PATH_SEPARATOR)) {
+        if (!RequestConditions.containsParameters(session, RequestConditions.REQUEST_KEY_TEMPLATE) && fileNameUri.endsWith(PATH_SEPARATOR)) {
             file.mkdirs();
-            return StandardResponses.successfulRequest();
+            return StandardResponses.successfulRequest(relativePathToJavaRoot(file));
         } else {
             Map<String, String> templateKeyMap = buildTemplateKeyMap(fileNameUri, data, file);
-            if (!OnBotJavaSecurityManager.isValidSourceFileLocation(fileNameUri)) return StandardResponses.badRequest();
+            if (!OnBotJavaSecurityManager.isValidSourceFileOrFolder(fileNameUri)) {
+                RobotLog.ii(TAG, "request did not include a valid source file or folder");
+                return StandardResponses.badRequest();
+            }
             if (RequestConditions.containsParameters(session, RequestConditions.REQUEST_KEY_TEMPLATE)) {
                 String template = RequestConditions.dataForParameter(session, RequestConditions.REQUEST_KEY_TEMPLATE);
+                boolean preserveAnnotations = RequestConditions.containsParameters(session, RequestConditions.REQUEST_KEY_PRESERVE);
                 if (OnBotJavaSecurityManager.isValidTemplateFile(template)) {
                     File templateFile = new File(OnBotJavaManager.javaRoot, template);
                     if (templateFile.exists() && !templateFile.isDirectory()) {
-                        String templateData = ReadWriteFile.readFile(templateFile);
-                        newFileFromTemplate(file, templateKeyMap, templateData, templateFile, RequestConditions.containsParameters(session, RequestConditions.REQUEST_KEY_PRESERVE));
-                        return StandardResponses.successfulRequest();
+                        RobotLog.ii(TAG, "creating new folder using template file");
+                        newFileFromTemplate(file, templateKeyMap, templateFile, preserveAnnotations, false);
+                        return StandardResponses.successfulRequest(relativePathToJavaRoot(file));
+                    } else if (templateFile.isDirectory()) {
+                        RobotLog.ii(TAG, "creating new folder using template folder");
+                        File dest;
+                        try {
+                            List<RecursiveCopyOperation> opsList = new ArrayList<>();
+                            dest = generateRecursiveCopyList(templateFile, file, opsList);
+                            executeRecursiveCopy(opsList, templateKeyMap, true, true);
+                        } catch (IOException ex) {
+                            RobotLog.ee(TAG, "cannot create vendored sample, using: " + templateFile.getAbsolutePath(), ex);
+                            return StandardResponses.serverError("cannot create vendored sample");
+                        }
+                        return StandardResponses.successfulRequest(relativePathToJavaRoot(dest));
+                    } else {
+                        RobotLog.ii(TAG, "template file does not exist, looking for: " + templateFile.getAbsolutePath());
                     }
                 }
+                RobotLog.ii(TAG, "template file did not match a valid template file");
 
                 return StandardResponses.badRequest();
             } else { // use default extension based template if any
-                String newFileData = defaultTemplateForFile(fileNameUri);
-                newFileFromTemplate(file, templateKeyMap, newFileData, null, false);
-                return StandardResponses.successfulRequest();
+                newFileFromTemplate(file, templateKeyMap, null, false, false);
+                return StandardResponses.successfulRequest(relativePathToJavaRoot(file));
             }
         }
+    }
 
+    private String relativePathToJavaRoot(File file) {
+        String absoluteJavaRoot = OnBotJavaManager.javaRoot.getAbsolutePath();
+        return file.getAbsolutePath().substring(absoluteJavaRoot.length());
     }
 
     private Map<String, String> buildTemplateKeyMap(String uri, Map<String, List<String>> data, File file) {
@@ -212,6 +248,85 @@ public class NewFile implements WebHandler {
         return results;
     }
 
+    private File generateRecursiveCopyList(File origin, File dest, List<? super RecursiveCopyOperation> filesToCopy) throws IOException {
+        dest = checkForSameNameConflicts(dest);
+        if (origin.isDirectory()) {
+            //if (dest.exists() && !dest.isDirectory()) throw new IOException("Cannot merge origin and destination");
+            filesToCopy.add(new RecursiveCopyOperation(origin, dest));
+            final String[] files = origin.list();
+            for (String file : files) {
+                File src = new File(origin, file);
+                File destFile = new File(dest, file);
+                destFile = checkForSameNameConflicts(destFile);
+                // Prevent a file from being copied endlessly, if we are copying the parent folder to the inside of itself
+                if (src.getAbsolutePath().equals(dest.getAbsolutePath())) {
+                    continue;
+                }
+
+                if (src.isDirectory()) {
+                    filesToCopy.add(new RecursiveCopyOperation(src, destFile));
+                }
+
+                generateRecursiveCopyList(src, destFile, filesToCopy);
+            }
+        } else {
+            filesToCopy.add(new RecursiveCopyOperation(origin, dest));
+        }
+        return dest;
+    }
+
+    private void executeRecursiveCopy(List<? extends RecursiveCopyOperation> ops, Map<String, String> templateKeyMap, boolean preserveAnnotations, boolean stripDisabled) throws IOException {
+        for (RecursiveCopyOperation op : ops) {
+            File src = op.src;
+            File dst = op.dest;
+            if (src.isDirectory()) {
+                dst.mkdirs();
+            } else {
+                copyFile(src, dst, templateKeyMap, preserveAnnotations, stripDisabled);
+            }
+        }
+    }
+
+    /**
+     * Copies the given source File to the given dest File.
+     */
+    private void copyFile(File source, File dest, Map<String, String> templateKeyMap, boolean preserveAnnotations, boolean stripDisabled) throws IOException {
+        dest = checkForSameNameConflicts(dest);
+
+        boolean isSampleFile = !source.getName().contains(".");
+        if (isSampleFile) {
+            dest = new File(dest.getParentFile(), dest.getName() + ".java");
+            newFileFromTemplate(dest, templateKeyMap, source, preserveAnnotations, stripDisabled);
+        } else if (source.getPath().endsWith(OnBotJavaFileSystemUtils.EXT_JAVA_FILE)) {
+            JavaSourceFile.forFile(source).copyTo(dest);
+        } else {
+            try (FileChannel sourceChannel = new FileInputStream(source).getChannel();
+                 FileChannel destChannel = new FileOutputStream(dest).getChannel()) {
+                destChannel.transferFrom(sourceChannel, 0, sourceChannel.size());
+            }
+        }
+    }
+
+    private File checkForSameNameConflicts(File dest) {
+        if (dest.exists()) {
+            String originalName = dest.getName();
+            String ext = "";
+            if (originalName.contains(".")) {
+                ext = originalName.substring(originalName.lastIndexOf('.'));
+                originalName = originalName.substring(0, originalName.lastIndexOf('.'));
+            }
+            String suffix = "_Copy";
+            if (originalName.endsWith(suffix)) {
+                suffix = "";
+            }
+            dest = new File(dest.getParentFile(), originalName + suffix + ext);
+            for (int i = 2; i < 1000 && dest.exists(); i++) {
+                dest = new File(dest.getParentFile(), originalName + suffix + i + ext);
+            }
+        }
+        return dest;
+    }
+
     private Class getHardwareTypeName(Class typeClass) {
         if (typeClass.equals(Object.class)) return null;
 
@@ -253,8 +368,14 @@ public class NewFile implements WebHandler {
         return packageName;
     }
 
-    private void newFileFromTemplate(File file, Map<String, String> templateKeyMap, String templateData, @Nullable File templateSource, boolean preserveAnnotations) {
-        templateData = parseTemplate(templateData, templateKeyMap, preserveAnnotations);
+    private void newFileFromTemplate(File file, Map<String, String> templateKeyMap, @Nullable File templateSource, boolean preserveAnnotations, boolean preserveDisabled) {
+        String templateData;
+        if (templateSource == null) {
+            templateData = defaultTemplateForFile(file);
+        } else {
+            templateData = ReadWriteFile.readFile(templateSource);
+        }
+        templateData = parseTemplate(templateData, templateKeyMap, preserveAnnotations, preserveDisabled);
 
         // Since a template could possibly be just a raw sample, we need to take measures to ensure that
         // everything appears to be right to the user
@@ -270,9 +391,9 @@ public class NewFile implements WebHandler {
     }
 
     @NonNull
-    private String defaultTemplateForFile(String uri) {
+    private String defaultTemplateForFile(File uri) {
         String newFileData;
-        if (uri.endsWith(EXT_JAVA_FILE)) {
+        if (uri.getAbsolutePath().endsWith(EXT_JAVA_FILE)) {
             newFileData = "package {{ +packageName }};\n" +
                     "\n" +
                     "{{ +opModeAnnotations }}\n" +
@@ -286,10 +407,19 @@ public class NewFile implements WebHandler {
         return newFileData;
     }
 
-    private String parseTemplate(String templateData, Map<String, String> valueMap, boolean preserveAnnotations) {
+    private String parseTemplate(String templateData, Map<String, String> valueMap, boolean preserveAnnotations, boolean stripDisabled) {
         for (Map.Entry<String, String> entry : valueMap.entrySet()) {
             RobotLog.dd(TAG, "Processing template tag '%s'", entry.getKey());
             templateData = templateData.replaceAll("\\{\\{ \\+" + entry.getKey() + " \\}\\}", Matcher.quoteReplacement(entry.getValue()));
+        }
+
+        // Strips the @Disabled annotation even though `preserveAnnotations` is true
+        if (preserveAnnotations && stripDisabled) {
+            Pattern pattern = Pattern.compile("^\\s*@Disabled.*$", Pattern.MULTILINE);
+            final Matcher matcher = pattern.matcher(templateData);
+            if (matcher.find()) {
+                templateData = matcher.replaceAll("");
+            }
         }
 
         if (!preserveAnnotations && valueMap.containsKey("opModeAnnotations")) {

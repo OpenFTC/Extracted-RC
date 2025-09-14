@@ -24,7 +24,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Quaternion;
 
 /**
- * A class that provides JavaScript access to {@link IMU#Parameters}.
+ * A class that provides JavaScript access to {@link Rev9AxisImuOrientationOnRobot}.
  *
  * @author lizlooney@google.com (Liz Looney)
  */

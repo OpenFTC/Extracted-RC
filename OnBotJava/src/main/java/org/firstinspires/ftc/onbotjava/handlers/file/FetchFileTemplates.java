@@ -63,7 +63,7 @@ public class FetchFileTemplates implements WebHandler {
             List<String> templates = new ArrayList<>();
             templatesEnsured = OnBotJavaFileSystemUtils.ensureTemplates();
             String templatePath = templatesDir.getAbsolutePath();
-            OnBotJavaFileSystemUtils.searchForFiles(templatePath, templatesDir, templates, false);
+            OnBotJavaFileSystemUtils.searchForFiles(templatePath, templatesDir, templates, true);
             List<Map<String, Object>> templateObjects = templates.stream()
                     // remove temp files and plain old directories
                     .filter(template -> !template.endsWith(OnBotJavaFileSystemUtils.EXT_TEMP_FILE))
@@ -73,10 +73,19 @@ public class FetchFileTemplates implements WebHandler {
                         TemplateFile templateFile = new TemplateFile(new File(templatesDir, template));
                         Map<String, Object> templateObject = new HashMap<>();
                         templateObject.put("name", template);
-                        templateObject.put("autonomous", templateFile.isAutonomous());
-                        templateObject.put("teleop", templateFile.isTeleOp());
-                        templateObject.put("disabled", templateFile.isDisabled());
-                        templateObject.put("example", templateFile.isExample());
+                        if (templateFile.isExampleProject()) {
+                            templateObject.put("autonomous", false);
+                            templateObject.put("teleop", false);
+                            templateObject.put("disabled", false);
+                            templateObject.put("example", true);
+                            templateObject.put("exampleProject", true);
+                        } else {
+                            templateObject.put("autonomous", templateFile.isAutonomous());
+                            templateObject.put("teleop", templateFile.isTeleOp());
+                            templateObject.put("disabled", templateFile.isDisabled());
+                            templateObject.put("example", templateFile.isExample());
+                            templateObject.put("exampleProject", false);
+                        }
 
                         return templateObject;
                     })

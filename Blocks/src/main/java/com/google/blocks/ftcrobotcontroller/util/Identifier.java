@@ -35,6 +35,7 @@ public enum Identifier {
       "androidSoundPool", "androidSoundPoolIdentifierForFtcJava"),
   ANDROID_TEXT_TO_SPEECH("androidTextToSpeechAccess", "androidTextToSpeechIdentifierForJavaScript",
       "androidTextToSpeech", "androidTextToSpeechIdentifierForFtcJava"),
+  ANDYMARK_IMU_ORIENTATION_ON_ROBOT("andyMarkImuOrientationOnRobotAccess", "andyMarkImuOrientationOnRobotIdentifierForJavaScript"),
   ANGULAR_VELOCITY("angularVelocityAccess", "angularVelocityIdentifierForJavaScript"),
   APRIL_TAG("aprilTagAccess", "aprilTagIdentifierForJavaScript"),
   BLACKBOARD("blackboard", "blackboardIdentifierForJavaScript"),

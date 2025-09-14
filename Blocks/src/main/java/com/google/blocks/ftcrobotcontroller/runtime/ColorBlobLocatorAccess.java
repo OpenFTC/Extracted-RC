@@ -28,6 +28,7 @@ import org.firstinspires.ftc.vision.opencv.ColorBlobLocatorProcessor.BlobFilter;
 import org.firstinspires.ftc.vision.opencv.ColorBlobLocatorProcessor.BlobSort;
 import org.firstinspires.ftc.vision.opencv.ColorBlobLocatorProcessor.Builder;
 import org.firstinspires.ftc.vision.opencv.ColorBlobLocatorProcessor.ContourMode;
+import org.firstinspires.ftc.vision.opencv.ColorBlobLocatorProcessor.MorphOperationType;
 import org.firstinspires.ftc.vision.opencv.ColorBlobLocatorProcessor.Util;
 import org.firstinspires.ftc.vision.opencv.ColorRange;
 import org.firstinspires.ftc.vision.opencv.ImageRegion;
@@ -55,6 +56,10 @@ class ColorBlobLocatorAccess extends Access {
 
   private ContourMode checkContourMode(String contourModeString) {
     return checkArg(contourModeString, ContourMode.class, "contourMode");
+  }
+
+  private MorphOperationType checkMorphOperationType(String morphOperationTypeString) {
+    return checkArg(morphOperationTypeString, MorphOperationType.class, "morphOperationType");
   }
 
   private ColorBlobLocatorProcessor checkColorBlobLocatorProcessor(Object colorBlobLocatorProcessorArg) {
@@ -119,6 +124,24 @@ class ColorBlobLocatorAccess extends Access {
       Builder colorBlobLocatorProcessorBuilder = checkColorBlobLocatorProcessorBuilder(colorBlobLocatorProcessorBuilderArg);
       if (colorBlobLocatorProcessorBuilder != null) {
         colorBlobLocatorProcessorBuilder.setBoxFitColor(color);
+      }
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(classes = Builder.class, methodName = "setCircleFitColor")
+  public void setCircleFitColor(Object colorBlobLocatorProcessorBuilderArg, int color) {
+    try {
+      startBlockExecution(BlockType.FUNCTION, "ColorBlobLocatorProcessor.Builder", ".setCircleFitColor");
+      Builder colorBlobLocatorProcessorBuilder = checkColorBlobLocatorProcessorBuilder(colorBlobLocatorProcessorBuilderArg);
+      if (colorBlobLocatorProcessorBuilder != null) {
+        colorBlobLocatorProcessorBuilder.setCircleFitColor(color);
       }
     } catch (Throwable e) {
       blocksOpMode.handleFatalException(e);
@@ -230,6 +253,25 @@ class ColorBlobLocatorAccess extends Access {
       Builder colorBlobLocatorProcessorBuilder = checkColorBlobLocatorProcessorBuilder(colorBlobLocatorProcessorBuilderArg);
       if (colorBlobLocatorProcessorBuilder != null) {
         colorBlobLocatorProcessorBuilder.setBlurSize(blurSize);
+      }
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(classes = Builder.class, methodName = "setMorphOperationType")
+  public void setMorphOperationType(Object colorBlobLocatorProcessorBuilderArg, String morphOperationTypeString) {
+    try {
+      startBlockExecution(BlockType.FUNCTION, "ColorBlobLocatorProcessor.Builder", ".setMorphOperationType");
+      Builder colorBlobLocatorProcessorBuilder = checkColorBlobLocatorProcessorBuilder(colorBlobLocatorProcessorBuilderArg);
+      MorphOperationType morphOperationType = checkMorphOperationType(morphOperationTypeString);
+      if (colorBlobLocatorProcessorBuilder != null && morphOperationType != null) {
+        colorBlobLocatorProcessorBuilder.setMorphOperationType(morphOperationType);
       }
     } catch (Throwable e) {
       blocksOpMode.handleFatalException(e);

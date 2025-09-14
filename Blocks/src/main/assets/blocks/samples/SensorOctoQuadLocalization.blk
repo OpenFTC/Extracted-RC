@@ -1,0 +1,837 @@
+<xml xmlns="https://developers.google.com/blockly/xml">
+<variables>
+<variable id="IPCE!+C[wC`ch6G#;FZ;">totalPackets</variable>
+<variable id=";)TC$XuuC]4/96voMW^^">badPackets</variable>
+<variable id="IRcr^qt:vXk5oxU[nOCL">myLocalizerDataBlock</variable>
+</variables>
+<block type="procedures_defnoreturn" id="WtpyD@tEu+EoY=P9iY,D" deletable="false" x="25" y="169">
+<field name="NAME">runOpMode</field>
+<comment pinned="true" h="306" w="862">This OpMode demonstrates how to use the "absolute localizer" feature of the Digital Chicken OctoQuad FTC Edition MK2.
+
+Note:  The MK2 OctoQuad has an Inertial Measurement Unit (IMU) that the MK1 does not, so this code will ONLY work with the MK2 version.
+
+It is STRONGLY recommended to read the Quick Start guide for the localizer feature, located here:
+
+  https://github.com/DigitalChickenLabs/OctoQuad/blob/master/documentation/OctoQuad%20Localizer%20Quickstart%20Guide.pdf
+
+This OpMode assumes that the OctoQuad is attached to an I2C interface named "octoquad" in the robot configuration.
+ Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
+ Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
+
+ See the sensor's product page: https://www.tindie.com/products/37799/</comment>
+<data>{"commentPositionLeft":-18,"commentPositionTop":-337}</data>
+<statement name="STACK">
+<block type="comment" id="Lc#BFtj*NTB48YL;eBl.">
+<field name="COMMENT">##############################################################################</field>
+<next>
+<block type="comment" id="nB08LQ:g:s)a::Cb{:+-">
+<field name="COMMENT">YOU MUST ADJUST THESE CONSTANTS FOR YOUR ROBOT ! SEE THE QUICKSTART GUIDE (link above).</field>
+<next>
+<block type="comment" id="OMxt{`2PBw%Vdde(#o/2">
+<field name="COMMENT">##############################################################################</field>
+<next>
+<block type="octoquad_setAllLocalizerParameters" id="tkZIBE,/dsxg*N}@c_9R">
+<field name="IDENTIFIER">octoquadAsOctoQuad</field>
+<data>{"IDENTIFIER":"octoquad"}</data>
+<value name="PORT_X">
+<shadow type="math_number" id="$~[[7q21lz_~d-`x]/]y">
+<field name="NUM">0</field>
+</shadow>
+</value>
+<value name="PORT_Y">
+<shadow type="math_number" id="rFLQhxVJB5]Ecio_(Di2">
+<field name="NUM">1</field>
+</shadow>
+</value>
+<value name="TICKS_PER_MM_X">
+<shadow type="math_number" id="Ol8V+@ITzVMvC](.^rgO">
+<field name="NUM">19.89</field>
+</shadow>
+</value>
+<value name="TICKS_PER_MM_Y">
+<shadow type="math_number" id="TiY!6DGU0|S-T[nmxd~o">
+<field name="NUM">19.89</field>
+</shadow>
+</value>
+<value name="TCP_OFFSET_MM_X">
+<shadow type="math_number" id="!Gzevd*m04|RE/mdEG:j">
+<field name="NUM">12.34</field>
+</shadow>
+</value>
+<value name="TCP_OFFSET_MM_Y">
+<shadow type="math_number" id="fWC$$ypCUxV3kj[+s|2p">
+<field name="NUM">12.34</field>
+</shadow>
+</value>
+<value name="HEADING_SCALAR">
+<shadow type="math_number" id="L[?=hayEg@{whOE4dRPp">
+<field name="NUM">1</field>
+</shadow>
+</value>
+<value name="VELOCITY_INTERVAL_MS">
+<shadow type="math_number" id="bY?r(Aq0~Y5O~(i+)|)5">
+<field name="NUM">25</field>
+</shadow>
+</value>
+<next>
+<block type="comment" id="]/~SMKwf|{2SQT3HM$nz">
+<field name="COMMENT">Adjust the encoder direction for positive Forward and Left motion based on your robot.</field>
+<next>
+<block type="octoquad_setSingleEncoderDirection" id="1mD:sT#D;0AP(QP4K`Fd">
+<field name="IDENTIFIER">octoquadAsOctoQuad</field>
+<data>{"IDENTIFIER":"octoquad"}</data>
+<value name="INDEX">
+<shadow type="math_number" id="qumd,H2$O8()sb8^DDbL">
+<field name="NUM">0</field>
+</shadow>
+</value>
+<value name="DIRECTION">
+<shadow type="octoquad_typedEnum_encoderDirection" id="(xtWmT``iP4#s;TUkOq`">
+<field name="ENCODER_DIRECTION">FORWARD</field>
+</shadow>
+</value>
+<next>
+<block type="octoquad_setSingleEncoderDirection" id="La-iXQy_fG+Rsii]Yfxn">
+<field name="IDENTIFIER">octoquadAsOctoQuad</field>
+<data>{"IDENTIFIER":"octoquad"}</data>
+<value name="INDEX">
+<shadow type="math_number" id="le`EvyS0rgYQWfQsPk#O">
+<field name="NUM">1</field>
+</shadow>
+</value>
+<value name="DIRECTION">
+<shadow type="octoquad_typedEnum_encoderDirection" id="I9/4wiXTR3?QaCAW*Wfj">
+<field name="ENCODER_DIRECTION">REVERSE</field>
+</shadow>
+</value>
+<next>
+<block type="comment" id="||]LyDxxG%Yz1sGM/_QG">
+<field name="COMMENT">Resetting the localizer will apply the parameters configured above.</field>
+<next>
+<block type="comment" id="O~h`cjrMu=*;xYo73R6x">
+<field name="COMMENT">This function will NOT block (waiting for the calibration of the IMU to be complete) -</field>
+<next>
+<block type="comment" id="dL{uCr!DaY+.5`h3(VH9">
+<field name="COMMENT">for that you need to look at the status returned by getLocalizerStatus()</field>
+<next>
+<block type="octoquad_resetLocalizerAndCalibrateIMU" id="fYxPv5$5W0_ALCHktWO$">
+<field name="IDENTIFIER">octoquadAsOctoQuad</field>
+<data>{"IDENTIFIER":"octoquad"}</data>
+<next>
+<block type="comment" id="AO|xTZ{)w(7~pJuu7|fY">
+<field name="COMMENT">init loop</field>
+<next>
+<block type="controls_whileUntil" id="[Y}{g-j#]A/}KE3atwn!">
+<field name="MODE">WHILE</field>
+<value name="BOOL">
+<block type="linearOpMode_opModeInInit" id="z_DXJ0a1)iON:ovVebW)"/>
+</value>
+<statement name="DO">
+<block type="telemetry_addTextData_All" id="$FFx-o/s68=H7pLan!;Q">
+<value name="KEY">
+<shadow type="text" id="l0#J@]vnu.p9{,$!E,-4">
+<field name="TEXT">Firmware Version</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id="6?%VS%m%r6,.57*5V,[O">
+<field name="TEXT">text</field>
+</shadow>
+<block type="octoquad_getProperty_String" id="EFtK+AS(+NKSH6NR0}f[">
+<field name="IDENTIFIER">octoquadAsOctoQuad</field>
+<field name="PROP">FirmwareVersionString</field>
+<data>{"IDENTIFIER":"octoquad"}</data>
+</block>
+</value>
+<next>
+<block type="telemetry_addTextData_All" id="Dne(EJ[?oN(c%,;|ugm$">
+<value name="KEY">
+<shadow type="text" id="{f`^mRkN05nvJ#wF7523">
+<field name="TEXT">Localizer Status</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id="wU9yLPTLz4`qF.#6GQfg">
+<field name="TEXT">text</field>
+</shadow>
+<block type="octoquad_getProperty_LocalizerStatus" id="W2aE[/#6b^d:gg,;sn6M">
+<field name="IDENTIFIER">octoquadAsOctoQuad</field>
+<field name="PROP">LocalizerStatus</field>
+<data>{"IDENTIFIER":"octoquad"}</data>
+</block>
+</value>
+<next>
+<block type="telemetry_addTextData_All" id="#j^Cs/|k|b8DK#Ipo28+">
+<value name="KEY">
+<shadow type="text" id="Y3(D]}*.u(Sb7^#Do:5G">
+<field name="TEXT">Heading Axis Detection</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id="u%jh`r.]O-@_8-TBV%*g">
+<field name="TEXT">text</field>
+</shadow>
+<block type="octoquad_getProperty_LocalizerYawAxis" id="!YwUf;]^z/,pcc~=o4A~">
+<field name="IDENTIFIER">octoquadAsOctoQuad</field>
+<field name="PROP">LocalizerHeadingAxisChoice</field>
+<data>{"IDENTIFIER":"octoquad"}</data>
+</block>
+</value>
+<next>
+<block type="telemetry_addLine" id="0Kn%C`#1G#uB8b2#4l6z">
+<value name="TEXT">
+<shadow type="text" id="0GB,dCs|MEDPj.trt#:?">
+<field name="TEXT"/>
+</shadow>
+</value>
+<next>
+<block type="telemetry_addLine" id="V9,rn[%HC(tDUWlUq?a%">
+<value name="TEXT">
+<shadow type="text" id="71JbIRR{5Kq@3JGTF[Z6">
+<field name="TEXT">Press Play to start navigating</field>
+</shadow>
+</value>
+<next>
+<block type="telemetry_update" id="3zuB,eo-O|oOs0+mx;J*">
+<next>
+<block type="linearOpMode_sleep_Number" id="nK2nqRVz)s*k:=e*]}]y">
+<value name="MILLISECONDS">
+<shadow type="math_number" id="^=3h15Di?X6.4VjtqC9P">
+<field name="NUM">100</field>
+</shadow>
+</value>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+<next>
+<block type="comment" id="%Z!JiT%XVaA%n^x^M,l-">
+<field name="COMMENT">After the user presses play, make sure the localizer is fully initialized before continuing.</field>
+<next>
+<block type="controls_whileUntil" id="AZ2t!$~Bh=WMZ~;LXRG4">
+<field name="MODE">WHILE</field>
+<value name="BOOL">
+<block type="logic_operation" id="EK#i((AQQ5f_FTE.`zLx">
+<field name="OP">AND</field>
+<value name="A">
+<block type="logic_negate" id="S.u=Z{]#M2@FaKnk?Fu~">
+<value name="BOOL">
+<block type="linearOpMode_isStopRequested" id="m?!EiWju2ocOtVsihrdx"/>
+</value>
+</block>
+</value>
+<value name="B">
+<block type="logic_compare" id="8H0o0{.}e2TmL8dUT,WI">
+<field name="OP">NEQ</field>
+<value name="A">
+<block type="octoquad_getProperty_LocalizerStatus" id="Pd!ujYuJ+=||wc/y`-YJ">
+<field name="IDENTIFIER">octoquadAsOctoQuad</field>
+<field name="PROP">LocalizerStatus</field>
+<data>{"IDENTIFIER":"octoquad"}</data>
+</block>
+</value>
+<value name="B">
+<block type="octoquad_typedEnum_localizerStatus" id="Q#.m8`=oRU6=U3rLHAi5">
+<field name="LOCALIZER_STATUS">RUNNING</field>
+</block>
+</value>
+</block>
+</value>
+</block>
+</value>
+<statement name="DO">
+<block type="telemetry_addLine" id="l~oVk$}+Osfpo8~PAy?I">
+<value name="TEXT">
+<shadow type="text" id="tz_Bl^coHw](hQomd)EJ">
+<field name="TEXT">Waiting for Localizer to report RUNNING status.</field>
+</shadow>
+</value>
+<next>
+<block type="telemetry_addLine" id="S]:V]ah1T|Izf2BxWBZW">
+<value name="TEXT">
+<shadow type="text" id="V42[PBsEHt1c;2v~Qe%R">
+<field name="TEXT"/>
+</shadow>
+</value>
+<next>
+<block type="telemetry_addTextData_All" id="qhuJ2^Z(dhVj:7A6M]$K">
+<value name="KEY">
+<shadow type="text" id=";X;Y.PHQVSIR%_31.NQH">
+<field name="TEXT">Localizer Status</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text">
+<field name="TEXT">text</field>
+</shadow>
+<block type="octoquad_getProperty_LocalizerStatus" id="4@UZb]7Q7l((CCb-~yNx">
+<field name="IDENTIFIER">octoquadAsOctoQuad</field>
+<field name="PROP">LocalizerStatus</field>
+<data>{"IDENTIFIER":"octoquad"}</data>
+</block>
+</value>
+<next>
+<block type="telemetry_update" id="llQVNlZ8.;~E;r)dN.V8">
+<next>
+<block type="linearOpMode_sleep_Number" id=":o,|;3#7N!*w2n0HbS:j">
+<value name="MILLISECONDS">
+<shadow type="math_number" id="^+7.(YeA_ZeE1XFy8,qB">
+<field name="NUM">100</field>
+</shadow>
+</value>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+<next>
+<block type="comment" id="Yt!H*lP^)f6Z9r#{ckFU">
+<field name="COMMENT">Reset the localizer to the origin.  (or any location you require)</field>
+<next>
+<block type="octoquad_setLocalizerPose" id="VFOo8T)fXWdZ.Adm4vdD">
+<field name="IDENTIFIER">octoquadAsOctoQuad</field>
+<data>{"IDENTIFIER":"octoquad"}</data>
+<value name="POS_X_MM">
+<shadow type="math_number" id="/O?I}5vX-^|yf2hw63p4">
+<field name="NUM">0</field>
+</shadow>
+</value>
+<value name="POS_Y_MM">
+<shadow type="math_number" id=".T$~A*$nf1nc+u%CQ~fY">
+<field name="NUM">0</field>
+</shadow>
+</value>
+<value name="HEADING_RAD">
+<shadow type="math_number" id="#o4jv|oC)Fwu{OY;6Nm0">
+<field name="NUM">0</field>
+</shadow>
+</value>
+<next>
+<block type="variables_set" id="UK:_/]J)S_!s24]tm2Dw">
+<field name="VAR" id="IPCE!+C[wC`ch6G#;FZ;">totalPackets</field>
+<value name="VALUE">
+<block type="math_number" id="DTTCTLvafTs7ly.F}b:@">
+<field name="NUM">0</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id="|MSX_IvKLIctk=91B.|m">
+<field name="VAR" id=";)TC$XuuC]4/96voMW^^">badPackets</field>
+<value name="VALUE">
+<block type="math_number" id="5o.p6F-#~4*SG(h(QLId">
+<field name="NUM">0</field>
+</block>
+</value>
+<next>
+<block type="controls_whileUntil" id="8ncj!U?qV|C#pHv%eB,0">
+<field name="MODE">WHILE</field>
+<value name="BOOL">
+<block type="linearOpMode_opModeIsActive" id="gfLMK{ebgpwH3uEe`{ED"/>
+</value>
+<statement name="DO">
+<block type="comment" id="x,Zx=Z/maW4Y=N?qyCtp">
+<field name="COMMENT">Use the Gamepad A/Cross button to teleport to a new location and heading</field>
+<next>
+<block type="controls_if" id="8MyC3fr[Q@(57H|ltj91">
+<value name="IF0">
+<block type="gamepad_getProperty_Boolean" id="{Zv)@wJBjqKIQU*J^UM:">
+<field name="IDENTIFIER">gamepad1</field>
+<field name="PROP">CrossWasPressed</field>
+<data>{"IDENTIFIER":"gamepad1"}</data>
+</block>
+</value>
+<statement name="DO0">
+<block type="octoquad_setLocalizerPose" id="u*%z3XyRZ8N*CKi?@4{Y">
+<field name="IDENTIFIER">octoquadAsOctoQuad</field>
+<data>{"IDENTIFIER":"octoquad"}</data>
+<value name="POS_X_MM">
+<shadow type="math_number" id="OZ{pgqM9zaFO.nQ^*N=4">
+<field name="NUM">200</field>
+</shadow>
+</value>
+<value name="POS_Y_MM">
+<shadow type="math_number" id="w0djJY0LZ{ABlH|SegQ)">
+<field name="NUM">200</field>
+</shadow>
+</value>
+<value name="HEADING_RAD">
+<shadow type="math_number" id=":Oj9y}X8cKcvMrTFW+7X">
+<field name="NUM">1</field>
+</shadow>
+<block type="math_arithmetic" id="t:QhCg9-h-S16:0D#0})">
+<field name="OP">DIVIDE</field>
+<value name="A">
+<shadow type="math_number" id="D7zf3in`c,$c$?dx0SHZ">
+<field name="NUM">1</field>
+</shadow>
+<block type="math_constant" id=";/.^qRxEvY0Ms02ATvAs">
+<field name="CONSTANT">PI</field>
+</block>
+</value>
+<value name="B">
+<shadow type="math_number" id="Ak{znz7P:]Pp.3T{!7J$">
+<field name="NUM">2</field>
+</shadow>
+</value>
+</block>
+</value>
+</block>
+</statement>
+<next>
+<block type="comment" id=":!o)H|%j,}FX}%ZO^G}`">
+<field name="COMMENT">Read updated data from the OctoQuad into the 'localizer' data structure</field>
+<next>
+<block type="variables_set" id="`m3_4N$(uL^ogfQ;o+!a">
+<field name="VAR" id="IRcr^qt:vXk5oxU[nOCL">myLocalizerDataBlock</field>
+<value name="VALUE">
+<block type="octoquad_readLocalizerData" id=",CXU=14q5*F$4HXGDuxf">
+<field name="IDENTIFIER">octoquadAsOctoQuad</field>
+<data>{"IDENTIFIER":"octoquad"}</data>
+</block>
+</value>
+<next>
+<block type="comment" id="ZGB6:qbkm/2T9MgH[Ly-">
+<field name="COMMENT">##############################################################################</field>
+<next>
+<block type="comment" id="n}D|zZv-exy4~Qu$E8!?">
+<field name="COMMENT">IMPORTANT ! Check whether the received data is valid. (A correct CRC must be present). </field>
+<next>
+<block type="comment" id="eJaD?=7tb7sOb?Nb,LX_">
+<field name="COMMENT">An incorrect CRC indicates that the data was corrupted in transit and cannot be trusted !</field>
+<next>
+<block type="comment" id="sx)$M?ftA:7[Bj]Kr)Ih">
+<field name="COMMENT">This can be caused by internal or external ESD.</field>
+<next>
+<block type="comment" id="h7s(h+=em44SJY_u$]]a">
+<field name="COMMENT">If the CRC is NOT reported as OK, the data is InValid, and should be throw away, and read again.</field>
+<next>
+<block type="comment" id="i]bUvzasojs_mWa9{wa(">
+<field name="COMMENT">##############################################################################</field>
+<next>
+<block type="controls_if" id="P9D7/5Dn^r@ZHk/$;Api">
+<mutation else="1"/>
+<value name="IF0">
+<block type="octoquadLocalizerDataBlock_isDataValid" id="NV]].cYta76J+;y^;=i:">
+<value name="LOCALIZER_DATA_BLOCK">
+<block type="variables_get" id="$@2HSGQ}}swsU?gGNgds">
+<field name="VAR" id="IRcr^qt:vXk5oxU[nOCL">myLocalizerDataBlock</field>
+</block>
+</value>
+</block>
+</value>
+<statement name="DO0">
+<block type="telemetry_addTextData_All" id="_@]r/H|d+i}EorqLNRGN">
+<value name="KEY">
+<shadow type="text" id="9C!/y?2}ST83aaB[^IZ}">
+<field name="TEXT">Localizer Status</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id="GJxiL^i3-n1:Cf|mvWg5">
+<field name="TEXT">text</field>
+</shadow>
+<block type="octoquadLocalizerDataBlock_getProperty_LocalizerStatus" id="Ni/*uc*KRnJ]}xMXtsVG">
+<field name="PROP">localizerStatus</field>
+<value name="LOCALIZER_DATA_BLOCK">
+<block type="variables_get" id="s/0Fj!91JZfxkw+XxXqi">
+<field name="VAR" id="IRcr^qt:vXk5oxU[nOCL">myLocalizerDataBlock</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_addTextData_All" id="P)*FvrBQV{Vl,{h$9*D*">
+<value name="KEY">
+<shadow type="text" id="cBa0S6H08-bI(!9^?1gc">
+<field name="TEXT">Heading Deg</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id="kFD-5S{IoHj%-@AuCUDm">
+<field name="TEXT">text</field>
+</shadow>
+<block type="misc_formatNumber" id="}5B~F*z0*il}P]u]XY2w">
+<value name="NUMBER">
+<shadow type="math_number" id="ZjhEd7buK%45Ki_~#+29">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="math_arithmetic" id="}Tp965GQqRQwZEn^=gmw">
+<field name="OP">MULTIPLY</field>
+<value name="A">
+<shadow type="math_number" id="LOs12NLO0WkMsOB{pg?I">
+<field name="NUM">1</field>
+</shadow>
+<block type="octoquadLocalizerDataBlock_getProperty_Number" id="{}6E-`+DDhW#^d[#@`9W">
+<field name="PROP">heading_rad</field>
+<value name="LOCALIZER_DATA_BLOCK">
+<block type="variables_get" id="+d=6531]MpEk`f:--2Us">
+<field name="VAR" id="IRcr^qt:vXk5oxU[nOCL">myLocalizerDataBlock</field>
+</block>
+</value>
+</block>
+</value>
+<value name="B">
+<shadow type="math_number" id="zxNF)xOsJidLXEMH$7rM">
+<field name="NUM">1</field>
+</shadow>
+<block type="math_arithmetic" id="BW)-dxSQ(Ufgb~e{RMwm">
+<field name="OP">DIVIDE</field>
+<value name="A">
+<shadow type="math_number" id="MsEwg~T3|j$3{^%7WC)a">
+<field name="NUM">180</field>
+</shadow>
+</value>
+<value name="B">
+<shadow type="math_number" id="HJV#Y{u93x$Fh7!5wfRd">
+<field name="NUM">1</field>
+</shadow>
+<block type="math_constant" id="Ikr|VrnXhBEQ]J)Gwpo[">
+<field name="CONSTANT">PI</field>
+</block>
+</value>
+</block>
+</value>
+</block>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="yHl[GH~:}8*8[`tJ$hfo">
+<field name="NUM">2</field>
+</shadow>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_addTextData_All" id="(EuE--AYZ.fQEDYMbc!s">
+<value name="KEY">
+<shadow type="text" id="{w`6B1AygeTweE3,TyO=">
+<field name="TEXT">Rotation dps</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id="R2C:yeob0jE88^-%P]D6">
+<field name="TEXT">text</field>
+</shadow>
+<block type="misc_formatNumber" id="vjQVXGL%RA;[4x~bJ@hb">
+<value name="NUMBER">
+<shadow type="math_number" id="Jn#q2miv(`KK8b2@szV(">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="math_arithmetic" id="F=98^c}DI4^|7w3L`8Jb">
+<field name="OP">MULTIPLY</field>
+<value name="A">
+<shadow type="math_number">
+<field name="NUM">1</field>
+</shadow>
+<block type="octoquadLocalizerDataBlock_getProperty_Number" id="v8f+S.~NG97Q%9vr^8tk">
+<field name="PROP">velHeading_radS</field>
+<value name="LOCALIZER_DATA_BLOCK">
+<block type="variables_get" id="d[)vl5i8gy%U,7xj]H.:">
+<field name="VAR" id="IRcr^qt:vXk5oxU[nOCL">myLocalizerDataBlock</field>
+</block>
+</value>
+</block>
+</value>
+<value name="B">
+<shadow type="math_number">
+<field name="NUM">1</field>
+</shadow>
+<block type="math_arithmetic" id="6G%70Pxxpxk%rswGk$(4">
+<field name="OP">DIVIDE</field>
+<value name="A">
+<shadow type="math_number" id="$xJOVGdQqFiaok/t!bUD">
+<field name="NUM">180</field>
+</shadow>
+</value>
+<value name="B">
+<shadow type="math_number">
+<field name="NUM">1</field>
+</shadow>
+<block type="math_constant" id="VmC5tfPj*;iJ|wZ51IZF">
+<field name="CONSTANT">PI</field>
+</block>
+</value>
+</block>
+</value>
+</block>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="aB^~X+yXDor4n6c)XM+e">
+<field name="NUM">2</field>
+</shadow>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_addTextData_All" id="cb.fZriaVaf0qJ+pY@Z0">
+<value name="KEY">
+<shadow type="text" id="0FKw,P`NsS,Xx[})Z0_g">
+<field name="TEXT">X pos mm</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id="z,MxmY4N9bFm+6,_3x:7">
+<field name="TEXT">text</field>
+</shadow>
+<block type="octoquadLocalizerDataBlock_getProperty_Number" id="yGvuE^@!AHQQ{qajx}VQ">
+<field name="PROP">posX_mm</field>
+<value name="LOCALIZER_DATA_BLOCK">
+<block type="variables_get" id="_R%b,ug:Cz4DGtJcT=E%">
+<field name="VAR" id="IRcr^qt:vXk5oxU[nOCL">myLocalizerDataBlock</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_addTextData_All" id="txI74,;0O^qf)Y?o+;.N">
+<value name="KEY">
+<shadow type="text" id="4%kGZ{=Tb(rl#CvDYQbi">
+<field name="TEXT">Y pos mm</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text">
+<field name="TEXT">text</field>
+</shadow>
+<block type="octoquadLocalizerDataBlock_getProperty_Number" id="#$_.)IJV#7,SuKV4-`e9">
+<field name="PROP">posY_mm</field>
+<value name="LOCALIZER_DATA_BLOCK">
+<block type="variables_get" id="-]Z=P-25tPm2*c9y}`11">
+<field name="VAR" id="IRcr^qt:vXk5oxU[nOCL">myLocalizerDataBlock</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_addTextData_All" id="dT^[#ieE:Aiu^y)$}G.@">
+<value name="KEY">
+<shadow type="text" id="_[Z7I{z*tvN=9I$p,ba#">
+<field name="TEXT">X Vel mm/s</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text">
+<field name="TEXT">text</field>
+</shadow>
+<block type="octoquadLocalizerDataBlock_getProperty_Number" id="j[gSTGta2*fH,rMPEZ:V">
+<field name="PROP">velX_mmS</field>
+<value name="LOCALIZER_DATA_BLOCK">
+<block type="variables_get" id="c(yy#+ia[:gyXjFUO,S[">
+<field name="VAR" id="IRcr^qt:vXk5oxU[nOCL">myLocalizerDataBlock</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_addTextData_All" id="o~Z$fGkx=,-z0j$]+/hg">
+<value name="KEY">
+<shadow type="text" id="eZVW`Dt1aWlT%7SJ^^lu">
+<field name="TEXT">y Vel mm/s</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text">
+<field name="TEXT">text</field>
+</shadow>
+<block type="octoquadLocalizerDataBlock_getProperty_Number" id="AfO7WK9wLF8n,!qZ;F*2">
+<field name="PROP">velY_mmS</field>
+<value name="LOCALIZER_DATA_BLOCK">
+<block type="variables_get" id="KdOO+Qwo/=n,9Y#{q{_C">
+<field name="VAR" id="IRcr^qt:vXk5oxU[nOCL">myLocalizerDataBlock</field>
+</block>
+</value>
+</block>
+</value>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+<statement name="ELSE">
+<block type="telemetry_addLine" id="sR{)07l^8wOE^UMgAbh$">
+<value name="TEXT">
+<shadow type="text" id="$s,*@dGcJC-DZzO|vWrM">
+<field name="TEXT">CRC Data not valid.</field>
+</shadow>
+</value>
+<next>
+<block type="math_change" id="To6-]qKRq^!}j4SC/g=Y">
+<field name="VAR" id=";)TC$XuuC]4/96voMW^^">badPackets</field>
+<value name="DELTA">
+<shadow type="math_number" id="Ok9W|C[i(EA#QXx#_#_-">
+<field name="NUM">1</field>
+</shadow>
+</value>
+</block>
+</next>
+</block>
+</statement>
+<next>
+<block type="telemetry_addLine" id="WotWhed.LVSweU|jK0s{">
+<value name="TEXT">
+<shadow type="text" id="4/L9*?7O~dw(![G~Jk=/">
+<field name="TEXT"/>
+</shadow>
+</value>
+<next>
+<block type="telemetry_addLine" id="TUS.!h}Mh!ih]*ZW*H5r">
+<value name="TEXT">
+<shadow type="text" id="tmuQ5r%T2oZ_f$,!thh0">
+<field name="TEXT">Press Gamepad A (Cross) to teleport.</field>
+</shadow>
+</value>
+<next>
+<block type="comment" id="gs,HG%ZDMvX^*{BN3riD">
+<field name="COMMENT">Show how many CRC errors have beed detected, compared with the total number of packets.</field>
+<next>
+<block type="math_change" id="/wmr=A:EAy7=opFP~SEm">
+<field name="VAR" id="IPCE!+C[wC`ch6G#;FZ;">totalPackets</field>
+<value name="DELTA">
+<shadow type="math_number" id="Uz|2{{;%=9XfY^bS9.u]">
+<field name="NUM">1</field>
+</shadow>
+</value>
+<next>
+<block type="telemetry_addLine" id="DLe23Ot5gKh?V7s@tQci">
+<value name="TEXT">
+<shadow type="text" id="Lo9e3qsOSIyOGFxrf=Vn">
+<field name="TEXT"/>
+</shadow>
+</value>
+<next>
+<block type="telemetry_addLine" id="Hqf,v03tAjn0*(,*.$/o">
+<value name="TEXT">
+<shadow type="text" id="};VhQ%#X}FKuik5b/Eg}">
+<field name="TEXT">\n Press Gamepad A (Cross) to teleport.</field>
+</shadow>
+<block type="text_join" id="T:M(ky%c,);e?g{5*+VE">
+<mutation items="4"/>
+<value name="ADD0">
+<block type="variables_get" id="`awn)Jm.]rV2Z^u5n%--">
+<field name="VAR" id=";)TC$XuuC]4/96voMW^^">badPackets</field>
+</block>
+</value>
+<value name="ADD1">
+<block type="text" id="]c1WW4R@$7rNv?*C?N}I">
+<field name="TEXT"> CRC Errors in </field>
+</block>
+</value>
+<value name="ADD2">
+<block type="variables_get" id="KgooljA_WvLxI|[BneSa">
+<field name="VAR" id="IPCE!+C[wC`ch6G#;FZ;">totalPackets</field>
+</block>
+</value>
+<value name="ADD3">
+<block type="text" id=".BYqPU;hi|%.e5X@JDN+">
+<field name="TEXT"> packets.</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_update" id="exvivmft-pX$n!1,8Ea$"/>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</xml>
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<Extra>
+<OpModeMeta flavor="TELEOP" group="" autoTransition="" />
+<Enabled value="true" />
+</Extra>

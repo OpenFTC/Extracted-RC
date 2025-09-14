@@ -1,0 +1,1097 @@
+<xml xmlns="https://developers.google.com/blockly/xml">
+<variables>
+<variable type="ColorBlobLocatorProcessor.Builder" id="+}baIP$foHL{Te=K+!6H">myColorBlobLocatorProcessorBuilder</variable>
+<variable id="B)2E@2u+:wp@{VIN.$qE">myColorBlobLocatorProcessor</variable>
+<variable type="VisionPortal.Builder" id="c[~BoNo=sNOXZ85;=XR*">myVisionPortalBuilder</variable>
+<variable id="tGnN%D((ih^CMv8L~PSD">myVisionPortal</variable>
+<variable id="*?14!TD)5LavaHH%Vt0n">myBlobs</variable>
+<variable id="Y`mTB@p7|QYN#EqkDl_E">myBlob</variable>
+<variable id="Hyk*kg?Wzdmfx{`Bw2%#">circleFit</variable>
+</variables>
+<block type="procedures_defnoreturn" id="WtpyD@tEu+EoY=P9iY,D" deletable="false" x="25" y="496">
+<field name="NAME">runOpMode</field>
+<comment pinned="true" h="468" w="688">This OpMode illustrates how to use a video source (camera) to locate specifically colored regions.
+This sample is targeted towards circular blobs. To see rectangles, look at ConceptVisionColorLocator_Rectangle
+
+Unlike a "color sensor" which determines the color of nearby object, this "color locator"
+will search the Region Of Interest (ROI) in a camera image, and find any "blobs" of color that
+match the requested color range.  These blobs can be further filtered and sorted to find the one
+most likely to be the item the user is looking for.
+
+To perform this function, a VisionPortal runs a ColorBlobLocatorProcessor process.
+  The ColorBlobLocatorProcessor (CBLP) process is created first, and then the VisionPortal is built.
+  The (CBLP) analyses the ROI and locates pixels that match the ColorRange to form a "mask".
+  The matching pixels are then collected into contiguous "blobs" of pixels.
+  The outer boundaries of these blobs are called its "contour".  For each blob, the process then
+  creates the smallest possible circle that will fully encase the contour. The user can then call
+  getBlobs() to retrieve the list of Blobs, where each contains the contour and the circle.
+  Note: The default sort order for Blobs is ContourArea, in descending order, so the biggest
+  contours are listed first.
+
+A colored enclosing circle is drawn on the camera preview to show the location of each Blob
+The original Blob contour can also be added to the preview.
+This is helpful when configuring the ColorBlobLocatorProcessor parameters.</comment>
+<data>{"commentPositionLeft":-18,"commentPositionTop":-496}</data>
+<statement name="STACK">
+<block type="comment" id="Lc#BFtj*NTB48YL;eBl.">
+<field name="COMMENT">Build a "Color Locator" vision processor based on the ColorBlobLocatorProcessor class.</field>
+<next>
+<block type="colorBlobLocatorProcessorBuilder_create_assign" id=":-dAEh}J5^PiKd;LB?Bw">
+<field name="COLOR_BLOB_LOCATOR_PROCESSOR_BUILDER" id="+}baIP$foHL{Te=K+!6H" variabletype="ColorBlobLocatorProcessor.Builder">myColorBlobLocatorProcessorBuilder</field>
+<next>
+<block type="comment" id="Uk0KD``N56t^lD$73lhu">
+<field name="COMMENT">- Specify the color range you are looking for. Use a predefined color, or create your own</field>
+<next>
+<block type="comment" id="$v#iMe1D/5]a-:I~^PxK">
+<field name="COMMENT">    Available colors are: RED, BLUE, YELLOW, GREEN, ARTIFACT_GREEN, ARTIFACT_PURPLE</field>
+<next>
+<block type="colorBlobLocatorProcessorBuilder_setTargetColorRange" id="FZS(]S,}Z+uK%5I0yA1y">
+<field name="COLOR_BLOB_LOCATOR_PROCESSOR_BUILDER" id="+}baIP$foHL{Te=K+!6H" variabletype="ColorBlobLocatorProcessor.Builder">myColorBlobLocatorProcessorBuilder</field>
+<comment pinned="false" h="37" w="268">use a predefined color match</comment>
+<data>{"commentPositionLeft":1,"commentPositionTop":-41}</data>
+<value name="COLOR_RANGE">
+<shadow type="colorRange_constant_ColorRange" id="P:Kn}(P|YO9}O~+XA?Hf">
+<field name="CONSTANT">ARTIFACT_GREEN</field>
+</shadow>
+</value>
+<next>
+<block type="colorBlobLocatorProcessorBuilder_setTargetColorRange" id="z/#BR$T,y{Kn,QvlOQGB" disabled="true">
+<field name="COLOR_BLOB_LOCATOR_PROCESSOR_BUILDER" id="+}baIP$foHL{Te=K+!6H" variabletype="ColorBlobLocatorProcessor.Builder">myColorBlobLocatorProcessorBuilder</field>
+<comment pinned="false" h="80" w="160">or define your own color match</comment>
+<data>{"commentPositionLeft":-40,"commentPositionTop":-105}</data>
+<value name="COLOR_RANGE">
+<shadow xmlns="" type="colorRange_constant_ColorRange">
+<field name="CONSTANT">BLUE</field>
+</shadow>
+<block type="colorRange_create" id="qQ(ZHo{HBnOk=7~IXi@:">
+<value name="COLOR_SPACE">
+<shadow type="colorSpace_typedEnum_colorSpace" id="*?8;:q:ku!b%n.e8S0HK">
+<field name="COLOR_SPACE">YCrCb</field>
+</shadow>
+</value>
+<value name="MIN">
+<block type="scalar_create_with3" id="yC{]U4FQY9kKQ*0TEKVF">
+<value name="V0">
+<shadow type="math_number" id="G/|o5Dx?S4ACr$HhpLqA">
+<field name="NUM">32</field>
+</shadow>
+</value>
+<value name="V1">
+<shadow type="math_number" id="Gz0oX:hWF=0)fQr=HN2H">
+<field name="NUM">176</field>
+</shadow>
+</value>
+<value name="V2">
+<shadow type="math_number" id="l=08c(,)d-k~!I_S~Z}U">
+<field name="NUM">0</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="MAX">
+<block type="scalar_create_with3" id="xt(^1[`Y/)kGYu^0J$NX">
+<value name="V0">
+<shadow type="math_number" id="SJ5NcNrrvOjf|?FGV/ia">
+<field name="NUM">255</field>
+</shadow>
+</value>
+<value name="V1">
+<shadow type="math_number" id="/todx!e!V;m`}!ACmP~}">
+<field name="NUM">255</field>
+</shadow>
+</value>
+<value name="V2">
+<shadow type="math_number" id="t0Z}Re,TXYq7ACD,6I`g">
+<field name="NUM">132</field>
+</shadow>
+</value>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="comment" id="bTRB6?+@v~^XGVTp2/)q">
+<field name="COMMENT">- Define which contours are included.</field>
+<next>
+<block type="comment" id="jy|k5DAHPanMeA7.uv|f">
+<field name="COMMENT">    You can get ALL the contours, ignore contours that are completely inside another contour.</field>
+<next>
+<block type="comment" id="GAjm+T{a#9)X2|l2B`tD">
+<field name="COMMENT">    EXTERNAL_ONLY helps to avoid bright reflection spots from breaking up solid colors.</field>
+<next>
+<block type="colorBlobLocatorProcessorBuilder_setContourMode" id="SVt+,cb*^t,E2Da;***a" disabled="true">
+<field name="COLOR_BLOB_LOCATOR_PROCESSOR_BUILDER" id="+}baIP$foHL{Te=K+!6H" variabletype="ColorBlobLocatorProcessor.Builder">myColorBlobLocatorProcessorBuilder</field>
+<value name="CONTOUR_MODE">
+<shadow type="colorBlobLocator_typedEnum_contourMode" id="oEZc=Z}XJRslGY(M[zZY">
+<field name="CONTOUR_MODE">ALL_FLATTENED_HIERARCHY</field>
+</shadow>
+</value>
+<next>
+<block type="colorBlobLocatorProcessorBuilder_setContourMode" id="`@)uk-.a.+JuU9[?ZT8i">
+<field name="COLOR_BLOB_LOCATOR_PROCESSOR_BUILDER" id="+}baIP$foHL{Te=K+!6H" variabletype="ColorBlobLocatorProcessor.Builder">myColorBlobLocatorProcessorBuilder</field>
+<value name="CONTOUR_MODE">
+<shadow type="colorBlobLocator_typedEnum_contourMode" id="*,q9.28^IUDVpO?DU;9d">
+<field name="CONTOUR_MODE">EXTERNAL_ONLY</field>
+</shadow>
+</value>
+<next>
+<block type="comment" id=";4)bv!PSWUsoTO+VT:d!">
+<field name="COMMENT">- Focus the color locator by defining a RegionOfInterest (ROI) which you want to search.</field>
+<next>
+<block type="comment" id="y,gyI9H`S:Z{Wz^1f8eC">
+<field name="COMMENT">    This can be the entire frame, or a sub-region defined using:</field>
+<next>
+<block type="comment" id="Dby~nq9D3x0NSXdgYkPh">
+<field name="COMMENT">    1) standard image coordinates or 2) a normalized +/- 1.0 coordinate system.</field>
+<next>
+<block type="comment" id="ekvV(sYD)t:,s4L,3W[]">
+<field name="COMMENT">    Use one form of the ImageRegion class to define the ROI.</field>
+<next>
+<block type="colorBlobLocatorProcessorBuilder_setRoi" id="j*y((3?.!R~Gv@*3hQHk" disabled="true">
+<field name="COLOR_BLOB_LOCATOR_PROCESSOR_BUILDER" id="+}baIP$foHL{Te=K+!6H" variabletype="ColorBlobLocatorProcessor.Builder">myColorBlobLocatorProcessorBuilder</field>
+<value name="ROI">
+<shadow type="imageRegion_entireFrame" id="(#wonoh,X8U/uJPt4$}e"/>
+</value>
+<next>
+<block type="colorBlobLocatorProcessorBuilder_setRoi" id="r)!Iy2+nD7$FcH?*(Zc+" disabled="true">
+<field name="COLOR_BLOB_LOCATOR_PROCESSOR_BUILDER" id="+}baIP$foHL{Te=K+!6H" variabletype="ColorBlobLocatorProcessor.Builder">myColorBlobLocatorProcessorBuilder</field>
+<value name="ROI">
+<shadow type="imageRegion_entireFrame" id="qvv(^@40F{89B{I3oTcc"/>
+<block type="imageRegion_asImageCoordinates" id="wzFQhQDYH@K(RNIN$YmR">
+<comment pinned="false" h="70" w="229">100x100 pixels at upper left corner</comment>
+<data>{"commentPositionLeft":1,"commentPositionTop":23}</data>
+<value name="LEFT">
+<shadow type="math_number" id="AKky!pJ5{U2(rT~s*kVq">
+<field name="NUM">50</field>
+</shadow>
+</value>
+<value name="TOP">
+<shadow type="math_number" id="wh3s!YZCF}!$O}A=_J.c">
+<field name="NUM">50</field>
+</shadow>
+</value>
+<value name="RIGHT">
+<shadow type="math_number" id="5Kyn!Y%4BB!eGCs3FaG(">
+<field name="NUM">150</field>
+</shadow>
+</value>
+<value name="BOTTOM">
+<shadow type="math_number" id="A!h5K^vNNKQ:n6pnTF[k">
+<field name="NUM">150</field>
+</shadow>
+</value>
+</block>
+</value>
+<next>
+<block type="colorBlobLocatorProcessorBuilder_setRoi" id="m2B+!Y*ji9n9e[DRfrII" disabled="true">
+<field name="COLOR_BLOB_LOCATOR_PROCESSOR_BUILDER" id="+}baIP$foHL{Te=K+!6H" variabletype="ColorBlobLocatorProcessor.Builder">myColorBlobLocatorProcessorBuilder</field>
+<value name="ROI">
+<shadow type="imageRegion_entireFrame"/>
+<block type="imageRegion_asUnityCenterCoordinates" id="`zQtufx;:+O!E[fj*RFj">
+<comment pinned="false" h="80" w="160">50% width/height in center</comment>
+<data>{"commentPositionLeft":16,"commentPositionTop":13}</data>
+<value name="LEFT">
+<shadow type="math_number" id="#Tjo-VnM|Zy-y]g9m#NO">
+<field name="NUM">-0.5</field>
+</shadow>
+</value>
+<value name="TOP">
+<shadow type="math_number" id="kRB8d36O!}F{t4D%|exJ">
+<field name="NUM">0.5</field>
+</shadow>
+</value>
+<value name="RIGHT">
+<shadow type="math_number" id=";7`paoh[AJ({F@;_Sn@6">
+<field name="NUM">0.5</field>
+</shadow>
+</value>
+<value name="BOTTOM">
+<shadow type="math_number" id="90LhJl:Rh9%c}$*mw}P6">
+<field name="NUM">-0.5</field>
+</shadow>
+</value>
+</block>
+</value>
+<next>
+<block type="colorBlobLocatorProcessorBuilder_setRoi" id="`T/*bb{3n$+0i68.vn1w">
+<field name="COLOR_BLOB_LOCATOR_PROCESSOR_BUILDER" id="+}baIP$foHL{Te=K+!6H" variabletype="ColorBlobLocatorProcessor.Builder">myColorBlobLocatorProcessorBuilder</field>
+<value name="ROI">
+<shadow type="imageRegion_entireFrame" id="nE{;=eF2s;c)@cy/mkuj"/>
+<block type="imageRegion_asUnityCenterCoordinates" id="-q=FzaFdxl`hncCIvPe[">
+<value name="LEFT">
+<shadow type="math_number" id="IZ3wdBD!h0c){,n3K`}B">
+<field name="NUM">-0.75</field>
+</shadow>
+</value>
+<value name="TOP">
+<shadow type="math_number" id="qoGeIX)eD9D1CZV9Y0t0">
+<field name="NUM">0.75</field>
+</shadow>
+</value>
+<value name="RIGHT">
+<shadow type="math_number" id="6^)RE9DsGOYV6^k#in]r">
+<field name="NUM">0.75</field>
+</shadow>
+</value>
+<value name="BOTTOM">
+<shadow type="math_number" id="JK#*AxjsAEnE;y@TA|d=">
+<field name="NUM">-0.75</field>
+</shadow>
+</value>
+</block>
+</value>
+<next>
+<block type="comment" id="Su,8Kjy5}YSF!rdy3dx^">
+<field name="COMMENT">- Turn the displays of contours ON or OFF.</field>
+<next>
+<block type="comment" id="n3}Bb|`ReMlo:3$].:8N">
+<field name="COMMENT">    Turning these on helps debugging but takes up valuable CPU time.</field>
+<next>
+<block type="colorBlobLocatorProcessorBuilder_setDrawContours" id="Oyl/N6BvB[L_K7us,tEZ">
+<field name="COLOR_BLOB_LOCATOR_PROCESSOR_BUILDER" id="+}baIP$foHL{Te=K+!6H" variabletype="ColorBlobLocatorProcessor.Builder">myColorBlobLocatorProcessorBuilder</field>
+<comment pinned="false" h="41" w="269">Show contours on the stream preview.</comment>
+<data>{"commentPositionLeft":10,"commentPositionTop":-45}</data>
+<value name="DRAW_CONTOURS">
+<shadow type="logic_boolean" id="+1.pK3IW5JCL?80!exel">
+<field name="BOOL">TRUE</field>
+</shadow>
+</value>
+<next>
+<block type="colorBlobLocatorProcessorBuilder_setBoxFitColor" id="hB~M*(06WzWtwb(h.it*">
+<field name="COLOR_BLOB_LOCATOR_PROCESSOR_BUILDER" id="+}baIP$foHL{Te=K+!6H" variabletype="ColorBlobLocatorProcessor.Builder">myColorBlobLocatorProcessorBuilder</field>
+<comment pinned="false" h="80" w="160">Disable the drawing of rectangles</comment>
+<data>{"commentPositionLeft":-40,"commentPositionTop":-105}</data>
+<value name="COLOR">
+<shadow xmlns="" type="color_constant_Number">
+<field name="CONSTANT">WHITE</field>
+</shadow>
+<block type="math_number" id=":p})-[6os=O-Tr[*iwDc">
+<field name="NUM">0</field>
+</block>
+</value>
+<next>
+<block type="colorBlobLocatorProcessorBuilder_setCircleFitColor" id="vabak;+u/`o0m-@}1=]{">
+<field name="COLOR_BLOB_LOCATOR_PROCESSOR_BUILDER" id="+}baIP$foHL{Te=K+!6H" variabletype="ColorBlobLocatorProcessor.Builder">myColorBlobLocatorProcessorBuilder</field>
+<comment pinned="false" h="80" w="160">Enable the drawing of a circle around blobs</comment>
+<data>{"commentPositionLeft":-40,"commentPositionTop":-105}</data>
+<value name="COLOR">
+<shadow xmlns="" type="color_constant_Number">
+<field name="CONSTANT">WHITE</field>
+</shadow>
+<block type="color_rgbToColor_Number" id="XboxLq1AR+u8U#%DaJ@~">
+<value name="RED">
+<shadow type="math_number" id="E}w)ycJ-PcPA$UFu[5`[">
+<field name="NUM">255</field>
+</shadow>
+</value>
+<value name="GREEN">
+<shadow type="math_number" id="|E(l99~vCdj{se/Yc,lR">
+<field name="NUM">255</field>
+</shadow>
+</value>
+<value name="BLUE">
+<shadow type="math_number" id="n;C`#TyhlDF7{3L|lP;e">
+<field name="NUM">0</field>
+</shadow>
+</value>
+</block>
+</value>
+<next>
+<block type="comment" id="7EX2Rr|AzWko3JtKGXY|">
+<field name="COMMENT">- Include any pre-processing of the image or mask before looking for Blobs.</field>
+<next>
+<block type="comment" id="k:,8}mVM]EG-@~kN^-oS">
+<field name="COMMENT">    There are some extra processing you can include to improve the formation of blobs.</field>
+<next>
+<block type="comment" id="T$nH[d*pXq0n)JQDH.7^">
+<field name="COMMENT">    Using these features requires an understanding of how they may effect the final</field>
+<next>
+<block type="comment" id="LRnE)$FypO@1[U=YN(Cq">
+<field name="COMMENT">    blobs.  The "pixels" argument sets the NxN kernel size.</field>
+<next>
+<block type="comment" id="mVDueq_7OtZ9y854T3%g">
+<field name="COMMENT">    Blurring an image helps to provide a smooth color transition between objects,</field>
+<next>
+<block type="comment" id="/#xktrbh^.QRwCj1)l30">
+<field name="COMMENT">    and smoother contours.  The higher the number, the more blurred the image becomes.</field>
+<next>
+<block type="comment" id="O@wt`.-Z*qTOc4(B)eI-">
+<field name="COMMENT">    Note:  Even "pixels" values will be incremented to satisfy the "odd number" requirement.</field>
+<next>
+<block type="comment" id="t|,P#aPznoh;8O8^q@_c">
+<field name="COMMENT">    Blurring too much may hide smaller features.  A size of 5 is good for a 320x240 image.</field>
+<next>
+<block type="colorBlobLocatorProcessorBuilder_setBlurSize" id="cp6~WAY!=9MaMe%pirP/">
+<field name="COLOR_BLOB_LOCATOR_PROCESSOR_BUILDER" id="+}baIP$foHL{Te=K+!6H" variabletype="ColorBlobLocatorProcessor.Builder">myColorBlobLocatorProcessorBuilder</field>
+<comment pinned="false" h="70" w="223">Smooth the transitions between different colors in image</comment>
+<data>{"commentPositionLeft":-40,"commentPositionTop":-105}</data>
+<value name="BLUR_SIZE">
+<shadow type="math_number" id="y0S16s/isf.5/v]Z2;Jt">
+<field name="NUM">5</field>
+</shadow>
+</value>
+<next>
+<block type="comment" id="3Ir^=]qojFG,qpoyIoA$">
+<field name="COMMENT">The following options have been added to improve DECODE artifact detection by filling in perimeter holes.</field>
+<next>
+<block type="comment" id="sGH4+d9~4:a?p7Smc_+4">
+<field name="COMMENT">    Dilation makes objects and lines more visible by filling in small holes, and making</field>
+<next>
+<block type="comment" id="XzOSZs41wy!I$6])4,V(">
+<field name="COMMENT">    filled shapes appear larger. Dilation is useful for joining broken parts of an</field>
+<next>
+<block type="comment" id=")n1W/Sc~EoSte/o3JkcY">
+<field name="COMMENT">    object, such as when removing noise from an image.</field>
+<next>
+<block type="comment" id="_hoX,cmz+~EiA!bmS,Ht">
+<field name="COMMENT">    "pixels" in the range of 2-4 are suitable for low res images.</field>
+<next>
+<block type="colorBlobLocatorProcessorBuilder_setDilateSize" id="|d;NaRX=)w+/Pa._l$pj">
+<field name="COLOR_BLOB_LOCATOR_PROCESSOR_BUILDER" id="+}baIP$foHL{Te=K+!6H" variabletype="ColorBlobLocatorProcessor.Builder">myColorBlobLocatorProcessorBuilder</field>
+<comment pinned="false" h="80" w="160">Expand blobs to fill any divots on the edges</comment>
+<data>{"commentPositionLeft":-40,"commentPositionTop":-105}</data>
+<value name="DILATE_SIZE">
+<shadow type="math_number" id="cWLzDI+oU0MNM:F=%dQe">
+<field name="NUM">15</field>
+</shadow>
+</value>
+<next>
+<block type="comment" id="+r!G:t]rb:D%U84wq{*Q">
+<field name="COMMENT">    Erosion removes floating pixels and thin lines so that only substantive objects remain.</field>
+<next>
+<block type="comment" id="cJI+)zEJjObQw!CWcaE=">
+<field name="COMMENT">    Erosion can grow holes inside regions, and also shrink objects.</field>
+<next>
+<block type="comment" id="7:_tr1[n54Dq(.a{./`w">
+<field name="COMMENT">    "pixels" in the range of 2-4 are suitable for low res images.</field>
+<next>
+<block type="colorBlobLocatorProcessorBuilder_setErodeSize" id="oBv{B?$C,{9G(M9VwOMT">
+<field name="COLOR_BLOB_LOCATOR_PROCESSOR_BUILDER" id="+}baIP$foHL{Te=K+!6H" variabletype="ColorBlobLocatorProcessor.Builder">myColorBlobLocatorProcessorBuilder</field>
+<comment pinned="false" h="80" w="160">Shrink blobs back to original size</comment>
+<data>{"commentPositionLeft":-40,"commentPositionTop":-105}</data>
+<value name="ERODE_SIZE">
+<shadow type="math_number" id=")DzNEh|*|O:!lA1$R6rv">
+<field name="NUM">15</field>
+</shadow>
+</value>
+<next>
+<block type="comment" id="-fA3acCAe#VzmU*U6O$y">
+<field name="COMMENT">This defines the order in which the Erode/Dilate actions are performed.</field>
+<next>
+<block type="comment" id="6_dS/Z#v2.5wM8ST`MC~">
+<field name="COMMENT">OPENING:    Will Erode and then Dilate which will make small noise blobs go away</field>
+<next>
+<block type="comment" id="fl/9m$)3BLH=?#iGW$ro">
+<field name="COMMENT">CLOSING:    Will Dilate and then Erode which will tend to fill in any small holes in blob edges.</field>
+<next>
+<block type="colorBlobLocatorProcessorBuilder_setMorphOperationType" id="eoP-dZ,x=rp:7tIuGlQv">
+<field name="COLOR_BLOB_LOCATOR_PROCESSOR_BUILDER" id="+}baIP$foHL{Te=K+!6H" variabletype="ColorBlobLocatorProcessor.Builder">myColorBlobLocatorProcessorBuilder</field>
+<value name="MORPH_OPERATION_TYPE">
+<shadow type="colorBlobLocator_typedEnum_morphOperationType" id="AKjEvq-Zf0o/`e5]r-a4">
+<field name="MORPH_OPERATION_TYPE">CLOSING</field>
+</shadow>
+</value>
+<next>
+<block type="variables_set" id="M#=h8eGgK:Ix]@FO$r_Z">
+<field name="VAR" id="B)2E@2u+:wp@{VIN.$qE">myColorBlobLocatorProcessor</field>
+<value name="VALUE">
+<block type="colorBlobLocatorProcessorBuilder_build" id="zp*4[l:kKh}[o{3cT:oE">
+<field name="COLOR_BLOB_LOCATOR_PROCESSOR_BUILDER" id="+}baIP$foHL{Te=K+!6H" variabletype="ColorBlobLocatorProcessor.Builder">myColorBlobLocatorProcessorBuilder</field>
+</block>
+</value>
+<next>
+<block type="comment" id="Q4O0%}3U!X1z+vgiH/Gq">
+<field name="COMMENT">Build a vision portal to run the Color Locator process.</field>
+<next>
+<block type="visionPortalBuilder_create_assign" id="GmydO@;Argi3]2LnQ1hJ">
+<field name="VISION_PORTAL_BUILDER" id="c[~BoNo=sNOXZ85;=XR*" variabletype="VisionPortal.Builder">myVisionPortalBuilder</field>
+<next>
+<block type="comment" id="q;x`*z^tvbH?aQtsKy8Z">
+<field name="COMMENT"> - Add the ColorBlobLocatorProcessor created above.</field>
+<next>
+<block type="visionPortalBuilder_addProcessor" id="Tl2~|yHTf+R[x7X#!RrD">
+<field name="VISION_PORTAL_BUILDER" id="c[~BoNo=sNOXZ85;=XR*" variabletype="VisionPortal.Builder">myVisionPortalBuilder</field>
+<value name="VISION_PROCESSOR">
+<block type="variables_get" id="mBgkyMECz)0mK8yh`!N(">
+<field name="VAR" id="B)2E@2u+:wp@{VIN.$qE">myColorBlobLocatorProcessor</field>
+</block>
+</value>
+<next>
+<block type="comment" id="2Kl3RWz!$o.2o}`F1vQ0">
+<field name="COMMENT"> - Set the desired video resolution.</field>
+<next>
+<block type="comment" id="NsJfZOp2z6.(0FWkA)s/">
+<field name="COMMENT">     Since a high resolution will not improve this process, choose a lower resolution</field>
+<next>
+<block type="comment" id="F{I]qrm!sv[LiBaUNCo!">
+<field name="COMMENT">     that is supported by your camera. This will improve overall performance and reduce</field>
+<next>
+<block type="comment" id="TIQJ7WlbGx`q.Pk_3FQH">
+<field name="COMMENT">     latency.</field>
+<next>
+<block type="visionPortalBuilder_setCameraResolution" id="iVTy#yQ51AZV)rn%BVH[">
+<field name="VISION_PORTAL_BUILDER" id="c[~BoNo=sNOXZ85;=XR*" variabletype="VisionPortal.Builder">myVisionPortalBuilder</field>
+<value name="CAMERA_WIDTH">
+<shadow type="math_number" id="Xr1uMi|)Oe=s][EJ4(9l">
+<field name="NUM">320</field>
+</shadow>
+</value>
+<value name="CAMERA_HEIGHT">
+<shadow type="math_number" id=")hL=tghS[g|(l8Tfzv?*">
+<field name="NUM">240</field>
+</shadow>
+</value>
+<next>
+<block type="comment" id="n8DMUvhj]3KdLjlyVwI_">
+<field name="COMMENT"> - Choose your video source. This may be for a webcam or for a Phone Camera.</field>
+<next>
+<block type="visionPortalBuilder_setCamera" id="(Zsf!V:L9WB$u}Iy!Fe4">
+<field name="VISION_PORTAL_BUILDER" id="c[~BoNo=sNOXZ85;=XR*" variabletype="VisionPortal.Builder">myVisionPortalBuilder</field>
+<value name="CAMERA">
+<shadow type="navigation_webcamName" id="k7GX}fW3B7jLZ3g~l+p9">
+<field name="WEBCAM_NAME">Webcam 1</field>
+</shadow>
+</value>
+<next>
+<block type="variables_set" id=";/cUjc+`Bg4uJ#UW.G)s">
+<field name="VAR" id="tGnN%D((ih^CMv8L~PSD">myVisionPortal</field>
+<value name="VALUE">
+<block type="visionPortalBuilder_build" id="xhhEJR*LR|+,(At=G82f">
+<field name="VISION_PORTAL_BUILDER" id="c[~BoNo=sNOXZ85;=XR*" variabletype="VisionPortal.Builder">myVisionPortalBuilder</field>
+</block>
+</value>
+<next>
+<block type="telemetry_setProperty_Number" id="%I^9:*[;gk.!/#3d8Gd$">
+<field name="PROP">MsTransmissionInterval</field>
+<comment pinned="false" h="38" w="353">Speed up telemetry updates for debugging.</comment>
+<data>{"commentPositionLeft":388,"commentPositionTop":-12}</data>
+<value name="VALUE">
+<shadow type="math_number" id="wcMh^+39}}Xy*aXSCfFh">
+<field name="NUM">100</field>
+</shadow>
+</value>
+<next>
+<block type="telemetry_setDisplayFormat" id="35km**GU{V,NYq+sJMPP">
+<value name="DISPLAY_FORMAT">
+<shadow type="telemetry_typedEnum_displayFormat" id="8*jz?pjRj5A~3Bh3egi6">
+<field name="DISPLAY_FORMAT">MONOSPACE</field>
+</shadow>
+</value>
+<next>
+<block type="comment" id="eqXAp/==x.CS`r5X%9]2">
+<field name="COMMENT">WARNING:  To view the stream preview on the Driver Station, this code runs in INIT mode.</field>
+<next>
+<block type="controls_whileUntil" id="^0Kagy/e+Ea{rbZPv2G6">
+<field name="MODE">WHILE</field>
+<value name="BOOL">
+<block type="logic_operation" id="xR(O[7Q#0}vIjuw;uJ-c" inline="false">
+<field name="OP">OR</field>
+<value name="A">
+<block type="linearOpMode_opModeIsActive" id=")o%YFX/#9kvv^sgXr4~5"/>
+</value>
+<value name="B">
+<block type="linearOpMode_opModeInInit" id=",c~buh+S8JJ|c.d4YC0@"/>
+</value>
+</block>
+</value>
+<statement name="DO">
+<block type="telemetry_addTextData_All" id=";Rg*{~N_DMj:y@g/BCIF">
+<value name="KEY">
+<shadow type="text" id="tba-ZCL%b4JRc?$JT7^p">
+<field name="TEXT">preview on/off</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id="Ydo7#NNNhx=62-e[LY@f">
+<field name="TEXT">... Camera Stream</field>
+</shadow>
+</value>
+<next>
+<block type="telemetry_addLine" id="{l-##dN{rAcv][li.=~D">
+<value name="TEXT">
+<shadow type="text" id="K{8?Nwp@[{VQN[nV|A]u">
+<field name="TEXT"/>
+</shadow>
+</value>
+<next>
+<block type="comment" id="El4/#=N(-{Uj~G/ZL~n`">
+<field name="COMMENT">Read the current list of blobs.</field>
+<next>
+<block type="variables_set" id="38TK_d@.w]K#U%P`%zNE">
+<field name="VAR" id="*?14!TD)5LavaHH%Vt0n">myBlobs</field>
+<value name="VALUE">
+<block type="colorBlobLocatorProcessor_getBlobs" id=")V(06a3k9(JfkzI_^;r@">
+<value name="COLOR_BLOB_LOCATOR_PROCESSOR">
+<block type="variables_get" id=")k|}/g3bGWY!OGNW?Vc#">
+<field name="VAR" id="B)2E@2u+:wp@{VIN.$qE">myColorBlobLocatorProcessor</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="comment" id="eFuEyaPq6e+L[Yoz6yv,">
+<field name="COMMENT">The list of Blobs can be filtered to remove unwanted Blobs.</field>
+<next>
+<block type="comment" id="a3ePL]RajSw4[EQ$Sa~`">
+<field name="COMMENT">  Note:  All contours will be still displayed on the Stream Preview, but only those</field>
+<next>
+<block type="comment" id="EauNDe0sYqjtZ1vDukXu">
+<field name="COMMENT">         that satisfy the filter conditions will remain in the current list of</field>
+<next>
+<block type="comment" id="Pova?3hL#arfIP!Q=}Mh">
+<field name="COMMENT">         "blobs". Multiple filters may be used.</field>
+<next>
+<block type="comment" id="%eO-(Wl%)vcT7wUo5w4F">
+<field name="COMMENT"/>
+<next>
+<block type="comment" id="Q)@uFgD[1O6qVzM4%_(f">
+<field name="COMMENT">The following criteria are currently supported.</field>
+<next>
+<block type="comment" id="v/=iUus9%rxH(eKLu%R;">
+<field name="COMMENT"/>
+<next>
+<block type="comment" id="M)DxOX_TjZjlQH`AE}Eg">
+<field name="COMMENT">BlobCriteria.BY_CONTOUR_AREA</field>
+<next>
+<block type="comment" id="YRf3bF;?t/?Up@Hd,]~W">
+<field name="COMMENT">  A Blob's area is the number of pixels contained within the Contour.  Filter out any</field>
+<next>
+<block type="comment" id=")odngEvUj![|VD~G*-84">
+<field name="COMMENT">  that are too big or small. Start with a large range and then refine the range based</field>
+<next>
+<block type="comment" id=":Ihru2;|9}P#yOY5nN|E">
+<field name="COMMENT">  on the likely size of the desired object in the viewfinder.</field>
+<next>
+<block type="comment" id="w)?B+8J0A,3G)$)C#5nL">
+<field name="COMMENT"/>
+<next>
+<block type="comment" id="P!*AQlkW_(^B+c@mb.o9">
+<field name="COMMENT">BlobCriteria.BY_DENSITY</field>
+<next>
+<block type="comment" id="z3m1wF`flMOm()?:_vs.">
+<field name="COMMENT">  A blob's density is an indication of how "full" the contour is.</field>
+<next>
+<block type="comment" id="pioX`|f/I{C%d)p#ncn+">
+<field name="COMMENT">  If you put a rubber band around the contour you get the "Convex Hull" of the</field>
+<next>
+<block type="comment" id="Y-lZLl:Qg}=F5~?;t0J$">
+<field name="COMMENT">  contour. The density is the ratio of Contour-area to Convex Hull-area.</field>
+<next>
+<block type="comment" id="Fk2!2Z]hMHRd~x8-S_Af">
+<field name="COMMENT"/>
+<next>
+<block type="comment" id="*U^KW{W-qu_A*Wr/2!/d">
+<field name="COMMENT">BlobCriteria.BY_ASPECT_RATIO</field>
+<next>
+<block type="comment" id="N9w{)g=F)?_0s|@l7uj!">
+<field name="COMMENT">  A blob's Aspect ratio is the ratio of boxFit long side to short side.</field>
+<next>
+<block type="comment" id="Q)q?76o1sq{-O8-:aZf$">
+<field name="COMMENT">  A perfect Square has an aspect ratio of 1.  All others are &gt; 1</field>
+<next>
+<block type="comment" id="ff[1xeILe1(dKl`P-rhK">
+<field name="COMMENT"/>
+<next>
+<block type="comment" id="5NcoBADnf~?T97E9l2;M">
+<field name="COMMENT">BlobCriteria.BY_ARC_LENGTH</field>
+<next>
+<block type="comment" id="eEW5U%Kxc(LSog}[UFl5">
+<field name="COMMENT">  A blob's arc length is the perimeter of the blob.</field>
+<next>
+<block type="comment" id="nNWBV8XZ~9J{p.t+YC{:">
+<field name="COMMENT">  This can be used in conjunction with an area filter to detect oddly shaped blobs.</field>
+<next>
+<block type="comment" id="kV_w:E#qJ(NXgP#~WORg">
+<field name="COMMENT"/>
+<next>
+<block type="comment" id="14)Du2$VmRUSF?U32OaZ">
+<field name="COMMENT">BlobCriteria.BY_CIRCULARITY</field>
+<next>
+<block type="comment" id="z4%A5,@]?aD2i,T#zscP">
+<field name="COMMENT">  A blob's circularity is how circular it is based on the known area and arc length.</field>
+<next>
+<block type="comment" id="+#434[2JU^z2wpO*3~#$">
+<field name="COMMENT">  A perfect circle has a circularity of 1.  All others are &lt; 1</field>
+<next>
+<block type="colorBlobLocatorProcessorUtil_filterByCriteria" id="[gV`#GQR6RqVAU7}VpSA">
+<comment pinned="false" h="46" w="184">filter out very small blobs.</comment>
+<data>{"commentPositionLeft":-7,"commentPositionTop":15}</data>
+<value name="CRITERIA">
+<shadow type="colorBlobLocator_typedEnum_blobCriteria" id="ZBZK=LimjG]jQN{U,wGD">
+<field name="CRITERIA">BY_CONTOUR_AREA</field>
+</shadow>
+</value>
+<value name="MIN_VALUE">
+<shadow type="math_number" id="-Rjl:-8os|;~ifhLn-f$">
+<field name="NUM">50</field>
+</shadow>
+</value>
+<value name="MAX_VALUE">
+<shadow type="math_number" id=".E_G3Z3;pb~Tl[r=ms-0">
+<field name="NUM">20000</field>
+</shadow>
+</value>
+<value name="BLOBS">
+<block type="variables_get" id="f_r2W%%mpeW;4)f`b)US">
+<field name="VAR" id="*?14!TD)5LavaHH%Vt0n">myBlobs</field>
+</block>
+</value>
+<next>
+<block type="colorBlobLocatorProcessorUtil_filterByCriteria" id="=cUt-|?w+(MFU#FUne-h">
+<comment pinned="false" h="174" w="563">filter out non-circular blobs.
+
+NOTE: You may want to adjust the minimum value depending on your use case.
+Circularity values will be affected by shadows, and will therefore vary based
+on the location of the camera on your robot and venue lighting. It is strongly
+encouraged to test your vision on the competition field if your event allows
+sensor calibration time.</comment>
+<data>{"commentPositionLeft":30,"commentPositionTop":-77}</data>
+<value name="CRITERIA">
+<shadow type="colorBlobLocator_typedEnum_blobCriteria" id="8XWB,,x2R^B94pohsBSi">
+<field name="CRITERIA">BY_CIRCULARITY</field>
+</shadow>
+</value>
+<value name="MIN_VALUE">
+<shadow type="math_number" id="3LGo[Y_UN0eXa!,RP9h/">
+<field name="NUM">0.6</field>
+</shadow>
+</value>
+<value name="MAX_VALUE">
+<shadow type="math_number" id="rY-cA.1E__C(]+y0UNw*">
+<field name="NUM">1</field>
+</shadow>
+</value>
+<value name="BLOBS">
+<block type="variables_get" id="mDqXHo1Ea(EckL-NFKH%">
+<field name="VAR" id="*?14!TD)5LavaHH%Vt0n">myBlobs</field>
+</block>
+</value>
+<next>
+<block type="comment" id="u*Na0J`c.C;ylf81GAj,">
+<field name="COMMENT">The list of Blobs can be sorted using the same Blob attributes as listed above.</field>
+<next>
+<block type="comment" id="dnT=cFNMxOZ$KHR6ufFZ">
+<field name="COMMENT">No more than one sort call should be made.  Sorting can be ASCENDING or DESCENDING.</field>
+<next>
+<block type="comment" id="5w1a7Rjo!Th+]cz@ULAc">
+<field name="COMMENT">Here is an example.:</field>
+<next>
+<block type="colorBlobLocatorProcessorUtil_sortByCriteria" id="1nT0MGT0%MI|b0dl-)g~" disabled="true">
+<value name="CRITERIA">
+<shadow type="colorBlobLocator_typedEnum_blobCriteria" id="BzY{S,ijzev0o{v[3`N8">
+<field name="CRITERIA">BY_CONTOUR_AREA</field>
+</shadow>
+</value>
+<value name="SORT_ORDER">
+<shadow type="util_typedEnum_sortOrder" id="][L_m)-F1MBCi.mn{,FG">
+<field name="SORT_ORDER">DESCENDING</field>
+</shadow>
+</value>
+<value name="BLOBS">
+<block type="variables_get" id="mb}8YMeo?@},dJwh%+Bc">
+<field name="VAR" id="*?14!TD)5LavaHH%Vt0n">myBlobs</field>
+</block>
+</value>
+<next>
+<block type="telemetry_addLine" id="b,?N4w6/(Y(,a7YbXI~F">
+<value name="TEXT">
+<shadow type="text" id="#?y1b+ik8qF:d*q_(spn">
+<field name="TEXT">Circularity Radius Center</field>
+</shadow>
+</value>
+<next>
+<block type="comment" id="#$$gM62MGh~0N;sGdZxp">
+<field name="COMMENT">Display the size (area) and center location for each Blob.</field>
+<next>
+<block type="controls_forEach" id="ZVTc]WRf5n]OJs-82GPh">
+<field name="VAR" id="Y`mTB@p7|QYN#EqkDl_E">myBlob</field>
+<value name="LIST">
+<block type="variables_get" id="s2UEJJ1{.2m%A+p%Tijw">
+<field name="VAR" id="*?14!TD)5LavaHH%Vt0n">myBlobs</field>
+</block>
+</value>
+<statement name="DO">
+<block type="variables_set" id="}Oj?d!Ye$7m0,WGQmW`l">
+<field name="VAR" id="Hyk*kg?Wzdmfx{`Bw2%#">circleFit</field>
+<value name="VALUE">
+<block type="colorBlobLocatorProcessorBlob_getProperty_Circle" id="oEAk!gupI]4^BM%eLw5i">
+<field name="PROP">Circle</field>
+<value name="BLOB">
+<block type="variables_get" id="^R*q5L2[@Ga#p$#*7XQi">
+<field name="VAR" id="Y`mTB@p7|QYN#EqkDl_E">myBlob</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_addLine" id="nDFUP}3u;igs{f?;pq7?">
+<value name="TEXT">
+<shadow type="text" id="hJzvFYXMuGf@d|]x=GYS">
+<field name="TEXT">text</field>
+</shadow>
+<block type="text_join" id="+6eIc`?9J$i~8_aMniNH">
+<mutation items="8"/>
+<value name="ADD0">
+<block type="misc_formatNumber_withWidth" id="f[mip4Q]rh6txFplAr`V">
+<value name="NUMBER">
+<shadow type="math_number">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="colorBlobLocatorProcessorBlob_getProperty_Number" id="m_L@tJiv/!^3^:o+40jN">
+<field name="PROP">Circularity</field>
+<value name="BLOB">
+<block type="variables_get" id="2E!`x7P(v:*7BDpim!jP">
+<field name="VAR" id="Y`mTB@p7|QYN#EqkDl_E">myBlob</field>
+</block>
+</value>
+</block>
+</value>
+<value name="WIDTH">
+<shadow type="math_number" id="3g!Bp%Z/Wn?SLkMepZ@3">
+<field name="NUM">5</field>
+</shadow>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="zCP=xc{gXf_-CjpF_i^R">
+<field name="NUM">3</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="ADD1">
+<block type="text" id="NSzk?Uw~L]XtC$,(r;Gf">
+<field name="TEXT">      </field>
+</block>
+</value>
+<value name="ADD2">
+<block type="misc_formatNumber_withWidth" id="wBFWm?lf$@As~C64N)42">
+<value name="NUMBER">
+<shadow type="math_number" id="SlCm_r(nC+/m,ENecVM[">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="circle_getProperty_Number" id="jF#qsEZA1WGf1[jFfCL1">
+<field name="PROP">Radius</field>
+<value name="CIRCLE">
+<block type="variables_get" id="^,BDPpBPZSaF3i}C5YpS">
+<field name="VAR" id="Hyk*kg?Wzdmfx{`Bw2%#">circleFit</field>
+</block>
+</value>
+</block>
+</value>
+<value name="WIDTH">
+<shadow type="math_number" id="rXL]Sh7YYrXM%`zhU/VB">
+<field name="NUM">3</field>
+</shadow>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="N:}wMiK|pc)%6SPHQE+%">
+<field name="NUM">0</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="ADD3">
+<block type="text" id="9ySt%Em{;m~-`rGu6zLZ">
+<field name="TEXT">     (</field>
+</block>
+</value>
+<value name="ADD4">
+<block type="misc_formatNumber_withWidth" id="/kc{08WSu}%%|mi#d}1P">
+<value name="NUMBER">
+<shadow type="math_number" id="PcFL:,B80Q^P:zgKQYcx">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="circle_getProperty_Number" id="(ze.cs{o4Os/QH/zp,Sn">
+<field name="PROP">X</field>
+<value name="CIRCLE">
+<block type="variables_get" id="~^aETuO;Mgc!N8i{m8{-">
+<field name="VAR" id="Hyk*kg?Wzdmfx{`Bw2%#">circleFit</field>
+</block>
+</value>
+</block>
+</value>
+<value name="WIDTH">
+<shadow type="math_number" id="tUwZox#sk#3Beln$UI9#">
+<field name="NUM">3</field>
+</shadow>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="fEi8ZL%g3(XP47Up|Nop">
+<field name="NUM">0</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="ADD5">
+<block type="text" id="P3qZT8k3(KV0}|-dn?~{">
+<field name="TEXT">,</field>
+</block>
+</value>
+<value name="ADD6">
+<block type="misc_formatNumber_withWidth" id="%7)]J3ujd-IL1~bX;=0Z">
+<value name="NUMBER">
+<shadow type="math_number" id="p6(wgMPy|eI~n823y;o}">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="circle_getProperty_Number" id="1;w0Yf7pXI(t)I3UX]AW">
+<field name="PROP">Y</field>
+<value name="CIRCLE">
+<block type="variables_get" id="Orz2SzUD{X87=hEQ+`ay">
+<field name="VAR" id="Hyk*kg?Wzdmfx{`Bw2%#">circleFit</field>
+</block>
+</value>
+</block>
+</value>
+<value name="WIDTH">
+<shadow type="math_number" id="CS1s$4xbNuA.@4~2tDCO">
+<field name="NUM">3</field>
+</shadow>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="p!3u(Lg)rksEkamt`IKJ">
+<field name="NUM">0</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="ADD7">
+<block type="text" id="X_d{%Wb:FPx8~}GalyM/">
+<field name="TEXT">)</field>
+</block>
+</value>
+</block>
+</value>
+</block>
+</next>
+</block>
+</statement>
+<next>
+<block type="telemetry_update" id="exvivmft-pX$n!1,8Ea$">
+<next>
+<block type="linearOpMode_sleep_Number" id="c[=Mv_z!gNMHeX(m3}S)">
+<value name="MILLISECONDS">
+<shadow type="math_number" id="KV/YeBp~U9FJGk~tR}#q">
+<field name="NUM">100</field>
+</shadow>
+</value>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</xml>
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<Extra>
+<OpModeMeta flavor="TELEOP" group="" autoTransition="" />
+<Enabled value="true" />
+</Extra>

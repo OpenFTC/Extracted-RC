@@ -20,8 +20,11 @@ import com.google.blocks.ftcrobotcontroller.util.ToolboxFolder;
 import com.google.blocks.ftcrobotcontroller.util.ToolboxIcon;
 import com.google.blocks.ftcrobotcontroller.util.ToolboxUtil;
 import com.qualcomm.hardware.adafruit.AdafruitBNO055IMU;
+import com.qualcomm.hardware.andymark.AndyMarkTOF;
+import com.qualcomm.hardware.andymark.AndyMarkColorSensor;
 import com.qualcomm.hardware.bosch.BNO055IMUImpl;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
+import com.qualcomm.hardware.digitalchickenlabs.OctoQuad;
 import com.qualcomm.hardware.digitalchickenlabs.OctoQuadImpl;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
@@ -89,6 +92,11 @@ public enum HardwareType {
       ToolboxFolder.OTHER, "AnalogInput", ToolboxIcon.ANALOG_INPUT,
       AnalogInput.class,
       ConfigurationTypeManager.getXmlTag(AnalogInput.class)),
+  ANDY_MARK_COLOR_SENSOR( // see andy_mark_color_sensor.js
+      "createAndyMarkColorSensorDropdown", "andyMarkColorSensor", "AsAndyMarkColorSensor", "_AndyMarkColorSensor",
+      ToolboxFolder.SENSORS, "AndyMarkColorSensor", ToolboxIcon.COLOR_SENSOR,
+      AndyMarkColorSensor.class,
+      ConfigurationTypeManager.getXmlTag(AndyMarkColorSensor.class)),
   BNO055IMU( // see bno055imu.js
       "createBNO055IMUDropdown", "bno055imu", "AsBNO055IMU", "_IMU_BNO055",
       ToolboxFolder.SENSORS, "IMU-BNO055 (legacy)", null, // No toolbox icon yet.
@@ -135,6 +143,7 @@ public enum HardwareType {
       ToolboxFolder.SENSORS, "DistanceSensor", ToolboxIcon.ULTRASONIC_SENSOR, // Need to make artwork but the ultrasonic sensor is close to what we want.
       DistanceSensor.class,
       BuiltInConfigurationType.LYNX_COLOR_SENSOR.getXmlTag(),
+      ConfigurationTypeManager.getXmlTag(AndyMarkTOF.class),
       ConfigurationTypeManager.getXmlTag(Rev2mDistanceSensor.class),
       ConfigurationTypeManager.getXmlTag(RevColorSensorV3.class)),
   GOBILDA_PINPOINT( // see gobilda_pinpoint.js
@@ -203,7 +212,7 @@ public enum HardwareType {
   OCTOQUAD( // see octoquad.js
       "createOctoQuadDropdown", "octoquad", "AsOctoQuad", "_OctoQuad",
       ToolboxFolder.SENSORS, "OctoQuad", ToolboxIcon.OCTOQUAD,
-      OctoQuadImpl.class,
+      OctoQuad.class,
       ConfigurationTypeManager.getXmlTag(OctoQuadImpl.class)),
   OPTICAL_DISTANCE_SENSOR( // see optical_distance_sensor.js
       "createOpticalDistanceSensorDropdown", "opticalDistanceSensor", "AsOpticalDistanceSensor", "_OpticalDistanceSensor",

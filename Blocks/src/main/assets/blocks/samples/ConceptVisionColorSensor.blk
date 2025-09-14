@@ -6,9 +6,9 @@
 <variable id="mD?J*1RmB`;jxOHI}|G~">myVisionPortal</variable>
 <variable id="W[iT:FTG%qgB)]18(;)L">myResult</variable>
 </variables>
-<block type="procedures_defnoreturn" id="WtpyD@tEu+EoY=P9iY,D" deletable="false" x="25" y="373">
+<block type="procedures_defnoreturn" id="WtpyD@tEu+EoY=P9iY,D" deletable="false" x="25" y="471">
 <field name="NAME">runOpMode</field>
-<comment pinned="true" h="447.2436218261719" w="790.0445556640625">This OpMode illustrates how to use a video source (camera) as a color sensor
+<comment pinned="true" h="447" w="790">This OpMode illustrates how to use a video source (camera) as a color sensor
 
 A "color sensor" will typically determine the color of the object that it is pointed at.
 
@@ -137,29 +137,39 @@ The Predominant Color is used to paint the rectangle border, so the user can ver
 <field name="COMMENT">    eg: Green may be reported as YELLOW, as this may be the "closest" match.</field>
 <next>
 <block type="predominantColorProcessorBuilder_setSwatches" id="AXWIQV(4@|7Du1X_]*,A" inline="false">
-<mutation items="5"/>
+<mutation items="7"/>
 <field name="PREDOMINANT_COLOR_PROCESSOR_BUILDER" id="yUI1R)p(2e_`in3b*gyP" variabletype="PredominantColorProcessor.Builder">myPredominantColorProcessorBuilder</field>
 <value name="SWATCH0">
+<block type="predominantColor_typedEnum_swatch" id="B/ZwGOxb,FJ5xOYUx|Vx">
+<field name="SWATCH">ARTIFACT_GREEN</field>
+</block>
+</value>
+<value name="SWATCH1">
+<block type="predominantColor_typedEnum_swatch" id="S7UcL}?f{YA8_u}MN2h:">
+<field name="SWATCH">ARTIFACT_PURPLE</field>
+</block>
+</value>
+<value name="SWATCH2">
 <block type="predominantColor_typedEnum_swatch" id="GM.kOr-cXg`KdA^]%=R4">
 <field name="SWATCH">RED</field>
 </block>
 </value>
-<value name="SWATCH1">
+<value name="SWATCH3">
 <block type="predominantColor_typedEnum_swatch" id="x,W~}]@y:X.M6K;a;yA8">
 <field name="SWATCH">BLUE</field>
 </block>
 </value>
-<value name="SWATCH2">
+<value name="SWATCH4">
 <block type="predominantColor_typedEnum_swatch" id="]4k1C}2mfk^1)xX.;NQn">
 <field name="SWATCH">YELLOW</field>
 </block>
 </value>
-<value name="SWATCH3">
+<value name="SWATCH5">
 <block type="predominantColor_typedEnum_swatch" id="GaANUl.YbPo1}|j0~)Wc">
 <field name="SWATCH">BLACK</field>
 </block>
 </value>
-<value name="SWATCH4">
+<value name="SWATCH6">
 <block type="predominantColor_typedEnum_swatch" id=":eOfAm7K2@C)/^[TL$;j">
 <field name="SWATCH">WHITE</field>
 </block>

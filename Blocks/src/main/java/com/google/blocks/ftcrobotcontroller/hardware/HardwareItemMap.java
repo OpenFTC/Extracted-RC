@@ -18,7 +18,9 @@ package com.google.blocks.ftcrobotcontroller.hardware;
 
 import com.qualcomm.ftccommon.configuration.RobotConfigFile;
 import com.qualcomm.ftccommon.configuration.RobotConfigFileManager;
+import com.qualcomm.hardware.andymark.AndyMarkColorSensor;
 import com.qualcomm.robotcore.exception.RobotCoreException;
+import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.configuration.ControllerConfiguration;
 import com.qualcomm.robotcore.hardware.configuration.DeviceConfiguration;
@@ -110,28 +112,22 @@ public class HardwareItemMap {
 
   /**
    * Constructs a {@link HardwareItemMap} with the supported hardware items in the given
-   * configuration {@link Reader}.
-   */
-  // visible for testing
-  HardwareItemMap(Reader reader) {
-    try {
-      ReadXMLFileHandler readXMLFileHandler = new ReadXMLFileHandler();
-      for (ControllerConfiguration controllerConfiguration : readXMLFileHandler.parse(reader)) {
-        addDevice(controllerConfiguration);
-      }
-    } catch (RobotCoreException e) {
-      RobotLog.logStackTrace(e);
-    }
-  }
-
-  /**
-   * Constructs a {@link HardwareItemMap} with the supported hardware items in the given
    * {@link HardwareMap}.
    */
   private HardwareItemMap(HardwareMap hardwareMap) {
     for (HardwareType hardwareType : HardwareType.values()) {
       SortedSet<String> deviceNames = hardwareMap.getAllNames(hardwareType.deviceType);
       for (String deviceName : deviceNames) {
+        HardwareDevice device = hardwareMap.get(deviceName);
+        if (device instanceof AndyMarkColorSensor) {
+          // Don't support AndyMarkColorSensor for HardwareType.COLOR_RANGE_SENSOR because, although
+          // AndyMarkColorSensor implements the ColorRangeSensor interface, the COLOR_RANGE_SENSOR
+          // blocks (with the lynxI2cColorRangeSensor_ prefix, defined in color_range_sensor.js)
+          // have tooltips that say "REV color/range sensor".
+          if (hardwareType == HardwareType.COLOR_RANGE_SENSOR) {
+            continue;
+          }
+        }
         addHardwareItem(hardwareType, deviceName);
       }
     }

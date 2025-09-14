@@ -445,6 +445,8 @@ Blockly.FtcJava['predominantColorProcessorResult_getProperty_Swatch'] =
 Blockly.Blocks['predominantColor_typedEnum_swatch'] = {
   init: function() {
     var SWATCH_CHOICES = [
+        ['ARTIFACT_GREEN', 'ARTIFACT_GREEN'],
+        ['ARTIFACT_PURPLE', 'ARTIFACT_PURPLE'],
         ['RED', 'RED'],
         ['ORANGE', 'ORANGE'],
         ['YELLOW', 'YELLOW'],
@@ -465,6 +467,8 @@ Blockly.Blocks['predominantColor_typedEnum_swatch'] = {
     // Assign 'this' to a variable for use in the tooltip closure below.
     var thisBlock = this;
     var TOOLTIPS = [
+        ['ARTIFACT_GREEN', 'The Swatch value ARTIFACT_GREEN.'],
+        ['ARTIFACT_PURPLE', 'The Swatch value ARTIFACT_PURPLE.'],
         ['RED', 'The Swatch value RED.'],
         ['ORANGE', 'The Swatch value ORANGE.'],
         ['YELLOW', 'The Swatch value YELLOW.'],

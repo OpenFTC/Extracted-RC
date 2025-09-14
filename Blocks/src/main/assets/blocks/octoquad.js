@@ -151,7 +151,7 @@ Blockly.JavaScript['octoquad_getProperty_Number'] = function(block) {
 };
 
 Blockly.FtcJava['octoquad_getProperty_Number'] = function(block) {
-  var identifier = Blockly.FtcJava.importDeclareAssign_(block, 'IDENTIFIER', 'CachingOctoQuad');
+  var identifier = Blockly.FtcJava.importDeclareAssign_(block, 'IDENTIFIER', 'OctoQuad');
   var property = block.getFieldValue('PROP');
   var code = identifier + '.get' + property + '()';
   return [code, Blockly.FtcJava.ORDER_FUNCTION_CALL];
@@ -193,7 +193,7 @@ Blockly.JavaScript['octoquad_getProperty_String'] = function(block) {
 };
 
 Blockly.FtcJava['octoquad_getProperty_String'] = function(block) {
-  var identifier = Blockly.FtcJava.importDeclareAssign_(block, 'IDENTIFIER', 'CachingOctoQuad');
+  var identifier = Blockly.FtcJava.importDeclareAssign_(block, 'IDENTIFIER', 'OctoQuad');
   var property = block.getFieldValue('PROP');
   var code = identifier + '.get' + property + '()';
   return [code, Blockly.FtcJava.ORDER_FUNCTION_CALL];
@@ -219,7 +219,7 @@ Blockly.JavaScript['octoquad_resetAllPositions'] = function(block) {
 };
 
 Blockly.FtcJava['octoquad_resetAllPositions'] = function(block) {
-  var identifier = Blockly.FtcJava.importDeclareAssign_(block, 'IDENTIFIER', 'CachingOctoQuad');
+  var identifier = Blockly.FtcJava.importDeclareAssign_(block, 'IDENTIFIER', 'OctoQuad');
   return identifier + '.resetAllPositions();\n';
 };
 
@@ -255,7 +255,7 @@ Blockly.JavaScript['octoquad_resetSinglePosition'] = function(block) {
 };
 
 Blockly.FtcJava['octoquad_resetSinglePosition'] = function(block) {
-  var identifier = Blockly.FtcJava.importDeclareAssign_(block, 'IDENTIFIER', 'CachingOctoQuad');
+  var identifier = Blockly.FtcJava.importDeclareAssign_(block, 'IDENTIFIER', 'OctoQuad');
   var index = Blockly.FtcJava.valueToCode(
       block, 'INDEX', Blockly.FtcJava.ORDER_COMMA);
   return identifier + '.resetSinglePosition(' + index + ');\n';
@@ -340,7 +340,7 @@ Blockly.JavaScript['octoquad_setSingleEncoderDirection'] = function(block) {
 };
 
 Blockly.FtcJava['octoquad_setSingleEncoderDirection'] = function(block) {
-  var identifier = Blockly.FtcJava.importDeclareAssign_(block, 'IDENTIFIER', 'CachingOctoQuad');
+  var identifier = Blockly.FtcJava.importDeclareAssign_(block, 'IDENTIFIER', 'OctoQuad');
   var index = Blockly.FtcJava.valueToCode(
     block, 'INDEX', Blockly.FtcJava.ORDER_COMMA);
   var direction = Blockly.FtcJava.valueToCode(
@@ -380,7 +380,7 @@ Blockly.JavaScript['octoquad_getSingleEncoderDirection'] = function(block) {
 };
 
 Blockly.FtcJava['octoquad_getSingleEncoderDirection'] = function(block) {
-  var identifier = Blockly.FtcJava.importDeclareAssign_(block, 'IDENTIFIER', 'CachingOctoQuad');
+  var identifier = Blockly.FtcJava.importDeclareAssign_(block, 'IDENTIFIER', 'OctoQuad');
   var index = Blockly.FtcJava.valueToCode(
       block, 'INDEX', Blockly.FtcJava.ORDER_NONE);
   var code = identifier + '.getSingleEncoderDirection(' + index + ')';
@@ -420,7 +420,7 @@ Blockly.JavaScript['octoquad_setAllVelocitySampleIntervals'] = function(block) {
 };
 
 Blockly.FtcJava['octoquad_setAllVelocitySampleIntervals'] = function(block) {
-  var identifier = Blockly.FtcJava.importDeclareAssign_(block, 'IDENTIFIER', 'CachingOctoQuad');
+  var identifier = Blockly.FtcJava.importDeclareAssign_(block, 'IDENTIFIER', 'OctoQuad');
   var intervalMillis = Blockly.FtcJava.valueToCode(
       block, 'INTERVAL_MS', Blockly.FtcJava.ORDER_COMMA);
   return identifier + '.setAllVelocitySampleIntervals(' + intervalMillis + ');\n';
@@ -466,7 +466,7 @@ Blockly.JavaScript['octoquad_setSingleVelocitySampleInterval'] = function(block)
 };
 
 Blockly.FtcJava['octoquad_setSingleVelocitySampleInterval'] = function(block) {
-  var identifier = Blockly.FtcJava.importDeclareAssign_(block, 'IDENTIFIER', 'CachingOctoQuad');
+  var identifier = Blockly.FtcJava.importDeclareAssign_(block, 'IDENTIFIER', 'OctoQuad');
   var index = Blockly.FtcJava.valueToCode(
       block, 'INDEX', Blockly.FtcJava.ORDER_COMMA);
   var intervalMillis = Blockly.FtcJava.valueToCode(
@@ -509,7 +509,7 @@ Blockly.JavaScript['octoquad_getSingleVelocitySampleInterval'] = function(block)
 };
 
 Blockly.FtcJava['octoquad_getSingleVelocitySampleInterval'] = function(block) {
-  var identifier = Blockly.FtcJava.importDeclareAssign_(block, 'IDENTIFIER', 'CachingOctoQuad');
+  var identifier = Blockly.FtcJava.importDeclareAssign_(block, 'IDENTIFIER', 'OctoQuad');
   var index = Blockly.FtcJava.valueToCode(
       block, 'INDEX', Blockly.FtcJava.ORDER_NONE);
   var code = identifier + '.getSingleVelocitySampleInterval(' + index + ')';
@@ -561,7 +561,7 @@ Blockly.JavaScript['octoquad_setSingleChannelPulseWidthParams'] = function(block
 };
 
 Blockly.FtcJava['octoquad_setSingleChannelPulseWidthParams'] = function(block) {
-  var identifier = Blockly.FtcJava.importDeclareAssign_(block, 'IDENTIFIER', 'CachingOctoQuad');
+  var identifier = Blockly.FtcJava.importDeclareAssign_(block, 'IDENTIFIER', 'OctoQuad');
   var index = Blockly.FtcJava.valueToCode(
       block, 'INDEX', Blockly.FtcJava.ORDER_COMMA);
   var minLengthMicros = Blockly.FtcJava.valueToCode(
@@ -591,7 +591,7 @@ Blockly.JavaScript['octoquad_resetEverything'] = function(block) {
 };
 
 Blockly.FtcJava['octoquad_resetEverything'] = function(block) {
-  var identifier = Blockly.FtcJava.importDeclareAssign_(block, 'IDENTIFIER', 'CachingOctoQuad');
+  var identifier = Blockly.FtcJava.importDeclareAssign_(block, 'IDENTIFIER', 'OctoQuad');
   return identifier + '.resetEverything();\n';
 };
 
@@ -679,7 +679,7 @@ Blockly.JavaScript['octoquad_setProperty_ChannelBankConfig'] =function(block) {
 };
 
 Blockly.FtcJava['octoquad_setProperty_ChannelBankConfig'] = function(block) {
-  var identifier = Blockly.FtcJava.importDeclareAssign_(block, 'IDENTIFIER', 'CachingOctoQuad');
+  var identifier = Blockly.FtcJava.importDeclareAssign_(block, 'IDENTIFIER', 'OctoQuad');
   var property = block.getFieldValue('PROP');
   var value = Blockly.FtcJava.valueToCode(
     block, 'VALUE', Blockly.FtcJava.ORDER_NONE);
@@ -722,7 +722,7 @@ Blockly.JavaScript['octoquad_getProperty_ChannelBankConfig'] = function(block) {
 };
 
 Blockly.FtcJava['octoquad_getProperty_ChannelBankConfig'] = function(block) {
-  var identifier = Blockly.FtcJava.importDeclareAssign_(block, 'IDENTIFIER', 'CachingOctoQuad');
+  var identifier = Blockly.FtcJava.importDeclareAssign_(block, 'IDENTIFIER', 'OctoQuad');
   var property = block.getFieldValue('PROP');
   var code = identifier + '.get' + property + '()';
   return [code, Blockly.FtcJava.ORDER_FUNCTION_CALL];
@@ -812,7 +812,7 @@ Blockly.JavaScript['octoquad_setProperty_I2cRecoveryMode'] =function(block) {
 };
 
 Blockly.FtcJava['octoquad_setProperty_I2cRecoveryMode'] = function(block) {
-  var identifier = Blockly.FtcJava.importDeclareAssign_(block, 'IDENTIFIER', 'CachingOctoQuad');
+  var identifier = Blockly.FtcJava.importDeclareAssign_(block, 'IDENTIFIER', 'OctoQuad');
   var property = block.getFieldValue('PROP');
   var value = Blockly.FtcJava.valueToCode(
     block, 'VALUE', Blockly.FtcJava.ORDER_NONE);
@@ -855,7 +855,7 @@ Blockly.JavaScript['octoquad_getProperty_I2cRecoveryMode'] = function(block) {
 };
 
 Blockly.FtcJava['octoquad_getProperty_I2cRecoveryMode'] = function(block) {
-  var identifier = Blockly.FtcJava.importDeclareAssign_(block, 'IDENTIFIER', 'CachingOctoQuad');
+  var identifier = Blockly.FtcJava.importDeclareAssign_(block, 'IDENTIFIER', 'OctoQuad');
   var property = block.getFieldValue('PROP');
   var code = identifier + '.get' + property + '()';
   return [code, Blockly.FtcJava.ORDER_FUNCTION_CALL];
@@ -881,18 +881,18 @@ Blockly.JavaScript['octoquad_saveParametersToFlash'] = function(block) {
 };
 
 Blockly.FtcJava['octoquad_saveParametersToFlash'] = function(block) {
-  var identifier = Blockly.FtcJava.importDeclareAssign_(block, 'IDENTIFIER', 'CachingOctoQuad');
+  var identifier = Blockly.FtcJava.importDeclareAssign_(block, 'IDENTIFIER', 'OctoQuad');
   return identifier + '.saveParametersToFlash();\n';
 };
 
 Blockly.Blocks['octoquad_typedEnum_cachingMode'] = {
   init: function() {
     var CACHING_MODE_CHOICES = [
-        ['NONE', 'NONE'],
         ['MANUAL', 'MANUAL'],
         ['AUTO', 'AUTO'],
+        ['NONE', 'NONE'],
     ];
-    this.setOutput(true, 'CachingOctoQuad.CachingMode');
+    this.setOutput(true, 'OctoQuad.CachingMode');
     this.appendDummyInput()
         .appendField(createNonEditableField('CachingMode'))
         .appendField('.')
@@ -901,9 +901,9 @@ Blockly.Blocks['octoquad_typedEnum_cachingMode'] = {
     // Assign 'this' to a variable for use in the tooltip closure below.
     var thisBlock = this;
     var TOOLTIPS = [
-        ['NONE', 'The CachingOctoQuad.CachingMode value NONE'],
-        ['MANUAL', 'The CachingOctoQuad.CachingMode value MANUAL'],
-        ['AUTO', 'The CachingOctoQuad.CachingMode value AUTO'],
+        ['MANUAL', 'The OctoQuad.CachingMode value MANUAL'],
+        ['AUTO', 'The OctoQuad.CachingMode value AUTO'],
+        ['NONE', 'The OctoQuad.CachingMode value NONE is obsolete.'],
     ];
     this.setTooltip(function() {
       var key = thisBlock.getFieldValue('CACHING_MODE');
@@ -923,8 +923,8 @@ Blockly.JavaScript['octoquad_typedEnum_cachingMode'] = function(block) {
 };
 
 Blockly.FtcJava['octoquad_typedEnum_cachingMode'] = function(block) {
-  var code = 'CachingOctoQuad.CachingMode.' + block.getFieldValue('CACHING_MODE');
-  Blockly.FtcJava.generateImport_('CachingOctoQuad');
+  var code = 'OctoQuad.CachingMode.' + block.getFieldValue('CACHING_MODE');
+  Blockly.FtcJava.generateImport_('OctoQuad');
   return [code, Blockly.FtcJava.ORDER_MEMBER];
 };
 
@@ -935,7 +935,7 @@ Blockly.Blocks['octoquad_setCachingMode'] = {
         .appendField(createOctoQuadDropdown(), 'IDENTIFIER')
         .appendField('.')
         .appendField(createNonEditableField('setCachingMode'));
-    this.appendValueInput('MODE').setCheck('CachingOctoQuad.CachingMode')
+    this.appendValueInput('MODE').setCheck('OctoQuad.CachingMode')
         .appendField('mode')
         .setAlign(Blockly.ALIGN_RIGHT);
     this.setPreviousStatement(true);
@@ -953,7 +953,7 @@ Blockly.JavaScript['octoquad_setCachingMode'] = function(block) {
 };
 
 Blockly.FtcJava['octoquad_setCachingMode'] = function(block) {
-  var identifier = Blockly.FtcJava.importDeclareAssign_(block, 'IDENTIFIER', 'CachingOctoQuad');
+  var identifier = Blockly.FtcJava.importDeclareAssign_(block, 'IDENTIFIER', 'OctoQuad');
   var mode = Blockly.FtcJava.valueToCode(
       block, 'MODE', Blockly.FtcJava.ORDER_COMMA);
   return identifier + '.setCachingMode(' + mode + ');\n';
@@ -979,7 +979,7 @@ Blockly.JavaScript['octoquad_refreshCache'] = function(block) {
 };
 
 Blockly.FtcJava['octoquad_refreshCache'] = function(block) {
-  var identifier = Blockly.FtcJava.importDeclareAssign_(block, 'IDENTIFIER', 'CachingOctoQuad');
+  var identifier = Blockly.FtcJava.importDeclareAssign_(block, 'IDENTIFIER', 'OctoQuad');
   return identifier + '.refreshCache();\n';
 };
 
@@ -1020,7 +1020,7 @@ Blockly.JavaScript['octoquad_readSinglePosition_Caching'] = function(block) {
 };
 
 Blockly.FtcJava['octoquad_readSinglePosition_Caching'] = function(block) {
-  var identifier = Blockly.FtcJava.importDeclareAssign_(block, 'IDENTIFIER', 'CachingOctoQuad');
+  var identifier = Blockly.FtcJava.importDeclareAssign_(block, 'IDENTIFIER', 'OctoQuad');
   var index = Blockly.FtcJava.valueToCode(
       block, 'INDEX', Blockly.FtcJava.ORDER_NONE);
   var code = identifier + '.readSinglePosition_Caching(' + index + ')';
@@ -1065,9 +1065,742 @@ Blockly.JavaScript['octoquad_readSingleVelocity_Caching'] = function(block) {
 };
 
 Blockly.FtcJava['octoquad_readSingleVelocity_Caching'] = function(block) {
-  var identifier = Blockly.FtcJava.importDeclareAssign_(block, 'IDENTIFIER', 'CachingOctoQuad');
+  var identifier = Blockly.FtcJava.importDeclareAssign_(block, 'IDENTIFIER', 'OctoQuad');
   var index = Blockly.FtcJava.valueToCode(
       block, 'INDEX', Blockly.FtcJava.ORDER_NONE);
   var code = identifier + '.readSingleVelocity_Caching(' + index + ')';
   return [code, Blockly.FtcJava.ORDER_FUNCTION_CALL];
 };
+
+Blockly.Blocks['octoquad_setSingleChannelPulseWidthTracksWrap'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('call')
+        .appendField(createOctoQuadDropdown(), 'IDENTIFIER')
+        .appendField('.')
+        .appendField(createNonEditableField('setSingleChannelPulseWidthTracksWrap'));
+    this.appendValueInput('INDEX').setCheck('Number')
+        .appendField('index')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('TRACK_WRAP').setCheck('Boolean')
+        .appendField('trackWrap')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setColour(functionColor);
+    this.setTooltip('Configure whether in PWM mode, a channel will report the raw PWM length in ' +
+                    'microseconds, or whether it will perform "wrap tracking" for use with an ' +
+                    'absolute encoder to turn the absolute position in a continuous value.');
+    this.getFtcJavaInputType = function(inputName) {
+      switch (inputName) {
+        case 'INDEX':
+          return 'int';
+      }
+      return '';
+    };
+  }
+};
+
+Blockly.JavaScript['octoquad_setSingleChannelPulseWidthTracksWrap'] = function(block) {
+  var identifier = block.getFieldValue('IDENTIFIER');
+  var index = Blockly.JavaScript.valueToCode(
+      block, 'INDEX', Blockly.JavaScript.ORDER_COMMA);
+  var trackWrap = Blockly.JavaScript.valueToCode(
+      block, 'TRACK_WRAP', Blockly.JavaScript.ORDER_COMMA);
+  return identifier + '.setSingleChannelPulseWidthTracksWrap(' + index + ', ' + trackWrap + ');\n';
+};
+
+Blockly.FtcJava['octoquad_setSingleChannelPulseWidthTracksWrap'] = function(block) {
+  var identifier = Blockly.FtcJava.importDeclareAssign_(block, 'IDENTIFIER', 'OctoQuad');
+  var index = Blockly.FtcJava.valueToCode(
+      block, 'INDEX', Blockly.FtcJava.ORDER_COMMA);
+  var trackWrap = Blockly.FtcJava.valueToCode(
+      block, 'TRACK_WRAP', Blockly.FtcJava.ORDER_COMMA);
+  return identifier + '.setSingleChannelPulseWidthTracksWrap(' + index + ', ' + trackWrap + ');\n';
+};
+
+Blockly.Blocks['octoquad_getSingleChannelPulseWidthTracksWrap'] = {
+  init: function() {
+    this.setOutput(true, 'Boolean');
+    this.appendDummyInput()
+        .appendField('call')
+        .appendField(createOctoQuadDropdown(), 'IDENTIFIER')
+        .appendField('.')
+        .appendField(createNonEditableField('getSingleChannelPulseWidthTracksWrap'));
+    this.appendValueInput('INDEX').setCheck('Number')
+        .appendField('index')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.setColour(functionColor);
+    this.setTooltip('Get whether PWM wrap tracking is enabled for a single channel.');
+    this.getFtcJavaInputType = function(inputName) {
+      switch (inputName) {
+        case 'INDEX':
+          return 'int';
+      }
+      return '';
+    };
+  }
+};
+
+Blockly.JavaScript['octoquad_getSingleChannelPulseWidthTracksWrap'] = function(block) {
+  var identifier = block.getFieldValue('IDENTIFIER');
+  var index = Blockly.JavaScript.valueToCode(
+      block, 'INDEX', Blockly.JavaScript.ORDER_NONE);
+  var code = identifier + '.getSingleChannelPulseWidthTracksWrap(' + index + ')';
+  return [code, Blockly.JavaScript.ORDER_FUNCTION_CALL];
+};
+
+Blockly.FtcJava['octoquad_getSingleChannelPulseWidthTracksWrap'] = function(block) {
+  var identifier = Blockly.FtcJava.importDeclareAssign_(block, 'IDENTIFIER', 'OctoQuad');
+  var index = Blockly.FtcJava.valueToCode(
+      block, 'INDEX', Blockly.FtcJava.ORDER_NONE);
+  var code = identifier + '.getSingleChannelPulseWidthTracksWrap(' + index + ')';
+  return [code, Blockly.FtcJava.ORDER_FUNCTION_CALL];
+};
+
+Blockly.Blocks['octoquad_typedEnum_localizerYawAxis'] = {
+  init: function() {
+    var LOCALIZER_YAW_AXIS_CHOICES = [
+        ['UNDECIDED', 'UNDECIDED'],
+        ['X', 'X'],
+        ['X_INV', 'X_INV'],
+        ['Y', 'Y'],
+        ['Y_INV', 'Y_INV'],
+        ['Z', 'Z'],
+        ['Z_INV', 'Z_INV'],
+    ];
+    this.setOutput(true, 'OctoQuad.LocalizerYawAxis');
+    this.appendDummyInput()
+        .appendField(createNonEditableField('LocalizerYawAxis'))
+        .appendField('.')
+        .appendField(new Blockly.FieldDropdown(LOCALIZER_YAW_AXIS_CHOICES), 'LOCALIZER_YAW_AXIS');
+    this.setColour(getPropertyColor);
+    // Assign 'this' to a variable for use in the tooltip closure below.
+    var thisBlock = this;
+    var TOOLTIPS = [
+        ['UNDECIDED', 'The OctoQuad.LocalizerYawAxis value UNDECIDED'],
+        ['X', 'The OctoQuad.LocalizerYawAxis value X'],
+        ['X_INV', 'The OctoQuad.LocalizerYawAxis value X_INV'],
+        ['Y', 'The OctoQuad.LocalizerYawAxis value Y'],
+        ['Y_INV', 'The OctoQuad.LocalizerYawAxis value Y_INV'],
+        ['Z', 'The OctoQuad.LocalizerYawAxis value Z'],
+        ['Z_INV', 'The OctoQuad.LocalizerYawAxis value Z_INV'],
+    ];
+    this.setTooltip(function() {
+      var key = thisBlock.getFieldValue('LOCALIZER_YAW_AXIS');
+      for (var i = 0; i < TOOLTIPS.length; i++) {
+        if (TOOLTIPS[i][0] == key) {
+          return TOOLTIPS[i][1];
+        }
+      }
+      return '';
+    });
+  }
+};
+
+Blockly.JavaScript['octoquad_typedEnum_localizerYawAxis'] = function(block) {
+  var code = '"' + block.getFieldValue('LOCALIZER_YAW_AXIS') + '"';
+  return [code, Blockly.JavaScript.ORDER_ATOMIC];
+};
+
+Blockly.FtcJava['octoquad_typedEnum_localizerYawAxis'] = function(block) {
+  var code = 'OctoQuad.LocalizerYawAxis.' + block.getFieldValue('LOCALIZER_YAW_AXIS');
+  Blockly.FtcJava.generateImport_('OctoQuad');
+  return [code, Blockly.FtcJava.ORDER_MEMBER];
+};
+
+Blockly.Blocks['octoquad_getProperty_LocalizerYawAxis'] = {
+  init: function() {
+    var PROPERTY_CHOICES = [
+        ['LocalizerHeadingAxisChoice', 'LocalizerHeadingAxisChoice'],
+    ];
+    this.setOutput(true, 'OctoQuad.LocalizerYawAxis');
+    this.appendDummyInput()
+        .appendField(createOctoQuadDropdown(), 'IDENTIFIER')
+        .appendField('.')
+        .appendField(new Blockly.FieldDropdown(PROPERTY_CHOICES), 'PROP');
+    this.setColour(getPropertyColor);
+    // Assign 'this' to a variable for use in the closures below.
+    var thisBlock = this;
+    var TOOLTIPS = [
+      ['LocalizerHeadingAxisChoice', 'Returns the IMU axis the localizer decided to use for heading.'],
+    ];
+    this.setTooltip(function() {
+      var key = thisBlock.getFieldValue('PROP');
+      for (var i = 0; i < TOOLTIPS.length; i++) {
+        if (TOOLTIPS[i][0] == key) {
+          return TOOLTIPS[i][1];
+        }
+      }
+      return '';
+    });
+  }
+};
+
+Blockly.JavaScript['octoquad_getProperty_LocalizerYawAxis'] = function(block) {
+  var identifier = block.getFieldValue('IDENTIFIER');
+  var property = block.getFieldValue('PROP');
+  var code = identifier + '.get' + property + '()';
+  return [code, Blockly.JavaScript.ORDER_FUNCTION_CALL];
+};
+
+Blockly.FtcJava['octoquad_getProperty_LocalizerYawAxis'] = function(block) {
+  var identifier = Blockly.FtcJava.importDeclareAssign_(block, 'IDENTIFIER', 'OctoQuad');
+  var property = block.getFieldValue('PROP');
+  var code = identifier + '.get' + property + '()';
+  return [code, Blockly.FtcJava.ORDER_FUNCTION_CALL];
+};
+
+Blockly.Blocks['octoquad_typedEnum_localizerStatus'] = {
+  init: function() {
+    var LOCALIZER_STATUS_CHOICES = [
+        ['INVALID', 'INVALID'],
+        ['NOT_INITIALIZED', 'NOT_INITIALIZED'],
+        ['WARMING_UP_IMU', 'WARMING_UP_IMU'],
+        ['CALIBRATING_IMU', 'CALIBRATING_IMU'],
+        ['RUNNING', 'RUNNING'],
+        ['FAULT_NO_IMU', 'FAULT_NO_IMU'],
+    ];
+    this.setOutput(true, 'OctoQuad.LocalizerStatus');
+    this.appendDummyInput()
+        .appendField(createNonEditableField('LocalizerStatus'))
+        .appendField('.')
+        .appendField(new Blockly.FieldDropdown(LOCALIZER_STATUS_CHOICES), 'LOCALIZER_STATUS');
+    this.setColour(getPropertyColor);
+    // Assign 'this' to a variable for use in the tooltip closure below.
+    var thisBlock = this;
+    var TOOLTIPS = [
+        ['INVALID', 'The OctoQuad.LocalizerStatus value INVALID'],
+        ['NOT_INITIALIZED', 'The OctoQuad.LocalizerStatus value NOT_INITIALIZED'],
+        ['WARMING_UP_IMU', 'The OctoQuad.LocalizerStatus value WARMING_UP_IMU'],
+        ['CALIBRATING_IMU', 'The OctoQuad.LocalizerStatus value CALIBRATING_IMU'],
+        ['RUNNING', 'The OctoQuad.LocalizerStatus value RUNNING'],
+        ['FAULT_NO_IMU', 'The OctoQuad.LocalizerStatus value FAULT_NO_IMU'],
+    ];
+    this.setTooltip(function() {
+      var key = thisBlock.getFieldValue('LOCALIZER_STATUS');
+      for (var i = 0; i < TOOLTIPS.length; i++) {
+        if (TOOLTIPS[i][0] == key) {
+          return TOOLTIPS[i][1];
+        }
+      }
+      return '';
+    });
+  }
+};
+
+Blockly.JavaScript['octoquad_typedEnum_localizerStatus'] = function(block) {
+  var code = '"' + block.getFieldValue('LOCALIZER_STATUS') + '"';
+  return [code, Blockly.JavaScript.ORDER_ATOMIC];
+};
+
+Blockly.FtcJava['octoquad_typedEnum_localizerStatus'] = function(block) {
+  var code = 'OctoQuad.LocalizerStatus.' + block.getFieldValue('LOCALIZER_STATUS');
+  Blockly.FtcJava.generateImport_('OctoQuad');
+  return [code, Blockly.FtcJava.ORDER_MEMBER];
+};
+
+Blockly.Blocks['octoquad_getProperty_LocalizerStatus'] = {
+  init: function() {
+    var PROPERTY_CHOICES = [
+        ['LocalizerStatus', 'LocalizerStatus'],
+    ];
+    this.setOutput(true, 'OctoQuad.LocalizerStatus');
+    this.appendDummyInput()
+        .appendField(createOctoQuadDropdown(), 'IDENTIFIER')
+        .appendField('.')
+        .appendField(new Blockly.FieldDropdown(PROPERTY_CHOICES), 'PROP');
+    this.setColour(getPropertyColor);
+    // Assign 'this' to a variable for use in the closures below.
+    var thisBlock = this;
+    var TOOLTIPS = [
+        ['LocalizerStatus', 'Returns the current status of the localizer algorithm.'],
+    ];
+    this.setTooltip(function() {
+      var key = thisBlock.getFieldValue('PROP');
+      for (var i = 0; i < TOOLTIPS.length; i++) {
+        if (TOOLTIPS[i][0] == key) {
+          return TOOLTIPS[i][1];
+        }
+      }
+      return '';
+    });
+  }
+};
+
+Blockly.JavaScript['octoquad_getProperty_LocalizerStatus'] = function(block) {
+  var identifier = block.getFieldValue('IDENTIFIER');
+  var property = block.getFieldValue('PROP');
+  var code = identifier + '.get' + property + '()';
+  return [code, Blockly.JavaScript.ORDER_FUNCTION_CALL];
+};
+
+Blockly.FtcJava['octoquad_getProperty_LocalizerStatus'] = function(block) {
+  var identifier = Blockly.FtcJava.importDeclareAssign_(block, 'IDENTIFIER', 'OctoQuad');
+  var property = block.getFieldValue('PROP');
+  var code = identifier + '.get' + property + '()';
+  return [code, Blockly.FtcJava.ORDER_FUNCTION_CALL];
+};
+
+Blockly.Blocks['octoquad_setAllLocalizerParameters'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('call')
+        .appendField(createOctoQuadDropdown(), 'IDENTIFIER')
+        .appendField('.')
+        .appendField(createNonEditableField('setAllLocalizerParameters'));
+    this.appendValueInput('PORT_X').setCheck('Number')
+        .appendField('portX')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('PORT_Y').setCheck('Number')
+        .appendField('portY')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('TICKS_PER_MM_X').setCheck('Number')
+        .appendField('ticksPerMM_x')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('TICKS_PER_MM_Y').setCheck('Number')
+        .appendField('ticksPerMM_y')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('TCP_OFFSET_MM_X').setCheck('Number')
+        .appendField('tcpOffsetMM_X')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('TCP_OFFSET_MM_Y').setCheck('Number')
+        .appendField('tcpOffsetMM_Y')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('HEADING_SCALAR').setCheck('Number')
+        .appendField('headingScalar')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('VELOCITY_INTERVAL_MS').setCheck('Number')
+        .appendField('velocityIntervalMs')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setColour(functionColor);
+    this.setTooltip(
+        'Sets all localizer parameters. ' +
+        'NOTE: this will not take effect until a call to resetLocalizerAndCalibrateIMU.');
+    this.getFtcJavaInputType = function(inputName) {
+      switch (inputName) {
+        case 'PORT_X':
+        case 'PORT_Y':
+        case 'VELOCITY_INTERVAL_MS':
+          return 'int';
+        case 'TICKS_PER_MM_X':
+        case 'TICKS_PER_MM_Y':
+        case 'TCP_OFFSET_MM_X':
+        case 'TCP_OFFSET_MM_Y':
+        case 'HEADING_SCALAR':
+          return 'float';
+      }
+      return '';
+    };
+  }
+};
+
+Blockly.JavaScript['octoquad_setAllLocalizerParameters'] = function(block) {
+  var identifier = block.getFieldValue('IDENTIFIER');
+  var portX = Blockly.JavaScript.valueToCode(
+      block, 'PORT_X', Blockly.JavaScript.ORDER_COMMA);
+  var portY = Blockly.JavaScript.valueToCode(
+      block, 'PORT_Y', Blockly.JavaScript.ORDER_COMMA);
+  var ticksPerMM_x = Blockly.JavaScript.valueToCode(
+      block, 'TICKS_PER_MM_X', Blockly.JavaScript.ORDER_COMMA);
+  var ticksPerMM_y = Blockly.JavaScript.valueToCode(
+      block, 'TICKS_PER_MM_Y', Blockly.JavaScript.ORDER_COMMA);
+  var tcpOffsetMM_X = Blockly.JavaScript.valueToCode(
+      block, 'TCP_OFFSET_MM_X', Blockly.JavaScript.ORDER_COMMA);
+  var tcpOffsetMM_Y = Blockly.JavaScript.valueToCode(
+      block, 'TCP_OFFSET_MM_Y', Blockly.JavaScript.ORDER_COMMA);
+  var headingScalar = Blockly.JavaScript.valueToCode(
+      block, 'HEADING_SCALAR', Blockly.JavaScript.ORDER_COMMA);
+  var velocityIntervalMs = Blockly.JavaScript.valueToCode(
+      block, 'VELOCITY_INTERVAL_MS', Blockly.JavaScript.ORDER_COMMA);
+  return identifier + '.setAllLocalizerParameters(' +
+    portX + ', ' + portY + ', ' +
+    ticksPerMM_x + ', ' + ticksPerMM_y + ', ' +
+    tcpOffsetMM_X + ', ' + tcpOffsetMM_Y + ', ' +
+    headingScalar + ', ' + velocityIntervalMs + ');\n';
+};
+
+Blockly.FtcJava['octoquad_setAllLocalizerParameters'] = function(block) {
+  var identifier = Blockly.FtcJava.importDeclareAssign_(block, 'IDENTIFIER', 'OctoQuad');
+  var portX = Blockly.FtcJava.valueToCode(
+      block, 'PORT_X', Blockly.FtcJava.ORDER_COMMA);
+  var portY = Blockly.FtcJava.valueToCode(
+      block, 'PORT_Y', Blockly.FtcJava.ORDER_COMMA);
+  var ticksPerMM_x = Blockly.FtcJava.valueToCode(
+      block, 'TICKS_PER_MM_X', Blockly.FtcJava.ORDER_COMMA);
+  var ticksPerMM_y = Blockly.FtcJava.valueToCode(
+      block, 'TICKS_PER_MM_Y', Blockly.FtcJava.ORDER_COMMA);
+  var tcpOffsetMM_X = Blockly.FtcJava.valueToCode(
+      block, 'TCP_OFFSET_MM_X', Blockly.FtcJava.ORDER_COMMA);
+  var tcpOffsetMM_Y = Blockly.FtcJava.valueToCode(
+      block, 'TCP_OFFSET_MM_Y', Blockly.FtcJava.ORDER_COMMA);
+  var headingScalar = Blockly.FtcJava.valueToCode(
+      block, 'HEADING_SCALAR', Blockly.FtcJava.ORDER_COMMA);
+  var velocityIntervalMs = Blockly.FtcJava.valueToCode(
+      block, 'VELOCITY_INTERVAL_MS', Blockly.FtcJava.ORDER_COMMA);
+  return identifier + '.setAllLocalizerParameters(' +
+    portX + ', ' + portY + ', ' +
+    ticksPerMM_x + ', ' + ticksPerMM_y + ', ' +
+    tcpOffsetMM_X + ', ' + tcpOffsetMM_Y + ', ' +
+    headingScalar + ', ' + velocityIntervalMs + ');\n';
+};
+
+Blockly.Blocks['octoquad_readLocalizerData'] = {
+  init: function() {
+    this.setOutput(true, 'OctoQuad.LocalizerDataBlock');
+    this.appendDummyInput()
+        .appendField('call')
+        .appendField(createOctoQuadDropdown(), 'IDENTIFIER')
+        .appendField('.')
+        .appendField(createNonEditableField('readLocalizerData'));
+    this.setColour(functionColor);
+    this.setTooltip(
+        'Bulk read all localizer data in one operation for maximum efficiency.');
+  }
+};
+
+Blockly.JavaScript['octoquad_readLocalizerData'] = function(block) {
+  var identifier = block.getFieldValue('IDENTIFIER');
+  var code = 'JSON.parse(' + identifier + '.readLocalizerData())';
+  return [code, Blockly.JavaScript.ORDER_FUNCTION_CALL];
+};
+
+Blockly.FtcJava['octoquad_readLocalizerData'] = function(block) {
+  var identifier = Blockly.FtcJava.importDeclareAssign_(block, 'IDENTIFIER', 'OctoQuad');
+  var code = identifier + '.readLocalizerData()';
+  return [code, Blockly.FtcJava.ORDER_FUNCTION_CALL];
+};
+
+Blockly.Blocks['octoquad_setLocalizerPose'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('call')
+        .appendField(createOctoQuadDropdown(), 'IDENTIFIER')
+        .appendField('.')
+        .appendField(createNonEditableField('setLocalizerPose'));
+    this.appendValueInput('POS_X_MM').setCheck('Number')
+        .appendField('posX_mm')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('POS_Y_MM').setCheck('Number')
+        .appendField('posY_mm')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('HEADING_RAD').setCheck('Number')
+        .appendField('heading_rad')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setColour(functionColor);
+    this.setTooltip(
+        '"Teleport" the localizer to a new location. This may be useful, for instance, for updating ' +
+        'your position based on vision targeting.');
+    this.getFtcJavaInputType = function(inputName) {
+      switch (inputName) {
+        case 'POS_X_MM':
+        case 'POS_Y_MM':
+          return 'int';
+        case 'HEADING_RAD':
+          return 'float';
+      }
+      return '';
+    };
+  }
+};
+
+Blockly.JavaScript['octoquad_setLocalizerPose'] = function(block) {
+  var identifier = block.getFieldValue('IDENTIFIER');
+  var posX_mm = Blockly.JavaScript.valueToCode(
+      block, 'POS_X_MM', Blockly.JavaScript.ORDER_COMMA);
+  var posY_mm = Blockly.JavaScript.valueToCode(
+      block, 'POS_Y_MM', Blockly.JavaScript.ORDER_COMMA);
+  var heading_rad = Blockly.JavaScript.valueToCode(
+      block, 'HEADING_RAD', Blockly.JavaScript.ORDER_COMMA);
+  return identifier + '.setLocalizerPose(' +
+    posX_mm + ', ' + posY_mm + ', ' + heading_rad + ');\n';
+};
+
+Blockly.FtcJava['octoquad_setLocalizerPose'] = function(block) {
+  var identifier = Blockly.FtcJava.importDeclareAssign_(block, 'IDENTIFIER', 'OctoQuad');
+  var posX_mm = Blockly.FtcJava.valueToCode(
+      block, 'POS_X_MM', Blockly.FtcJava.ORDER_COMMA);
+  var posY_mm = Blockly.FtcJava.valueToCode(
+      block, 'POS_Y_MM', Blockly.FtcJava.ORDER_COMMA);
+  var heading_rad = Blockly.FtcJava.valueToCode(
+      block, 'HEADING_RAD', Blockly.FtcJava.ORDER_COMMA);
+  return identifier + '.setLocalizerPose(' +
+    posX_mm + ', ' + posY_mm + ', ' + heading_rad + ');\n';
+};
+
+Blockly.Blocks['octoquad_setLocalizerHeading'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('call')
+        .appendField(createOctoQuadDropdown(), 'IDENTIFIER')
+        .appendField('.')
+        .appendField(createNonEditableField('setLocalizerHeading'));
+    this.appendValueInput('HEADING_RAD').setCheck('Number')
+        .appendField('heading_rad')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setColour(functionColor);
+    this.setTooltip(
+        '"Teleport" the localizer heading to a new orientation. This may be useful, ' +
+        'for instance, for updating heading based on vision targeting.');
+    this.getFtcJavaInputType = function(inputName) {
+      switch (inputName) {
+        case 'HEADING_RAD':
+          return 'float';
+      }
+      return '';
+    };
+  }
+};
+
+Blockly.JavaScript['octoquad_setLocalizerHeading'] = function(block) {
+  var identifier = block.getFieldValue('IDENTIFIER');
+  var heading_rad = Blockly.JavaScript.valueToCode(
+      block, 'HEADING_RAD', Blockly.JavaScript.ORDER_COMMA);
+  return identifier + '.setLocalizerHeading(' + heading_rad + ');\n';
+};
+
+Blockly.FtcJava['octoquad_setLocalizerHeading'] = function(block) {
+  var identifier = Blockly.FtcJava.importDeclareAssign_(block, 'IDENTIFIER', 'OctoQuad');
+  var heading_rad = Blockly.FtcJava.valueToCode(
+      block, 'HEADING_RAD', Blockly.FtcJava.ORDER_COMMA);
+  return identifier + '.setLocalizerHeading(' + heading_rad + ');\n';
+};
+
+Blockly.Blocks['octoquad_resetLocalizerAndCalibrateIMU'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('call')
+        .appendField(createOctoQuadDropdown(), 'IDENTIFIER')
+        .appendField('.')
+        .appendField(createNonEditableField('resetLocalizerAndCalibrateIMU'));
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setColour(functionColor);
+    this.setTooltip(
+        'Reset the localizer pose to (0,0,0) and recalibrate the IMU. ' +
+        'To determine when the reset is complete, call getLocalizerStatus and compare with ' +
+        'LocalizerStatus.RUNNING.');
+  }
+};
+
+Blockly.JavaScript['octoquad_resetLocalizerAndCalibrateIMU'] = function(block) {
+  var identifier = block.getFieldValue('IDENTIFIER');
+  return identifier + '.resetLocalizerAndCalibrateIMU();\n';
+};
+
+Blockly.FtcJava['octoquad_resetLocalizerAndCalibrateIMU'] = function(block) {
+  var identifier = Blockly.FtcJava.importDeclareAssign_(block, 'IDENTIFIER', 'OctoQuad');
+  return identifier + '.resetLocalizerAndCalibrateIMU();\n';
+};
+
+Blockly.Blocks['octoquadLocalizerDataBlock_getProperty_LocalizerStatus'] = {
+  init: function() {
+    var PROPERTY_CHOICES = [
+        ['localizerStatus', 'localizerStatus'],
+    ];
+    this.setOutput(true, 'OctoQuad.LocalizerStatus');
+    this.appendDummyInput()
+        .appendField(createNonEditableField('OctoQuad.LocalizerDataBlock'))
+        .appendField('.')
+        .appendField(new Blockly.FieldDropdown(PROPERTY_CHOICES), 'PROP');
+    this.appendValueInput('LOCALIZER_DATA_BLOCK').setCheck('OctoQuad.LocalizerDataBlock')
+        .appendField('localizerDataBlock')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.setColour(getPropertyColor);
+    // Assign 'this' to a variable for use in the closures below.
+    var thisBlock = this;
+    var TOOLTIPS = [
+        ['localizerStatus', 'Returns the localizerStatus field of the OctoQuad.LocalizerDataBlock.'],
+    ];
+    this.setTooltip(function() {
+      var key = thisBlock.getFieldValue('PROP');
+      for (var i = 0; i < TOOLTIPS.length; i++) {
+        if (TOOLTIPS[i][0] == key) {
+          return TOOLTIPS[i][1];
+        }
+      }
+      return '';
+    });
+  }
+};
+
+Blockly.JavaScript['octoquadLocalizerDataBlock_getProperty_LocalizerStatus'] = function(block) {
+  var property = block.getFieldValue('PROP');
+  var localizerDataBlock = Blockly.JavaScript.valueToCode(
+      block, 'LOCALIZER_DATA_BLOCK', Blockly.JavaScript.ORDER_MEMBER);
+  var code = localizerDataBlock + '.' + property;
+  var blockLabel = 'OctoQuad.LocalizerDataBlock.' + block.getField('PROP').getText();
+  return wrapJavaScriptCode(code, blockLabel);
+};
+
+Blockly.FtcJava['octoquadLocalizerDataBlock_getProperty_LocalizerStatus'] = function(block) {
+  var property = block.getFieldValue('PROP');
+  var localizerDataBlock = Blockly.FtcJava.valueToCode(
+      block, 'LOCALIZER_DATA_BLOCK', Blockly.FtcJava.ORDER_MEMBER);
+  var code = localizerDataBlock + '.' + property;
+  return [code, Blockly.FtcJava.ORDER_MEMBER];
+};
+
+Blockly.Blocks['octoquadLocalizerDataBlock_getProperty_Boolean'] = {
+  init: function() {
+    var PROPERTY_CHOICES = [
+        ['crcOk', 'crcOk'],
+    ];
+    this.setOutput(true, 'Boolean');
+    this.appendDummyInput()
+        .appendField(createNonEditableField('OctoQuad.LocalizerDataBlock'))
+        .appendField('.')
+        .appendField(new Blockly.FieldDropdown(PROPERTY_CHOICES), 'PROP');
+    this.appendValueInput('LOCALIZER_DATA_BLOCK').setCheck('OctoQuad.LocalizerDataBlock')
+        .appendField('localizerDataBlock')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.setColour(getPropertyColor);
+    // Assign 'this' to a variable for use in the closures below.
+    var thisBlock = this;
+    var TOOLTIPS = [
+        ['crcOk', 'Returns the crcOk field of the OctoQuad.LocalizerDataBlock.'],
+    ];
+    this.setTooltip(function() {
+      var key = thisBlock.getFieldValue('PROP');
+      for (var i = 0; i < TOOLTIPS.length; i++) {
+        if (TOOLTIPS[i][0] == key) {
+          return TOOLTIPS[i][1];
+        }
+      }
+      return '';
+    });
+  }
+};
+
+Blockly.JavaScript['octoquadLocalizerDataBlock_getProperty_Boolean'] = function(block) {
+  var property = block.getFieldValue('PROP');
+  var localizerDataBlock = Blockly.JavaScript.valueToCode(
+      block, 'LOCALIZER_DATA_BLOCK', Blockly.JavaScript.ORDER_MEMBER);
+  var code = localizerDataBlock + '.' + property;
+  var blockLabel = 'OctoQuad.LocalizerDataBlock.' + block.getField('PROP').getText();
+  return wrapJavaScriptCode(code, blockLabel);
+};
+
+Blockly.FtcJava['octoquadLocalizerDataBlock_getProperty_Boolean'] = function(block) {
+  var property = block.getFieldValue('PROP');
+  var localizerDataBlock = Blockly.FtcJava.valueToCode(
+      block, 'LOCALIZER_DATA_BLOCK', Blockly.FtcJava.ORDER_MEMBER);
+  var code = localizerDataBlock + '.' + property;
+  return [code, Blockly.FtcJava.ORDER_MEMBER];
+};
+
+Blockly.Blocks['octoquadLocalizerDataBlock_getProperty_Number'] = {
+  init: function() {
+    var PROPERTY_CHOICES = [
+        ['heading_rad', 'heading_rad'],
+        ['posX_mm', 'posX_mm'],
+        ['posY_mm', 'posY_mm'],
+        ['velX_mmS', 'velX_mmS'],
+        ['velY_mmS', 'velY_mmS'],
+        ['velHeading_radS', 'velHeading_radS'],
+    ];
+    this.setOutput(true, 'Number');
+    this.appendDummyInput()
+        .appendField(createNonEditableField('OctoQuad.LocalizerDataBlock'))
+        .appendField('.')
+        .appendField(new Blockly.FieldDropdown(PROPERTY_CHOICES), 'PROP');
+    this.appendValueInput('LOCALIZER_DATA_BLOCK').setCheck('OctoQuad.LocalizerDataBlock')
+        .appendField('localizerDataBlock')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.setColour(getPropertyColor);
+    // Assign 'this' to a variable for use in the closures below.
+    var thisBlock = this;
+    var TOOLTIPS = [
+        ['heading_rad', 'Returns the heading_rad field of the OctoQuad.LocalizerDataBlock.'],
+        ['posX_mm', 'Returns the posX_mm field of the OctoQuad.LocalizerDataBlock.'],
+        ['posY_mm', 'Returns the posY_mm field of the OctoQuad.LocalizerDataBlock.'],
+        ['velX_mmS', 'Returns the velX_mmS field of the OctoQuad.LocalizerDataBlock.'],
+        ['velY_mmS', 'Returns the velY_mmS field of the OctoQuad.LocalizerDataBlock.'],
+        ['velHeading_radS', 'Returns the velHeading_radS field of the OctoQuad.LocalizerDataBlock.'],
+    ];
+    this.setTooltip(function() {
+      var key = thisBlock.getFieldValue('PROP');
+      for (var i = 0; i < TOOLTIPS.length; i++) {
+        if (TOOLTIPS[i][0] == key) {
+          return TOOLTIPS[i][1];
+        }
+      }
+      return '';
+    });
+    this.getFtcJavaOutputType = function() {
+      var property = thisBlock.getFieldValue('PROP');
+      switch (property) {
+        case 'posX_mm':
+        case 'posY_mm':
+        case 'velX_mmS':
+        case 'velY_mmS':
+          return 'short';
+        case 'heading_rad':
+        case 'velHeading_radS':
+          return 'float';
+        default:
+          throw 'Unexpected property ' + property + ' (octoquadLocalizerDataBlock_getProperty_Number getOutputType).';
+      }
+    };
+  }
+};
+
+Blockly.JavaScript['octoquadLocalizerDataBlock_getProperty_Number'] = function(block) {
+  var property = block.getFieldValue('PROP');
+  var localizerDataBlock = Blockly.JavaScript.valueToCode(
+      block, 'LOCALIZER_DATA_BLOCK', Blockly.JavaScript.ORDER_MEMBER);
+  var code = localizerDataBlock + '.' + property;
+  var blockLabel = 'OctoQuad.LocalizerDataBlock.' + block.getField('PROP').getText();
+  return wrapJavaScriptCode(code, blockLabel);
+};
+
+Blockly.FtcJava['octoquadLocalizerDataBlock_getProperty_Number'] = function(block) {
+  var property = block.getFieldValue('PROP');
+  var localizerDataBlock = Blockly.FtcJava.valueToCode(
+      block, 'LOCALIZER_DATA_BLOCK', Blockly.FtcJava.ORDER_MEMBER);
+  var code = localizerDataBlock + '.' + property;
+  return [code, Blockly.FtcJava.ORDER_MEMBER];
+};
+
+Blockly.Blocks['octoquadLocalizerDataBlock_isDataValid'] = {
+  init: function() {
+    this.setOutput(true, 'Boolean');
+    this.appendDummyInput()
+        .appendField('call')
+        .appendField(createNonEditableField('OctoQuad.LocalizerDataBlock'))
+        .appendField('.')
+        .appendField(createNonEditableField('isDataValid'));
+    this.appendValueInput('LOCALIZER_DATA_BLOCK').setCheck('OctoQuad.LocalizerDataBlock')
+        .appendField('localizerDataBlock')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.setColour(functionColor);
+    this.setTooltip(
+        'Checks whether it is likely that this data is valid. The localizer status is read ' +
+        'along with the data, and if the status is not RUNNING, then the data invalid. ' +
+        'Additionally, if the CRC on the returned is bad, (e.g. if there is an I2C bus stall ' +
+        'or bit flip), you could avoid acting on that corrupted data. ' +
+        'Returns whether it is likely that this data is valid.');
+  }
+};
+
+Blockly.JavaScript['octoquadLocalizerDataBlock_isDataValid'] = function(block) {
+  var localizerDataBlock = Blockly.JavaScript.valueToCode(
+      block, 'LOCALIZER_DATA_BLOCK', Blockly.JavaScript.ORDER_MEMBER);
+  var code = localizerDataBlock + '.isDataValid';
+  var blockLabel = 'call OctoQuad.LocalizerDataBlock.isDataValid';
+  return wrapJavaScriptCode(code, blockLabel);
+};
+
+Blockly.FtcJava['octoquadLocalizerDataBlock_isDataValid'] = function(block) {
+  var localizerDataBlock = Blockly.FtcJava.valueToCode(
+      block, 'LOCALIZER_DATA_BLOCK', Blockly.FtcJava.ORDER_MEMBER);
+  var code = localizerDataBlock + '.isDataValid()';
+  return [code, Blockly.FtcJava.ORDER_FUNCTION_CALL];
+};
+

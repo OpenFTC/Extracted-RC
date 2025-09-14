@@ -108,7 +108,7 @@ There are two main types of edge detection. Rising edge detection will trigger w
 </value>
 <next>
 <block type="comment" id="~64DT*/tCy]$qk{O$+m*">
-<field name="COMMENT">Add an empty line to seperate the buttons in telemetry</field>
+<field name="COMMENT">Add an empty line to separate the buttons in telemetry</field>
 <next>
 <block type="telemetry_addLine" id="mt%St;4YBt+:?U]yN(?{">
 <value name="TEXT">
