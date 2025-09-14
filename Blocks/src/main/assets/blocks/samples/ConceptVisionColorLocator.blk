@@ -381,13 +381,18 @@ To aid the user, a colored boxFit rectangle is drawn on the camera preview to sh
 <block type="comment" id=":Ihru2;|9}P#yOY5nN|E">
 <field name="COMMENT">Start with a large range and then refine the range based on the likely size of the desired object in the viewfinder.</field>
 <next>
-<block type="colorBlobLocatorProcessorUtil_filterByArea" id="[gV`#GQR6RqVAU7}VpSA">
-<value name="MIN_AREA">
+<block type="colorBlobLocatorProcessorUtil_filterByCriteria" id="[gV`#GQR6RqVAU7}VpSA">
+<value name="CRITERIA">
+<shadow type="colorBlobLocator_typedEnum_blobCriteria" id="ZBZK=LimjG]jQN{U,wGD">
+<field name="CRITERIA">BY_CONTOUR_AREA</field>
+</shadow>
+</value>
+<value name="MIN_VALUE">
 <shadow type="math_number" id="-Rjl:-8os|;~ifhLn-f$">
 <field name="NUM">50</field>
 </shadow>
 </value>
-<value name="MAX_AREA">
+<value name="MAX_VALUE">
 <shadow type="math_number" id=".E_G3Z3;pb~Tl[r=ms-0">
 <field name="NUM">20000</field>
 </shadow>
@@ -407,13 +412,18 @@ To aid the user, a colored boxFit rectangle is drawn on the camera preview to sh
 <block type="comment" id="Y-lZLl:Qg}=F5~?;t0J$">
 <field name="COMMENT">The density is the ratio of Contour-area to Convex Hull-area.</field>
 <next>
-<block type="colorBlobLocatorProcessorUtil_filterByDensity" id="0^{[u#*0D}YS?yNgXr_;" disabled="true">
-<value name="MIN_DENSITY">
+<block type="colorBlobLocatorProcessorUtil_filterByCriteria" id="0^{[u#*0D}YS?yNgXr_;" disabled="true">
+<value name="CRITERIA">
+<shadow type="colorBlobLocator_typedEnum_blobCriteria" id="nH4=liNj`V*=nO[gN}!I">
+<field name="CRITERIA">BY_DENSITY</field>
+</shadow>
+</value>
+<value name="MIN_VALUE">
 <shadow type="math_number" id="Tj9zv00S}4%fqc5ZHa;?">
 <field name="NUM">0.5</field>
 </shadow>
 </value>
-<value name="MAX_DENSITY">
+<value name="MAX_VALUE">
 <shadow type="math_number" id="v9*oz1^c`ct({%L.1)B@">
 <field name="NUM">1</field>
 </shadow>
@@ -430,13 +440,18 @@ To aid the user, a colored boxFit rectangle is drawn on the camera preview to sh
 <block type="comment" id="Q)q?76o1sq{-O8-:aZf$">
 <field name="COMMENT">A perfect Square has an aspect ratio of 1.  All others are &gt; 1</field>
 <next>
-<block type="colorBlobLocatorProcessorUtil_filterByAspectRatio" id="o=n~|OF)ZSWhqeft,XKP" disabled="true">
-<value name="MIN_ASPECT_RATIO">
+<block type="colorBlobLocatorProcessorUtil_filterByCriteria" id="o=n~|OF)ZSWhqeft,XKP" disabled="true">
+<value name="CRITERIA">
+<shadow type="colorBlobLocator_typedEnum_blobCriteria" id="5mn0p1(HUZ?EX~@^+):D">
+<field name="CRITERIA">BY_ASPECT_RATIO</field>
+</shadow>
+</value>
+<value name="MIN_VALUE">
 <shadow type="math_number" id="3WwT(K%~u{eTD)6J3B3x">
 <field name="NUM">1</field>
 </shadow>
 </value>
-<value name="MAX_ASPECT_RATIO">
+<value name="MAX_VALUE">
 <shadow type="math_number" id="D/M#8~H|90C]~,*Qr0,{">
 <field name="NUM">3</field>
 </shadow>
@@ -447,13 +462,74 @@ To aid the user, a colored boxFit rectangle is drawn on the camera preview to sh
 </block>
 </value>
 <next>
+<block type="comment" id="eEW5U%Kxc(LSog}[UFl5">
+<field name="COMMENT">A blob's arc length is the perimeter of the blob.</field>
+<next>
+<block type="comment" id="nNWBV8XZ~9J{p.t+YC{:">
+<field name="COMMENT">This can be used in conjunction with an area filter to detect oddly shaped blobs.</field>
+<next>
+<block type="colorBlobLocatorProcessorUtil_filterByCriteria" id="(WfPn(CHtEGC+X#ksCD~" disabled="true">
+<value name="CRITERIA">
+<shadow type="colorBlobLocator_typedEnum_blobCriteria" id="_-zSR|/G^/a@m?zLmH(Z">
+<field name="CRITERIA">BY_ARC_LENGTH</field>
+</shadow>
+</value>
+<value name="MIN_VALUE">
+<shadow type="math_number" id="q).zts9~?U*aS.3(,Thc">
+<field name="NUM">50</field>
+</shadow>
+</value>
+<value name="MAX_VALUE">
+<shadow type="math_number" id="`Ic%$_9T:Oe}YIJv5(rB">
+<field name="NUM">1000</field>
+</shadow>
+</value>
+<value name="BLOBS">
+<block type="variables_get" id="1y:T@KA7Xscl%SGf7n0~">
+<field name="VAR" id="*?14!TD)5LavaHH%Vt0n">myBlobs</field>
+</block>
+</value>
+<next>
+<block type="comment" id="z4%A5,@]?aD2i,T#zscP">
+<field name="COMMENT">A blob's circularity is how circular it is based on the known area and arc length.</field>
+<next>
+<block type="comment" id="+#434[2JU^z2wpO*3~#$">
+<field name="COMMENT">A perfect circle has a circularity of 1.  All others are &lt; 1</field>
+<next>
+<block type="colorBlobLocatorProcessorUtil_filterByCriteria" id="9B72*1j}zuZ(;$NSyDx*" disabled="true">
+<value name="CRITERIA">
+<shadow type="colorBlobLocator_typedEnum_blobCriteria" id="(VACZ(0BN}7E`qM%LGm/">
+<field name="CRITERIA">BY_CIRCULARITY</field>
+</shadow>
+</value>
+<value name="MIN_VALUE">
+<shadow type="math_number" id="#+3tGxF~_r@YT~,/Z@%G">
+<field name="NUM">0.1</field>
+</shadow>
+</value>
+<value name="MAX_VALUE">
+<shadow type="math_number" id="vq1OGirFCE%L=rL=I~Pa">
+<field name="NUM">1</field>
+</shadow>
+</value>
+<value name="BLOBS">
+<block type="variables_get" id="KYkdZD,f5a`LX)w.NUz#">
+<field name="VAR" id="*?14!TD)5LavaHH%Vt0n">myBlobs</field>
+</block>
+</value>
+<next>
 <block type="comment" id="u*Na0J`c.C;ylf81GAj,">
 <field name="COMMENT">The list of Blobs can be sorted using the same Blob attributes as listed above.</field>
 <next>
 <block type="comment" id="dnT=cFNMxOZ$KHR6ufFZ">
 <field name="COMMENT">No more than one sort call should be made.  Sorting can use ascending or descending order.</field>
 <next>
-<block type="colorBlobLocatorProcessorUtil_sortByArea" id="1nT0MGT0%MI|b0dl-)g~" disabled="true">
+<block type="colorBlobLocatorProcessorUtil_sortByCriteria" id="1nT0MGT0%MI|b0dl-)g~" disabled="true">
+<value name="CRITERIA">
+<shadow type="colorBlobLocator_typedEnum_blobCriteria" id="BzY{S,ijzev0o{v[3`N8">
+<field name="CRITERIA">BY_CONTOUR_AREA</field>
+</shadow>
+</value>
 <value name="SORT_ORDER">
 <shadow type="util_typedEnum_sortOrder" id="][L_m)-F1MBCi.mn{,FG">
 <field name="SORT_ORDER">DESCENDING</field>
@@ -465,7 +541,12 @@ To aid the user, a colored boxFit rectangle is drawn on the camera preview to sh
 </block>
 </value>
 <next>
-<block type="colorBlobLocatorProcessorUtil_sortByDensity" id="M(|:=O2:M-%Hlr2sOZaH" disabled="true">
+<block type="colorBlobLocatorProcessorUtil_sortByCriteria" id="M(|:=O2:M-%Hlr2sOZaH" disabled="true">
+<value name="CRITERIA">
+<shadow type="colorBlobLocator_typedEnum_blobCriteria" id="OKI3|Te5g5pkh/rx$DKR">
+<field name="CRITERIA">BY_DENSITY</field>
+</shadow>
+</value>
 <value name="SORT_ORDER">
 <shadow type="util_typedEnum_sortOrder" id="Ti,2yrI.NO!h%OKItvnw">
 <field name="SORT_ORDER">DESCENDING</field>
@@ -477,7 +558,12 @@ To aid the user, a colored boxFit rectangle is drawn on the camera preview to sh
 </block>
 </value>
 <next>
-<block type="colorBlobLocatorProcessorUtil_sortByAspectRatio" id="ls=t917$~I=-%4IVsa~u" disabled="true">
+<block type="colorBlobLocatorProcessorUtil_sortByCriteria" id="ls=t917$~I=-%4IVsa~u" disabled="true">
+<value name="CRITERIA">
+<shadow type="colorBlobLocator_typedEnum_blobCriteria" id="vwRYv=p9S{(]sr^GJNy6">
+<field name="CRITERIA">BY_ASPECT_RATIO</field>
+</shadow>
+</value>
 <value name="SORT_ORDER">
 <shadow type="util_typedEnum_sortOrder" id="-@M_Ub^j/h)I%dZjg:wJ">
 <field name="SORT_ORDER">DESCENDING</field>
@@ -485,6 +571,40 @@ To aid the user, a colored boxFit rectangle is drawn on the camera preview to sh
 </value>
 <value name="BLOBS">
 <block type="variables_get" id="E8taj[KIB?;:3rKfxp!L">
+<field name="VAR" id="*?14!TD)5LavaHH%Vt0n">myBlobs</field>
+</block>
+</value>
+<next>
+<block type="colorBlobLocatorProcessorUtil_sortByCriteria" id="n//[Ji62dp[*=y3:*BvG" disabled="true">
+<value name="CRITERIA">
+<shadow type="colorBlobLocator_typedEnum_blobCriteria" id="LJ|8aNTwZ,#6MtOo`=6*">
+<field name="CRITERIA">BY_ARC_LENGTH</field>
+</shadow>
+</value>
+<value name="SORT_ORDER">
+<shadow type="util_typedEnum_sortOrder" id="GH3liSagLs-g`!;:*.{Q">
+<field name="SORT_ORDER">DESCENDING</field>
+</shadow>
+</value>
+<value name="BLOBS">
+<block type="variables_get" id="QfD9JNP}8mbm1s`EXT_-">
+<field name="VAR" id="*?14!TD)5LavaHH%Vt0n">myBlobs</field>
+</block>
+</value>
+<next>
+<block type="colorBlobLocatorProcessorUtil_sortByCriteria" id="~3szoS7iLuDb:25l+mci" disabled="true">
+<value name="CRITERIA">
+<shadow type="colorBlobLocator_typedEnum_blobCriteria" id="MyH0`t@QJ;$76Bf?^qVq">
+<field name="CRITERIA">BY_CIRCULARITY</field>
+</shadow>
+</value>
+<value name="SORT_ORDER">
+<shadow type="util_typedEnum_sortOrder" id="8)N}pQ!{G:^N[pegsu:/">
+<field name="SORT_ORDER">DESCENDING</field>
+</shadow>
+</value>
+<value name="BLOBS">
+<block type="variables_get" id="0%o|`=Z[.Se?n+^0N6Wb">
 <field name="VAR" id="*?14!TD)5LavaHH%Vt0n">myBlobs</field>
 </block>
 </value>
@@ -716,6 +836,22 @@ To aid the user, a colored boxFit rectangle is drawn on the camera preview to sh
 <field name="NUM">50</field>
 </shadow>
 </value>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
 </block>
 </next>
 </block>

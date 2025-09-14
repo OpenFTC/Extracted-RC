@@ -1,10 +1,8 @@
 package org.firstinspires.ftc.vision.opencv;
 
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.util.Log;
 
 import androidx.annotation.ColorInt;
 
@@ -186,18 +184,7 @@ class ColorBlobLocatorProcessorImpl extends ColorBlobLocatorProcessor implements
         {
             for (BlobFilter filter : filters)
             {
-                switch (filter.criteria)
-                {
-                    case BY_CONTOUR_AREA:
-                        Util.filterByArea(filter.minValue, filter.maxValue, blobs);
-                        break;
-                    case BY_DENSITY:
-                        Util.filterByDensity(filter.minValue, filter.maxValue, blobs);
-                        break;
-                    case BY_ASPECT_RATIO:
-                        Util.filterByAspectRatio(filter.minValue, filter.maxValue, blobs);
-                        break;
-                }
+                Util.filterByCriteria(filter.criteria, filter.minValue, filter.maxValue, blobs);
             }
         }
 
@@ -205,23 +192,12 @@ class ColorBlobLocatorProcessorImpl extends ColorBlobLocatorProcessor implements
         BlobSort sort = this.sort; // Put the field into a local variable for thread safety.
         if (sort != null)
         {
-            switch (sort.criteria)
-            {
-                case BY_CONTOUR_AREA:
-                    Util.sortByArea(sort.sortOrder, blobs);
-                    break;
-                case BY_DENSITY:
-                    Util.sortByDensity(sort.sortOrder, blobs);
-                    break;
-                case BY_ASPECT_RATIO:
-                    Util.sortByAspectRatio(sort.sortOrder, blobs);
-                    break;
-            }
+            Util.sortByCriteria(sort.criteria, sort.sortOrder, blobs);
         }
         else
         {
             // Apply a default sort by area
-            Util.sortByArea(SortOrder.DESCENDING, blobs);
+            Util.sortByCriteria(BlobCriteria.BY_CONTOUR_AREA, SortOrder.DESCENDING, blobs);
         }
 
         // Deep copy this to prevent concurrent modification exception
@@ -334,10 +310,14 @@ class ColorBlobLocatorProcessorImpl extends ColorBlobLocatorProcessor implements
     {
         private MatOfPoint contour;
         private Point[] contourPts;
+        private MatOfPoint2f contourAsFloat;
         private int area = -1;
         private double density = -1;
         private double aspectRatio = -1;
         private RotatedRect rect;
+        private double arcLength = -1;
+        private double circularity = -1;
+        private Circle circle;
 
         BlobImpl(MatOfPoint contour)
         {
@@ -359,6 +339,15 @@ class ColorBlobLocatorProcessorImpl extends ColorBlobLocatorProcessor implements
             }
 
             return contourPts;
+        }
+
+        @Override
+        public MatOfPoint2f getContourAsFloat() {
+            if (contourAsFloat == null) {
+                contourAsFloat = new MatOfPoint2f(getContourPoints());
+            }
+
+            return contourAsFloat;
         }
 
         @Override
@@ -423,9 +412,45 @@ class ColorBlobLocatorProcessorImpl extends ColorBlobLocatorProcessor implements
         {
             if (rect == null)
             {
-                rect = Imgproc.minAreaRect(new MatOfPoint2f(getContourPoints()));
+                rect = Imgproc.minAreaRect(getContourAsFloat());
             }
             return rect;
+        }
+
+        @Override
+        public double getArcLength()
+        {
+            if (arcLength < 0)
+            {
+                arcLength = Imgproc.arcLength(getContourAsFloat(), true);
+            }
+
+            return arcLength;
+        }
+
+        @Override
+        public double getCircularity()
+        {
+            if (circularity < 0)
+            {
+                circularity = 4 * Math.PI * (getContourArea() / Math.pow(getArcLength(), 2));
+            }
+
+            return circularity;
+        }
+
+        @Override
+        public Circle getCircle()
+        {
+            if (circle == null)
+            {
+                Point center = new Point();
+                float[] radius = new float[1];
+                Imgproc.minEnclosingCircle(getContourAsFloat(), center, radius);
+                circle = new Circle(center, radius[0]);
+            }
+
+            return circle;
         }
     }
 }

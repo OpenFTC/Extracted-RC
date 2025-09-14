@@ -1,10 +1,10 @@
 <xml xmlns="https://developers.google.com/blockly/xml">
 <variables>
 <variable id="[.pAw0rC;@QmWxE_o*05">runtime</variable>
-<variable id="+CP[0*{1J`c;3HTvP%W{">leftFrontPower</variable>
-<variable id="%=G;ExcF`IeP)U5Tqt$A">leftBackPower</variable>
-<variable id="P:XwW3E6}H_!OjE.l{6x">rightFrontPower</variable>
-<variable id="]a=q2O(hYa7{h#/A$!IC">rightBackPower</variable>
+<variable id="+CP[0*{1J`c;3HTvP%W{">frontLeftPower</variable>
+<variable id="%=G;ExcF`IeP)U5Tqt$A">backLeftPower</variable>
+<variable id="P:XwW3E6}H_!OjE.l{6x">frontRightPower</variable>
+<variable id="]a=q2O(hYa7{h#/A$!IC">backRightPower</variable>
 <variable id="+2Qv8oDa_v90|LL;eD!k">axial</variable>
 <variable id="bbz%Ci44gd/O)rKAh7BE">lateral</variable>
 <variable id="k?zh^k_Orxi[sNPs.)Vz">yaw</variable>
@@ -54,9 +54,9 @@ Keep testing until ALL the wheels move the robot forward when you push the left 
 <data>{"commentPositionLeft":217,"commentPositionTop":-259}</data>
 <next>
 <block type="dcMotor_setProperty_Direction" id="eq?6z=8[X(p{)!kj=ljm">
-<field name="IDENTIFIER">left_front_driveAsDcMotor</field>
+<field name="IDENTIFIER">front_left_driveAsDcMotor</field>
 <field name="PROP">Direction</field>
-<data>{"IDENTIFIER":"left_front_drive"}</data>
+<data>{"IDENTIFIER":"front_left_drive"}</data>
 <value name="VALUE">
 <shadow type="dcMotor_typedEnum_direction" id="fA5KX5L@6hypglpOh=^Z">
 <field name="DIRECTION">REVERSE</field>
@@ -64,9 +64,9 @@ Keep testing until ALL the wheels move the robot forward when you push the left 
 </value>
 <next>
 <block type="dcMotor_setProperty_Direction" id="gOic0grHo]9$s{C+aCU7">
-<field name="IDENTIFIER">left_back_driveAsDcMotor</field>
+<field name="IDENTIFIER">back_left_driveAsDcMotor</field>
 <field name="PROP">Direction</field>
-<data>{"IDENTIFIER":"left_back_drive"}</data>
+<data>{"IDENTIFIER":"back_left_drive"}</data>
 <value name="VALUE">
 <shadow type="dcMotor_typedEnum_direction" id=":EJJkhX`?DuRjn=0J3a.">
 <field name="DIRECTION">REVERSE</field>
@@ -74,9 +74,9 @@ Keep testing until ALL the wheels move the robot forward when you push the left 
 </value>
 <next>
 <block type="dcMotor_setProperty_Direction" id="moG^)wr%:b#e+;}l8q.M">
-<field name="IDENTIFIER">right_front_driveAsDcMotor</field>
+<field name="IDENTIFIER">front_right_driveAsDcMotor</field>
 <field name="PROP">Direction</field>
-<data>{"IDENTIFIER":"right_front_drive"}</data>
+<data>{"IDENTIFIER":"front_right_drive"}</data>
 <value name="VALUE">
 <shadow type="dcMotor_typedEnum_direction" id="1ieRtIu(?KJY-W#5)em,">
 <field name="DIRECTION">FORWARD</field>
@@ -84,9 +84,9 @@ Keep testing until ALL the wheels move the robot forward when you push the left 
 </value>
 <next>
 <block type="dcMotor_setProperty_Direction" id="=c`?5^m?HdXPMYXus?ns">
-<field name="IDENTIFIER">right_back_driveAsDcMotor</field>
+<field name="IDENTIFIER">back_right_driveAsDcMotor</field>
 <field name="PROP">Direction</field>
-<data>{"IDENTIFIER":"right_back_drive"}</data>
+<data>{"IDENTIFIER":"back_right_drive"}</data>
 <value name="VALUE">
 <shadow type="dcMotor_typedEnum_direction" id="fU~42G2~0]CW`~Dm=43/">
 <field name="DIRECTION">FORWARD</field>
@@ -179,7 +179,7 @@ Keep testing until ALL the wheels move the robot forward when you push the left 
 <field name="COMMENT">Set up a variable for each drive wheel to save the power level for telemetry.</field>
 <next>
 <block type="variables_set" id="YhAethecMuvgOFq-E0%Q">
-<field name="VAR" id="+CP[0*{1J`c;3HTvP%W{">leftFrontPower</field>
+<field name="VAR" id="+CP[0*{1J`c;3HTvP%W{">frontLeftPower</field>
 <value name="VALUE">
 <block type="math_arithmetic" id="?#Ij55*Do#8._o#usT.-">
 <field name="OP">ADD</field>
@@ -219,7 +219,7 @@ Keep testing until ALL the wheels move the robot forward when you push the left 
 </value>
 <next>
 <block type="variables_set" id="reX~^rI!cx6,xsa,@Lcw">
-<field name="VAR" id="P:XwW3E6}H_!OjE.l{6x">rightFrontPower</field>
+<field name="VAR" id="P:XwW3E6}H_!OjE.l{6x">frontRightPower</field>
 <value name="VALUE">
 <block type="math_arithmetic" id="kS|GRN,|QK|DC0r_$1G*">
 <field name="OP">MINUS</field>
@@ -259,7 +259,7 @@ Keep testing until ALL the wheels move the robot forward when you push the left 
 </value>
 <next>
 <block type="variables_set" id="A~#l#yaJDc?d]|vDyWM3">
-<field name="VAR" id="%=G;ExcF`IeP)U5Tqt$A">leftBackPower</field>
+<field name="VAR" id="%=G;ExcF`IeP)U5Tqt$A">backLeftPower</field>
 <value name="VALUE">
 <block type="math_arithmetic" id="s.6=#Q-xnL!.gWsx`C]T">
 <field name="OP">ADD</field>
@@ -299,7 +299,7 @@ Keep testing until ALL the wheels move the robot forward when you push the left 
 </value>
 <next>
 <block type="variables_set" id="d,x6GsMrY@QI[b|OHpj;">
-<field name="VAR" id="]a=q2O(hYa7{h#/A$!IC">rightBackPower</field>
+<field name="VAR" id="]a=q2O(hYa7{h#/A$!IC">backRightPower</field>
 <value name="VALUE">
 <block type="math_arithmetic" id="_D9AcluQ(f@Jt3bE2:Q:">
 <field name="OP">MINUS</field>
@@ -361,7 +361,7 @@ Keep testing until ALL the wheels move the robot forward when you push the left 
 <field name="NUM">9</field>
 </shadow>
 <block type="variables_get" id="!;dK+ieK7K?pgogVp-Jb">
-<field name="VAR" id="+CP[0*{1J`c;3HTvP%W{">leftFrontPower</field>
+<field name="VAR" id="+CP[0*{1J`c;3HTvP%W{">frontLeftPower</field>
 </block>
 </value>
 </block>
@@ -374,7 +374,7 @@ Keep testing until ALL the wheels move the robot forward when you push the left 
 <field name="NUM">9</field>
 </shadow>
 <block type="variables_get" id="v0(AA?UoCpb#bP}IpF.5">
-<field name="VAR" id="P:XwW3E6}H_!OjE.l{6x">rightFrontPower</field>
+<field name="VAR" id="P:XwW3E6}H_!OjE.l{6x">frontRightPower</field>
 </block>
 </value>
 </block>
@@ -387,7 +387,7 @@ Keep testing until ALL the wheels move the robot forward when you push the left 
 <field name="NUM">9</field>
 </shadow>
 <block type="variables_get" id="JpI+qkn#HwT8/URT7$LV">
-<field name="VAR" id="%=G;ExcF`IeP)U5Tqt$A">leftBackPower</field>
+<field name="VAR" id="%=G;ExcF`IeP)U5Tqt$A">backLeftPower</field>
 </block>
 </value>
 </block>
@@ -400,7 +400,7 @@ Keep testing until ALL the wheels move the robot forward when you push the left 
 <field name="NUM">9</field>
 </shadow>
 <block type="variables_get" id="eqKL[ni#4X74#8$n445(">
-<field name="VAR" id="]a=q2O(hYa7{h#/A$!IC">rightBackPower</field>
+<field name="VAR" id="]a=q2O(hYa7{h#/A$!IC">backRightPower</field>
 </block>
 </value>
 </block>
@@ -428,7 +428,7 @@ Keep testing until ALL the wheels move the robot forward when you push the left 
 </value>
 <statement name="DO0">
 <block type="variables_set" id="b%}j[O1+?P}^7zY4^u(%">
-<field name="VAR" id="+CP[0*{1J`c;3HTvP%W{">leftFrontPower</field>
+<field name="VAR" id="+CP[0*{1J`c;3HTvP%W{">frontLeftPower</field>
 <value name="VALUE">
 <block type="math_arithmetic" id="v?z%;Rn9_}J:!|RxW~iG">
 <field name="OP">DIVIDE</field>
@@ -437,7 +437,7 @@ Keep testing until ALL the wheels move the robot forward when you push the left 
 <field name="NUM">1</field>
 </shadow>
 <block type="variables_get" id="O_XPhZ9jufVb-s8[6;S]">
-<field name="VAR" id="+CP[0*{1J`c;3HTvP%W{">leftFrontPower</field>
+<field name="VAR" id="+CP[0*{1J`c;3HTvP%W{">frontLeftPower</field>
 </block>
 </value>
 <value name="B">
@@ -452,7 +452,7 @@ Keep testing until ALL the wheels move the robot forward when you push the left 
 </value>
 <next>
 <block type="variables_set" id="RNwSt^J2*`MRO+}2-=^j">
-<field name="VAR" id="P:XwW3E6}H_!OjE.l{6x">rightFrontPower</field>
+<field name="VAR" id="P:XwW3E6}H_!OjE.l{6x">frontRightPower</field>
 <value name="VALUE">
 <block type="math_arithmetic" id="MP)K$qv!G)4H.PR0[8=F">
 <field name="OP">DIVIDE</field>
@@ -461,7 +461,7 @@ Keep testing until ALL the wheels move the robot forward when you push the left 
 <field name="NUM">1</field>
 </shadow>
 <block type="variables_get" id="$h(ja?]VC7;W%E1aWYSb">
-<field name="VAR" id="P:XwW3E6}H_!OjE.l{6x">rightFrontPower</field>
+<field name="VAR" id="P:XwW3E6}H_!OjE.l{6x">frontRightPower</field>
 </block>
 </value>
 <value name="B">
@@ -476,7 +476,7 @@ Keep testing until ALL the wheels move the robot forward when you push the left 
 </value>
 <next>
 <block type="variables_set" id="Nf/K*BaP}*P,yy%X?ezU">
-<field name="VAR" id="%=G;ExcF`IeP)U5Tqt$A">leftBackPower</field>
+<field name="VAR" id="%=G;ExcF`IeP)U5Tqt$A">backLeftPower</field>
 <value name="VALUE">
 <block type="math_arithmetic" id="zj+~rya@pP}JyT+Y7gG#">
 <field name="OP">DIVIDE</field>
@@ -485,7 +485,7 @@ Keep testing until ALL the wheels move the robot forward when you push the left 
 <field name="NUM">1</field>
 </shadow>
 <block type="variables_get" id="oAx{U/W%9Ta~MDbwZei:">
-<field name="VAR" id="%=G;ExcF`IeP)U5Tqt$A">leftBackPower</field>
+<field name="VAR" id="%=G;ExcF`IeP)U5Tqt$A">backLeftPower</field>
 </block>
 </value>
 <value name="B">
@@ -500,7 +500,7 @@ Keep testing until ALL the wheels move the robot forward when you push the left 
 </value>
 <next>
 <block type="variables_set" id="H|VS.7jz8L`Q?HCUugx1">
-<field name="VAR" id="]a=q2O(hYa7{h#/A$!IC">rightBackPower</field>
+<field name="VAR" id="]a=q2O(hYa7{h#/A$!IC">backRightPower</field>
 <value name="VALUE">
 <block type="math_arithmetic" id="4oB2Ul}gA/m:cT}ca1LE">
 <field name="OP">DIVIDE</field>
@@ -509,7 +509,7 @@ Keep testing until ALL the wheels move the robot forward when you push the left 
 <field name="NUM">1</field>
 </shadow>
 <block type="variables_get" id="jf;1she/c_9R_97td}5B">
-<field name="VAR" id="]a=q2O(hYa7{h#/A$!IC">rightBackPower</field>
+<field name="VAR" id="]a=q2O(hYa7{h#/A$!IC">backRightPower</field>
 </block>
 </value>
 <value name="B">
@@ -542,15 +542,15 @@ Once the correct motors move in the correct direction re-disable this block.</co
 <next>
 <block type="dcMotor_setDualProperty" id="?fu!mk[evxtjh1mAGC7J">
 <field name="PROP">Power</field>
-<field name="IDENTIFIER1">left_front_driveAsDcMotor</field>
-<field name="IDENTIFIER2">right_front_driveAsDcMotor</field>
-<data>{"IDENTIFIER1":"left_front_drive","IDENTIFIER2":"right_front_drive"}</data>
+<field name="IDENTIFIER1">front_left_driveAsDcMotor</field>
+<field name="IDENTIFIER2">front_right_driveAsDcMotor</field>
+<data>{"IDENTIFIER1":"front_left_drive","IDENTIFIER2":"front_right_drive"}</data>
 <value name="VALUE1">
 <shadow type="math_number" id="xm^!xz;E%A,_X6P[I?kY">
 <field name="NUM">1</field>
 </shadow>
 <block type="variables_get" id="u{~mI1NzqS=6OOR]gy4]">
-<field name="VAR" id="+CP[0*{1J`c;3HTvP%W{">leftFrontPower</field>
+<field name="VAR" id="+CP[0*{1J`c;3HTvP%W{">frontLeftPower</field>
 </block>
 </value>
 <value name="VALUE2">
@@ -558,21 +558,21 @@ Once the correct motors move in the correct direction re-disable this block.</co
 <field name="NUM">1</field>
 </shadow>
 <block type="variables_get" id="y,,33}Lj6PYB6;/T;aV(">
-<field name="VAR" id="P:XwW3E6}H_!OjE.l{6x">rightFrontPower</field>
+<field name="VAR" id="P:XwW3E6}H_!OjE.l{6x">frontRightPower</field>
 </block>
 </value>
 <next>
 <block type="dcMotor_setDualProperty" id="LD`9.|KA`bUzLTq%g5#p">
 <field name="PROP">Power</field>
-<field name="IDENTIFIER1">left_back_driveAsDcMotor</field>
-<field name="IDENTIFIER2">right_back_driveAsDcMotor</field>
-<data>{"IDENTIFIER1":"left_back_drive","IDENTIFIER2":"right_back_drive"}</data>
+<field name="IDENTIFIER1">back_left_driveAsDcMotor</field>
+<field name="IDENTIFIER2">back_right_driveAsDcMotor</field>
+<data>{"IDENTIFIER1":"back_left_drive","IDENTIFIER2":"back_right_drive"}</data>
 <value name="VALUE1">
 <shadow type="math_number">
 <field name="NUM">1</field>
 </shadow>
 <block type="variables_get" id="(~P]l7zJ*%`A9(*](rXz">
-<field name="VAR" id="%=G;ExcF`IeP)U5Tqt$A">leftBackPower</field>
+<field name="VAR" id="%=G;ExcF`IeP)U5Tqt$A">backLeftPower</field>
 </block>
 </value>
 <value name="VALUE2">
@@ -580,7 +580,7 @@ Once the correct motors move in the correct direction re-disable this block.</co
 <field name="NUM">1</field>
 </shadow>
 <block type="variables_get" id="]l?Iv5ZMG,=M50WqzqgU">
-<field name="VAR" id="]a=q2O(hYa7{h#/A$!IC">rightBackPower</field>
+<field name="VAR" id="]a=q2O(hYa7{h#/A$!IC">backRightPower</field>
 </block>
 </value>
 <next>
@@ -631,7 +631,7 @@ Once the correct motors move in the correct direction re-disable this block.</co
 <field name="NUM">3.14159265</field>
 </shadow>
 <block type="variables_get" id="X5za(Sz)JAeD$;QKZ(=w">
-<field name="VAR" id="+CP[0*{1J`c;3HTvP%W{">leftFrontPower</field>
+<field name="VAR" id="+CP[0*{1J`c;3HTvP%W{">frontLeftPower</field>
 </block>
 </value>
 <value name="WIDTH">
@@ -658,7 +658,7 @@ Once the correct motors move in the correct direction re-disable this block.</co
 <field name="NUM">3.14159265</field>
 </shadow>
 <block type="variables_get" id="sWNK8QH|6:Q6BGkhdSs;">
-<field name="VAR" id="P:XwW3E6}H_!OjE.l{6x">rightFrontPower</field>
+<field name="VAR" id="P:XwW3E6}H_!OjE.l{6x">frontRightPower</field>
 </block>
 </value>
 <value name="WIDTH">
@@ -695,7 +695,7 @@ Once the correct motors move in the correct direction re-disable this block.</co
 <field name="NUM">3.14159265</field>
 </shadow>
 <block type="variables_get" id="Y+[,S?P@}aD3e;!E%BWm">
-<field name="VAR" id="%=G;ExcF`IeP)U5Tqt$A">leftBackPower</field>
+<field name="VAR" id="%=G;ExcF`IeP)U5Tqt$A">backLeftPower</field>
 </block>
 </value>
 <value name="WIDTH">
@@ -722,7 +722,7 @@ Once the correct motors move in the correct direction re-disable this block.</co
 <field name="NUM">3.14159265</field>
 </shadow>
 <block type="variables_get" id="EGEy}Jnfz~e^|kz0t3]H">
-<field name="VAR" id="]a=q2O(hYa7{h#/A$!IC">rightBackPower</field>
+<field name="VAR" id="]a=q2O(hYa7{h#/A$!IC">backRightPower</field>
 </block>
 </value>
 <value name="WIDTH">
@@ -829,7 +829,7 @@ Each button should make the corresponding motor run FORWARD.
 <data>{"commentPositionLeft":-46,"commentPositionTop":-236}</data>
 <statement name="STACK">
 <block type="variables_set" id="GB`NLcBc$TP@Lnu9/b0b">
-<field name="VAR" id="+CP[0*{1J`c;3HTvP%W{">leftFrontPower</field>
+<field name="VAR" id="+CP[0*{1J`c;3HTvP%W{">frontLeftPower</field>
 <value name="VALUE">
 <block type="logic_ternary" id="aD!|jew-lPHFPj-NY#x_">
 <value name="IF">
@@ -853,7 +853,7 @@ Each button should make the corresponding motor run FORWARD.
 </value>
 <next>
 <block type="variables_set" id="x7#w8Z|[vUY1Vs`Mu/6u">
-<field name="VAR" id="%=G;ExcF`IeP)U5Tqt$A">leftBackPower</field>
+<field name="VAR" id="%=G;ExcF`IeP)U5Tqt$A">backLeftPower</field>
 <value name="VALUE">
 <block type="logic_ternary" id="s1X}S[3Ql-7yg!tDQ`II">
 <value name="IF">
@@ -877,7 +877,7 @@ Each button should make the corresponding motor run FORWARD.
 </value>
 <next>
 <block type="variables_set" id="]~j)-ZQ;t5.jK%krDe%w">
-<field name="VAR" id="P:XwW3E6}H_!OjE.l{6x">rightFrontPower</field>
+<field name="VAR" id="P:XwW3E6}H_!OjE.l{6x">frontRightPower</field>
 <value name="VALUE">
 <block type="logic_ternary" id="V`z_4Jut]K/[!9*#r_2-">
 <value name="IF">
@@ -901,7 +901,7 @@ Each button should make the corresponding motor run FORWARD.
 </value>
 <next>
 <block type="variables_set" id="0*uoS9?|8I7EqZ/%]1b;">
-<field name="VAR" id="]a=q2O(hYa7{h#/A$!IC">rightBackPower</field>
+<field name="VAR" id="]a=q2O(hYa7{h#/A$!IC">backRightPower</field>
 <value name="VALUE">
 <block type="logic_ternary" id="0A`?+EcSCYtU1N4j}79.">
 <value name="IF">

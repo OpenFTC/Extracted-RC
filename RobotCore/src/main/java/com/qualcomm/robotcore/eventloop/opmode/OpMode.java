@@ -36,6 +36,7 @@ import com.qualcomm.robotcore.robocol.TelemetryMessage;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
+import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -45,6 +46,10 @@ import java.util.concurrent.TimeUnit;
  * multiple OpModes have the same name, only one will be available.
  */
 public abstract class OpMode extends OpModeInternal {
+  /**
+   * this is to store information in between opmodes
+   */
+  public final static HashMap<String, Object> blackboard = new HashMap<>();
   /**
    * The number of seconds this OpMode has been running. This is
    * updated before every call to loop().

@@ -382,7 +382,7 @@ Blockly.Blocks['servo_scaleRange'] = {
     this.setNextStatement(true);
     this.setColour(functionColor);
     this.setTooltip('Scale the available movement range of the servo to be a subset of its ' +
-        'maximum range.');
+        'maximum range irrespective of whether reverse() has been called');
   }
 };
 

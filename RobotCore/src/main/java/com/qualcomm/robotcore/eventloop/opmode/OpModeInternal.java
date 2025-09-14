@@ -176,6 +176,9 @@ abstract class OpModeInternal {
             ((TelemetryInternal)telemetry).resetTelemetryForOpMode();
         }
 
+        gamepad1.resetEdgeDetection();
+        gamepad2.resetEdgeDetection();
+
         executorService.execute(() -> ThreadPool.logThreadLifeCycle("OpModeThread", () -> {
             try {
                 internalRunOpMode();
@@ -214,6 +217,9 @@ abstract class OpModeInternal {
 
     // Package-private
     final void internalStart() {
+        gamepad1.resetEdgeDetection();
+        gamepad2.resetEdgeDetection();
+
         stopRequested = false;
         isStarted = true;
         // It's important that the states are updated BEFORE LinearOpModes notify the runningNotifier

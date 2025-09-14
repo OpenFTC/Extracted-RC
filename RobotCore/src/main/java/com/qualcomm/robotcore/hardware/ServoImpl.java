@@ -176,13 +176,16 @@ public class ServoImpl implements Servo {
    */
   synchronized public double getPosition() {
     double position = controller.getServoPosition(portNumber);
-    if (direction == Direction.REVERSE) position = reverse(position);
     double scaled = Range.scale(position, limitPositionMin, limitPositionMax, MIN_POSITION, MAX_POSITION);
+    if (direction == Direction.REVERSE) scaled = reverse(scaled);
     return Range.clip(scaled, MIN_POSITION, MAX_POSITION);
   }
 
   /**
-   * Automatically scales the position of the servo.
+   * Automatically scales the position of the servo irrespective of whether or not reverse()
+   * is called.
+   * For example, if you set the scale range to [0.0, 0.5] and the servo is reversed,
+   * it will be from 0.5 to 0.0, NOT 1.0 to 0.5
    */
   synchronized public void scaleRange(double min, double max) {
     min = Range.clip(min, MIN_POSITION, MAX_POSITION);

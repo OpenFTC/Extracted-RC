@@ -26,4 +26,6 @@ public class InspectionStateValidation {
     InspectionProperty otherApp;
     @SerializedName("vm")
     InspectionProperty versionsMatch;
+    @SerializedName("ct")
+    InspectionProperty connectedTo;
 }

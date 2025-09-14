@@ -132,7 +132,7 @@ public class AnnotatedHooksClassFilter implements ClassFilter {
       try {
         method.invoke(null, context);
       } catch (Exception e) {
-        RobotLog.e(TAG, e, "failure while calling OnCreate annotated method " +
+        RobotLog.ee(TAG, e, "failure while calling OnCreateMethods annotated method " +
             method.getDeclaringClass() + "." + method.getName());
       }
     }
@@ -143,7 +143,7 @@ public class AnnotatedHooksClassFilter implements ClassFilter {
       try {
         method.invoke(null, context, ftcEventLoop);
       } catch (Exception e) {
-        RobotLog.e(TAG, e, "failure while calling OnCreateEventLoop annotated method " +
+        RobotLog.ee(TAG, e, "failure while calling onCreateEventLoopMethods annotated method " +
             method.getDeclaringClass() + "." + method.getName());
       }
     }
@@ -154,7 +154,7 @@ public class AnnotatedHooksClassFilter implements ClassFilter {
       try {
         method.invoke(null, context, menu);
       } catch (Exception e) {
-        RobotLog.e(TAG, e, "failure while calling OnCreateMenu annotated method " +
+        RobotLog.ee(TAG, e, "failure while calling onCreateMenuMethods annotated method " +
             method.getDeclaringClass() + "." + method.getName());
       }
     }
@@ -165,7 +165,7 @@ public class AnnotatedHooksClassFilter implements ClassFilter {
       try {
         method.invoke(null, context);
       } catch (Exception e) {
-        RobotLog.e(TAG, e, "failure while calling OnDestory annotated method " +
+        RobotLog.ee(TAG, e, "failure while calling onDestroyMethods annotated method " +
             method.getDeclaringClass() + "." + method.getName());
       }
     }
@@ -176,7 +176,7 @@ public class AnnotatedHooksClassFilter implements ClassFilter {
       try {
         method.invoke(null, context, webHandlerManager);
       } catch (Exception e) {
-        RobotLog.e(TAG, e, "failure while calling WebHandlerRegistrar annotated method " +
+        RobotLog.ee(TAG, e, "failure while calling WebHandlerRegistrarMethods annotated method " +
             method.getDeclaringClass() + "." + method.getName());
       }
     }

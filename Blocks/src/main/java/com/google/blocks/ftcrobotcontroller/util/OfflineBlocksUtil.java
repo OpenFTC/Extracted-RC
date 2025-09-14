@@ -94,6 +94,7 @@ public class OfflineBlocksUtil {
     assetsToInclude.add("blocks/android_text_to_speech.js");
     assetsToInclude.add("blocks/angular_velocity.js");
     assetsToInclude.add("blocks/april_tag.js");
+    assetsToInclude.add("blocks/blackboard.js");
     assetsToInclude.add("blocks/bno055imu.js");
     assetsToInclude.add("blocks/bno055imu_parameters.js");
     assetsToInclude.add("blocks/clipboard_util.js");
@@ -112,6 +113,7 @@ public class OfflineBlocksUtil {
     assetsToInclude.add("blocks/focus_control.js");
     assetsToInclude.add("blocks/gain_control.js");
     assetsToInclude.add("blocks/gamepad.js");
+    assetsToInclude.add("blocks/gobilda_pinpoint.js");
     assetsToInclude.add("blocks/gyro_sensor.js");
     assetsToInclude.add("blocks/hardware_util.js");
     assetsToInclude.add("blocks/husky_lens.js");

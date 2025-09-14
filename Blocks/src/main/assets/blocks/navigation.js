@@ -633,3 +633,45 @@ Blockly.FtcJava['navigation_typedEnum_currentUnit'] = function(block) {
   Blockly.FtcJava.generateImport_('CurrentUnit');
   return [code, Blockly.FtcJava.ORDER_MEMBER];
 };
+
+// UnnormalizedAngleUnit
+Blockly.Blocks['navigation_typedEnum_unnormalizedAngleUnit'] = {
+  init: function() {
+    var UNNORMALIZED_ANGLE_UNIT_CHOICES = [
+        ['DEGREES', 'DEGREES'],
+        ['RADIANS', 'RADIANS'],
+    ];
+    this.setOutput(true, 'UnnormalizedAngleUnit');
+    this.appendDummyInput()
+        .appendField(createNonEditableField('UnnormalizedAngleUnit'))
+        .appendField('.')
+        .appendField(new Blockly.FieldDropdown(UNNORMALIZED_ANGLE_UNIT_CHOICES), 'UNNORMALIZED_ANGLE_UNIT');
+    this.setColour(getPropertyColor);
+    // Assign 'this' to a variable for use in the tooltip closure below.
+    var thisBlock = this;
+    var TOOLTIPS = [
+        ['DEGREES', 'The UnnormalizedAngleUnit value DEGREES.'],
+        ['RADIANS', 'The UnnormalizedAngleUnit value RADIANS.'],
+    ];
+    this.setTooltip(function() {
+      var key = thisBlock.getFieldValue('UNNORMALIZED_ANGLE_UNIT');
+      for (var i = 0; i < TOOLTIPS.length; i++) {
+        if (TOOLTIPS[i][0] == key) {
+          return TOOLTIPS[i][1];
+        }
+      }
+      return '';
+    });
+  }
+};
+
+Blockly.JavaScript['navigation_typedEnum_unnormalizedAngleUnit'] = function(block) {
+  var code = '"' + block.getFieldValue('UNNORMALIZED_ANGLE_UNIT') + '"';
+  return [code, Blockly.JavaScript.ORDER_ATOMIC];
+};
+
+Blockly.FtcJava['navigation_typedEnum_unnormalizedAngleUnit'] = function(block) {
+  var code = 'UnnormalizedAngleUnit.' + block.getFieldValue('UNNORMALIZED_ANGLE_UNIT');
+  Blockly.FtcJava.generateImport_('UnnormalizedAngleUnit');
+  return [code, Blockly.FtcJava.ORDER_MEMBER];
+};

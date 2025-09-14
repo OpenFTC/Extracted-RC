@@ -550,6 +550,8 @@ function addReservedWordsForJavaScriptRuntime() {
   Blockly.JavaScript.addReservedWords('getObjectViaJson');
   Blockly.JavaScript.addReservedWords('updateObjectViaJson');
   Blockly.JavaScript.addReservedWords('getJavaObject');
+  Blockly.JavaScript.addReservedWords('colorBlobsFilterByCriteria');
+  Blockly.JavaScript.addReservedWords('colorBlobsSortByCriteria');
   Blockly.JavaScript.addReservedWords('colorBlobsFilterByArea');
   Blockly.JavaScript.addReservedWords('colorBlobsSortByArea');
   Blockly.JavaScript.addReservedWords('colorBlobsFilterByDensity');

@@ -47,6 +47,7 @@ class MiscAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(exclusiveToBlocks = true)
   public Object getNull() {
     try {
       startBlockExecution(BlockType.SPECIAL, "null");
@@ -61,6 +62,7 @@ class MiscAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(exclusiveToBlocks = true)
   public boolean isNull(Object value) {
     try {
       startBlockExecution(BlockType.FUNCTION, "isNull");
@@ -75,6 +77,7 @@ class MiscAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(exclusiveToBlocks = true)
   public boolean isNotNull(Object value) {
     try {
       startBlockExecution(BlockType.FUNCTION, "isNotNull");
@@ -89,6 +92,7 @@ class MiscAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(exclusiveToBlocks = true)
   public String formatNumber(double number, int precision) {
     try {
       startBlockExecution(BlockType.FUNCTION, "formatNumber");
@@ -103,6 +107,7 @@ class MiscAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(exclusiveToBlocks = true)
   public String formatNumber_withWidth(double number, int width, int precision) {
     try {
       startBlockExecution(BlockType.FUNCTION, "formatNumber");
@@ -117,6 +122,7 @@ class MiscAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(exclusiveToBlocks = true)
   public double roundDecimal(double number, int precision) {
     try {
       startBlockExecution(BlockType.FUNCTION, "roundDecimal");
@@ -136,6 +142,7 @@ class MiscAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(exclusiveToBlocks = true)
   public Object callJava(String methodLookupString, String json,
       Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7,
       Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14,
@@ -157,6 +164,7 @@ class MiscAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(exclusiveToBlocks = true)
   public boolean callJava_boolean(String methodLookupString, String json,
       Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7,
       Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14,
@@ -178,6 +186,7 @@ class MiscAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(exclusiveToBlocks = true)
   public String callJava_String(String methodLookupString, String json,
       Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7,
       Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14,
@@ -230,6 +239,7 @@ class MiscAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(exclusiveToBlocks = true)
   public Object callHardware(String deviceName, String methodLookupString, String json,
       Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7,
       Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14,
@@ -251,6 +261,7 @@ class MiscAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(exclusiveToBlocks = true)
   public boolean callHardware_boolean(String deviceName, String methodLookupString, String json,
       Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7,
       Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14,
@@ -272,6 +283,7 @@ class MiscAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(exclusiveToBlocks = true)
   public String callHardware_String(String deviceName, String methodLookupString, String json,
       Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7,
       Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14,
@@ -445,6 +457,7 @@ class MiscAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(exclusiveToBlocks = true)
   public int listLength(Object o) {
     try {
       startBlockExecution(BlockType.SPECIAL, "length of");
@@ -459,6 +472,7 @@ class MiscAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(exclusiveToBlocks = true)
   public boolean listIsEmpty(Object o) {
     try {
       startBlockExecution(BlockType.SPECIAL, "is empty");
@@ -473,6 +487,7 @@ class MiscAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(exclusiveToBlocks = true)
   public String huskyLensBlockToText(String json) {
     try {
       startBlockExecution(BlockType.FUNCTION, "HuskyLens.Block", "toText");
@@ -487,6 +502,7 @@ class MiscAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(exclusiveToBlocks = true)
   public String huskyLensArrowToText(String json) {
     try {
       startBlockExecution(BlockType.FUNCTION, "HuskyLens.Arrow", "toText");
@@ -501,6 +517,7 @@ class MiscAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(exclusiveToBlocks = true)
   public String objectToJson(Object o) {
     try {
       if (o instanceof LLResult) {

@@ -14,7 +14,7 @@ android {
         minSdkVersion 23
         targetSdkVersion 28
         versionCode 56
-        versionName "10.2"
+        versionName "10.3"
 
         buildConfigField "String", "APP_BUILD_TIME", '"' + (new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.ROOT).format(new Date())) + '"'
     }

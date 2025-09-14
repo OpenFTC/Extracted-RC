@@ -462,7 +462,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/wifiNameLabel"
+                android:text="@string/robotControllerNameLabel"
                 android:textAppearance="?android:attr/textAppearanceMedium"/>
 
             <TextView
@@ -474,6 +474,36 @@
             <ImageView
                 android:paddingLeft="5dp"
                 android:id="@+id/wifiName_img"
+                android:src="@drawable/ic_warning"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/connectedToLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="2dp"
+            android:layout_marginTop="2dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/robotControllerNameLabel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/robotControllerNameLabel"
+                android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+            <TextView
+                android:id="@+id/connectedToDevice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+            <ImageView
+                android:paddingLeft="5dp"
+                android:id="@+id/connectedTo_img"
                 android:src="@drawable/ic_warning"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />

@@ -543,7 +543,7 @@ public class VL53L0X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements Dis
         // instead, provide a desired inter-measurement period in
         // ms (e.g. sensor.startContinuous(100)).
         startContinuous();
-
+        double tempRange = getDistance(DistanceUnit.MM);    // call getDistance to eat the bad initial value rather then return it to user
         return true;
 
     }

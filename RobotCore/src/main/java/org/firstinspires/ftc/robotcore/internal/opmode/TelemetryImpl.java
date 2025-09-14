@@ -513,7 +513,10 @@ public class TelemetryImpl implements Telemetry, TelemetryInternal
 
         int size()
             {
-            return entries.size();
+            synchronized (getLock())
+                {
+                return entries.size();
+                }
             }
 
         String get(int index)
@@ -598,6 +601,28 @@ public class TelemetryImpl implements Telemetry, TelemetryInternal
                 this.markDirty();
                 }
             }
+        public void saveToTransmitter(TelemetryMessage transmitter, int iLine)
+           {
+               synchronized (getLock())
+               {
+                   if (displayOrder == DisplayOrder.OLDEST_FIRST)
+                       {
+                       for (String entry : entries)
+                           {
+                           transmitter.addData(getKey(iLine), entry);
+                           iLine++;
+                           }
+                       }
+                   else 
+                       {
+                       for (int i = entries.size() - 1; i >= 0; i--)
+                           {
+                           transmitter.addData(getKey(iLine), entries.get(i));
+                           iLine++;
+                           }
+                       }
+               }
+           }
         }
 
     //----------------------------------------------------------------------------------------------
@@ -778,17 +803,8 @@ public class TelemetryImpl implements Telemetry, TelemetryInternal
             {
             transmitter.addData(getKey(iLine), this.composedLines.get(iLine));
             }
-
         // Add in the log
-        int size = this.log.size();
-        for (int i = 0; i < size; i++)
-            {
-            String s = this.log.getDisplayOrder()==Log.DisplayOrder.OLDEST_FIRST
-                    ? this.log.get(i)
-                    : this.log.get(size-1 -i);
-            transmitter.addData(getKey(iLine), s);
-            iLine++;
-            }
+        log.saveToTransmitter(transmitter, iLine);
         }
 
     //----------------------------------------------------------------------------------------------

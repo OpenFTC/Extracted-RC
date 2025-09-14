@@ -42,6 +42,7 @@ import com.google.gson.annotations.SerializedName;
 import com.qualcomm.robotcore.BuildConfig;
 import com.qualcomm.robotcore.hardware.configuration.LynxConstants;
 import com.qualcomm.robotcore.util.Device;
+import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.wifi.NetworkType;
 
 import org.firstinspires.ftc.robotcore.internal.hardware.CachedLynxModulesInfo;
@@ -136,6 +137,8 @@ public class InspectionState
     public long    bytesPerSecond;
     @SerializedName("pw")
     public boolean isDefaultPassword;
+    @QrExclude
+    public String connectedToName;
 
     //----------------------------------------------------------------------------------------------
     // Construction and initialization
@@ -177,6 +180,7 @@ public class InspectionState
         this.driverStationInstalled = !getPackageVersionString(driverStationPackage).equals(NO_VERSION);
         this.robotControllerInstalled = !getPackageVersionString(robotControllerPackage).equals(NO_VERSION);
         this.deviceName = nameManager.getDeviceName();
+        this.connectedToName = "unknown";
 
         if (Device.isRevDriverHub())
             {
@@ -191,6 +195,7 @@ public class InspectionState
 
         NetworkConnectionHandler networkConnectionHandler = NetworkConnectionHandler.getInstance();
         NetworkType networkType = networkConnectionHandler.getNetworkType();
+        this.connectedToName = networkConnectionHandler.getConnectionOwnerName();
         if (networkType == NetworkType.WIRELESSAP || networkType == NetworkType.RCWIRELESSAP)
             {
             if (Device.isRevControlHub())
@@ -209,7 +214,6 @@ public class InspectionState
                 {
                 this.controlHubOsVersion = NO_VERSION;
                 this.controlHubOsVersionNum = NO_VERSION_CODE;
-                this.deviceName = WifiUtil.getConnectedSsid();
                 this.wifiDirectEnabled = WifiUtil.isWifiEnabled();
                 this.wifiConnected = WifiUtil.isWifiConnected();
                 }

@@ -21,11 +21,11 @@
  */
 
 // The following are generated dynamically in HardwareUtil.fetchJavaScriptForHardware():
+// knownTypeToClassName
 // miscIdentifierForJavaScript
 // The following are defined in vars.js:
 // commentColor
 // functionColor
-// knownTypeToClassName
 
 Blockly.Blocks['comment'] = {
   init: function() {

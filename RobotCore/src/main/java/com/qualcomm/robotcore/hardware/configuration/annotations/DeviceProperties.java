@@ -37,6 +37,7 @@ import com.qualcomm.robotcore.hardware.ControlSystem;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -48,6 +49,7 @@ import static com.qualcomm.robotcore.hardware.ControlSystem.REV_HUB;
  * {@link ServoType}.
  */
 @Documented
+@Repeatable(DevicesProperties.class)
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DeviceProperties {
@@ -72,6 +74,8 @@ public @interface DeviceProperties {
      * Specifies whether the type is built into the SDK
      */
     boolean builtIn() default false;
+
+    boolean defaultDevice() default true;
 
     /**
      * Specifies what control systems this device is compatible with

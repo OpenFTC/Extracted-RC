@@ -37,6 +37,7 @@ public enum Identifier {
       "androidTextToSpeech", "androidTextToSpeechIdentifierForFtcJava"),
   ANGULAR_VELOCITY("angularVelocityAccess", "angularVelocityIdentifierForJavaScript"),
   APRIL_TAG("aprilTagAccess", "aprilTagIdentifierForJavaScript"),
+  BLACKBOARD("blackboard", "blackboardIdentifierForJavaScript"),
   BLINKIN_PATTERN("blinkinPatternAccess", "blinkinPatternIdentifierForJavaScript"),
   BLOCKS_OP_MODE("blocksOpMode", null),
   BNO055IMU_PARAMETERS("bno055imuParametersAccess", "bno055imuParametersIdentifierForJavaScript"),

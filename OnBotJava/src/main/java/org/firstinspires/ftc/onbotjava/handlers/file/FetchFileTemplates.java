@@ -33,6 +33,7 @@
 
 package org.firstinspires.ftc.onbotjava.handlers.file;
 
+import com.qualcomm.robotcore.util.ReadWriteFile;
 import org.firstinspires.ftc.onbotjava.OnBotJavaFileSystemUtils;
 import org.firstinspires.ftc.onbotjava.OnBotJavaProgrammingMode;
 import org.firstinspires.ftc.onbotjava.OnBotJavaWebInterfaceManager;
@@ -40,9 +41,9 @@ import org.firstinspires.ftc.onbotjava.RegisterWebHandler;
 import org.firstinspires.ftc.onbotjava.StandardResponses;
 import org.firstinspires.ftc.robotcore.internal.webserver.WebHandler;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.io.File;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import fi.iki.elonen.NanoHTTPD;
 
@@ -60,30 +61,28 @@ public class FetchFileTemplates implements WebHandler {
     private NanoHTTPD.Response projectTemplates() {
         if (response == null || !templatesEnsured) {
             List<String> templates = new ArrayList<>();
-            //final File templatesFolder = templatesDir;
             templatesEnsured = OnBotJavaFileSystemUtils.ensureTemplates();
             String templatePath = templatesDir.getAbsolutePath();
             OnBotJavaFileSystemUtils.searchForFiles(templatePath, templatesDir, templates, false);
-            for (int i = 0; i < templates.size(); i++) {
-                String template = templates.get(i);
+            List<Map<String, Object>> templateObjects = templates.stream()
+                    // remove temp files and plain old directories
+                    .filter(template -> !template.endsWith(OnBotJavaFileSystemUtils.EXT_TEMP_FILE))
+                    // Remove path seperators
+                    .map(template -> template.startsWith(OnBotJavaFileSystemUtils.PATH_SEPARATOR) ? template.substring(1) : template)
+                    .map(template -> {
+                        TemplateFile templateFile = new TemplateFile(new File(templatesDir, template));
+                        Map<String, Object> templateObject = new HashMap<>();
+                        templateObject.put("name", template);
+                        templateObject.put("autonomous", templateFile.isAutonomous());
+                        templateObject.put("teleop", templateFile.isTeleOp());
+                        templateObject.put("disabled", templateFile.isDisabled());
+                        templateObject.put("example", templateFile.isExample());
 
-                // remove temp files and plain old directories
-                if (template.endsWith(OnBotJavaFileSystemUtils.EXT_TEMP_FILE)) {
-                    templates.remove(template);
-                    // Preserve current loop index by subtracting 1 then continuing the loop, causing the loop to re-run the same index
-                    // which now should be a different object
-                    --i;
-                    continue;
-                }
-
-                if (template.startsWith(OnBotJavaFileSystemUtils.PATH_SEPARATOR)) {
-                    template = template.substring(1);
-                    templates.set(i, template);
-                }
-            }
-
-            Collections.sort(templates);
-            response = OnBotJavaWebInterfaceManager.instance().gson().toJson(templates);
+                        return templateObject;
+                    })
+                    .sorted(Comparator.comparing(x-> (String) x.get("name")))
+                    .collect(Collectors.toList());
+            response = OnBotJavaWebInterfaceManager.instance().gson().toJson(templateObjects);
         }
 
         return StandardResponses.successfulJsonRequest(response);

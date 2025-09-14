@@ -48,6 +48,7 @@ import com.google.blocks.ftcrobotcontroller.util.ProjectsUtil;
 import com.qualcomm.hardware.bosch.BNO055IMUImpl;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;
 import com.qualcomm.robotcore.hardware.EmbeddedControlHubModule;
 import com.qualcomm.robotcore.hardware.LynxModuleImuType;
@@ -455,6 +456,8 @@ public final class BlocksOpMode extends LinearOpMode {
         new AngularVelocityAccess(this, Identifier.ANGULAR_VELOCITY.identifierForJavaScript));
     addJavascriptInterface(Identifier.APRIL_TAG.identifierForJavaScript,
         new AprilTagAccess(this, Identifier.APRIL_TAG.identifierForJavaScript));
+    addJavascriptInterface(Identifier.BLACKBOARD.identifierForJavaScript,
+        new BlackboardAccess(this, Identifier.BLACKBOARD.identifierForJavaScript, OpMode.blackboard));
     addJavascriptInterface(Identifier.BLINKIN_PATTERN.identifierForJavaScript,
         new BlinkinPatternAccess(this, Identifier.BLINKIN_PATTERN.identifierForJavaScript));
     addJavascriptInterface(Identifier.BNO055IMU_PARAMETERS.identifierForJavaScript,

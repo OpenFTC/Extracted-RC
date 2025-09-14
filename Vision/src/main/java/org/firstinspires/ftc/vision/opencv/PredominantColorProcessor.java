@@ -34,6 +34,7 @@
 package org.firstinspires.ftc.vision.opencv;
 
 import org.firstinspires.ftc.vision.VisionProcessor;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -115,15 +116,39 @@ public abstract class PredominantColorProcessor implements VisionProcessor
          */
         public final Swatch closestSwatch;
 
-        /**
-         * Exact numerical value of the dominant color in the ROI
-         */
+        /** Exact numerical value of the dominant color in the ROI (24 bit)  */
         public final int rgb;
 
+        /** Predominant color expressed as RGB int array. Red 0-255, Green 0-255, Blue 0-255  */
+        public final int[] RGB;
+
+        /** Predominant color expressed as HSV int array. Hue 0-180, Saturation 0-255, Value 0-255  */
+        public final int[] HSV;
+
+        /** Predominant color expressed as YCrCb int array. Luminance(Y) 0-255, Cr 0-255 (center 128), Cb 0-255 (center 128)  */
+        public final int[] YCrCb;
+
+        public Result()
+        {
+            // Create an empty result.
+            this(Swatch.BLACK, 0, new int[3], new int[3], new int[3]) ;
+        }
+
+        // legacy constructor
+        @Deprecated
         public Result(Swatch closestSwatch, int rgb)
+        {
+            // Chain the legacy constructor to use the new form.
+            this(closestSwatch, rgb, new int[3], new int[3], new int[3]) ;
+        }
+
+        public Result(Swatch closestSwatch, int rgb, int[] RGB, int[] HSV, int[] YCrCb)
         {
             this.closestSwatch = closestSwatch;
             this.rgb = rgb;
+            this.RGB = RGB;
+            this.HSV = HSV;
+            this.YCrCb = YCrCb;
         }
     }
 

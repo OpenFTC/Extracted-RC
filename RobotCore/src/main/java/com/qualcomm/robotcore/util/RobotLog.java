@@ -321,6 +321,13 @@ public class RobotLog {
   //------------------------------------------------------------------------------------------------
 
   /**
+   * NOT FOR USE BY TEAM SOFTWARE OR THIRD PARTY LIBRARIES
+   *
+   * PRIVATE INTERNAL SDK USAGE ONLY.
+   *
+   * If used in an OpMode or third party library and called when an OpMode is
+   * running, setGlobalErrorMsg will be ignored.
+   *
    * Set a global error message
    *
    * This message stays set until clearGlobalErrorMsg is called. Additional

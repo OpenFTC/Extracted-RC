@@ -8,7 +8,7 @@
 </variables>
 <block type="procedures_defnoreturn" id="WtpyD@tEu+EoY=P9iY,D" deletable="false" x="25" y="373">
 <field name="NAME">runOpMode</field>
-<comment pinned="true" h="346" w="784">This OpMode illustrates how to use a video source (camera) as a color sensor
+<comment pinned="true" h="447.2436218261719" w="790.0445556640625">This OpMode illustrates how to use a video source (camera) as a color sensor
 
 A "color sensor" will typically determine the color of the object that it is pointed at.
 
@@ -21,10 +21,15 @@ To perform this function, a VisionPortal runs a PredominantColorProcessor proces
   The PredominantColorProcessor analyses the ROI and splits the colored pixels into several color-clusters.
   The largest of these clusters is then considered to be the "Predominant Color"
   The process then matches the Predominant Color with the closest Swatch and returns that match.
+  The process also returns the actual Predominant Color in three different color spaces: RGB, HSV &amp; YCrCb
+  Each returned color-space value has three components, in the following ranges:
+   RGB   Red 0-255, Green 0-255, Blue 0-255
+   HSV   Hue 0-180, Saturation 0-255, Value 0-255
+   YCrCb Luminance(Y) 0-255, Cr 0-255 (center 128), Cb 0-255 (center 128)
 
 To aid the user, a colored rectangle is drawn on the camera preview to show the RegionOfInterest,
 The Predominant Color is used to paint the rectangle border, so the user can verify that the color is reasonable.</comment>
-<data>{"commentPositionLeft":-21,"commentPositionTop":-373}</data>
+<data>{"commentPositionLeft":-21,"commentPositionTop":-471}</data>
 <statement name="STACK">
 <block type="comment" id="Lc#BFtj*NTB48YL;eBl.">
 <field name="COMMENT">Build a "Color Sensor" vision processor based on the PredominantColorProcessor class.</field>
@@ -236,6 +241,13 @@ The Predominant Color is used to paint the rectangle border, so the user can ver
 </shadow>
 </value>
 <next>
+<block type="telemetry_setDisplayFormat" id="B141jCuBwQ98?$4E*U,z">
+<value name="DISPLAY_FORMAT">
+<shadow type="telemetry_typedEnum_displayFormat" id="sDiAa67?jD]f9-$D^7VC">
+<field name="DISPLAY_FORMAT">MONOSPACE</field>
+</shadow>
+</value>
+<next>
 <block type="comment" id="x^FU*UT:ZiFEqk$};0te">
 <field name="COMMENT">WARNING:  To be able to view the stream preview on the Driver Station, this code runs in INIT mode.</field>
 <next>
@@ -253,15 +265,10 @@ The Predominant Color is used to paint the rectangle border, so the user can ver
 </block>
 </value>
 <statement name="DO">
-<block type="telemetry_addTextData_All" id="$Doe_ZP|U:jUQ)^i9Pt3">
-<value name="KEY">
-<shadow type="text" id="_2M4hC^kD:h@Eo3/6P63">
-<field name="TEXT">DS preview on/off</field>
-</shadow>
-</value>
+<block type="telemetry_addLine" id="8$iannKtwCvslE.x/ngy">
 <value name="TEXT">
-<shadow type="text" id="vp|^8+-fn4FT=@%sPP_Q">
-<field name="TEXT">3 dots, Camera Stream</field>
+<shadow type="text" id="n,bMZp6jRuX8:VdO.8bI">
+<field name="TEXT">Preview on/off: 3 dots, Camera Stream</field>
 </shadow>
 </value>
 <next>
@@ -276,7 +283,7 @@ The Predominant Color is used to paint the rectangle border, so the user can ver
 <field name="COMMENT">Request the most recent color analysis.</field>
 <next>
 <block type="comment" id="Jh/;L$n@JuX8AQJDFCul">
-<field name="COMMENT">This will return the closest matching colorSwatch and the predominant RGB color.</field>
+<field name="COMMENT">This will return the closest matching colorSwatch and the predominant color in RGB, HSV and YCrCb color spaces.</field>
 <next>
 <block type="variables_set" id="MB(NmOK;$*omB?G^0ZSe">
 <field name="VAR" id="W[iT:FTG%qgB)]18(;)L">myResult</field>
@@ -290,8 +297,8 @@ The Predominant Color is used to paint the rectangle border, so the user can ver
 </block>
 </value>
 <next>
-<block type="comment" id="r*it@Y2Dki3i^W7I)k7a">
-<field name="COMMENT">Note: to take actions based on the detected color, simply use the colorSwatch in a comparison or switch.</field>
+<block type="comment" id=";Jxtq~^--o)E:h,/J~,^">
+<field name="COMMENT">Note: to take actions based on the detected color, simply use the colorSwatch or color space value in a comparison or switch.</field>
 <next>
 <block type="comment" id="XYi:O3,R)!T:SZqcLHbQ">
 <field name="COMMENT"> eg:</field>
@@ -323,13 +330,43 @@ The Predominant Color is used to paint the rectangle border, so the user can ver
 </block>
 </statement>
 <next>
+<block type="comment" id="J9)}FioA]1gYM]u,v3]A">
+<field name="COMMENT"> or:</field>
+<next>
+<block type="controls_if" id="rQ00zpCxQI(xql(-4aCG" disabled="true">
+<value name="IF0">
+<block type="logic_compare" id="8rvJ7U5t(]|xXi:m;v]A">
+<field name="OP">GT</field>
+<value name="A">
+<block type="predominantColorProcessorResult_getProperty_Number" id="XTWsJ}%@,7sn0?4z77TW">
+<field name="PROP">RGB[0]</field>
+<value name="RESULT">
+<block type="variables_get" id=".CbiU5Hygdm|?b,;Qa]`">
+<field name="VAR" id="W[iT:FTG%qgB)]18(;)L">myResult</field>
+</block>
+</value>
+</block>
+</value>
+<value name="B">
+<block type="math_number" id="I+J79woZQwpiPRJs,30z">
+<field name="NUM">128</field>
+</block>
+</value>
+</block>
+</value>
+<statement name="DO0">
+<block type="comment" id="g}xNq/|V0$@?x8GM+S22">
+<field name="COMMENT">... some code  ...</field>
+</block>
+</statement>
+<next>
 <block type="comment" id="LNQ/aOAz6Uln~y#^$6{F">
 <field name="COMMENT">Display the Color Sensor result.</field>
 <next>
 <block type="telemetry_addTextData_All" id="hotG$i|Dfe(W7m-bfbYM">
 <value name="KEY">
 <shadow type="text" id="SGl:KbG~FF``yZ1LS:l6">
-<field name="TEXT">Best Match:</field>
+<field name="TEXT">Best Match</field>
 </shadow>
 </value>
 <value name="TEXT">
@@ -352,10 +389,10 @@ The Predominant Color is used to paint the rectangle border, so the user can ver
 <field name="TEXT">text</field>
 </shadow>
 <block type="text_join" id="PAOiw7OmcUODU}jNl:;,">
-<mutation items="6"/>
+<mutation items="7"/>
 <value name="ADD0">
 <block type="text" id="2/8]VG@YQ(GIW.]4nuM^">
-<field name="TEXT">R </field>
+<field name="TEXT">RGB   (</field>
 </block>
 </value>
 <value name="ADD1">
@@ -364,16 +401,11 @@ The Predominant Color is used to paint the rectangle border, so the user can ver
 <shadow type="math_number" id="5emvV5:i*{Jw^b8M@[Wj">
 <field name="NUM">3.14159265</field>
 </shadow>
-<block type="color_getProperty_Number" id="qz?5u^^ZQAjhslrwJK9Q">
-<field name="PROP">Red</field>
-<value name="COLOR">
 <block type="predominantColorProcessorResult_getProperty_Number" id="])7_hx%~?=Ttk12+)]d(">
-<field name="PROP">rgb</field>
+<field name="PROP">RGB[0]</field>
 <value name="RESULT">
 <block type="variables_get" id="jRwrlG7v_+qUb^j0~r;q">
 <field name="VAR" id="W[iT:FTG%qgB)]18(;)L">myResult</field>
-</block>
-</value>
 </block>
 </value>
 </block>
@@ -392,7 +424,7 @@ The Predominant Color is used to paint the rectangle border, so the user can ver
 </value>
 <value name="ADD2">
 <block type="text" id="INEN%mfCI=`v}X|E.51Q">
-<field name="TEXT">, G </field>
+<field name="TEXT">, </field>
 </block>
 </value>
 <value name="ADD3">
@@ -401,16 +433,11 @@ The Predominant Color is used to paint the rectangle border, so the user can ver
 <shadow type="math_number" id="ky^^69+iA$9MEb:_ayaj">
 <field name="NUM">3.14159265</field>
 </shadow>
-<block type="color_getProperty_Number" id="RMymPQx5==G4qWCUkI^u">
-<field name="PROP">Green</field>
-<value name="COLOR">
 <block type="predominantColorProcessorResult_getProperty_Number" id="OQA`@1!^VLpG@OV=OQ5~">
-<field name="PROP">rgb</field>
+<field name="PROP">RGB[1]</field>
 <value name="RESULT">
 <block type="variables_get" id="Y;?SY[QPsPPHJiN4{Pv$">
 <field name="VAR" id="W[iT:FTG%qgB)]18(;)L">myResult</field>
-</block>
-</value>
 </block>
 </value>
 </block>
@@ -429,7 +456,7 @@ The Predominant Color is used to paint the rectangle border, so the user can ver
 </value>
 <value name="ADD4">
 <block type="text" id="kRkk~g=Ml;QzTd16YpeS">
-<field name="TEXT">, B </field>
+<field name="TEXT">, </field>
 </block>
 </value>
 <value name="ADD5">
@@ -438,16 +465,11 @@ The Predominant Color is used to paint the rectangle border, so the user can ver
 <shadow type="math_number" id="0CWwIby~8]aLGRw|NbP|">
 <field name="NUM">3.14159265</field>
 </shadow>
-<block type="color_getProperty_Number" id="S9oVOmuJp1XCG}CLqL[G">
-<field name="PROP">Blue</field>
-<value name="COLOR">
 <block type="predominantColorProcessorResult_getProperty_Number" id="PJQs3(Jjp{/dIt*KSUpG">
-<field name="PROP">rgb</field>
+<field name="PROP">RGB[2]</field>
 <value name="RESULT">
 <block type="variables_get" id="v;awZ#Ext_}%fE4V80Ip">
 <field name="VAR" id="W[iT:FTG%qgB)]18(;)L">myResult</field>
-</block>
-</value>
 </block>
 </value>
 </block>
@@ -462,6 +484,233 @@ The Predominant Color is used to paint the rectangle border, so the user can ver
 <field name="NUM">0</field>
 </shadow>
 </value>
+</block>
+</value>
+<value name="ADD6">
+<block type="text" id="*[X^}]Kwok$iz;Fb8]*p">
+<field name="TEXT">)</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_addLine" id=".CB?Pu;ppkFTVC[B#Qa4">
+<value name="TEXT">
+<shadow type="text">
+<field name="TEXT">text</field>
+</shadow>
+<block type="text_join" id="Z3yg`E}eVI_NBm{WQ1*u">
+<mutation items="7"/>
+<value name="ADD0">
+<block type="text" id="-52%x8p;N`z,*%j+c4sN">
+<field name="TEXT">HSV   (</field>
+</block>
+</value>
+<value name="ADD1">
+<block type="misc_formatNumber_withWidth" id="b@(l#XM;Q,4-Aj8aO;_U">
+<value name="NUMBER">
+<shadow type="math_number">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="predominantColorProcessorResult_getProperty_Number" id=".~@{z}4jqNUUM@RQY)Q$">
+<field name="PROP">HSV[0]</field>
+<value name="RESULT">
+<block type="variables_get" id="rTOnzC!#6UX:l$5CFV_w">
+<field name="VAR" id="W[iT:FTG%qgB)]18(;)L">myResult</field>
+</block>
+</value>
+</block>
+</value>
+<value name="WIDTH">
+<shadow type="math_number" id="=a/zN.:_A#DM[S?Sn:!0">
+<field name="NUM">3</field>
+</shadow>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="B#RV]DLZDbTcK_[l|La/">
+<field name="NUM">0</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="ADD2">
+<block type="text" id="yU-cg9zrcT|j,istlV`k">
+<field name="TEXT">, </field>
+</block>
+</value>
+<value name="ADD3">
+<block type="misc_formatNumber_withWidth" id="PGtB0m3Vrd]%m*J(m}J*">
+<value name="NUMBER">
+<shadow type="math_number">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="predominantColorProcessorResult_getProperty_Number" id="WkM]:zWUH:zc]EI7YNoI">
+<field name="PROP">HSV[1]</field>
+<value name="RESULT">
+<block type="variables_get" id="-,O%U~VmpIM5espT`d6C">
+<field name="VAR" id="W[iT:FTG%qgB)]18(;)L">myResult</field>
+</block>
+</value>
+</block>
+</value>
+<value name="WIDTH">
+<shadow type="math_number" id="0KST9^Gn_Eora.l6T.gT">
+<field name="NUM">3</field>
+</shadow>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="5wO_fC7+ew#[4yp]mb5B">
+<field name="NUM">0</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="ADD4">
+<block type="text" id="pZ=bW`B9VRoo.[Uk%YbK">
+<field name="TEXT">, </field>
+</block>
+</value>
+<value name="ADD5">
+<block type="misc_formatNumber_withWidth" id="A1X=|YU%r+i%WkqW0=n/">
+<value name="NUMBER">
+<shadow type="math_number">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="predominantColorProcessorResult_getProperty_Number" id="Z!q5EI75j:w6WJE-x0Zc">
+<field name="PROP">HSV[2]</field>
+<value name="RESULT">
+<block type="variables_get" id="i{$_eTj(_g(MOl1-_x~I">
+<field name="VAR" id="W[iT:FTG%qgB)]18(;)L">myResult</field>
+</block>
+</value>
+</block>
+</value>
+<value name="WIDTH">
+<shadow type="math_number" id="ZDsbSs.c$3un+b%7O)4O">
+<field name="NUM">3</field>
+</shadow>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="+kh|SMOb1h){W84dglX9">
+<field name="NUM">0</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="ADD6">
+<block type="text" id="Tq//-[C8a!b~-q]{ed:i">
+<field name="TEXT">)</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_addLine" id="F8rxG~H?}(_^1G=us%so">
+<value name="TEXT">
+<shadow type="text">
+<field name="TEXT">text</field>
+</shadow>
+<block type="text_join" id="$8fqxA{.3;4fIDlAdulz">
+<mutation items="7"/>
+<value name="ADD0">
+<block type="text" id="3WwNa)nswYfE_r8l~!?U">
+<field name="TEXT">YCrCb (</field>
+</block>
+</value>
+<value name="ADD1">
+<block type="misc_formatNumber_withWidth" id="LA!uMY7~{V*#Icw_9{yC">
+<value name="NUMBER">
+<shadow type="math_number">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="predominantColorProcessorResult_getProperty_Number" id="ROhZ.D,VK!-S!5d*E|fZ">
+<field name="PROP">YCrCb[0]</field>
+<value name="RESULT">
+<block type="variables_get" id="JOLpdT;(zLiUm9b%:HbX">
+<field name="VAR" id="W[iT:FTG%qgB)]18(;)L">myResult</field>
+</block>
+</value>
+</block>
+</value>
+<value name="WIDTH">
+<shadow type="math_number" id="cOATX[HIx-~~4`TuyD19">
+<field name="NUM">3</field>
+</shadow>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="(AH?IiJPNh$.@rToJ1x6">
+<field name="NUM">0</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="ADD2">
+<block type="text" id="xZ,RHt$NeK@mRo962b[w">
+<field name="TEXT">, </field>
+</block>
+</value>
+<value name="ADD3">
+<block type="misc_formatNumber_withWidth" id="?xJ;Gts1gad*87ht+jt;">
+<value name="NUMBER">
+<shadow type="math_number">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="predominantColorProcessorResult_getProperty_Number" id="V$d{RBvj#IpT`cVuwgfP">
+<field name="PROP">YCrCb[1]</field>
+<value name="RESULT">
+<block type="variables_get" id="IK+y;FJx$FO:+Q5xAe-I">
+<field name="VAR" id="W[iT:FTG%qgB)]18(;)L">myResult</field>
+</block>
+</value>
+</block>
+</value>
+<value name="WIDTH">
+<shadow type="math_number" id="jsJNpSJF$F[?Jnl[izUY">
+<field name="NUM">3</field>
+</shadow>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="|CkTf-iSHrqf%_AL+{UX">
+<field name="NUM">0</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="ADD4">
+<block type="text" id=",MHtpoP0eENSPl9C*%o%">
+<field name="TEXT">, </field>
+</block>
+</value>
+<value name="ADD5">
+<block type="misc_formatNumber_withWidth" id="Z:{d09[I@R4R,:%.@JwR">
+<value name="NUMBER">
+<shadow type="math_number">
+<field name="NUM">3.14159265</field>
+</shadow>
+<block type="predominantColorProcessorResult_getProperty_Number" id="zpm/.UvO!.8CHcXQYq0n">
+<field name="PROP">YCrCb[2]</field>
+<value name="RESULT">
+<block type="variables_get" id="4ROn4O9{53~(SrzV%O]H">
+<field name="VAR" id="W[iT:FTG%qgB)]18(;)L">myResult</field>
+</block>
+</value>
+</block>
+</value>
+<value name="WIDTH">
+<shadow type="math_number" id="QF45{Asnk`OJ/hNT@)+0">
+<field name="NUM">3</field>
+</shadow>
+</value>
+<value name="PRECISION">
+<shadow type="math_number" id="e?a8~C|/b=|Q%0^E,~6*">
+<field name="NUM">0</field>
+</shadow>
+</value>
+</block>
+</value>
+<value name="ADD6">
+<block type="text" id="h,6[dT/%xCN#;oi~fyGg">
+<field name="TEXT">)</field>
 </block>
 </value>
 </block>
@@ -500,7 +749,17 @@ The Predominant Color is used to paint the rectangle border, so the user can ver
 </block>
 </next>
 </block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
 </statement>
+</block>
+</next>
 </block>
 </next>
 </block>

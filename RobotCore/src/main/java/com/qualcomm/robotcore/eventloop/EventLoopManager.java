@@ -383,6 +383,16 @@ public class EventLoopManager implements RecvLoopRunnable.RecvLoopCallback, Netw
   // Misc
   //------------------------------------------------------------------------------------------------
 
+  private boolean isRobotInSafeState() {
+    if (state != RobotState.INIT && state != RobotState.RUNNING) {
+      return true;
+    }
+    if (eventLoop.getOpModeManager().getActiveOpMode() instanceof OpModeManagerImpl.DefaultOpMode) {
+      return true;
+    }
+    return false;
+  }
+
   /**
    * Forces an immediate refresh of the system telemetry
    */
@@ -409,7 +419,11 @@ public class EventLoopManager implements RecvLoopRunnable.RecvLoopCallback, Netw
       String warningMessage = RobotLog.getGlobalWarningMessage().message;
 
       // Figure out what things *should* like
-      if (!errorMessage.isEmpty()) {
+      // Don't allow for setGlobalErrorMsg to be called while the robot is running, unless we are running
+      // the default opmode which ensures the robot is always in a safe state.
+      // see: https://github.com/FIRST-Tech-Challenge/ftc_sdk/issues/3349
+
+      if (!errorMessage.isEmpty() && isRobotInSafeState()) {
         message = errorMessage;
         key = SYSTEM_ERROR_KEY;
       }

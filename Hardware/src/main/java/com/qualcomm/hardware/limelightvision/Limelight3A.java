@@ -36,6 +36,7 @@ import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.util.SerialNumber;
 
 import org.firstinspires.ftc.robotcore.internal.usb.EthernetOverUsbSerialNumber;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONArray;
 import java.io.BufferedReader;
@@ -238,7 +239,11 @@ public class Limelight3A implements HardwareDevice
      *
      * @return The latest LLResult object.
      */
-    public LLResult getLatestResult() {
+    public LLResult getLatestResult(){
+        if (this.latestResult == null) {
+            JSONObject fakeJSON = new JSONObject();
+            this.latestResult = LLResult.parse(fakeJSON);
+        }
         return this.latestResult;
     }
 

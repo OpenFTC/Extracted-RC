@@ -143,6 +143,200 @@
     <field name="IDENTIFIER">gamepad1</field>
     <field name="PROP">Y</field>
   </block>
+  <category name="Pressed">
+    <block type="gamepad_getProperty_Boolean">
+      <field name="IDENTIFIER">gamepad1</field>
+      <field name="PROP">AWasPressed</field>
+    </block>
+    <block type="gamepad_getProperty_Boolean">
+      <field name="IDENTIFIER">gamepad1</field>
+      <field name="PROP">BWasPressed</field>
+    </block>
+    <block type="gamepad_getProperty_Boolean">
+      <field name="IDENTIFIER">gamepad1</field>
+      <field name="PROP">BackWasPressed</field>
+    </block>
+    <block type="gamepad_getProperty_Boolean">
+      <field name="IDENTIFIER">gamepad1</field>
+      <field name="PROP">CircleWasPressed</field>
+    </block>
+    <block type="gamepad_getProperty_Boolean">
+      <field name="IDENTIFIER">gamepad1</field>
+      <field name="PROP">CrossWasPressed</field>
+    </block>
+    <block type="gamepad_getProperty_Boolean">
+      <field name="IDENTIFIER">gamepad1</field>
+      <field name="PROP">DpadDownWasPressed</field>
+    </block>
+    <block type="gamepad_getProperty_Boolean">
+      <field name="IDENTIFIER">gamepad1</field>
+      <field name="PROP">DpadLeftWasPressed</field>
+    </block>
+    <block type="gamepad_getProperty_Boolean">
+      <field name="IDENTIFIER">gamepad1</field>
+      <field name="PROP">DpadRightWasPressed</field>
+    </block>
+    <block type="gamepad_getProperty_Boolean">
+      <field name="IDENTIFIER">gamepad1</field>
+      <field name="PROP">DpadUpWasPressed</field>
+    </block>
+    <block type="gamepad_getProperty_Boolean">
+      <field name="IDENTIFIER">gamepad1</field>
+      <field name="PROP">GuideWasPressed</field>
+    </block>
+    <block type="gamepad_getProperty_Boolean">
+      <field name="IDENTIFIER">gamepad1</field>
+      <field name="PROP">LeftBumperWasPressed</field>
+    </block>
+    <block type="gamepad_getProperty_Boolean">
+      <field name="IDENTIFIER">gamepad1</field>
+      <field name="PROP">LeftStickButtonWasPressed</field>
+    </block>
+    <block type="gamepad_getProperty_Boolean">
+      <field name="IDENTIFIER">gamepad1</field>
+      <field name="PROP">OptionsWasPressed</field>
+    </block>
+    <block type="gamepad_getProperty_Boolean">
+      <field name="IDENTIFIER">gamepad1</field>
+      <field name="PROP">PSWasPressed</field>
+    </block>
+    <block type="gamepad_getProperty_Boolean">
+      <field name="IDENTIFIER">gamepad1</field>
+      <field name="PROP">RightBumperWasPressed</field>
+    </block>
+    <block type="gamepad_getProperty_Boolean">
+      <field name="IDENTIFIER">gamepad1</field>
+      <field name="PROP">RightStickButtonWasPressed</field>
+    </block>
+    <block type="gamepad_getProperty_Boolean">
+      <field name="IDENTIFIER">gamepad1</field>
+      <field name="PROP">ShareWasPressed</field>
+    </block>
+    <block type="gamepad_getProperty_Boolean">
+      <field name="IDENTIFIER">gamepad1</field>
+      <field name="PROP">SquareWasPressed</field>
+    </block>
+    <block type="gamepad_getProperty_Boolean">
+      <field name="IDENTIFIER">gamepad1</field>
+      <field name="PROP">StartWasPressed</field>
+    </block>
+    <block type="gamepad_getProperty_Boolean">
+      <field name="IDENTIFIER">gamepad1</field>
+      <field name="PROP">TouchpadWasPressed</field>
+    </block>
+    <block type="gamepad_getProperty_Boolean">
+      <field name="IDENTIFIER">gamepad1</field>
+      <field name="PROP">TriangleWasPressed</field>
+    </block>
+    <block type="gamepad_getProperty_Boolean">
+      <field name="IDENTIFIER">gamepad1</field>
+      <field name="PROP">XWasPressed</field>
+    </block>
+    <block type="gamepad_getProperty_Boolean">
+      <field name="IDENTIFIER">gamepad1</field>
+      <field name="PROP">YWasPressed</field>
+    </block>
+    <block type="gamepad_resetEdgeDetection">
+      <field name="IDENTIFIER">gamepad1</field>
+    </block>
+  </category>
+  <category name="Released">
+    <block type="gamepad_getProperty_Boolean">
+      <field name="IDENTIFIER">gamepad1</field>
+      <field name="PROP">AWasReleased</field>
+    </block>
+    <block type="gamepad_getProperty_Boolean">
+      <field name="IDENTIFIER">gamepad1</field>
+      <field name="PROP">BWasReleased</field>
+    </block>
+    <block type="gamepad_getProperty_Boolean">
+      <field name="IDENTIFIER">gamepad1</field>
+      <field name="PROP">BackWasReleased</field>
+    </block>
+    <block type="gamepad_getProperty_Boolean">
+      <field name="IDENTIFIER">gamepad1</field>
+      <field name="PROP">CircleWasReleased</field>
+    </block>
+    <block type="gamepad_getProperty_Boolean">
+      <field name="IDENTIFIER">gamepad1</field>
+      <field name="PROP">CrossWasReleased</field>
+    </block>
+    <block type="gamepad_getProperty_Boolean">
+      <field name="IDENTIFIER">gamepad1</field>
+      <field name="PROP">DpadDownWasReleased</field>
+    </block>
+    <block type="gamepad_getProperty_Boolean">
+      <field name="IDENTIFIER">gamepad1</field>
+      <field name="PROP">DpadLeftWasReleased</field>
+    </block>
+    <block type="gamepad_getProperty_Boolean">
+      <field name="IDENTIFIER">gamepad1</field>
+      <field name="PROP">DpadRightWasReleased</field>
+    </block>
+    <block type="gamepad_getProperty_Boolean">
+      <field name="IDENTIFIER">gamepad1</field>
+      <field name="PROP">DpadUpWasReleased</field>
+    </block>
+    <block type="gamepad_getProperty_Boolean">
+      <field name="IDENTIFIER">gamepad1</field>
+      <field name="PROP">GuideWasReleased</field>
+    </block>
+    <block type="gamepad_getProperty_Boolean">
+      <field name="IDENTIFIER">gamepad1</field>
+      <field name="PROP">LeftBumperWasReleased</field>
+    </block>
+    <block type="gamepad_getProperty_Boolean">
+      <field name="IDENTIFIER">gamepad1</field>
+      <field name="PROP">LeftStickButtonWasReleased</field>
+    </block>
+    <block type="gamepad_getProperty_Boolean">
+      <field name="IDENTIFIER">gamepad1</field>
+      <field name="PROP">OptionsWasReleased</field>
+    </block>
+    <block type="gamepad_getProperty_Boolean">
+      <field name="IDENTIFIER">gamepad1</field>
+      <field name="PROP">PSWasReleased</field>
+    </block>
+    <block type="gamepad_getProperty_Boolean">
+      <field name="IDENTIFIER">gamepad1</field>
+      <field name="PROP">RightBumperWasReleased</field>
+    </block>
+    <block type="gamepad_getProperty_Boolean">
+      <field name="IDENTIFIER">gamepad1</field>
+      <field name="PROP">RightStickButtonWasReleased</field>
+    </block>
+    <block type="gamepad_getProperty_Boolean">
+      <field name="IDENTIFIER">gamepad1</field>
+      <field name="PROP">ShareWasReleased</field>
+    </block>
+    <block type="gamepad_getProperty_Boolean">
+      <field name="IDENTIFIER">gamepad1</field>
+      <field name="PROP">SquareWasReleased</field>
+    </block>
+    <block type="gamepad_getProperty_Boolean">
+      <field name="IDENTIFIER">gamepad1</field>
+      <field name="PROP">StartWasReleased</field>
+    </block>
+    <block type="gamepad_getProperty_Boolean">
+      <field name="IDENTIFIER">gamepad1</field>
+      <field name="PROP">TouchpadWasReleased</field>
+    </block>
+    <block type="gamepad_getProperty_Boolean">
+      <field name="IDENTIFIER">gamepad1</field>
+      <field name="PROP">TriangleWasReleased</field>
+    </block>
+    <block type="gamepad_getProperty_Boolean">
+      <field name="IDENTIFIER">gamepad1</field>
+      <field name="PROP">XWasReleased</field>
+    </block>
+    <block type="gamepad_getProperty_Boolean">
+      <field name="IDENTIFIER">gamepad1</field>
+      <field name="PROP">YWasReleased</field>
+    </block>
+    <block type="gamepad_resetEdgeDetection">
+      <field name="IDENTIFIER">gamepad1</field>
+    </block>
+  </category>
   <category name="Rumble">
     <block type="gamepad_rumble_with1">
       <field name="IDENTIFIER">gamepad1</field>

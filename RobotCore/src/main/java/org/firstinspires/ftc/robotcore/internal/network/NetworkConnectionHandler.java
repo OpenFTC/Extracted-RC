@@ -291,6 +291,9 @@ public class NetworkConnectionHandler {
     }
 
     public String getConnectionOwnerName() {
+        if (networkConnection == null) {
+            return null;
+        }
         return networkConnection.getConnectionOwnerName();
     }
 

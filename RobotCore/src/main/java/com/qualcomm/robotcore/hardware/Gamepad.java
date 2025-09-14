@@ -267,6 +267,11 @@ public class Gamepad extends RobocolParsableBase {
   public volatile boolean ps = false;
 
   /**
+   * Edge detection for gamepads
+   */
+  private volatile GamepadStateChanges changes = new GamepadStateChanges();
+
+  /**
    * Which user is this gamepad used by
    */
   protected volatile byte user = ID_UNASSOCIATED;
@@ -483,6 +488,8 @@ public class Gamepad extends RobocolParsableBase {
     }
 
     updateButtonAliases();
+
+    updateEdgeDetection();
   }
 
   /**
@@ -903,5 +910,384 @@ public class Gamepad extends RobocolParsableBase {
     share = back;
     options = start;
     ps = guide;
+  }
+
+  private void updateEdgeDetection() {
+    changes.updateAllButtons(this);
+  }
+
+  /**
+   * Clears any remembered presses and releases of buttons
+   */
+  public void resetEdgeDetection() {
+    changes = new GamepadStateChanges();
+  }
+
+  /**
+   * Checks if dpad_up was pressed since the last call of this method
+   * @return true if dpad_up was pressed since the last call of this method; otherwise false
+   */
+  public boolean dpadUpWasPressed() {
+    return changes.dpadUp.wasPressed();
+  }
+
+  /**
+   * Checks if dpad_up was released since the last call of this method
+   * @return true if dpad_up was released since the last call of this method; otherwise false
+   */
+  public boolean dpadUpWasReleased() {
+    return changes.dpadUp.wasReleased();
+  }
+
+  /**
+   * Checks if dpad_down was pressed since the last call of this method
+   * @return true if dpad_down was pressed since the last call of this method; otherwise false
+   */
+  public boolean dpadDownWasPressed() {
+    return changes.dpadDown.wasPressed();
+  }
+
+  /**
+   * Checks if dpad_down was released since the last call of this method
+   * @return true if dpad_down was released since the last call of this method; otherwise false
+   */
+  public boolean dpadDownWasReleased() {
+    return changes.dpadDown.wasReleased();
+  }
+
+  /**
+   * Checks if dpad_left was pressed since the last call of this method
+   * @return true if dpad_left was pressed since the last call of this method; otherwise false
+   */
+  public boolean dpadLeftWasPressed() {
+    return changes.dpadLeft.wasPressed();
+  }
+
+  /**
+   * Checks if dpad_left was released since the last call of this method
+   * @return true if dpad_left was released since the last call of this method; otherwise false
+   */
+  public boolean dpadLeftWasReleased() {
+    return changes.dpadLeft.wasReleased();
+  }
+
+  /**
+   * Checks if dpad_right was pressed since the last call of this method
+   * @return true if dpad_right was pressed since the last call of this method; otherwise false
+   */
+  public boolean dpadRightWasPressed() {
+    return changes.dpadRight.wasPressed();
+  }
+
+  /**
+   * Checks if dpad_right was released since the last call of this methmethodod
+   * @return true if dpad_right was released since the last call of this ; otherwise false
+   */
+  public boolean dpadRightWasReleased() {
+    return changes.dpadRight.wasReleased();
+  }
+
+  /**
+   * Checks if a was pressed since the last call of this method
+   * @return true if a was pressed since the last call of this method; otherwise false
+   */
+  public boolean aWasPressed() {
+    return changes.a.wasPressed();
+  }
+
+  /**
+   * Checks if a was released since the last call of this method
+   * @return true if a was released since the last call of this method; otherwise false
+   */
+  public boolean aWasReleased() {
+    return changes.a.wasReleased();
+  }
+
+  /**
+   * Checks if b was pressed since the last call of this method
+   * @return true if b was pressed since the last call of this method; otherwise false
+   */
+  public boolean bWasPressed() {
+    return changes.b.wasPressed();
+  }
+
+  /**
+   * Checks if b was released since the last call of this method
+   * @return true if b was released since the last call of this method; otherwise false
+   */
+  public boolean bWasReleased() {
+    return changes.b.wasReleased();
+  }
+
+  /**
+   * Checks if x was pressed since the last call of this method
+   * @return true if x was pressed since the last call of this method; otherwise false
+   */
+  public boolean xWasPressed() {
+    return changes.x.wasPressed();
+  }
+
+  /**
+   * Checks if x was released since the last call of this method
+   * @return true if x was released since the last call of this method; otherwise false
+   */
+  public boolean xWasReleased() {
+    return changes.x.wasReleased();
+  }
+
+  /**
+   * Checks if y was pressed since the last call of this method
+   * @return true if y was pressed since the last call of this method; otherwise false
+   */
+  public boolean yWasPressed() {
+    return changes.y.wasPressed();
+  }
+
+  /**
+   * Checks if y was released since the last call of this method
+   * @return true if y was released since the last call of this method; otherwise false
+   */
+  public boolean yWasReleased() {
+    return changes.y.wasReleased();
+  }
+
+  /**
+   * Checks if guide was pressed since the last call of this method
+   * @return true if guide was pressed since the last call of this method; otherwise false
+   */
+  public boolean guideWasPressed() {
+    return changes.guide.wasPressed();
+  }
+
+  /**
+   * Checks if guide was released since the last call of this method
+   * @return true if guide was released since the last call of this method; otherwise false
+   */
+  public boolean guideWasReleased() {
+    return changes.guide.wasReleased();
+  }
+
+  /**
+   * Checks if start was pressed since the last call of this method
+   * @return true if start was pressed since the last call of this method; otherwise false
+   */
+  public boolean startWasPressed() {
+    return changes.start.wasPressed();
+  }
+
+  /**
+   * Checks if start was released since the last call of this method
+   * @return true if start was released since the last call of this method; otherwise false
+   */
+  public boolean startWasReleased() {
+    return changes.start.wasReleased();
+  }
+
+  /**
+   * Checks if back was pressed since the last call of this method
+   * @return true if back was pressed since the last call of this method; otherwise false
+   */
+  public boolean backWasPressed() {
+    return changes.back.wasPressed();
+  }
+
+  /**
+   * Checks if back was released since the last call of this method
+   * @return true if back was released since the last call of this method; otherwise false
+   */
+  public boolean backWasReleased() {
+    return changes.back.wasReleased();
+  }
+
+  /**
+   * Checks if left_bumper was pressed since the last call of this method
+   * @return true if left_bumper was pressed since the last call of this method; otherwise false
+   */
+  public boolean leftBumperWasPressed() {
+    return changes.leftBumper.wasPressed();
+  }
+
+  /**
+   * Checks if left_bumper was released since the last call of this method
+   * @return true if left_bumper was released since the last call of this method; otherwise false
+   */
+  public boolean leftBumperWasReleased() {
+    return changes.leftBumper.wasReleased();
+  }
+
+  /**
+   * Checks if right_bumper was pressed since the last call of this method
+   * @return true if right_bumper was pressed since the last call of this method; otherwise false
+   */
+  public boolean rightBumperWasPressed() {
+    return changes.rightBumper.wasPressed();
+  }
+
+  /**
+   * Checks if right_bumper was released since the last call of this method
+   * @return true if right_bumper was released since the last call of this method; otherwise false
+   */
+  public boolean rightBumperWasReleased() {
+    return changes.rightBumper.wasReleased();
+  }
+
+  /**
+   * Checks if left_stick_button was pressed since the last call of this method
+   * @return true if left_stick_button was pressed since the last call of this method; otherwise false
+   */
+  public boolean leftStickButtonWasPressed() {
+    return changes.leftStickButton.wasPressed();
+  }
+
+  /**
+   * Checks if left_stick_button was released since the last call of this method
+   * @return true if left_stick_button was released since the last call of this method; otherwise false
+   */
+  public boolean leftStickButtonWasReleased() {
+    return changes.leftStickButton.wasReleased();
+  }
+
+  /**
+   * Checks if right_stick_button was pressed since the last call of this method
+   * @return true if right_stick_button was pressed since the last call of this method; otherwise false
+   */
+  public boolean rightStickButtonWasPressed() {
+    return changes.rightStickButton.wasPressed();
+  }
+
+  /**
+   * Checks if right_stick_button was released since the last call of this method
+   * @return true if right_stick_button was released since the last call of this method; otherwise false
+   */
+  public boolean rightStickButtonWasReleased() {
+    return changes.rightStickButton.wasReleased();
+  }
+
+  /**
+   * Checks if circle was pressed since the last call of this method
+   * @return true if circle was pressed since the last call of this method; otherwise false
+   */
+  public boolean circleWasPressed() {
+    return changes.circle.wasPressed();
+  }
+
+  /**
+   * Checks if circle was released since the last call of this method
+   * @return true if circle was released since the last call of this method; otherwise false
+   */
+  public boolean circleWasReleased() {
+    return changes.circle.wasReleased();
+  }
+
+  /**
+   * Checks if cross was pressed since the last call of this method
+   * @return true if cross was pressed since the last call of this method; otherwise false
+   */
+  public boolean crossWasPressed() {
+    return changes.cross.wasPressed();
+  }
+
+  /**
+   * Checks if cross was released since the last call of this method
+   * @return true if cross was released since the last call of this method; otherwise false
+   */
+  public boolean crossWasReleased() {
+    return changes.cross.wasReleased();
+  }
+
+  /**
+   * Checks if triangle was pressed since the last call of this method
+   * @return true if triangle was pressed since the last call of this method; otherwise false
+   */
+  public boolean triangleWasPressed() {
+    return changes.triangle.wasPressed();
+  }
+
+  /**
+   * Checks if triangle was released since the last call of this method
+   * @return true if triangle was released since the last call of this method; otherwise false
+   */
+  public boolean triangleWasReleased() {
+    return changes.triangle.wasReleased();
+  }
+
+  /**
+   * Checks if square was pressed since the last call of this method
+   * @return true if square was pressed since the last call of this method; otherwise false
+   */
+  public boolean squareWasPressed() {
+    return changes.square.wasPressed();
+  }
+
+  /**
+   * Checks if square was released since the last call of this method
+   * @return true if square was released since the last call of this method; otherwise false
+   */
+  public boolean squareWasReleased() {
+    return changes.square.wasReleased();
+  }
+
+  /**
+   * Checks if share was pressed since the last call of this method
+   * @return true if share was pressed since the last call of this method; otherwise false
+   */
+  public boolean shareWasPressed() {
+    return changes.share.wasPressed();
+  }
+
+  /**
+   * Checks if share was released since the last call of this method
+   * @return true if share was released since the last call of this method; otherwise false
+   */
+  public boolean shareWasReleased() {
+    return changes.share.wasReleased();
+  }
+
+  /**
+   * Checks if options was pressed since the last call of this method
+   * @return true if options was pressed since the last call of this method; otherwise false
+   */
+  public boolean optionsWasPressed() {
+    return changes.options.wasPressed();
+  }
+
+  /**
+   * Checks if options was released since the last call of this method
+   * @return true if options was released since the last call of this method; otherwise false
+   */
+  public boolean optionsWasReleased() {
+    return changes.options.wasReleased();
+  }
+
+  /**
+   * Checks if touchpad was pressed since the last call of this method
+   * @return true if touchpad was pressed since the last call of this method; otherwise false
+   */
+  public boolean touchpadWasPressed() {
+    return changes.touchpad.wasPressed();
+  }
+
+  /**
+   * Checks if touchpad was released since the last call of this method
+   * @return true if touchpad was released since the last call of this method; otherwise false
+   */
+  public boolean touchpadWasReleased() {
+    return changes.touchpad.wasReleased();
+  }
+
+  /**
+   * Checks if ps was pressed since the last call of this method
+   * @return true if ps was pressed since the last call of this method; otherwise false
+   */
+  public boolean psWasPressed() {
+    return changes.ps.wasPressed();
+  }
+
+  /**
+   * Checks if ps was released since the last call of this method
+   * @return true if ps was released since the last call of this method; otherwise false
+   */
+  public boolean psWasReleased() {
+    return changes.ps.wasReleased();
   }
 }

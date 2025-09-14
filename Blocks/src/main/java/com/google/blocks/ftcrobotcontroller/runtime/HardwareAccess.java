@@ -84,6 +84,8 @@ abstract class HardwareAccess<DEVICE_TYPE extends HardwareDevice> extends Access
         return new DigitalChannelAccess(blocksOpMode, hardwareItem, hardwareMap);
       case DISTANCE_SENSOR:
         return new DistanceSensorAccess(blocksOpMode, hardwareItem, hardwareMap);
+      case GOBILDA_PINPOINT:
+        return new GoBildaPinpointAccess(blocksOpMode, hardwareItem, hardwareMap);
       case GYRO_SENSOR:
         return new GyroSensorAccess(blocksOpMode, hardwareItem, hardwareMap);
       case HUSKY_LENS:

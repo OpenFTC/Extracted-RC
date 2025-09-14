@@ -324,6 +324,15 @@ Blockly.Blocks['predominantColorProcessorResult_getProperty_Number'] = {
   init: function() {
     var PROPERTY_CHOICES = [
         ['rgb', 'rgb'],
+        ['RGB[0]', 'RGB[0]'],
+        ['RGB[1]', 'RGB[1]'],
+        ['RGB[2]', 'RGB[2]'],
+        ['HSV[0]', 'HSV[0]'],
+        ['HSV[1]', 'HSV[1]'],
+        ['HSV[2]', 'HSV[2]'],
+        ['YCrCb[0]', 'YCrCb[0]'],
+        ['YCrCb[1]', 'YCrCb[1]'],
+        ['YCrCb[2]', 'YCrCb[2]'],
     ];
     this.setOutput(true, 'Number');
     this.appendDummyInput()
@@ -337,7 +346,16 @@ Blockly.Blocks['predominantColorProcessorResult_getProperty_Number'] = {
     // Assign 'this' to a variable for use in the closures below.
     var thisBlock = this;
     var TOOLTIPS = [
-        ['rgb', 'Returns the Exact numerical value of the dominant color in the ROI.'],
+        ['rgb', 'Returns the exact numerical value of the dominant color in the ROI.'],
+        ['RGB[0]', 'Returns a numeric value between 0 and 255 representing the red component of the RGB color.'],
+        ['RGB[1]', 'Returns a numeric value between 0 and 255 representing the green component of the RGB color.'],
+        ['RGB[2]', 'Returns a numeric value between 0 and 255 representing the blue component of the RGB color.'],
+        ['HSV[0]', 'Returns a numeric value between 0 and 180 representing the hue component of the HSV color.'],
+        ['HSV[1]', 'Returns a numeric value between 0 and 255 representing the saturation component of the HSV color.'],
+        ['HSV[2]', 'Returns a numeric value between 0 and 255 representing the value component of the HSV color.'],
+        ['YCrCb[0]', 'Returns a numeric value between 0 and 255 representing the Luminance(Y) component of the YCrCb color.'],
+        ['YCrCb[1]', 'Returns a numeric value between 0 and 255 representing the Cr component of the YCrCb color.'],
+        ['YCrCb[2]', 'Returns a numeric value between 0 and 255 representing the Cb component of the YCrCb color.'],
     ];
     this.setTooltip(function() {
       var key = thisBlock.getFieldValue('PROP');
@@ -352,6 +370,15 @@ Blockly.Blocks['predominantColorProcessorResult_getProperty_Number'] = {
       var property = thisBlock.getFieldValue('PROP');
       switch (property) {
         case 'rgb':
+        case 'RGB[0]':
+        case 'RGB[1]':
+        case 'RGB[2]':
+        case 'HSV[0]':
+        case 'HSV[1]':
+        case 'HSV[2]':
+        case 'YCrCb[0]':
+        case 'YCrCb[1]':
+        case 'YCrCb[2]':
           return 'int';
       }
       return '';
@@ -373,7 +400,7 @@ Blockly.FtcJava['predominantColorProcessorResult_getProperty_Number'] = function
   var result = Blockly.FtcJava.valueToCode(
       block, 'RESULT', Blockly.FtcJava.ORDER_MEMBER);
   var code = result + '.' + property;
-  return [code, Blockly.FtcJava.ORDER_FUNCTION_CALL];
+  return [code, Blockly.FtcJava.ORDER_MEMBER];
 };
 
 Blockly.Blocks['predominantColorProcessorResult_getProperty_Swatch'] = {

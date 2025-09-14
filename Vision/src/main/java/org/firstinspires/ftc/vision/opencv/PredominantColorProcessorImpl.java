@@ -33,6 +33,8 @@
 
 package org.firstinspires.ftc.vision.opencv;
 
+import static org.firstinspires.ftc.vision.opencv.PredominantColorProcessor.Swatch.BLACK;
+
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -43,6 +45,7 @@ import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Rect;
+import org.opencv.core.Scalar;
 import org.opencv.core.TermCriteria;
 import org.opencv.imgproc.Imgproc;
 
@@ -67,9 +70,13 @@ class PredominantColorProcessorImpl extends PredominantColorProcessor
     private final Paint boundingRectPaint;
     private final Paint boundingRectCrosshairPaint;
 
-    private volatile Result result = new Result(null, 0);
+    private volatile Result result = new Result();
 
     private final ArrayList<Swatch> swatches;
+
+    private int[] resultRGB = new int[3];
+    private int[] resultHSV = new int[3];;
+    private int[] resultYCrCb = new int[3];;
 
     PredominantColorProcessorImpl(ImageRegion roi, Swatch[] swatches)
     {
@@ -154,16 +161,24 @@ class PredominantColorProcessorImpl extends PredominantColorProcessor
             }
         }
 
-        double Y  = avgLuminance; // Luminance
-        double Cr = centers.get(maxCountIndex, 0)[0]; // Red-difference Chroma
-        double Cb = centers.get(maxCountIndex, 1)[0]; // Blue-difference Chroma
+        // Save the predominant color in YCrCb color space
+        resultYCrCb[0] = (int)avgLuminance & 0xFF; // Luminance
+        resultYCrCb[1] = (int)(centers.get(maxCountIndex, 0)[0]) &  0xFF; // Red-difference Chroma
+        resultYCrCb[2] = (int)(centers.get(maxCountIndex, 1)[0]) &  0xFF; // Blue-difference Chroma
 
-        byte[] rgb = yCrCb2Rgb(new byte[] {(byte) Y, (byte) Cr, (byte) Cb});
+        // Now convert predominant color to RGB space
+        byte[] rgb = yCrCb2Rgb(new byte[] {(byte) resultYCrCb[0], (byte) resultYCrCb[1], (byte) resultYCrCb[2]});
+        resultRGB[0] = (int)rgb[0] & 0xFF;
+        resultRGB[1] = (int)rgb[1] & 0xFF;
+        resultRGB[2] = (int)rgb[2] & 0xFF;
+
+        // Now convert predominant color to HSV space
         float[] hsv = new float[3];
-        int color = Color.rgb(rgb[0] & 0xFF, rgb[1] & 0xFF, rgb[2] & 0xFF);
-
-        // Note this used 0-360, 0-1, 0-1
-        Color.colorToHSV(color, hsv);
+        int color = Color.rgb(resultRGB[0], resultRGB[1], resultRGB[2]);
+        Color.colorToHSV(color, hsv);       // Note this uses 0-360, 0-1, 0-1
+        resultHSV[0] = (int)(hsv[0] / 2);   // Change to 0-180
+        resultHSV[1] = (int)(hsv[1] * 255); // Change to 0-255
+        resultHSV[2] = (int)(hsv[2] * 255); // Change to 0-255
 
         float H = hsv[0];
         float S = hsv[1];
@@ -178,9 +193,9 @@ class PredominantColorProcessorImpl extends PredominantColorProcessor
         {
             closestSwatch = Swatch.WHITE;
         }
-        else if ((V < 0.1) || (S < 0.2 || V < 0.2) && swatches.contains(Swatch.BLACK))
+        else if ((V < 0.1) || (S < 0.2 || V < 0.2) && swatches.contains(BLACK))
         {
-            closestSwatch = Swatch.BLACK;
+            closestSwatch = BLACK;
         }
         else
         {
@@ -210,7 +225,8 @@ class PredominantColorProcessorImpl extends PredominantColorProcessor
             }
         }
 
-        result = new Result(closestSwatch, color);
+        // Return the closest matching color swatch, AND the predominant color in all three color formats.
+        result = new Result(closestSwatch, color, resultRGB, resultHSV, resultYCrCb);
 
         return result;
     }

@@ -153,4 +153,27 @@ public class Util {
       action.test(file);
     }
   }
+
+  /*
+   * Do the team numbers in the Robot Controller and Driver Station device names match?
+   * Note: this function isn't meant to validate DS/RC names, just that the leading characters match.
+   */
+  public static boolean teamNumberMatch(String first, String second) {
+    int i;
+    if (first == null || second == null) {
+      return(false);
+    }
+    for (i = 0; i < Math.min(first.length(),second.length()); i++) {
+      if (first.charAt(i) != second.charAt(i)) {
+        return(false);  // any mismatch in leading digits
+      }
+      if (first.charAt(i) == '-' || second.charAt(i) == '-') {
+        break;  // stop when first dash encountered
+      }
+    }
+    if (i > 0 && first.charAt(i) == '-' && second.charAt(i) == '-') {
+      return(true);   // leading digits up to the first dash in both names all match. Ignore -A,-B and/or -RC/DS portion of names.
+    }
+    else return(false); // leading digits are different length, or zero length
+  }
 }

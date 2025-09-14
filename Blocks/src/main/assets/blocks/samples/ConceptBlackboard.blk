@@ -1,0 +1,265 @@
+<xml xmlns="https://developers.google.com/blockly/xml">
+<variables>
+<variable id="q32e=9PC;ovv;1.fO1kp">TIMES_STARTED_KEY</variable>
+<variable id="_FjqhSkf!ws?h:B_M_{B">ALLIANCE_KEY</variable>
+<variable id="o#=qIO$s}8EU|6At-zEj">timesStarted</variable>
+</variables>
+<block type="procedures_defnoreturn" id="WtpyD@tEu+EoY=P9iY,D" deletable="false" x="25" y="164">
+<field name="NAME">runOpMode</field>
+<comment pinned="true" h="135" w="574">Demonstrates how to use an OpMode to store data in the blackboard and retrieve it.
+
+This is useful for storing information in Auto and then retrieving it in your TeleOp.
+
+Be aware that this is NOT saved across power reboots or downloads or robot resets.</comment>
+<data>{"commentPositionLeft":-19,"commentPositionTop":-164}</data>
+<statement name="STACK">
+<block type="comment" id="Lc#BFtj*NTB48YL;eBl.">
+<field name="COMMENT">Put initialization blocks here.</field>
+<next>
+<block type="comment" id="Q7}P7OSt(BYe+[LLsau@">
+<field name="COMMENT">We use constants here so we won't have the problem of typos in different places</field>
+<next>
+<block type="comment" id="@{Hi@8U{Eo(kk,f*WM!N">
+<field name="COMMENT">when we meant to refer to the same thing.</field>
+<next>
+<block type="variables_set" id="{7*oxmIKCpH34gx#c26=">
+<field name="VAR" id="q32e=9PC;ovv;1.fO1kp">TIMES_STARTED_KEY</field>
+<value name="VALUE">
+<block type="text" id="(rWF32zLnZ@#7iL]w4%[">
+<field name="TEXT">Times started</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id="Qe/+G7mM9XntK{LE/.o*">
+<field name="VAR" id="_FjqhSkf!ws?h:B_M_{B">ALLIANCE_KEY</field>
+<value name="VALUE">
+<block type="text" id="PV*nEL]a2VPn,;#FnB]e">
+<field name="TEXT">Alliance</field>
+</block>
+</value>
+<next>
+<block type="comment" id="Wo:C7:/#Mzb(k+{+yEc[">
+<field name="COMMENT">This gets us what is in the blackboard or the default if it isn't in there.</field>
+<next>
+<block type="variables_set" id="e1x9]yN],AY.O%90/$2{">
+<field name="VAR" id="o#=qIO$s}8EU|6At-zEj">timesStarted</field>
+<value name="VALUE">
+<block type="blackboard_getOrDefault" id="k#Hqgh?5Gt5J`d0Dd$o%">
+<value name="KEY">
+<shadow type="text" id="l+I@G*z0xCY#-UqST}ze">
+<field name="TEXT">key</field>
+</shadow>
+<block type="variables_get" id="FH+Ikofi0g0e6XPaU}v`">
+<field name="VAR" id="q32e=9PC;ovv;1.fO1kp">TIMES_STARTED_KEY</field>
+</block>
+</value>
+<value name="DEFAULT_VALUE">
+<block type="math_number" id="~`hp#,]fx_-lX.7e9_%:">
+<field name="NUM">0</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="blackboard_put" id="t)zWn_3%;dD.TjDS^Z$g">
+<value name="KEY">
+<shadow type="text" id="7?[{2~R9(C5^Ex8.|;LD">
+<field name="TEXT">key</field>
+</shadow>
+<block type="variables_get" id="MTF!F5j2][Zz:?U-0M]O">
+<field name="VAR" id="q32e=9PC;ovv;1.fO1kp">TIMES_STARTED_KEY</field>
+</block>
+</value>
+<value name="VALUE">
+<block type="math_arithmetic" id="N.{b6bmsqzNpUvCa4lH#">
+<field name="OP">ADD</field>
+<value name="A">
+<shadow type="math_number" id=")9C5Pp.KH{MW0G|fLXGg">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="dzOuY9OzG]*RipLH(5[K">
+<field name="VAR" id="o#=qIO$s}8EU|6At-zEj">timesStarted</field>
+</block>
+</value>
+<value name="B">
+<shadow type="math_number" id="ytau1Ri;8H+/?65$we$O">
+<field name="NUM">1</field>
+</shadow>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_addNumericData_Number" id="pTGnqIlL@76Aq(}ZgXv0">
+<value name="KEY">
+<shadow type="text" id="bv?Pi$GL!X+y%3[!nuMv">
+<field name="TEXT">OpMode started times</field>
+</shadow>
+</value>
+<value name="NUMBER">
+<shadow type="math_number" id="G-au/qKZnxl5p)HCN3|l">
+<field name="NUM">123</field>
+</shadow>
+<block type="blackboard_get" id=".dWLk`Oz6ZNRh.zMFx}X">
+<value name="KEY">
+<shadow type="text" id="Z:m/xAbVjd2Olt;o^0ug">
+<field name="TEXT">key</field>
+</shadow>
+<block type="variables_get" id="-%h_DQG9B8z1!h7*9m]!">
+<field name="VAR" id="q32e=9PC;ovv;1.fO1kp">TIMES_STARTED_KEY</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_update" id="2d!1HUG%93a%/7*D_~LQ">
+<next>
+<block type="linearOpMode_waitForStart" id=":`$wN_ci`O;o6P0~.(+g">
+<next>
+<block type="controls_if" id="}Q?5mbxSO8Di;i!__6[y">
+<value name="IF0">
+<block type="linearOpMode_opModeIsActive" id=")o%YFX/#9kvv^sgXr4~5"/>
+</value>
+<statement name="DO0">
+<block type="comment" id="(rU-p_T_/B|vExcs}liL">
+<field name="COMMENT">Put run blocks here.</field>
+<next>
+<block type="controls_whileUntil" id="^0Kagy/e+Ea{rbZPv2G6">
+<field name="MODE">WHILE</field>
+<value name="BOOL">
+<block type="linearOpMode_opModeIsActive" id="e)cr{!2VIET83s,JWC.="/>
+</value>
+<statement name="DO">
+<block type="comment" id="Jh/;L$n@JuX8AQJDFCul">
+<field name="COMMENT">Put loop blocks here.</field>
+<next>
+<block type="comment" id="hvL8sJgfAX1`ZD$H{V7)">
+<field name="COMMENT">If the left bumper is pressed it will store the value "RED" in the blackboard for alliance.</field>
+<next>
+<block type="comment" id="p7k]c5LOTt~JV$auov%1">
+<field name="COMMENT">If the right bumper is pressed it will store the value "BLUE" in the blackboard for alliance.</field>
+<next>
+<block type="comment" id="dIZes_rCYL(.@Bs?LhxR">
+<field name="COMMENT">You'll notice that if you quit the OpMode and come back in, the value will persist.</field>
+<next>
+<block type="controls_if" id="wrL~32GJYol;|!-n@9l#">
+<mutation elseif="1"/>
+<value name="IF0">
+<block type="gamepad_getProperty_Boolean" id="D7}ONctM14Np~%W5[T`T">
+<field name="IDENTIFIER">gamepad1</field>
+<field name="PROP">LeftBumper</field>
+<data>{"IDENTIFIER":"gamepad1"}</data>
+</block>
+</value>
+<statement name="DO0">
+<block type="blackboard_put" id="p6-N4o.n%Uq`){5$HPJM">
+<value name="KEY">
+<shadow type="text" id="1rj8j?hw{H|T_9{Z3;u:">
+<field name="TEXT">key</field>
+</shadow>
+<block type="variables_get" id="yUOT$-pzKMR%/#y2ru5w">
+<field name="VAR" id="_FjqhSkf!ws?h:B_M_{B">ALLIANCE_KEY</field>
+</block>
+</value>
+<value name="VALUE">
+<block type="text" id="Tbj4F$dk=5MZkz[M*3=o">
+<field name="TEXT">RED</field>
+</block>
+</value>
+</block>
+</statement>
+<value name="IF1">
+<block type="gamepad_getProperty_Boolean" id="bY}1=IxG-M.)OgU4Yy%:">
+<field name="IDENTIFIER">gamepad1</field>
+<field name="PROP">RightBumper</field>
+<data>{"IDENTIFIER":"gamepad1"}</data>
+</block>
+</value>
+<statement name="DO1">
+<block type="blackboard_put" id="ats$ZzOA-Z1J`:7t]Zt@">
+<value name="KEY">
+<shadow type="text" id="DHe^@bGnc87%V:h79~*|">
+<field name="TEXT">key</field>
+</shadow>
+<block type="variables_get" id="7SvK!e8Qb5?Gd:bi8y*)">
+<field name="VAR" id="_FjqhSkf!ws?h:B_M_{B">ALLIANCE_KEY</field>
+</block>
+</value>
+<value name="VALUE">
+<block type="text" id="!4-4j=w72iT%H!!EbCPJ">
+<field name="TEXT">BLUE</field>
+</block>
+</value>
+</block>
+</statement>
+<next>
+<block type="telemetry_addTextData_All" id="RAAYPvzDYO0Ej*^[o7/M">
+<value name="KEY">
+<shadow type="text" id="k$MIASeR~}zKQPcxMKuf">
+<field name="TEXT">Alliance</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id="B`6k~A^;%_%gPzK(qK^w">
+<field name="TEXT">text</field>
+</shadow>
+<block type="blackboard_get" id="@`8SBV6(rbkvD8;*EadZ">
+<value name="KEY">
+<shadow type="text" id="G77MIW;LpVCZ*|A7$?:J">
+<field name="TEXT">key</field>
+</shadow>
+<block type="variables_get" id="ddxqhzoWk!6bO:z9YUMW">
+<field name="VAR" id="_FjqhSkf!ws?h:B_M_{B">ALLIANCE_KEY</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_update" id="exvivmft-pX$n!1,8Ea$"/>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</xml>
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<Extra>
+<OpModeMeta flavor="TELEOP" group="" autoTransition="" />
+<Enabled value="true" />
+</Extra>

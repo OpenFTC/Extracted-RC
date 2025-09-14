@@ -204,6 +204,11 @@ public enum AngleUnit
 
     public static double normalizeDegrees(double degrees)
         {
+        if (Math.abs(degrees) > 720.0)
+            {
+            double numRevolutions = Math.floor(Math.abs(degrees) / 360.0);
+            degrees = Math.signum(degrees) * (Math.abs(degrees) - (numRevolutions * 360.0));
+            }
         while (degrees >= 180.0) degrees -= 360.0;
         while (degrees < -180.0) degrees += 360.0;
         return degrees;
@@ -216,6 +221,11 @@ public enum AngleUnit
 
     public static double normalizeRadians(double radians)
         {
+        if (Math.abs(radians) > 4 * Math.PI)
+            {
+            double numRevolutions = Math.floor(Math.abs(radians) / (2*Math.PI));
+            radians = Math.signum(radians) * (Math.abs(radians) - (numRevolutions * (2*Math.PI)));
+            }
         while (radians >= Math.PI) radians -= TwoPi;
         while (radians < -Math.PI) radians += TwoPi;
         return radians;

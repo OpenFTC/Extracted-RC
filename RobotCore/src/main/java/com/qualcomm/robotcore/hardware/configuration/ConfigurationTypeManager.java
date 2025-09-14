@@ -44,11 +44,13 @@ import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.configuration.annotations.AnalogSensorType;
 import com.qualcomm.robotcore.hardware.configuration.annotations.DeviceProperties;
+import com.qualcomm.robotcore.hardware.configuration.annotations.DevicesProperties;
 import com.qualcomm.robotcore.hardware.configuration.annotations.DigitalIoDeviceType;
 import com.qualcomm.robotcore.hardware.configuration.annotations.ExpansionHubPIDFPositionParams;
 import com.qualcomm.robotcore.hardware.configuration.annotations.ExpansionHubPIDFVelocityParams;
 import com.qualcomm.robotcore.hardware.configuration.annotations.I2cDeviceType;
 import com.qualcomm.robotcore.hardware.configuration.annotations.ServoType;
+import com.qualcomm.robotcore.hardware.configuration.annotations.ServoTypes;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.AnalogSensorConfigurationType;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.DigitalIoDeviceConfigurationType;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.I2cDeviceConfigurationType;
@@ -132,7 +134,7 @@ public final class ConfigurationTypeManager implements ClassFilter
     private static final ConfigurationTypeManager theInstance = new ConfigurationTypeManager();
     private static final String unspecifiedMotorTypeXmlTag = getXmlTag(UnspecifiedMotor.class);
     private static final String standardServoTypeXmlTag = getXmlTag(Servo.class);
-    private static final Class[] typeAnnotationsArray = { ServoType.class, AnalogSensorType.class, DigitalIoDeviceType.class, I2cDeviceType.class, com.qualcomm.robotcore.hardware.configuration.annotations.MotorType.class};
+    private static final Class[] typeAnnotationsArray = { ServoTypes.class, ServoType.class, AnalogSensorType.class, DigitalIoDeviceType.class, I2cDeviceType.class, com.qualcomm.robotcore.hardware.configuration.annotations.MotorType.class};
     private static final List<Class> typeAnnotationsList = Arrays.asList(typeAnnotationsArray);
 
     private final Gson gson = newGson();
@@ -543,26 +545,12 @@ public final class ConfigurationTypeManager implements ClassFilter
         filterClass(clazz, ClassSource.EXTERNAL_LIB);
         }
 
-    private void filterClass(Class<?> clazz, ClassSource classSource)
+    private void addConfigurationType(Annotation specificTypeAnnotation, DeviceProperties devicePropertiesAnnotation, Class<?> clazz, ClassSource classSource)
         {
-        if (addMotorTypeFromDeprecatedAnnotation(clazz, classSource)) return;
-
-        if (addI2cTypeFromDeprecatedAnnotation(clazz, classSource)) return;
-
-        Annotation specificTypeAnnotation = getTypeAnnotation(clazz);
-        if (specificTypeAnnotation == null) return;
-
-        DeviceProperties devicePropertiesAnnotation = clazz.getAnnotation(DeviceProperties.class);
-        if (devicePropertiesAnnotation == null)
-            {
-            reportConfigurationError("Class " + clazz.getSimpleName() + " annotated with " + specificTypeAnnotation + " is missing @DeviceProperties annotation.");
-            return;
-            }
-
         UserConfigurationType configurationType = createAppropriateConfigurationType(specificTypeAnnotation, devicePropertiesAnnotation, clazz, classSource);
         configurationType.processAnnotation(devicePropertiesAnnotation);
         configurationType.finishedAnnotations(clazz);
-        if (configurationType.annotatedClassIsInstantiable())
+        if (!clazz.isInterface() && configurationType.annotatedClassIsInstantiable())
             {
             if (checkInstantiableTypeConstraints((InstantiableUserConfigurationType)configurationType))
                 {
@@ -576,6 +564,86 @@ public final class ConfigurationTypeManager implements ClassFilter
                 add(configurationType);
                 }
             }
+        }
+
+    private ServoType findPairedServoAnnotation(ServoType[] servoTypes, String xmlTag)
+        {
+        for (ServoType servoType : servoTypes)
+            {
+            if (servoType.xmlTag().equals(xmlTag))
+                {
+                return servoType;
+                }
+            }
+        return null;
+        }
+
+    /*
+     * Handles pairing a type annotation with a device properties annotation where a class, or
+     * interface has repeated annotations.
+     *
+     * Pairing is indicated through the xmlTag.  Device types, e.g. ServoType, that support
+     * repeated annotations must implement an xmlTag property the value of which should match
+     * the xmlTag property of the device properties annotation.
+     *
+     * Only ServoType supports this at present.
+     */
+    private void handleRepeatedAnnotation(Class<?> clazz, ClassSource classSource, Annotation specificTypeAnnotation, DevicesProperties devicesProperties)
+        {
+        for (DeviceProperties deviceProperties : devicesProperties.value())
+            {
+            if (specificTypeAnnotation instanceof ServoTypes)
+                {
+                ServoType servoType = findPairedServoAnnotation(((ServoTypes)specificTypeAnnotation).value(), getXmlTag(deviceProperties));
+                if (servoType == null)
+                    {
+                    RobotLog.ee(RobotLog.TAG, "Could not find paired @ServoType annotation for repeated annotation type with tag: %s", getXmlTag(deviceProperties));
+                    return;
+                    }
+                addConfigurationType(servoType, deviceProperties, clazz, classSource);
+                }
+                else
+                {
+                RobotLog.ee(RobotLog.TAG, "Unsupported repeated annotation type: %s", specificTypeAnnotation);
+                }
+            }
+        }
+
+    private void filterClass(Class<?> clazz, ClassSource classSource)
+        {
+        if (addMotorTypeFromDeprecatedAnnotation(clazz, classSource)) return;
+
+        if (addI2cTypeFromDeprecatedAnnotation(clazz, classSource)) return;
+
+        Annotation specificTypeAnnotation = getTypeAnnotation(clazz);
+        if (specificTypeAnnotation == null) return;
+
+        /*
+         * Support repeated DeviceProperties annotations.
+         *
+         * Note that we call getAnnotation() for both the repeated container annotation type
+         * and the singular annotation instance.  This is because despite the compiler knowing
+         * that DeviceProperties is repeatable, if there's only one instance of the annotation
+         * attached to any given class, then rather than return the container annotation containing
+         * an array of length 1, it returns the DeviceProperties annotation itself.
+         *
+         * Therefore in order to know if the annotation is repeated or not, we need to check both.
+         */
+        DevicesProperties devicesPropertiesAnnotation = clazz.getAnnotation(DevicesProperties.class);
+        if (devicesPropertiesAnnotation != null)
+            {
+            handleRepeatedAnnotation(clazz, classSource, specificTypeAnnotation, devicesPropertiesAnnotation);
+            return;
+            }
+
+        DeviceProperties devicePropertiesAnnotation = clazz.getAnnotation(DeviceProperties.class);
+        if (devicePropertiesAnnotation == null)
+            {
+            reportConfigurationError("Class " + clazz.getSimpleName() + " annotated with " + specificTypeAnnotation + " is missing @DeviceProperties annotation.");
+            return;
+            }
+
+        addConfigurationType(specificTypeAnnotation, devicePropertiesAnnotation, clazz, classSource);
         }
 
 
@@ -873,11 +941,31 @@ public final class ConfigurationTypeManager implements ClassFilter
     //----------------------------------------------------------------------------------------------
     // Utility
     //----------------------------------------------------------------------------------------------
+
+    /*
+     * Returns the XML tag associated with the device.
+     *
+     * If a class has repeated device properties annotations, returns the one marked default,
+     * or the first in the array if none are marked default.  See the interface Servo for an
+     * example.
+     */
     public static String getXmlTag(Class clazz)
         {
         DeviceProperties devicePropertiesAnnotation = (DeviceProperties) clazz.getAnnotation(DeviceProperties.class);
-        return getXmlTag(devicePropertiesAnnotation);
+        if (devicePropertiesAnnotation != null) {
+            return getXmlTag(devicePropertiesAnnotation);
+        } else {
+            DevicesProperties devicesPropertiesAnnotation = (DevicesProperties) clazz.getAnnotation(DevicesProperties.class);
+            DeviceProperties[] props = devicesPropertiesAnnotation.value();
+            for (DeviceProperties prop : props) {
+                if (prop.defaultDevice()) {
+                    return getXmlTag(prop);
+                }
+            }
+            return getXmlTag(props[0]);
+            }
         }
+
     private void reportConfigurationError(String format, Object... args)
         {
         String message = String.format(format, args);

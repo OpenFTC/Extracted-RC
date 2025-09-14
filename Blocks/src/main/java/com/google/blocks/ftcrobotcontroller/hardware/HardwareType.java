@@ -23,6 +23,7 @@ import com.qualcomm.hardware.adafruit.AdafruitBNO055IMU;
 import com.qualcomm.hardware.bosch.BNO055IMUImpl;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.hardware.digitalchickenlabs.OctoQuadImpl;
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.lynx.LynxEmbeddedIMU;
 import com.qualcomm.hardware.lynx.LynxModule;
@@ -136,6 +137,11 @@ public enum HardwareType {
       BuiltInConfigurationType.LYNX_COLOR_SENSOR.getXmlTag(),
       ConfigurationTypeManager.getXmlTag(Rev2mDistanceSensor.class),
       ConfigurationTypeManager.getXmlTag(RevColorSensorV3.class)),
+  GOBILDA_PINPOINT( // see gobilda_pinpoint.js
+      "createGoBildaPinpointDropdown", "goBildaPinpoint", "AsGoBildaPinpoint", "_GoBildaPinpoint",
+      ToolboxFolder.SENSORS, "GoBildaPinpoint", null, // No toolbox icon.
+      GoBildaPinpointDriver.class,
+      ConfigurationTypeManager.getXmlTag(GoBildaPinpointDriver.class)),
   GYRO_SENSOR( // see gyro_sensor.js
       "createGyroSensorDropdown", "gyroSensor", "AsGyroSensor", "_GyroSensor",
       ToolboxFolder.SENSORS, "GyroSensor", ToolboxIcon.GYRO_SENSOR,

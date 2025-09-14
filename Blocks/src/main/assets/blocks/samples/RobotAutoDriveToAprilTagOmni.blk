@@ -6,13 +6,13 @@
 <variable id="SyG#C3GAjkl8pSBY{VOl">exposureMs</variable>
 <variable id="qze4g3wN?_rCL5HG%Db[">gain</variable>
 <variable id=",gbz4Fp=%|e_/119JmJ{">DESIRED_DISTANCE</variable>
-<variable id="UqR@UM%tL+PxOyZ];4r,">leftFrontPower</variable>
+<variable id="UqR@UM%tL+PxOyZ];4r,">frontLeftPower</variable>
 <variable type="AprilTagProcessor.Builder" id="-XiFm:F{y?M%WQ!KZiC?">aprilTagBuilder</variable>
-<variable id="etOywgLd-cqv*lp/}$p)">rightFrontPower</variable>
+<variable id="etOywgLd-cqv*lp/}$p)">frontRightPower</variable>
 <variable id="|{;F#!XBfa=fMT#t9BvV">aprilTag</variable>
-<variable id="l!x-`|[?!%=WikM5vuC~">leftBackPower</variable>
+<variable id="l!x-`|[?!%=WikM5vuC~">backLeftPower</variable>
 <variable id="5d:[ZN,+5Q[.8+H$J8WN">visionPortal</variable>
-<variable id="p~Y65Iqcjf!2}[+W3(D:">rightBackPower</variable>
+<variable id="p~Y65Iqcjf!2}[+W3(D:">backRightPower</variable>
 <variable id="rH?YFt{ADc0ZaL(3xRxG">SPEED_GAIN</variable>
 <variable id="aG74{7,z=/4.MKSu08GF">max</variable>
 <variable id="]DN6)^xB$^H}Bc,YjKp}">exposureControl</variable>
@@ -46,7 +46,7 @@ When an AprilTag in the TagLibrary is detected, the SDK provides location and or
 
 The driving goal is to rotate to keep the tag centered in the camera, while strafing to be directly in front of the tag, and driving towards the tag to achieve the desired distance. To reduce any motion blur (which will interrupt the detection process) the Camera exposure is reduced to a very low value (5mS). You can determine the best exposure and gain values by using the ConceptAprilTagOptimizeExposure OpMode.
 
-This OpMode assumes a Robot Configuration with motors named: leftfront_drive and rightfront_drive, leftback_drive and rightback_drive. The motor directions must be set so a positive power goes forward on all wheels. This sample assumes that the default AprilTag Library (usually for the current season) is being loaded by default, so you should choose to approach a valid tag ID.
+This OpMode assumes a Robot Configuration with motors named: front_left_drive and front_right_drive, back_left_drive and back_right_drive. The motor directions must be set so a positive power goes forward on all wheels. This sample assumes that the default AprilTag Library (usually for the current season) is being loaded by default, so you should choose to approach a valid tag ID.
 
 Under manual control, the left stick will move forward/back and left/right. The right stick will rotate the robot. Manually drive the robot until it displays Target data on the Driver Station.
 
@@ -228,9 +228,9 @@ Speed and Turn sensitivity can be adjusted using the SPEED_GAIN, STRAFE_GAIN, an
 <field name="COMMENT">Gear Reduction or 90 degree drives may require direction flips.</field>
 <next>
 <block type="dcMotor_setProperty_Direction" id="obn-eub]kojlDW4vk;sy">
-<field name="IDENTIFIER">leftfront_driveAsDcMotor</field>
+<field name="IDENTIFIER">front_left_driveAsDcMotor</field>
 <field name="PROP">Direction</field>
-<data>{"IDENTIFIER":"leftfront_drive"}</data>
+<data>{"IDENTIFIER":"front_left_drive"}</data>
 <value name="VALUE">
 <shadow type="dcMotor_typedEnum_direction" id="]Q.:MWx=rv%X[uiSo,Js">
 <field name="DIRECTION">REVERSE</field>
@@ -238,9 +238,9 @@ Speed and Turn sensitivity can be adjusted using the SPEED_GAIN, STRAFE_GAIN, an
 </value>
 <next>
 <block type="dcMotor_setProperty_Direction" id="/|,OkQ^?8mRt{hZeJJ~[">
-<field name="IDENTIFIER">leftback_driveAsDcMotor</field>
+<field name="IDENTIFIER">back_left_driveAsDcMotor</field>
 <field name="PROP">Direction</field>
-<data>{"IDENTIFIER":"leftback_drive"}</data>
+<data>{"IDENTIFIER":"back_left_drive"}</data>
 <value name="VALUE">
 <shadow type="dcMotor_typedEnum_direction" id="+JweInR5X6/pnvW-b)6+">
 <field name="DIRECTION">REVERSE</field>
@@ -248,9 +248,9 @@ Speed and Turn sensitivity can be adjusted using the SPEED_GAIN, STRAFE_GAIN, an
 </value>
 <next>
 <block type="dcMotor_setProperty_Direction" id="(p(f{E~s!CXWL4O@?I/P">
-<field name="IDENTIFIER">rightfront_driveAsDcMotor</field>
+<field name="IDENTIFIER">front_right_driveAsDcMotor</field>
 <field name="PROP">Direction</field>
-<data>{"IDENTIFIER":"rightfront_drive"}</data>
+<data>{"IDENTIFIER":"front_right_drive"}</data>
 <value name="VALUE">
 <shadow type="dcMotor_typedEnum_direction" id="sEn-xu{KkgtjG)3?@ts1">
 <field name="DIRECTION">FORWARD</field>
@@ -258,9 +258,9 @@ Speed and Turn sensitivity can be adjusted using the SPEED_GAIN, STRAFE_GAIN, an
 </value>
 <next>
 <block type="dcMotor_setProperty_Direction" id="%0J1[qdD!(@@wRYZWiv-">
-<field name="IDENTIFIER">rightback_driveAsDcMotor</field>
+<field name="IDENTIFIER">back_right_driveAsDcMotor</field>
 <field name="PROP">Direction</field>
-<data>{"IDENTIFIER":"rightback_drive"}</data>
+<data>{"IDENTIFIER":"back_right_drive"}</data>
 <value name="VALUE">
 <shadow type="dcMotor_typedEnum_direction" id="G?d|D.{_Jm:Gk,lGWq3`">
 <field name="DIRECTION">FORWARD</field>
@@ -1544,7 +1544,7 @@ Positive yaw is counter-clockwise.</comment>
 <field name="COMMENT">Calculate wheel powers.</field>
 <next>
 <block type="variables_set" id="1m/bPFw2JN5aXEDWXTrt">
-<field name="VAR" id="UqR@UM%tL+PxOyZ];4r,">leftFrontPower</field>
+<field name="VAR" id="UqR@UM%tL+PxOyZ];4r,">frontLeftPower</field>
 <value name="VALUE">
 <block type="math_arithmetic" id="!c$O!/}Jc2:#)T*|iCUU">
 <field name="OP">MINUS</field>
@@ -1584,7 +1584,7 @@ Positive yaw is counter-clockwise.</comment>
 </value>
 <next>
 <block type="variables_set" id="XMLH_d0aBs=vE]:EZ_zf">
-<field name="VAR" id="etOywgLd-cqv*lp/}$p)">rightFrontPower</field>
+<field name="VAR" id="etOywgLd-cqv*lp/}$p)">frontRightPower</field>
 <value name="VALUE">
 <block type="math_arithmetic" id="6m9V_a(_P_uT7Q85YvO.">
 <field name="OP">ADD</field>
@@ -1624,7 +1624,7 @@ Positive yaw is counter-clockwise.</comment>
 </value>
 <next>
 <block type="variables_set" id=".nocu@3~f2kBcI/;LlEB">
-<field name="VAR" id="l!x-`|[?!%=WikM5vuC~">leftBackPower</field>
+<field name="VAR" id="l!x-`|[?!%=WikM5vuC~">backLeftPower</field>
 <value name="VALUE">
 <block type="math_arithmetic" id=";0xVAkYCR67:VLyvN$*D">
 <field name="OP">MINUS</field>
@@ -1664,7 +1664,7 @@ Positive yaw is counter-clockwise.</comment>
 </value>
 <next>
 <block type="variables_set" id="cl=%=Y86;8@Pr_}$Gx1Z">
-<field name="VAR" id="p~Y65Iqcjf!2}[+W3(D:">rightBackPower</field>
+<field name="VAR" id="p~Y65Iqcjf!2}[+W3(D:">backRightPower</field>
 <value name="VALUE">
 <block type="math_arithmetic" id="TXfNBT;M(ucdDW/K=rXq">
 <field name="OP">ADD</field>
@@ -1723,7 +1723,7 @@ Positive yaw is counter-clockwise.</comment>
 <field name="NUM">9</field>
 </shadow>
 <block type="variables_get" id="`84hyUExqZhTGaX!YPtW">
-<field name="VAR" id="UqR@UM%tL+PxOyZ];4r,">leftFrontPower</field>
+<field name="VAR" id="UqR@UM%tL+PxOyZ];4r,">frontLeftPower</field>
 </block>
 </value>
 </block>
@@ -1736,7 +1736,7 @@ Positive yaw is counter-clockwise.</comment>
 <field name="NUM">9</field>
 </shadow>
 <block type="variables_get" id="xeBv8p-lkUbn|iC0PQc@">
-<field name="VAR" id="etOywgLd-cqv*lp/}$p)">rightFrontPower</field>
+<field name="VAR" id="etOywgLd-cqv*lp/}$p)">frontRightPower</field>
 </block>
 </value>
 </block>
@@ -1749,7 +1749,7 @@ Positive yaw is counter-clockwise.</comment>
 <field name="NUM">9</field>
 </shadow>
 <block type="variables_get" id="5~h1_^m/{~cR+`~]tn}v">
-<field name="VAR" id="l!x-`|[?!%=WikM5vuC~">leftBackPower</field>
+<field name="VAR" id="l!x-`|[?!%=WikM5vuC~">backLeftPower</field>
 </block>
 </value>
 </block>
@@ -1762,7 +1762,7 @@ Positive yaw is counter-clockwise.</comment>
 <field name="NUM">9</field>
 </shadow>
 <block type="variables_get" id="l0+xhD`Ous%*B$!aAEZu">
-<field name="VAR" id="p~Y65Iqcjf!2}[+W3(D:">rightBackPower</field>
+<field name="VAR" id="p~Y65Iqcjf!2}[+W3(D:">backRightPower</field>
 </block>
 </value>
 </block>
@@ -1790,7 +1790,7 @@ Positive yaw is counter-clockwise.</comment>
 </value>
 <statement name="DO0">
 <block type="variables_set" id="x@t^~;0SpXPXCK.C58^N">
-<field name="VAR" id="UqR@UM%tL+PxOyZ];4r,">leftFrontPower</field>
+<field name="VAR" id="UqR@UM%tL+PxOyZ];4r,">frontLeftPower</field>
 <value name="VALUE">
 <block type="math_arithmetic" id="#+b@1AY~pa,Z]V9]h_re">
 <field name="OP">DIVIDE</field>
@@ -1799,7 +1799,7 @@ Positive yaw is counter-clockwise.</comment>
 <field name="NUM">1</field>
 </shadow>
 <block type="variables_get" id="|V).zLNn;aDvF#EUwtEg">
-<field name="VAR" id="UqR@UM%tL+PxOyZ];4r,">leftFrontPower</field>
+<field name="VAR" id="UqR@UM%tL+PxOyZ];4r,">frontLeftPower</field>
 </block>
 </value>
 <value name="B">
@@ -1814,7 +1814,7 @@ Positive yaw is counter-clockwise.</comment>
 </value>
 <next>
 <block type="variables_set" id="aXpSN]QA9y_[bSl?3}6B">
-<field name="VAR" id="etOywgLd-cqv*lp/}$p)">rightFrontPower</field>
+<field name="VAR" id="etOywgLd-cqv*lp/}$p)">frontRightPower</field>
 <value name="VALUE">
 <block type="math_arithmetic" id="C%hf[Bg;{chLCUUw+Ggh">
 <field name="OP">DIVIDE</field>
@@ -1823,7 +1823,7 @@ Positive yaw is counter-clockwise.</comment>
 <field name="NUM">1</field>
 </shadow>
 <block type="variables_get" id="e)3LX_lysAW%AxoEgTTI">
-<field name="VAR" id="etOywgLd-cqv*lp/}$p)">rightFrontPower</field>
+<field name="VAR" id="etOywgLd-cqv*lp/}$p)">frontRightPower</field>
 </block>
 </value>
 <value name="B">
@@ -1838,7 +1838,7 @@ Positive yaw is counter-clockwise.</comment>
 </value>
 <next>
 <block type="variables_set" id="D+`VIyBx%!/;`9^qBpo:">
-<field name="VAR" id="l!x-`|[?!%=WikM5vuC~">leftBackPower</field>
+<field name="VAR" id="l!x-`|[?!%=WikM5vuC~">backLeftPower</field>
 <value name="VALUE">
 <block type="math_arithmetic" id="%?Bco~bjn!J0aJuKV:3^">
 <field name="OP">DIVIDE</field>
@@ -1847,7 +1847,7 @@ Positive yaw is counter-clockwise.</comment>
 <field name="NUM">1</field>
 </shadow>
 <block type="variables_get" id="OE1$Qi,VV{xH!uA;G00j">
-<field name="VAR" id="l!x-`|[?!%=WikM5vuC~">leftBackPower</field>
+<field name="VAR" id="l!x-`|[?!%=WikM5vuC~">backLeftPower</field>
 </block>
 </value>
 <value name="B">
@@ -1862,7 +1862,7 @@ Positive yaw is counter-clockwise.</comment>
 </value>
 <next>
 <block type="variables_set" id="L[@UJIqJelZfDn85qQzO">
-<field name="VAR" id="p~Y65Iqcjf!2}[+W3(D:">rightBackPower</field>
+<field name="VAR" id="p~Y65Iqcjf!2}[+W3(D:">backRightPower</field>
 <value name="VALUE">
 <block type="math_arithmetic" id="nL+ofSZMQT~R}^a/)#@o">
 <field name="OP">DIVIDE</field>
@@ -1871,7 +1871,7 @@ Positive yaw is counter-clockwise.</comment>
 <field name="NUM">1</field>
 </shadow>
 <block type="variables_get" id="t11p/GZTtq0,4syE}|D4">
-<field name="VAR" id="p~Y65Iqcjf!2}[+W3(D:">rightBackPower</field>
+<field name="VAR" id="p~Y65Iqcjf!2}[+W3(D:">backRightPower</field>
 </block>
 </value>
 <value name="B">
@@ -1898,15 +1898,15 @@ Positive yaw is counter-clockwise.</comment>
 <next>
 <block type="dcMotor_setDualProperty_Number" id="@yUGqY}rXkM8/knE_G@3">
 <field name="PROP">Power</field>
-<field name="IDENTIFIER1">leftfront_driveAsDcMotor</field>
-<field name="IDENTIFIER2">rightfront_driveAsDcMotor</field>
-<data>{"IDENTIFIER1":"leftfront_drive","IDENTIFIER2":"rightfront_drive"}</data>
+<field name="IDENTIFIER1">front_left_driveAsDcMotor</field>
+<field name="IDENTIFIER2">front_right_driveAsDcMotor</field>
+<data>{"IDENTIFIER1":"front_left_drive","IDENTIFIER2":"front_right_drive"}</data>
 <value name="VALUE1">
 <shadow type="math_number" id="JC#FyEHkZ{:%?oCtYSME">
 <field name="NUM">1</field>
 </shadow>
 <block type="variables_get" id="*zQP!NRHP5|2/C;8j7mu">
-<field name="VAR" id="UqR@UM%tL+PxOyZ];4r,">leftFrontPower</field>
+<field name="VAR" id="UqR@UM%tL+PxOyZ];4r,">frontLeftPower</field>
 </block>
 </value>
 <value name="VALUE2">
@@ -1914,21 +1914,21 @@ Positive yaw is counter-clockwise.</comment>
 <field name="NUM">1</field>
 </shadow>
 <block type="variables_get" id="|}vmlYu_2_%_6t[TZUf$">
-<field name="VAR" id="etOywgLd-cqv*lp/}$p)">rightFrontPower</field>
+<field name="VAR" id="etOywgLd-cqv*lp/}$p)">frontRightPower</field>
 </block>
 </value>
 <next>
 <block type="dcMotor_setDualProperty_Number" id=":f6]Cs?-{*YaeFgL[S}p">
 <field name="PROP">Power</field>
-<field name="IDENTIFIER1">leftback_driveAsDcMotor</field>
-<field name="IDENTIFIER2">rightback_driveAsDcMotor</field>
-<data>{"IDENTIFIER1":"leftback_drive","IDENTIFIER2":"rightback_drive"}</data>
+<field name="IDENTIFIER1">back_left_driveAsDcMotor</field>
+<field name="IDENTIFIER2">back_right_driveAsDcMotor</field>
+<data>{"IDENTIFIER1":"back_left_drive","IDENTIFIER2":"back_right_drive"}</data>
 <value name="VALUE1">
 <shadow type="math_number" id="?AOF+66`0WLz+loRHF*A">
 <field name="NUM">1</field>
 </shadow>
 <block type="variables_get" id="?*uxGeTEuk;R1KJ=$XS)">
-<field name="VAR" id="l!x-`|[?!%=WikM5vuC~">leftBackPower</field>
+<field name="VAR" id="l!x-`|[?!%=WikM5vuC~">backLeftPower</field>
 </block>
 </value>
 <value name="VALUE2">
@@ -1936,7 +1936,7 @@ Positive yaw is counter-clockwise.</comment>
 <field name="NUM">1</field>
 </shadow>
 <block type="variables_get" id="P)^ut:X+-_fu46fL`5$2">
-<field name="VAR" id="p~Y65Iqcjf!2}[+W3(D:">rightBackPower</field>
+<field name="VAR" id="p~Y65Iqcjf!2}[+W3(D:">backRightPower</field>
 </block>
 </value>
 </block>

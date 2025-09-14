@@ -52,6 +52,7 @@ import com.qualcomm.robotcore.hardware.configuration.LynxConstants;
 import com.qualcomm.robotcore.robocol.Command;
 import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.util.ThreadPool;
+import com.qualcomm.robotcore.util.Util;
 import com.qualcomm.robotcore.wifi.NetworkType;
 
 import org.firstinspires.ftc.robotcore.internal.network.DeviceNameManagerFactory;
@@ -94,9 +95,11 @@ public abstract class InspectionActivity extends ThemedActivity
 
     protected final boolean remoteConfigure = appUtil.isDriverStation() && inspectingRobotController();
 
+    protected NetworkConnectionHandler networkConnectionHandler = NetworkConnectionHandler.getInstance();
+
     ValidatedInspectionItem airplaneMode, bluetooth, location, rcPassword, wifiEnabled, wifiConnected,
             wifiName, androidVersion, isRCInstalled, rcMatchesDSVersion, isDSInstalled, osVersion,
-            firmwareVersion1, firmwareVersion2;
+            firmwareVersion1, firmwareVersion2, connectedTo;
 
     TextView batteryLevel;
     View hubFirmwareExtraLineLayout, hubFirmwarePrimaryLine_layout;
@@ -116,6 +119,8 @@ public abstract class InspectionActivity extends ThemedActivity
     int textError = AppUtil.getColor(R.color.text_error);
     StartResult nameManagerStartResult = new StartResult();
     private boolean properWifiConnectedState;
+    LinearLayout connectedToLayout;
+    TextView connectedToDevice;
 
     class ValidatedInspectionItem
         {
@@ -151,6 +156,7 @@ public abstract class InspectionActivity extends ThemedActivity
         isDSInstalled = new ValidatedInspectionItem(R.id.txtIsDSInstalled, R.id.txtIsDSInstalled_img);
 
         wifiName = new ValidatedInspectionItem(R.id.wifiName, R.id.wifiName_img);
+        connectedTo = new ValidatedInspectionItem(R.id.connectedToDevice, R.id.connectedTo_img);
         trafficCount = findViewById(R.id.trafficCount);
         bytesPerSecond = findViewById(R.id.bytesPerSecond);
         trafficCountLabel = findViewById(R.id.trafficCountLabel);
@@ -175,6 +181,12 @@ public abstract class InspectionActivity extends ThemedActivity
         rcPasswordLayout = findViewById(R.id.rcPasswordLayout);
         autoInspectQr = findViewById(R.id.autoInspectQr);
         invalidQr = findViewById(R.id.invalidQr);
+        connectedToLayout = findViewById(R.id.connectedToLayout);
+        connectedToDevice = findViewById(R.id.connectedToDevice);
+        if (networkConnectionHandler != null && networkConnectionHandler.getConnectionOwnerName() != null)
+            {
+                connectedToDevice.setText(networkConnectionHandler.getConnectionOwnerName());
+            }
 
         txtAppVersion.setText(inspectingRobotController()
             ? getString(R.string.titleInspectionReportRC)
@@ -187,6 +199,11 @@ public abstract class InspectionActivity extends ThemedActivity
             hubFirmwareExtraLineLayout.setVisibility(View.GONE);
             autoInspectQr.setVisibility(View.GONE);
             invalidQr.setVisibility(View.GONE);
+            }
+            else
+            {
+            connectedToLayout.setVisibility(View.GONE);
+            findViewById(R.id.robotControllerNameLabel).setVisibility(View.GONE);
             }
 
         if (!inspectingRemoteDevice())
@@ -201,7 +218,7 @@ public abstract class InspectionActivity extends ThemedActivity
         txtManufacturer = findViewById(R.id.txtManufacturer);
         txtModel = findViewById(R.id.txtModel);
 
-        teamNoRegex = Pattern.compile("^\\d{1,5}(-\\w)?-(RC|DS)\\z", Pattern.CASE_INSENSITIVE);
+        teamNoRegex = Pattern.compile("^\\d{1,5}(-[A-Z])?-(RC|DS)\\z");
 
         ImageButton buttonMenu = findViewById(R.id.menu_buttons);
 
@@ -233,6 +250,11 @@ public abstract class InspectionActivity extends ThemedActivity
             {
             makeWirelessAPModeSane();
             }
+        if (networkType == NetworkType.WIFIDIRECT && !inspectingRobotController())
+            {
+            TextView labelWifiName = findViewById(R.id.labelWifiName);
+            labelWifiName.setText(getString(R.string.driverStationNameLabel));
+            }
 
         enableTrafficDataReporting(SHOW_TRAFFIC_STATS);
 
@@ -261,8 +283,14 @@ public abstract class InspectionActivity extends ThemedActivity
     protected void makeWirelessAPModeSane()
         {
         TextView labelWifiName = findViewById(R.id.labelWifiName);
-        labelWifiName.setText(getString(R.string.wifiAccessPointLabel));
-
+        if (!inspectingRobotController())
+            {
+            labelWifiName.setText(getString(R.string.driverStationNameLabel));
+            }
+        else
+            {
+            labelWifiName.setText(getString(R.string.robotControllerNameLabel));
+            }
         properWifiConnectedState = true;
         }
 
@@ -417,7 +445,7 @@ public abstract class InspectionActivity extends ThemedActivity
         InspectionStateValidation validation = new InspectionStateValidation();
         validation.wifi = new InspectionProperty(state.wifiEnabled, R.string.wifiEnabledContext);
         validation.bluetooth = new InspectionProperty(!state.bluetoothOn, R.string.bluetoothOnContext);
-        validation.localNetworks = new InspectionProperty(state.wifiConnected == properWifiConnectedState, R.string.noContext);
+        validation.localNetworks = new InspectionProperty(state.wifiConnected == properWifiConnectedState, R.string.standardWifiConnected);
         validation.os = new InspectionProperty(isValidAndroidVersion(state), R.string.osContext);
 
         /*
@@ -485,6 +513,7 @@ public abstract class InspectionActivity extends ThemedActivity
                     state.majorSdkVersion >= BuildConfig.SDK_MAJOR_VERSION &&
                     !appIsObsolete, R.string.driverStationIsObsoleteContext, InspectionProperty.InvalidAs.WARNING);
             validation.otherApp = new InspectionProperty(!state.robotControllerInstalled, R.string.robotControllerInstalledOnDriverStationContext);
+            validation.connectedTo = new InspectionProperty(isValidConnectedTo(state), R.string.connectedToContext);
             }
         return validation;
         }
@@ -604,6 +633,7 @@ public abstract class InspectionActivity extends ThemedActivity
             refresh(isRCInstalled,
                     validated.otherApp,
                     state.robotControllerInstalled ? installed : notInstalled);
+            refresh(connectedTo, validated.connectedTo, state.connectedToName);
             }
         }
 
@@ -672,6 +702,11 @@ public abstract class InspectionActivity extends ThemedActivity
         {
         if (state.deviceName.contains("\n") || state.deviceName.contains("\r")) return false;
         return (teamNoRegex.matcher(state.deviceName)).find();
+        }
+
+    public boolean isValidConnectedTo(InspectionState state)
+        {
+        return Util.teamNumberMatch(state.deviceName, state.connectedToName);
         }
 
     //----------------------------------------------------------------------------------------------

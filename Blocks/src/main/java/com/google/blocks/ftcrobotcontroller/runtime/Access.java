@@ -33,6 +33,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Quaternion;
+import org.firstinspires.ftc.robotcore.external.navigation.UnnormalizedAngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.robotcore.internal.collections.SimpleGson;
 import org.firstinspires.ftc.vision.opencv.ImageRegion;
@@ -149,6 +150,10 @@ public abstract class Access {
 
   protected OpenGLMatrix checkOpenGLMatrix(Object matrixArg) {
     return checkArg(matrixArg, OpenGLMatrix.class, "matrix");
+  }
+
+  protected UnnormalizedAngleUnit checkUnnormalizedAngleUnit(String unnormalizedAngleUnitString) {
+    return checkArg(unnormalizedAngleUnitString, UnnormalizedAngleUnit.class, "unnormalizedAngleUnit");
   }
 
   protected VectorF checkVectorF(Object vectorArg) {

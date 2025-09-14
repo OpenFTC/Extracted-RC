@@ -42,6 +42,7 @@ import com.qualcomm.robotcore.hardware.configuration.ServoFlavor;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -70,6 +71,7 @@ import java.lang.annotation.Target;
  * @see HardwareMap#get(String)
  */
 @Documented
+@Repeatable(ServoTypes.class)
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ServoType {
@@ -93,4 +95,10 @@ public @interface ServoType {
      * Specifies the rate, in microseconds, at which the PWM is transmitted
      */
     double usPulseFrameRate() default PwmControl.PwmRange.usFrameDefault;
+
+    /**
+     * Maps a device type to its servo type in cases where an interface may define more than
+     * one type.
+     */
+     String xmlTag() default "Servo";
 }

@@ -1,1 +1,26 @@
 @import "/css/core.less";
+
+.bordered-text-block { /* set max line length to improve readability */
+    max-width: 750px;
+}
+/* fix links for accessibility */
+a {
+  color: #0000EE;
+  text-decoration-line: underline;
+  text-decoration-style: solid;
+  text-decoration-color: #0000EE;
+  text-underline-offset: 0.2em;
+}
+a:visited  {
+  color: #551A8B;
+  text-decoration-style: dotted;  /* many browsers don't support this */
+  text-decoration-color: #551A8B;
+}
+a:hover, a:focus {
+  font-weight: bold;
+  text-underline-offset: 0.3em;
+}
+a:active {
+  text-decoration-line: underline overline;
+  color: #FF0000;
+}

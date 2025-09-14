@@ -41,6 +41,8 @@ import com.qualcomm.robotcore.hardware.configuration.annotations.ServoType;
  */
 @ServoType(flavor = ServoFlavor.STANDARD)
 @DeviceProperties(name = "@string/configTypeServo", xmlTag = "Servo", builtIn = true)
+@ServoType(flavor = ServoFlavor.STANDARD, usPulseLower = 500, usPulseUpper = 2500, xmlTag = "ServoFullRange")
+@DeviceProperties(name = "@string/configTypeServoFullRange", xmlTag = "ServoFullRange", builtIn = true, defaultDevice = false)
 public interface Servo extends HardwareDevice
     {
     /**

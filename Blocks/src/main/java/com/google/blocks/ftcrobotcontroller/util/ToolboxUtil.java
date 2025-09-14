@@ -71,7 +71,7 @@ public class ToolboxUtil {
    * Creates an enum block with the given {@link HardwareType}, enum type, fieldName, and
    * fieldValue.
    */
-  static String makeTypedEnumBlock(HardwareType hardwareType, String enumType,
+  public static String makeTypedEnumBlock(HardwareType hardwareType, String enumType,
       String fieldName, String fieldValue) {
     return "<block type=\"" + hardwareType.blockTypePrefix + "_typedEnum_" + enumType + "\">\n"
         + "<field name=\"" + fieldName + "\">" + fieldValue + "</field>"
@@ -180,8 +180,9 @@ public class ToolboxUtil {
               xmlToolbox, hardwareType, identifier, propertyName, propertyType, setterValue);
         }
       }
+      addPropertyGetter(xmlToolbox, hardwareType, identifier, propertyName, propertyType);
       if (enumBlocks != null && enumBlocks.containsKey(propertyName)) {
-        // For an enum property, provide a logic_compare block that compares the property getter with the enum.
+        // For an enum property, also provide a logic_compare block that compares the property getter with the enum.
         xmlToolbox
             .append("<block type=\"logic_compare\"><field name=\"OP\">EQ</field><value name=\"A\">");
         addPropertyGetter(xmlToolbox, hardwareType, identifier, propertyName, propertyType);
@@ -189,9 +190,6 @@ public class ToolboxUtil {
             .append("</value><value name=\"B\">")
             .append(enumBlocks.get(propertyName))
             .append("</value></block>");
-      } else {
-        // For other properties, just provide the property getter block.
-        addPropertyGetter(xmlToolbox, hardwareType, identifier, propertyName, propertyType);
       }
     }
   }

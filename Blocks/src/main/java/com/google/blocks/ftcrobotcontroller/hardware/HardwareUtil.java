@@ -29,6 +29,7 @@ import android.content.res.AssetManager;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
+import android.util.Size;
 
 import com.google.blocks.ftcrobotcontroller.util.AvailableTtsLocalesProvider;
 import com.google.blocks.ftcrobotcontroller.util.FileUtil;
@@ -37,44 +38,89 @@ import com.google.blocks.ftcrobotcontroller.util.ProjectsUtil;
 import com.google.blocks.ftcrobotcontroller.util.ToolboxFolder;
 import com.google.blocks.ftcrobotcontroller.util.ToolboxIcon;
 import com.google.blocks.ftcrobotcontroller.util.ToolboxUtil;
+import com.qualcomm.ftccommon.SoundPlayer;
 import com.qualcomm.ftccommon.configuration.RobotConfigFile;
 import com.qualcomm.ftccommon.configuration.RobotConfigFileManager;
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.hardware.digitalchickenlabs.CachingOctoQuad;
+import com.qualcomm.hardware.digitalchickenlabs.OctoQuad;
 import com.qualcomm.hardware.digitalchickenlabs.OctoQuadBase;
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.LLResultTypes;
+import com.qualcomm.hardware.limelightvision.LLStatus;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.maxbotix.MaxSonarI2CXL;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cCompassSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver.BlinkinPattern;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.hardware.rev.Rev9AxisImuOrientationOnRobot;
+import com.qualcomm.hardware.sparkfun.SparkFunLEDStick;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeManagerImpl;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.AccelerationSensor;
+import com.qualcomm.robotcore.hardware.AnalogInput;
+import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.CompassSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.hardware.GyroSensor;
+import com.qualcomm.robotcore.hardware.Gyroscope;
 import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.I2cAddr;
+import com.qualcomm.robotcore.hardware.I2cAddrConfig;
+import com.qualcomm.robotcore.hardware.I2cAddressableDevice;
+import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.ImuOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.IrSeekerSensor;
+import com.qualcomm.robotcore.hardware.LED;
+import com.qualcomm.robotcore.hardware.Light;
+import com.qualcomm.robotcore.hardware.LightSensor;
 import com.qualcomm.robotcore.hardware.MotorControlAlgorithm;
+import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
+import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
+import com.qualcomm.robotcore.hardware.OrientationSensor;
+import com.qualcomm.robotcore.hardware.PIDCoefficients;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.hardware.PWMOutput;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoController;
+import com.qualcomm.robotcore.hardware.SwitchableLight;
+import com.qualcomm.robotcore.hardware.TouchSensor;
+import com.qualcomm.robotcore.hardware.UltrasonicSensor;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.annotations.DeviceProperties;
 import com.qualcomm.robotcore.hardware.configuration.DeviceConfiguration;
 import com.qualcomm.robotcore.robot.RobotState;
-import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Device;
+import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.util.ReadWriteFile;
 import com.qualcomm.robotcore.util.RobotLog;
+import com.qualcomm.robotcore.util.SortOrder;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -88,24 +134,71 @@ import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
 
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.ExportAprilTagLibraryToBlocks;
 import org.firstinspires.ftc.robotcore.external.ExportEnumToBlocks;
 import org.firstinspires.ftc.robotcore.external.ExportToBlocks;
+import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.android.AndroidAccelerometer;
+import org.firstinspires.ftc.robotcore.external.android.AndroidGyroscope;
+import org.firstinspires.ftc.robotcore.external.android.AndroidOrientation;
 import org.firstinspires.ftc.robotcore.external.android.AndroidSoundPool;
+import org.firstinspires.ftc.robotcore.external.android.AndroidTextToSpeech;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.CameraControl;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.FocusControl;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.PtzControl;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.WhiteBalanceControl;
+import org.firstinspires.ftc.robotcore.external.matrices.MatrixF;
+import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
+import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
+import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AngularVelocity;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Axis;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.MagneticFlux;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import org.firstinspires.ftc.robotcore.external.navigation.Quaternion;
 import org.firstinspires.ftc.robotcore.external.navigation.TempUnit;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
+import org.firstinspires.ftc.robotcore.external.navigation.Temperature;
+import org.firstinspires.ftc.robotcore.external.navigation.UnnormalizedAngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+import org.firstinspires.ftc.robotcore.external.stream.CameraStreamServer;
 import org.firstinspires.ftc.robotcore.internal.opmode.BlocksClassFilter;
 import org.firstinspires.ftc.robotcore.internal.opmode.OpModeMeta;
 import org.firstinspires.ftc.robotcore.internal.opmode.RegisteredOpModes;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
+import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.VisionProcessor;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+import org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase;
+import org.firstinspires.ftc.vision.apriltag.AprilTagLibrary;
+import org.firstinspires.ftc.vision.apriltag.AprilTagMetadata;
+import org.firstinspires.ftc.vision.apriltag.AprilTagPoseFtc;
+import org.firstinspires.ftc.vision.apriltag.AprilTagPoseRaw;
+import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
+import org.firstinspires.ftc.vision.opencv.ColorBlobLocatorProcessor;
+import org.firstinspires.ftc.vision.opencv.ColorRange;
+import org.firstinspires.ftc.vision.opencv.ColorSpace;
+import org.firstinspires.ftc.vision.opencv.ImageRegion;
+import org.firstinspires.ftc.vision.opencv.PredominantColorProcessor;
+import org.opencv.core.RotatedRect;
+import org.opencv.core.Scalar;
 
 /**
  * A class that provides utility methods related to hardware.
@@ -153,14 +246,25 @@ public class HardwareUtil {
     }
   }
 
-  private static final Set<String> reservedWordsForFtcJava = buildReservedWordsForFtcJava();
+  /**
+   * A {@link Set} of reserved words for FtcJava.
+   */
+  private static final Set<String> RESERVED_WORDS_FOR_FTCJAVA = new TreeSet<>();
+
+  /**
+   * A {@link set} of classes that are known types in FtcJava.
+   */
+  private static final Map<String, Class<?>[]> KNOWN_TYPES_FOR_FTCJAVA = new TreeMap<>();
 
   /**
    * A {@link Map} from xmlTag to List of {@link HardwareType}.
    */
   private static final Map<String, List<HardwareType>> XML_TAG_TO_HARDWARE_TYPES =
       new HashMap<String, List<HardwareType>>();
+
   static {
+    buildKnownTypesAndReservedWordsForFtcJava();
+
     for (HardwareType hardwareType : HardwareType.values()) {
       for (String xmlTag : hardwareType.xmlTags) {
         List<HardwareType> list = (List<HardwareType>) XML_TAG_TO_HARDWARE_TYPES.get(xmlTag);
@@ -577,7 +681,7 @@ public class HardwareUtil {
     for (HardwareItem hardwareItem : hardwareItemMap.getAllHardwareItems()) {
       String identifierForFtcJava = HardwareItem.makeIdentifier(hardwareItem.deviceName);
       // Check that it isn't a reserved word.
-      if (reservedWordsForFtcJava.contains(identifierForFtcJava)) {
+      if (RESERVED_WORDS_FOR_FTCJAVA.contains(identifierForFtcJava)) {
         identifierForFtcJava += hardwareItem.hardwareType.identifierSuffixForFtcJava;
       }
       // Check if identifierForFtcJava is already in the set.
@@ -597,7 +701,7 @@ public class HardwareUtil {
 
     jsHardware
         .append("function addReservedWordsForFtcJava() {\n");
-    for (String word : reservedWordsForFtcJava) {
+    for (String word : RESERVED_WORDS_FOR_FTCJAVA) {
       jsHardware
           .append("  Blockly.FtcJava.addReservedWords('").append(word).append("');\n");
     }
@@ -618,6 +722,43 @@ public class HardwareUtil {
       }
     }
     jsHardware
+        .append("}\n\n");
+
+    jsHardware
+        .append("function knownTypeToClassName(type) {\n")
+        .append("  switch (type) {\n");
+    for (Map.Entry<String, Class<?>[]> entry: KNOWN_TYPES_FOR_FTCJAVA.entrySet()) {
+      String pkg = entry.getKey();
+      for (Class<?> c : entry.getValue()) {
+        if (!pkg.equals(c.getPackage().getName())) {
+          RobotLog.e("Error: expected package " + pkg + " for " + c);
+        }
+        String name = c.getSimpleName();
+        Class<?> enclosingClass = c.getEnclosingClass();
+        while (enclosingClass != null) {
+          name = enclosingClass.getSimpleName() + '.' + name;
+          enclosingClass = enclosingClass.getEnclosingClass();
+        }
+        jsHardware
+            .append("    case '").append(name).append("':\n");
+        // Special cases for CRServo.Direction and DcMotor.Direction.
+        if (c.equals(CRServo.class) || c.equals(DcMotor.class)) {
+          jsHardware
+              .append("    case '").append(name).append(".Direction':\n");
+        }
+      }
+      jsHardware
+          .append("      return '").append(pkg).append(".' + type;\n");
+    }
+    // For some opencv types we use the full class name because the simple class name conflicts with another class.
+    jsHardware
+        .append("    case '").append(org.opencv.core.Point.class.getName()).append("':\n")
+        .append("    case '").append(org.opencv.core.Rect.class.getName()).append("':\n")
+        .append("    case '").append(org.opencv.core.Size.class.getName()).append("':\n")
+        .append("      return type;\n");
+    jsHardware
+        .append("  }\n")
+        .append("  return knownTypeToClassNameObsolete(type);\n")
         .append("}\n\n");
 
     jsHardware
@@ -1278,6 +1419,26 @@ public class HardwareUtil {
         shadow = (defaultValue == null)
             ? ToolboxUtil.makeTypedEnumShadow("elapsedTime2", "resolution")
             : ToolboxUtil.makeTypedEnumShadow("elapsedTime2", "resolution", "RESOLUTION", defaultValue);
+      } else if (argType.equals(GoBildaPinpointDriver.DeviceStatus.class.getName())) {
+        String defaultValue = parseEnumDefaultValue(parameterDefaultValues[i], GoBildaPinpointDriver.DeviceStatus.class);
+        shadow = (defaultValue == null)
+            ? ToolboxUtil.makeTypedEnumShadow("goBildaPinpoint", "deviceStatus")
+            : ToolboxUtil.makeTypedEnumShadow("goBildaPinpoint", "deviceStatus", "DEVICE_STATUS", defaultValue);
+      } else if (argType.equals(GoBildaPinpointDriver.EncoderDirection.class.getName())) {
+        String defaultValue = parseEnumDefaultValue(parameterDefaultValues[i], GoBildaPinpointDriver.EncoderDirection.class);
+        shadow = (defaultValue == null)
+            ? ToolboxUtil.makeTypedEnumShadow("goBildaPinpoint", "encoderDirection")
+            : ToolboxUtil.makeTypedEnumShadow("goBildaPinpoint", "encoderDirection", "ENCODER_DIRECTION", defaultValue);
+      } else if (argType.equals(GoBildaPinpointDriver.GoBildaOdometryPods.class.getName())) {
+        String defaultValue = parseEnumDefaultValue(parameterDefaultValues[i], GoBildaPinpointDriver.GoBildaOdometryPods.class);
+        shadow = (defaultValue == null)
+            ? ToolboxUtil.makeTypedEnumShadow("goBildaPinpoint", "goBildaOdometryPods")
+            : ToolboxUtil.makeTypedEnumShadow("goBildaPinpoint", "goBildaOdometryPods", "ODOMETRY_PODS", defaultValue);
+      } else if (argType.equals(GoBildaPinpointDriver.ReadData.class.getName())) {
+        String defaultValue = parseEnumDefaultValue(parameterDefaultValues[i], GoBildaPinpointDriver.ReadData.class);
+        shadow = (defaultValue == null)
+            ? ToolboxUtil.makeTypedEnumShadow("goBildaPinpoint", "readData")
+            : ToolboxUtil.makeTypedEnumShadow("goBildaPinpoint", "readData", "READ_DATA", defaultValue);
       } else if (argType.equals(HuskyLens.Algorithm.class.getName())) {
         String defaultValue = parseEnumDefaultValue(parameterDefaultValues[i], HuskyLens.Algorithm.class);
         shadow = (defaultValue == null)
@@ -1358,6 +1519,11 @@ public class HardwareUtil {
         shadow = (defaultValue == null)
             ? ToolboxUtil.makeTypedEnumShadow("rev9AxisImuOrientationOnRobot", "i2cPortFacingDirection")
             : ToolboxUtil.makeTypedEnumShadow("rev9AxisImuOrientationOnRobot", "i2cPortFacingDirection", "I2C_PORT_FACING_DIRECTION", defaultValue);
+      } else if (argType.equals(UnnormalizedAngleUnit.class.getName())) {
+        String defaultValue = parseEnumDefaultValue(parameterDefaultValues[i], UnnormalizedAngleUnit.class);
+        shadow = (defaultValue == null)
+            ? ToolboxUtil.makeTypedEnumShadow("navigation", "unnormalizedAngleUnit")
+            : ToolboxUtil.makeTypedEnumShadow("navigation", "unnormalizedAngleUnit", "UNNORMALIZED_ANGLE_UNIT", defaultValue);
       } else {
         // Leave other sockets empty?
       }
@@ -1762,6 +1928,9 @@ public class HardwareUtil {
           break;
         case DISTANCE_SENSOR:
           addDistanceSensorCategoryToToolbox(xmlToolbox, hardwareType, hardwareItems);
+          break;
+        case GOBILDA_PINPOINT:
+          addGoBildaPinpointCategoryToToolbox(xmlToolbox, hardwareType, hardwareItems);
           break;
         case GYRO_SENSOR:
           addGyroSensorCategoryToToolbox(xmlToolbox, hardwareType, hardwareItems);
@@ -2286,6 +2455,111 @@ public class HardwareUtil {
     Map<String, String> getDistanceArgs = new LinkedHashMap<String, String>();
     getDistanceArgs.put("DISTANCE_UNIT", ToolboxUtil.makeTypedEnumShadow("navigation", "distanceUnit"));
     functions.put("getDistance", getDistanceArgs);
+    ToolboxUtil.addFunctions(xmlToolbox, hardwareType, identifier, functions);
+  }
+
+  /**
+   * Adds the category for GoBildaPinpointDriver to the toolbox.
+   */
+  private static void addGoBildaPinpointCategoryToToolbox(
+      StringBuilder xmlToolbox, HardwareType hardwareType, List<HardwareItem> hardwareItems) {
+    String identifier = hardwareItems.get(0).identifier;
+    String zero = ToolboxUtil.makeNumberShadow(0);
+    String encoderDirection = ToolboxUtil.makeTypedEnumShadow(hardwareType, "encoderDirection");
+    String readData = ToolboxUtil.makeTypedEnumShadow(hardwareType, "readData");
+    String goBildaOdometryPods = ToolboxUtil.makeTypedEnumShadow(hardwareType, "goBildaOdometryPods");
+    String distanceUnit = ToolboxUtil.makeTypedEnumShadow("navigation", "distanceUnit");
+    String mm = ToolboxUtil.makeTypedEnumShadow("navigation", "distanceUnit", "DISTANCE_UNIT", "MM");
+    String angleUnit = ToolboxUtil.makeTypedEnumShadow("navigation", "angleUnit");
+    String unnormalizedAngleUnit = ToolboxUtil.makeTypedEnumShadow("navigation", "unnormalizedAngleUnit");
+
+    // Properties
+    SortedMap<String, String> properties = new TreeMap<String, String>();
+    properties.put("YawScalar", "Number");
+    properties.put("DeviceID", "Number");
+    properties.put("DeviceVersion", "Number");
+    properties.put("LoopTime", "Number");
+    properties.put("EncoderX", "Number");
+    properties.put("EncoderY", "Number");
+    properties.put("Frequency", "Number");
+    properties.put("DeviceStatus", "DeviceStatus");
+    properties.put("Position", "Pose2D");
+    Map<String, String[]> setterValues = new HashMap<String, String[]>();
+    setterValues.put("YawScalar", new String[] { zero });
+    Map<String, String> enumBlocks = new HashMap<String, String>();
+    enumBlocks.put(
+        "DeviceStatus",
+        ToolboxUtil.makeTypedEnumBlock(hardwareType, "deviceStatus", "DEVICE_STATUS", "READY"));
+    ToolboxUtil.addProperties(xmlToolbox, hardwareType, identifier, properties,
+        setterValues, enumBlocks);
+
+    // Functions
+    Map<String, Map<String, String>> functions = new TreeMap<String, Map<String, String>>();
+    functions.put("update", null);
+    Map<String, String> update_withReadDataArgs = new LinkedHashMap<String, String>();
+    update_withReadDataArgs.put("READ_DATA", readData);
+    functions.put("update_withReadData", update_withReadDataArgs);
+    Map<String, String> setOffsetsArgs = new LinkedHashMap<String, String>();
+    setOffsetsArgs.put("X_OFFSET", ToolboxUtil.makeNumberShadow(-104.0));
+    setOffsetsArgs.put("Y_OFFSET", ToolboxUtil.makeNumberShadow(-168.0));
+    setOffsetsArgs.put("DISTANCE_UNIT", distanceUnit);
+    functions.put("setOffsets", setOffsetsArgs);
+    functions.put("recalibrateIMU", null);
+    functions.put("resetPosAndIMU", null);
+    Map<String, String> setEncoderDirectionsArgs = new LinkedHashMap<String, String>();
+    setEncoderDirectionsArgs.put("X_ENCODER", encoderDirection);
+    setEncoderDirectionsArgs.put("Y_ENCODER", encoderDirection);
+    functions.put("setEncoderDirections", setEncoderDirectionsArgs);
+    Map<String, String> setEncoderResolution_withPodsArgs = new LinkedHashMap<String, String>();
+    setEncoderResolution_withPodsArgs.put("PODS", goBildaOdometryPods);
+    functions.put("setEncoderResolution_withPods", setEncoderResolution_withPodsArgs);
+    Map<String, String> setEncoderResolution_withTicksArgs = new LinkedHashMap<String, String>();
+    // goBILDA Swingarm pod is ~13.26291192 ticks/mm.
+    setEncoderResolution_withTicksArgs.put("TICKS_PER_UNIT", ToolboxUtil.makeNumberShadow(13.26291192));
+    setEncoderResolution_withTicksArgs.put("DISTANCE_UNIT", mm);
+    functions.put("setEncoderResolution_withTicks", setEncoderResolution_withTicksArgs);
+    Map<String, String> setPositionArgs = new LinkedHashMap<String, String>();
+    setPositionArgs.put("POSITION", ToolboxUtil.makeVariableGetBlock("myPose2D"));
+    functions.put("setPosition", setPositionArgs);
+    Map<String, String> setPosXArgs = new LinkedHashMap<String, String>();
+    setPosXArgs.put("POS_X", zero);
+    setPosXArgs.put("DISTANCE_UNIT", distanceUnit);
+    functions.put("setPosX", setPosXArgs);
+    Map<String, String> setPosYArgs = new LinkedHashMap<String, String>();
+    setPosYArgs.put("POS_Y", zero);
+    setPosYArgs.put("DISTANCE_UNIT", distanceUnit);
+    functions.put("setPosY", setPosYArgs);
+    Map<String, String> setHeadingArgs = new LinkedHashMap<String, String>();
+    setHeadingArgs.put("HEADING", zero);
+    setHeadingArgs.put("ANGLE_UNIT", angleUnit);
+    functions.put("setHeading", setHeadingArgs);
+    Map<String, String> getPosXArgs = new LinkedHashMap<String, String>();
+    getPosXArgs.put("DISTANCE_UNIT", distanceUnit);
+    functions.put("getPosX", getPosXArgs);
+    Map<String, String> getPosYArgs = new LinkedHashMap<String, String>();
+    getPosYArgs.put("DISTANCE_UNIT", distanceUnit);
+    functions.put("getPosY", getPosYArgs);
+    Map<String, String> getHeading_withAngleUnitArgs = new LinkedHashMap<String, String>();
+    getHeading_withAngleUnitArgs.put("ANGLE_UNIT", angleUnit);
+    functions.put("getHeading_withAngleUnit", getHeading_withAngleUnitArgs);
+    Map<String, String> getHeading_withUnnormalizedAngleUnitArgs = new LinkedHashMap<String, String>();
+    getHeading_withUnnormalizedAngleUnitArgs.put("UNNORMALIZED_ANGLE_UNIT", unnormalizedAngleUnit);
+    functions.put("getHeading_withUnnormalizedAngleUnit", getHeading_withUnnormalizedAngleUnitArgs);
+    Map<String, String> getVelXArgs = new LinkedHashMap<String, String>();
+    getVelXArgs.put("DISTANCE_UNIT", distanceUnit);
+    functions.put("getVelX", getVelXArgs);
+    Map<String, String> getVelYArgs = new LinkedHashMap<String, String>();
+    getVelYArgs.put("DISTANCE_UNIT", distanceUnit);
+    functions.put("getVelY", getVelYArgs);
+    Map<String, String> getHeadingVelocity_withUnnormalizedAngleUnitArgs = new LinkedHashMap<String, String>();
+    getHeadingVelocity_withUnnormalizedAngleUnitArgs.put("UNNORMALIZED_ANGLE_UNIT", unnormalizedAngleUnit);
+    functions.put("getHeadingVelocity_withUnnormalizedAngleUnit", getHeadingVelocity_withUnnormalizedAngleUnitArgs);
+    Map<String, String> getXOffsetArgs = new LinkedHashMap<String, String>();
+    getXOffsetArgs.put("DISTANCE_UNIT", distanceUnit);
+    functions.put("getXOffset", getXOffsetArgs);
+    Map<String, String> getYOffsetArgs = new LinkedHashMap<String, String>();
+    getYOffsetArgs.put("DISTANCE_UNIT", distanceUnit);
+    functions.put("getYOffset", getYOffsetArgs);
     ToolboxUtil.addFunctions(xmlToolbox, hardwareType, identifier, functions);
   }
 
@@ -3008,356 +3282,423 @@ public class HardwareUtil {
     return activeConfig.getName();
   }
 
-  private static Set<String> buildReservedWordsForFtcJava() {
-    Set<String> set = new HashSet<>();
-    // Include all the classes that we could import (see generateImport_).
-    // android.graphics
-    set.add("Color");
-    // android.util
-    set.add("Size");
-    // com.qualcomm.ftccommon
-    set.add("SoundPlayer");
-    // com.qualcomm.hardware.bosch
-    set.add("BNO055IMU");
-    set.add("JustLoggingAccelerationIntegrator");
-    // com.qualcomm.hardware.dfrobot
-    set.add("HuskyLens");
-    // com.qualcomm.hardware.digitalchickenlabs
-    set.add("CachingOctoQuad");
-    set.add("OctoQuadBase");
-    // com.qualcomm.hardware.limelightvision
-    set.add("Limelight3A");
-    set.add("LLResult");
-    set.add("LLResultTypes");
-    set.add("LLStatus");
-    set.add("OctoQuad");
-    // com.qualcomm.hardware.maxbotix
-    set.add("MaxSonarI2CXL");
-    // com.qualcomm.hardware.modernrobotics
-    set.add("ModernRoboticsI2cCompassSensor");
-    set.add("ModernRoboticsI2cGyro");
-    set.add("ModernRoboticsI2cRangeSensor");
-    // com.qualcomm.hardware.rev
-    set.add("RevBlinkinLedDriver");
-    set.add("RevHubOrientationOnRobot");
-    set.add("Rev9AxisImuOrientationOnRobot");
-    // com.qualcomm.hardware.sparkfun
-    set.add("SparkFunLEDStick");
-    set.add("SparkFunOTOS");
-    // com.qualcomm.robotcore.eventloop
-    set.add("Autonomous");
-    set.add("Disabled");
-    set.add("LinearOpMode");
-    set.add("TeleOp");
-    // com.qualcomm.robotcore.hardware
-    set.add("AccelerationSensor");
-    set.add("AnalogInput");
-    set.add("CRServo");
-    set.add("ColorSensor");
-    set.add("CompassSensor");
-    set.add("DcMotor");
-    set.add("DcMotorEx");
-    set.add("DcMotorSimple");
-    set.add("DigitalChannel");
-    set.add("DistanceSensor");
-    set.add("GyroSensor");
-    set.add("Gyroscope");
-    set.add("I2cAddr");
-    set.add("I2cAddrConfig");
-    set.add("I2cAddressableDevice");
-    set.add("IMU");
-    set.add("IrSeekerSensor");
-    set.add("LED");
-    set.add("Light");
-    set.add("LightSensor");
-    set.add("MotorControlAlgorithm");
-    set.add("NormalizedColorSensor");
-    set.add("NormalizedRGBA");
-    set.add("OpticalDistanceSensor");
-    set.add("OrientationSensor");
-    set.add("PIDCoefficients");
-    set.add("PIDFCoefficients");
-    set.add("PWMOutput");
-    set.add("Servo");
-    set.add("ServoController");
-    set.add("SwitchableLight");
-    set.add("TouchSensor");
-    set.add("UltrasonicSensor");
-    set.add("VoltageSensor");
-    // com.qualcomm.robotcore.util
-    set.add("ElapsedTime");
-    set.add("Range");
-    set.add("ReadWriteFile");
-    set.add("RobotLog");
-    set.add("SortOrder");
-    // java.util
-    set.add("ArrayList");
-    set.add("Collections");
-    set.add("List");
-    // java.util.concurrent
-    set.add("TimeUnit");
-    // org.firstinspires.ftc.vision
-    set.add("VisionPortal");
-    set.add("VisionProcessor");
-    // org.firstinspires.ftc.vision.apriltag
-    set.add("AprilTagDetection");
-    set.add("AprilTagGameDatabase");
-    set.add("AprilTagLibrary");
-    set.add("AprilTagMetadata");
-    set.add("AprilTagPoseFtc");
-    set.add("AprilTagPoseRaw");
-    set.add("AprilTagProcessor");
-    // org.firstinspires.ftc.vision.opencv
-    set.add("ColorBlobLocatorProcessor");
-    set.add("ColorRange");
-    set.add("ColorSpace");
-    set.add("ImageRegion");
-    set.add("PredominantColorProcessor");
-    // org.firstinspires.ftc.robotcore.external
-    set.add("ClassFactory");
-    set.add("JavaUtil");
-    set.add("Telemetry");
-    // org.firstinspires.ftc.robotcore.external.android
-    set.add("AndroidAccelerometer");
-    set.add("AndroidGyroscope");
-    set.add("AndroidOrientation");
-    set.add("AndroidSoundPool");
-    set.add("AndroidTextToSpeech");
-    // org.firstinspires.ftc.robotcore.external.hardware.camera
-    set.add("BuiltinCameraDirection");
-    set.add("CameraName");
-    set.add("WebcamName");
-    // org.firstinspires.ftc.robotcore.external.hardware.camera.controls
-    set.add("CameraControl");
-    set.add("ExposureControl");
-    set.add("FocusControl");
-    set.add("GainControl");
-    set.add("PtzControl");
-    set.add("WhiteBalanceControl");
-    // org.firstinspires.ftc.robotcore.external.matrices
-    set.add("MatrixF");
-    set.add("OpenGLMatrix");
-    set.add("VectorF");
-    // org.firstinspires.ftc.robotcore.external.navigation
-    set.add("Acceleration");
-    set.add("AngleUnit");
-    set.add("AngularVelocity");
-    set.add("Pose3D");
-    set.add("AxesOrder");
-    set.add("AxesReference");
-    set.add("Axis");
-    set.add("DistanceUnit");
-    set.add("MagneticFlux");
-    set.add("Orientation");
-    set.add("Pose2D");
-    set.add("Position");
-    set.add("Quaternion");
-    set.add("Temperature");
-    set.add("TempUnit");
-    set.add("UnnormalizedAngleUnit");
-    set.add("Velocity");
-    // org.firstinspires.ftc.robotcore.external.stream
-    set.add("CameraStreamServer");
-    // org.firstinspires.ftc.robotcore.internal.system
-    set.add("AppUtil");
-    // org.opencv.core
-    set.add("RotatedRect");
-    set.add("Scalar");
+  private static void buildKnownTypesAndReservedWordsForFtcJava() {
+    // Include all the classes that we could import (see Blockly.FtcJava.generateImport_ in ftcjava.js).
+    KNOWN_TYPES_FOR_FTCJAVA.put("android.graphics", new Class<?>[] {
+        Color.class,
+      });
+    KNOWN_TYPES_FOR_FTCJAVA.put("android.util", new Class<?>[] {
+        Size.class,
+      });
+    KNOWN_TYPES_FOR_FTCJAVA.put("com.qualcomm.ftccommon", new Class<?>[] {
+        SoundPlayer.class,
+      });
+    KNOWN_TYPES_FOR_FTCJAVA.put("com.qualcomm.hardware.bosch", new Class<?>[] {
+        BNO055IMU.class,
+        BNO055IMU.AccelerationIntegrator.class,
+        BNO055IMU.AccelUnit.class,
+        BNO055IMU.Parameters.class,
+        BNO055IMU.SensorMode.class,
+        BNO055IMU.SystemStatus.class,
+        JustLoggingAccelerationIntegrator.class,
+      });
+    KNOWN_TYPES_FOR_FTCJAVA.put("com.qualcomm.hardware.dfrobot", new Class<?>[] {
+        HuskyLens.class,
+      });
+    KNOWN_TYPES_FOR_FTCJAVA.put("com.qualcomm.hardware.digitalchickenlabs", new Class<?>[] {
+        CachingOctoQuad.class,
+        OctoQuad.class,
+        OctoQuadBase.class,
+      });
+    KNOWN_TYPES_FOR_FTCJAVA.put("com.qualcomm.hardware.gobilda", new Class<?>[] {
+        GoBildaPinpointDriver.class,
+        GoBildaPinpointDriver.DeviceStatus.class,
+        GoBildaPinpointDriver.EncoderDirection.class,
+        GoBildaPinpointDriver.GoBildaOdometryPods.class,
+        GoBildaPinpointDriver.ReadData.class,
+      });
+    KNOWN_TYPES_FOR_FTCJAVA.put("com.qualcomm.hardware.limelightvision", new Class<?>[] {
+        Limelight3A.class,
+        LLResult.class,
+        LLResultTypes.class,
+        LLResultTypes.FiducialResult.class,
+        LLResultTypes.ColorResult.class,
+        LLStatus.class,
+      });
+    KNOWN_TYPES_FOR_FTCJAVA.put("com.qualcomm.hardware.maxbotix", new Class<?>[] {
+        MaxSonarI2CXL.class,
+      });
+    KNOWN_TYPES_FOR_FTCJAVA.put("com.qualcomm.hardware.modernrobotics", new Class<?>[] {
+        ModernRoboticsI2cCompassSensor.class,
+        ModernRoboticsI2cGyro.class,
+        ModernRoboticsI2cGyro.HeadingMode.class,
+        ModernRoboticsI2cRangeSensor.class,
+      });
+    KNOWN_TYPES_FOR_FTCJAVA.put("com.qualcomm.hardware.rev", new Class<?>[] {
+        RevBlinkinLedDriver.class,
+        RevBlinkinLedDriver.BlinkinPattern.class,
+        RevHubOrientationOnRobot.class,
+        RevHubOrientationOnRobot.LogoFacingDirection.class,
+        RevHubOrientationOnRobot.UsbFacingDirection.class,
+        Rev9AxisImuOrientationOnRobot.class,
+        Rev9AxisImuOrientationOnRobot.I2cPortFacingDirection.class,
+        Rev9AxisImuOrientationOnRobot.LogoFacingDirection.class,
+      });
+    KNOWN_TYPES_FOR_FTCJAVA.put("com.qualcomm.hardware.sparkfun", new Class<?>[] {
+        SparkFunLEDStick.class,
+        SparkFunOTOS.class,
+        SparkFunOTOS.Pose2D.class,
+        SparkFunOTOS.SelfTestConfig.class,
+        SparkFunOTOS.SignalProcessConfig.class,
+        SparkFunOTOS.Status.class,
+        SparkFunOTOS.Version.class,
+      });
+    KNOWN_TYPES_FOR_FTCJAVA.put("com.qualcomm.robotcore.eventloop.opmode", new Class<?>[] {
+        Autonomous.class,
+        Disabled.class,
+        LinearOpMode.class,
+        OpMode.class,
+        TeleOp.class,
+      });
+    KNOWN_TYPES_FOR_FTCJAVA.put("com.qualcomm.robotcore.hardware", new Class<?>[] {
+        AccelerationSensor.class,
+        AnalogInput.class,
+        CRServo.class,
+        // CRServo.Direction.class is a special case because it is the same class as DcMotorSimple.Direction.class.
+        // It is handled in fetchJavaScriptForHardware.
+        ColorSensor.class,
+        CompassSensor.class,
+        CompassSensor.CompassMode.class,
+        DcMotor.class,
+        // DcMotor.Direction.class is a special case because it is the same class as DcMotorSimple.Direction.class.
+        // It is handled in fetchJavaScriptForHardware.
+        DcMotor.RunMode.class,
+        DcMotor.ZeroPowerBehavior.class,
+        DcMotorEx.class,
+        DcMotorSimple.class,
+        DcMotorSimple.Direction.class,
+        DigitalChannel.class,
+        DigitalChannel.Mode.class,
+        DistanceSensor.class,
+        Gamepad.class,
+        Gamepad.LedEffect.class,
+        Gamepad.LedEffect.Builder.class,
+        Gamepad.RumbleEffect.class,
+        Gamepad.RumbleEffect.Builder.class,
+        GyroSensor.class,
+        Gyroscope.class,
+        I2cAddr.class,
+        I2cAddrConfig.class,
+        I2cAddressableDevice.class,
+        IMU.class,
+        IMU.Parameters.class,
+        ImuOrientationOnRobot.class,
+        IrSeekerSensor.class,
+        IrSeekerSensor.Mode.class,
+        LED.class,
+        Light.class,
+        LightSensor.class,
+        MotorControlAlgorithm.class,
+        NormalizedColorSensor.class,
+        NormalizedRGBA.class,
+        OpticalDistanceSensor.class,
+        OrientationSensor.class,
+        PIDCoefficients.class,
+        PIDFCoefficients.class,
+        PWMOutput.class,
+        Servo.class,
+        Servo.Direction.class,
+        ServoController.class,
+        ServoController.PwmStatus.class,
+        SwitchableLight.class,
+        TouchSensor.class,
+        UltrasonicSensor.class,
+        VoltageSensor.class,
+      });
+    KNOWN_TYPES_FOR_FTCJAVA.put("com.qualcomm.robotcore.util", new Class<?>[] {
+        ElapsedTime.class,
+        ElapsedTime.Resolution.class,
+        Range.class,
+        ReadWriteFile.class,
+        RobotLog.class,
+        SortOrder.class,
+      });
+    KNOWN_TYPES_FOR_FTCJAVA.put("java.lang", new Class<?>[] {
+        Boolean.class,
+        Byte.class,
+        Character.class,
+        Double.class,
+        Float.class,
+        Integer.class,
+        Long.class,
+        Number.class,
+        Object.class,
+        Short.class,
+        String.class,
+      });
+    KNOWN_TYPES_FOR_FTCJAVA.put("java.util", new Class<?>[] {
+        ArrayList.class,
+        Collections.class,
+        List.class,
+      });
+    KNOWN_TYPES_FOR_FTCJAVA.put("java.util.concurrent", new Class<?>[] {
+        TimeUnit.class,
+      });
+    KNOWN_TYPES_FOR_FTCJAVA.put("org.firstinspires.ftc.robotcore.external", new Class<?>[] {
+        ClassFactory.class,
+        JavaUtil.class,
+        Telemetry.class,
+        Telemetry.DisplayFormat.class,
+      });
+    KNOWN_TYPES_FOR_FTCJAVA.put("org.firstinspires.ftc.robotcore.external.android", new Class<?>[] {
+        AndroidAccelerometer.class,
+        AndroidGyroscope.class,
+        AndroidOrientation.class,
+        AndroidSoundPool.class,
+        AndroidTextToSpeech.class,
+      });
+    KNOWN_TYPES_FOR_FTCJAVA.put("org.firstinspires.ftc.robotcore.external.hardware.camera", new Class<?>[] {
+        BuiltinCameraDirection.class,
+        CameraName.class,
+        WebcamName.class,
+      });
+    KNOWN_TYPES_FOR_FTCJAVA.put("org.firstinspires.ftc.robotcore.external.hardware.camera.controls", new Class<?>[] {
+        CameraControl.class,
+        ExposureControl.class,
+        FocusControl.class,
+        GainControl.class,
+        PtzControl.class,
+        WhiteBalanceControl.class,
+      });
+    KNOWN_TYPES_FOR_FTCJAVA.put("org.firstinspires.ftc.robotcore.external.matrices", new Class<?>[] {
+        MatrixF.class,
+        OpenGLMatrix.class,
+        VectorF.class,
+      });
+    KNOWN_TYPES_FOR_FTCJAVA.put("org.firstinspires.ftc.robotcore.external.navigation", new Class<?>[] {
+        Acceleration.class,
+        AngleUnit.class,
+        AngularVelocity.class,
+        AxesOrder.class,
+        AxesReference.class,
+        Axis.class,
+        CurrentUnit.class,
+        DistanceUnit.class,
+        MagneticFlux.class,
+        Orientation.class,
+        Pose2D.class,
+        Pose3D.class,
+        Position.class,
+        Quaternion.class,
+        TempUnit.class,
+        Temperature.class,
+        UnnormalizedAngleUnit.class,
+        Velocity.class,
+        YawPitchRollAngles.class,
+      });
+    KNOWN_TYPES_FOR_FTCJAVA.put("org.firstinspires.ftc.robotcore.external.stream", new Class<?>[] {
+        CameraStreamServer.class,
+      });
+    KNOWN_TYPES_FOR_FTCJAVA.put("org.firstinspires.ftc.robotcore.internal.system", new Class<?>[] {
+        AppUtil.class,
+      });
+    KNOWN_TYPES_FOR_FTCJAVA.put("org.firstinspires.ftc.vision", new Class<?>[] {
+        VisionPortal.class,
+        VisionProcessor.class,
+      });
+    KNOWN_TYPES_FOR_FTCJAVA.put("org.firstinspires.ftc.vision.apriltag", new Class<?>[] {
+        AprilTagDetection.class,
+        AprilTagGameDatabase.class,
+        AprilTagLibrary.class,
+        AprilTagMetadata.class,
+        AprilTagPoseFtc.class,
+        AprilTagPoseRaw.class,
+        AprilTagProcessor.class,
+      });
+    KNOWN_TYPES_FOR_FTCJAVA.put("org.firstinspires.ftc.vision.opencv", new Class<?>[] {
+        ColorBlobLocatorProcessor.class,
+        ColorRange.class,
+        ColorSpace.class,
+        ImageRegion.class,
+        PredominantColorProcessor.class,
+      });
+    KNOWN_TYPES_FOR_FTCJAVA.put("org.opencv.core", new Class<?>[] {
+        RotatedRect.class,
+        Scalar.class,
+      });
+
+    // Add the known types to the reserved words.
+    for (Class<?>[] classes : KNOWN_TYPES_FOR_FTCJAVA.values()) {
+      for (Class<?> c : classes) {
+        if (c.getEnclosingClass() != null) {
+          // If the class has an enclosing class, the name will have a dot and doesn't need to be
+          // added as a reserved word.
+          continue;
+        }
+        RESERVED_WORDS_FOR_FTCJAVA.add(c.getSimpleName());
+      }
+    }
+
     // LinearOpMode members
-    set.add("waitForStart");
-    set.add("idle");
-    set.add("sleep");
-    set.add("opModeInInit");
-    set.add("opModeIsActive");
-    set.add("isStarted");
-    set.add("isStopRequested");
-    set.add("init");
-    set.add("init_loop");
-    set.add("start");
-    set.add("loop");
-    set.add("stop");
-    set.add("handleLoop");
-    set.add("LinearOpModeHelper");
-    set.add("internalPostInitLoop");
-    set.add("internalPostLoop");
-    set.add("waitOneFullHardwareCycle");
-    set.add("waitForNextHardwareCycle");
-    set.add("OpMode");
-    set.add("gamepad1");
-    set.add("gamepad2");
-    set.add("telemetry");
-    set.add("time");
-    set.add("requestOpModeStop");
-    set.add("terminateOpModeNow");
-    set.add("getRuntime");
-    set.add("resetRuntime");
-    set.add("resetStartTime");
-    set.add("updateTelemetry");
-    set.add("msStuckDetectInit");
-    set.add("msStuckDetectInitLoop");
-    set.add("msStuckDetectStart");
-    set.add("msStuckDetectLoop");
-    set.add("msStuckDetectStop");
-    set.add("internalPreInit");
-    set.add("internalOpModeServices");
-    set.add("internalUpdateTelemetryNow");
+    for (Method method : LinearOpMode.class.getMethods()) {
+      if (method.getName().equals("runOpMode")) {
+        // We generate code for the declaration of runOpMode.
+        // If we include it in the list of reserved words, it will generate runOpMode2, which is wrong.
+        continue;
+      }
+      RESERVED_WORDS_FOR_FTCJAVA.add(method.getName());
+    }
+    for (Field field : LinearOpMode.class.getFields()) {
+      RESERVED_WORDS_FOR_FTCJAVA.add(field.getName());
+    }
     // https://docs.oracle.com/javase/tutorial/java/nutsandbolts/_keywords.html
-    set.add("abstract");
-    set.add("assert");
-    set.add("boolean");
-    set.add("break");
-    set.add("byte");
-    set.add("case");
-    set.add("catch");
-    set.add("char");
-    set.add("class");
-    set.add("const");
-    set.add("continue");
-    set.add("default");
-    set.add("do");
-    set.add("double");
-    set.add("else");
-    set.add("enum");
-    set.add("extends");
-    set.add("final");
-    set.add("finally");
-    set.add("float");
-    set.add("for");
-    set.add("goto");
-    set.add("if");
-    set.add("implements");
-    set.add("import");
-    set.add("instanceof");
-    set.add("int");
-    set.add("interface");
-    set.add("long");
-    set.add("native");
-    set.add("new");
-    set.add("package");
-    set.add("private");
-    set.add("protected");
-    set.add("public");
-    set.add("return");
-    set.add("short");
-    set.add("static");
-    set.add("strictfp");
-    set.add("super");
-    set.add("switch");
-    set.add("synchronized");
-    set.add("this");
-    set.add("throw");
-    set.add("throws");
-    set.add("transient");
-    set.add("try");
-    set.add("void");
-    set.add("volatile");
-    set.add("while");
+    RESERVED_WORDS_FOR_FTCJAVA.add("abstract");
+    RESERVED_WORDS_FOR_FTCJAVA.add("assert");
+    RESERVED_WORDS_FOR_FTCJAVA.add("boolean");
+    RESERVED_WORDS_FOR_FTCJAVA.add("break");
+    RESERVED_WORDS_FOR_FTCJAVA.add("byte");
+    RESERVED_WORDS_FOR_FTCJAVA.add("case");
+    RESERVED_WORDS_FOR_FTCJAVA.add("catch");
+    RESERVED_WORDS_FOR_FTCJAVA.add("char");
+    RESERVED_WORDS_FOR_FTCJAVA.add("class");
+    RESERVED_WORDS_FOR_FTCJAVA.add("const");
+    RESERVED_WORDS_FOR_FTCJAVA.add("continue");
+    RESERVED_WORDS_FOR_FTCJAVA.add("default");
+    RESERVED_WORDS_FOR_FTCJAVA.add("do");
+    RESERVED_WORDS_FOR_FTCJAVA.add("double");
+    RESERVED_WORDS_FOR_FTCJAVA.add("else");
+    RESERVED_WORDS_FOR_FTCJAVA.add("enum");
+    RESERVED_WORDS_FOR_FTCJAVA.add("extends");
+    RESERVED_WORDS_FOR_FTCJAVA.add("final");
+    RESERVED_WORDS_FOR_FTCJAVA.add("finally");
+    RESERVED_WORDS_FOR_FTCJAVA.add("float");
+    RESERVED_WORDS_FOR_FTCJAVA.add("for");
+    RESERVED_WORDS_FOR_FTCJAVA.add("goto");
+    RESERVED_WORDS_FOR_FTCJAVA.add("if");
+    RESERVED_WORDS_FOR_FTCJAVA.add("implements");
+    RESERVED_WORDS_FOR_FTCJAVA.add("import");
+    RESERVED_WORDS_FOR_FTCJAVA.add("instanceof");
+    RESERVED_WORDS_FOR_FTCJAVA.add("int");
+    RESERVED_WORDS_FOR_FTCJAVA.add("interface");
+    RESERVED_WORDS_FOR_FTCJAVA.add("long");
+    RESERVED_WORDS_FOR_FTCJAVA.add("native");
+    RESERVED_WORDS_FOR_FTCJAVA.add("new");
+    RESERVED_WORDS_FOR_FTCJAVA.add("package");
+    RESERVED_WORDS_FOR_FTCJAVA.add("private");
+    RESERVED_WORDS_FOR_FTCJAVA.add("protected");
+    RESERVED_WORDS_FOR_FTCJAVA.add("public");
+    RESERVED_WORDS_FOR_FTCJAVA.add("return");
+    RESERVED_WORDS_FOR_FTCJAVA.add("short");
+    RESERVED_WORDS_FOR_FTCJAVA.add("static");
+    RESERVED_WORDS_FOR_FTCJAVA.add("strictfp");
+    RESERVED_WORDS_FOR_FTCJAVA.add("super");
+    RESERVED_WORDS_FOR_FTCJAVA.add("switch");
+    RESERVED_WORDS_FOR_FTCJAVA.add("synchronized");
+    RESERVED_WORDS_FOR_FTCJAVA.add("this");
+    RESERVED_WORDS_FOR_FTCJAVA.add("throw");
+    RESERVED_WORDS_FOR_FTCJAVA.add("throws");
+    RESERVED_WORDS_FOR_FTCJAVA.add("transient");
+    RESERVED_WORDS_FOR_FTCJAVA.add("try");
+    RESERVED_WORDS_FOR_FTCJAVA.add("void");
+    RESERVED_WORDS_FOR_FTCJAVA.add("volatile");
+    RESERVED_WORDS_FOR_FTCJAVA.add("while");
     // java.lang.*
-    set.add("AbstractMethodError");
-    set.add("Appendable");
-    set.add("ArithmeticException");
-    set.add("ArrayIndexOutOfBoundsException");
-    set.add("ArrayStoreException");
-    set.add("AssertionError");
-    set.add("AutoCloseable");
-    set.add("Boolean");
-    set.add("BootstrapMethodError");
-    set.add("Byte");
-    set.add("Character");
-    set.add("Character.Subset");
-    set.add("Character.UnicodeBlock");
-    set.add("Character.UnicodeScript");
-    set.add("CharSequence");
-    set.add("Class");
-    set.add("ClassCastException");
-    set.add("ClassCircularityError");
-    set.add("ClassFormatError");
-    set.add("ClassLoader");
-    set.add("ClassNotFoundException");
-    set.add("ClassValue");
-    set.add("Cloneable");
-    set.add("CloneNotSupportedException");
-    set.add("Comparable");
-    set.add("Compiler");
-    set.add("Deprecated");
-    set.add("Double");
-    set.add("Enum");
-    set.add("Enum");
-    set.add("EnumConstantNotPresentException");
-    set.add("Error");
-    set.add("Exception");
-    set.add("ExceptionInInitializerError");
-    set.add("Float");
-    set.add("FunctionalInterface");
-    set.add("IllegalAccessError");
-    set.add("IllegalAccessException");
-    set.add("IllegalArgumentException");
-    set.add("IllegalMonitorStateException");
-    set.add("IllegalStateException");
-    set.add("IllegalThreadStateException");
-    set.add("IncompatibleClassChangeError");
-    set.add("IndexOutOfBoundsException");
-    set.add("InheritableThreadLocal");
-    set.add("InstantiationError");
-    set.add("InstantiationException");
-    set.add("Integer");
-    set.add("InternalError");
-    set.add("InterruptedException");
-    set.add("Iterable");
-    set.add("LinkageError");
-    set.add("Long");
-    set.add("Math");
-    set.add("NegativeArraySizeException");
-    set.add("NoClassDefFoundError");
-    set.add("NoSuchFieldError");
-    set.add("NoSuchFieldException");
-    set.add("NoSuchMethodError");
-    set.add("NoSuchMethodException");
-    set.add("NullPointerException");
-    set.add("Number");
-    set.add("NumberFormatException");
-    set.add("Object");
-    set.add("OutOfMemoryError");
-    set.add("Override");
-    set.add("Package");
-    set.add("Process");
-    set.add("ProcessBuilder");
-    set.add("ProcessBuilder.Redirect");
-    set.add("ProcessBuilder.Redirect.Type");
-    set.add("Readable");
-    set.add("ReflectiveOperationException");
-    set.add("Runnable");
-    set.add("Runtime");
-    set.add("RuntimeException");
-    set.add("RuntimePermission");
-    set.add("SafeVarargs");
-    set.add("SecurityException");
-    set.add("SecurityManager");
-    set.add("Short");
-    set.add("StackOverflowError");
-    set.add("StackTraceElement");
-    set.add("StrictMath");
-    set.add("String");
-    set.add("StringBuffer");
-    set.add("StringBuilder");
-    set.add("StringIndexOutOfBoundsException");
-    set.add("SuppressWarnings");
-    set.add("System");
-    set.add("Thread");
-    set.add("ThreadDeath");
-    set.add("ThreadGroup");
-    set.add("ThreadLocal");
-    set.add("Thread.State");
-    set.add("Thread.UncaughtExceptionHandler");
-    set.add("Throwable");
-    set.add("TypeNotPresentException");
-    set.add("UnknownError");
-    set.add("UnsatisfiedLinkError");
-    set.add("UnsupportedClassVersionError");
-    set.add("UnsupportedOperationException");
-    set.add("VerifyError");
-    set.add("VirtualMachineError");
-    set.add("Void");
-    return set;
+    RESERVED_WORDS_FOR_FTCJAVA.add(AbstractMethodError.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(Appendable.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(ArithmeticException.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(ArrayIndexOutOfBoundsException.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(ArrayStoreException.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(AssertionError.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(AutoCloseable.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(Boolean.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add("BootstrapMethodError"); // Added in API level 26
+    RESERVED_WORDS_FOR_FTCJAVA.add(Byte.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(Character.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(CharSequence.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(Class.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add("ClassValue"); // Added in API level 34
+    RESERVED_WORDS_FOR_FTCJAVA.add(ClassCastException.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(ClassCircularityError.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(ClassFormatError.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(ClassLoader.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(ClassNotFoundException.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(Cloneable.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(CloneNotSupportedException.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(Comparable.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(Compiler.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(Deprecated.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(Double.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(Enum.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(EnumConstantNotPresentException.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(Error.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(Exception.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(ExceptionInInitializerError.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(Float.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(FunctionalInterface.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(IllegalAccessError.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(IllegalAccessException.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(IllegalArgumentException.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(IllegalMonitorStateException.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(IllegalStateException.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(IllegalThreadStateException.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(IncompatibleClassChangeError.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(IndexOutOfBoundsException.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(InheritableThreadLocal.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(InstantiationError.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(InstantiationException.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(Integer.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(InternalError.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(InterruptedException.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(Iterable.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(LinkageError.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(Long.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(Math.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(NegativeArraySizeException.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(NoClassDefFoundError.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(NoSuchFieldError.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(NoSuchFieldException.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(NoSuchMethodError.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(NoSuchMethodException.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(NullPointerException.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(Number.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(NumberFormatException.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(Object.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(OutOfMemoryError.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(Override.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(Package.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(Process.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(ProcessBuilder.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(Readable.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(ReflectiveOperationException.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(Runnable.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(Runtime.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(RuntimeException.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(RuntimePermission.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(SafeVarargs.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(SecurityException.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(SecurityManager.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(Short.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(StackOverflowError.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(StackTraceElement.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(StrictMath.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(String.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(StringBuffer.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(StringBuilder.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(StringIndexOutOfBoundsException.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(SuppressWarnings.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(System.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(Thread.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(ThreadDeath.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(ThreadGroup.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(ThreadLocal.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(Throwable.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(TypeNotPresentException.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(UnknownError.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(UnsatisfiedLinkError.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(UnsupportedClassVersionError.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(UnsupportedOperationException.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(VerifyError.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(VirtualMachineError.class.getSimpleName());
+    RESERVED_WORDS_FOR_FTCJAVA.add(Void.class.getSimpleName());
   }
 }

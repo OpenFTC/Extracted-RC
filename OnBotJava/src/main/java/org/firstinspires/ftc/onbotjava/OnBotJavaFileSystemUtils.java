@@ -78,6 +78,8 @@ public final class OnBotJavaFileSystemUtils {
     public static final String EXT_TEMP_FILE = ".tmp";
     public static final String EXT_JAVA_FILE = ".java";
     public static final String EXT_ZIP_FILE = ".zip";
+    private static final String SRC_PREFIX = "/src";
+    private static final String EXAMPLE_PREFIX = "/examples";
 
     private OnBotJavaFileSystemUtils() {
 
@@ -103,8 +105,22 @@ public final class OnBotJavaFileSystemUtils {
         // Determine if we are referencing the external library directory or the src directory
         // References to the external library directory start with /src/ExternalLibraries
         // This is due to how external libraries interact with frontend code to trigger downloads and the like
-        if (trimmedUri.startsWith("/src" + OnBotJavaManager.EXTERNAL_LIBRARIES)) {
-            filePath = OnBotJavaManager.extLibDir.getAbsolutePath() + trimmedUri.substring(("/src" + OnBotJavaManager.EXTERNAL_LIBRARIES).length());
+        if (trimmedUri.startsWith(SRC_PREFIX + OnBotJavaManager.EXTERNAL_LIBRARIES)) {
+            filePath = OnBotJavaManager.extLibDir.getAbsolutePath() + trimmedUri.substring((SRC_PREFIX + OnBotJavaManager.EXTERNAL_LIBRARIES).length());
+        // Handle a sample file being requested
+        } else if (trimmedUri.startsWith(EXAMPLE_PREFIX)) {
+            String examplePath = trimmedUri.substring((EXAMPLE_PREFIX).length());
+            if (OnBotJavaSecurityManager.isValidTemplateFile(examplePath)) {
+                File templateFile = new File(OnBotJavaManager.javaRoot, examplePath);
+                if (templateFile.exists() && !templateFile.isDirectory()) {
+                    try {
+                        return serveFile(templateFile.getAbsolutePath(), lineEndings);
+                    } catch (FileNotFoundException ignored) {
+                        return StandardResponses.fileNotFound();
+                    }
+                }
+            }
+            return StandardResponses.fileNotFound();
         } else {
             filePath = OnBotJavaManager.javaRoot.getAbsolutePath() + trimmedUri;
         }

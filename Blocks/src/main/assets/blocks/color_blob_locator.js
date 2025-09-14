@@ -714,6 +714,8 @@ Blockly.Blocks['colorBlobLocatorProcessorBlob_getProperty_Number'] = {
         ['ContourArea', 'ContourArea'],
         ['Density', 'Density'],
         ['AspectRatio', 'AspectRatio'],
+        ['ArcLength', 'ArcLength'],
+        ['Circularity', 'Circularity'],
     ];
     this.setOutput(true, 'Number');
     this.appendDummyInput()
@@ -730,6 +732,8 @@ Blockly.Blocks['colorBlobLocatorProcessorBlob_getProperty_Number'] = {
         ['ContourArea', 'Returns the area enclosed by this blob\'s contour.'],
         ['Density', 'Returns the density of this blob, i.e. the ratio of contour area to convex hull area'],
         ['AspectRatio', 'Returns the aspect ratio of this blob, i.e. the ratio of longer side of the bounding box to the shorter side'],
+        ['ArcLength', 'Returns the arc length of this blob.'],
+        ['Circularity', 'Returns the circularity of this blob.'],
     ];
     this.setTooltip(function() {
       var key = thisBlock.getFieldValue('PROP');
@@ -851,6 +855,43 @@ Blockly.JavaScript['colorBlobLocatorProcessorBlob_getProperty_RotatedRect'] =
 Blockly.FtcJava['colorBlobLocatorProcessorBlob_getProperty_RotatedRect'] =
   Blockly.FtcJava['colorBlobLocatorProcessorBlob_getProperty_Number'];
 
+Blockly.Blocks['colorBlobLocatorProcessorBlob_getProperty_Circle'] = {
+  init: function() {
+    var PROPERTY_CHOICES = [
+        ['Circle', 'Circle'],
+    ];
+    this.setOutput(true, 'Circle');
+    this.appendDummyInput()
+        .appendField(createNonEditableField('ColorBlobLocatorProcessor.Blob'))
+        .appendField('.')
+        .appendField(new Blockly.FieldDropdown(PROPERTY_CHOICES), 'PROP');
+    this.appendValueInput('BLOB').setCheck('ColorBlobLocatorProcessor.Blob')
+        .appendField('blob')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.setColour(getPropertyColor);
+    // Assign 'this' to a variable for use in the closures below.
+    var thisBlock = this;
+    var TOOLTIPS = [
+        ['Circle', 'Returns the circle enclosing this blob.'],
+    ];
+    this.setTooltip(function() {
+      var key = thisBlock.getFieldValue('PROP');
+      for (var i = 0; i < TOOLTIPS.length; i++) {
+        if (TOOLTIPS[i][0] == key) {
+          return TOOLTIPS[i][1];
+        }
+      }
+      return '';
+    });
+  }
+};
+
+Blockly.JavaScript['colorBlobLocatorProcessorBlob_getProperty_Circle'] =
+  Blockly.JavaScript['colorBlobLocatorProcessorBlob_getProperty_Number'];
+
+Blockly.FtcJava['colorBlobLocatorProcessorBlob_getProperty_Circle'] =
+  Blockly.FtcJava['colorBlobLocatorProcessorBlob_getProperty_Number'];
+
 // ColorBlobLocatorProcessor.BlobCriteria
 
 Blockly.Blocks['colorBlobLocator_typedEnum_blobCriteria'] = {
@@ -859,6 +900,8 @@ Blockly.Blocks['colorBlobLocator_typedEnum_blobCriteria'] = {
         ['BY_CONTOUR_AREA', 'BY_CONTOUR_AREA'],
         ['BY_DENSITY', 'BY_DENSITY'],
         ['BY_ASPECT_RATIO', 'BY_ASPECT_RATIO'],
+        ['BY_ARC_LENGTH', 'BY_ARC_LENGTH'],
+        ['BY_CIRCULARITY', 'BY_CIRCULARITY'],
     ];
     this.setOutput(true, 'ColorBlobLocatorProcessor.BlobCriteria');
     this.appendDummyInput()
@@ -872,6 +915,8 @@ Blockly.Blocks['colorBlobLocator_typedEnum_blobCriteria'] = {
         ['BY_CONTOUR_AREA', 'The BlobCriteria value BY_CONTOUR_AREA.'],
         ['BY_DENSITY', 'The BlobCriteria value BY_DENSITY.'],
         ['BY_ASPECT_RATIO', 'The BlobCriteria value BY_ASPECT_RATIO.'],
+        ['BY_ARC_LENGTH', 'The BlobCriteria value BY_ARC_LENGTH.'],
+        ['BY_CIRCULARITY', 'The BlobCriteria value BY_CIRCULARITY.'],
     ];
     this.setTooltip(function() {
       var key = thisBlock.getFieldValue('CRITERIA');
@@ -933,8 +978,8 @@ Blockly.JavaScript['colorBlobLocatorProcessorBlobFilter_create'] = function(bloc
       block, 'MIN_VALUE', Blockly.JavaScript.ORDER_COMMA);
   var maxValue = Blockly.JavaScript.valueToCode(
       block, 'MAX_VALUE', Blockly.JavaScript.ORDER_COMMA);
-  var code = colorBlobLocatorIdentifierForJavaScript + '.createColorBlobLocatorProcessorBlobFilter(' + criteria + ', ' + minValue + ', ' +
-      maxValue + ')';
+  var code = colorBlobLocatorIdentifierForJavaScript + '.createColorBlobLocatorProcessorBlobFilter(' +
+      criteria + ', ' + minValue + ', ' + maxValue + ')';
   return [code, Blockly.JavaScript.ORDER_FUNCTION_CALL];
 };
 
@@ -1171,6 +1216,118 @@ Blockly.FtcJava['colorBlobLocatorProcessorBlobSort_getProperty_SortOrder'] =
 
 // Util
 
+Blockly.Blocks['colorBlobLocatorProcessorUtil_filterByCriteria'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('call')
+        .appendField(createNonEditableField('ColorBlobLocatorProcessor.Util'))
+        .appendField('.')
+        .appendField(createNonEditableField('filterByCriteria'));
+    this.appendValueInput('CRITERIA').setCheck('ColorBlobLocatorProcessor.BlobCriteria')
+        .appendField('criteria')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('MIN_VALUE').setCheck('Number')
+        .appendField('minValue')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('MAX_VALUE').setCheck('Number')
+        .appendField('maxValue')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('BLOBS').setCheck('Array')
+        .appendField('blobs')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setColour(functionColor);
+    this.setTooltip('Removes from a List of Blobs those which fail to meet a given criteria.');
+    this.getFtcJavaInputType = function(inputName) {
+      switch (inputName) {
+        case 'MIN_VALUE':
+        case 'MAX_VALUE':
+          return 'double';
+        case 'BLOBS':
+          return 'List<ColorBlobLocatorProcessor.Blob>';
+      }
+      return '';
+    };
+  }
+};
+
+Blockly.JavaScript['colorBlobLocatorProcessorUtil_filterByCriteria'] = function(block) {
+  var criteria = Blockly.JavaScript.valueToCode(
+      block, 'CRITERIA', Blockly.JavaScript.ORDER_COMMA);
+  var minValue = Blockly.JavaScript.valueToCode(
+      block, 'MIN_VALUE', Blockly.JavaScript.ORDER_COMMA);
+  var maxValue = Blockly.JavaScript.valueToCode(
+      block, 'MAX_VALUE', Blockly.JavaScript.ORDER_COMMA);
+  var blobs = Blockly.JavaScript.valueToCode(
+      block, 'BLOBS', Blockly.JavaScript.ORDER_COMMA);
+  return 'colorBlobsFilterByCriteria(' + criteria + ', ' + minValue + ', ' + maxValue + ', ' + blobs + ');\n';
+};
+
+Blockly.FtcJava['colorBlobLocatorProcessorUtil_filterByCriteria'] = function(block) {
+  var criteria = Blockly.FtcJava.valueToCode(
+      block, 'CRITERIA', Blockly.FtcJava.ORDER_COMMA);
+  var minValue = Blockly.FtcJava.valueToCode(
+      block, 'MIN_VALUE', Blockly.FtcJava.ORDER_COMMA);
+  var maxValue = Blockly.FtcJava.valueToCode(
+      block, 'MAX_VALUE', Blockly.FtcJava.ORDER_COMMA);
+  var blobs = Blockly.FtcJava.valueToCode(
+      block, 'BLOBS', Blockly.FtcJava.ORDER_COMMA);
+  Blockly.FtcJava.generateImport_('ColorBlobLocatorProcessor');
+  return 'ColorBlobLocatorProcessor.Util.filterByCriteria(' + criteria + ', ' + minValue + ', ' + maxValue + ', ' + blobs + ');\n';
+};
+
+Blockly.Blocks['colorBlobLocatorProcessorUtil_sortByCriteria'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('call')
+        .appendField(createNonEditableField('ColorBlobLocatorProcessor.Util'))
+        .appendField('.')
+        .appendField(createNonEditableField('sortByCriteria'));
+    this.appendValueInput('CRITERIA').setCheck('ColorBlobLocatorProcessor.BlobCriteria')
+        .appendField('criteria')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('SORT_ORDER').setCheck('SortOrder')
+        .appendField('sortOrder')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('BLOBS').setCheck('Array')
+        .appendField('blobs')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setColour(functionColor);
+    this.setTooltip('Sorts a list of Blobs based on a given criteria.');
+    this.getFtcJavaInputType = function(inputName) {
+      switch (inputName) {
+        case 'BLOBS':
+          return 'List<ColorBlobLocatorProcessor.Blob>';
+      }
+      return '';
+    };
+  }
+};
+
+Blockly.JavaScript['colorBlobLocatorProcessorUtil_sortByCriteria'] = function(block) {
+  var criteria = Blockly.JavaScript.valueToCode(
+      block, 'CRITERIA', Blockly.JavaScript.ORDER_COMMA);
+  var sortOrder = Blockly.JavaScript.valueToCode(
+      block, 'SORT_ORDER', Blockly.JavaScript.ORDER_COMMA);
+  var blobs = Blockly.JavaScript.valueToCode(
+      block, 'BLOBS', Blockly.JavaScript.ORDER_COMMA);
+  return 'colorBlobsSortByCriteria(' + criteria + ', ' + sortOrder + ', ' + blobs + ');\n';
+};
+
+Blockly.FtcJava['colorBlobLocatorProcessorUtil_sortByCriteria'] = function(block) {
+  var criteria = Blockly.FtcJava.valueToCode(
+      block, 'CRITERIA', Blockly.FtcJava.ORDER_COMMA);
+  var sortOrder = Blockly.FtcJava.valueToCode(
+      block, 'SORT_ORDER', Blockly.FtcJava.ORDER_COMMA);
+  var blobs = Blockly.FtcJava.valueToCode(
+      block, 'BLOBS', Blockly.FtcJava.ORDER_COMMA);
+  Blockly.FtcJava.generateImport_('ColorBlobLocatorProcessor');
+  return 'ColorBlobLocatorProcessor.Util.sortByCriteria(' + criteria + ', ' + sortOrder + ', ' + blobs + ');\n';
+};
+
 Blockly.Blocks['colorBlobLocatorProcessorUtil_filterByArea'] = {
   init: function() {
     this.appendDummyInput()
@@ -1193,6 +1350,9 @@ Blockly.Blocks['colorBlobLocatorProcessorUtil_filterByArea'] = {
     this.setTooltip('Removes from a List of Blobs those which fail to meet an area criteria.');
     this.getFtcJavaInputType = function(inputName) {
       switch (inputName) {
+        case 'MIN_AREA':
+        case 'MAX_AREA':
+          return 'double';
         case 'BLOBS':
           return 'List<ColorBlobLocatorProcessor.Blob>';
       }
@@ -1288,6 +1448,9 @@ Blockly.Blocks['colorBlobLocatorProcessorUtil_filterByDensity'] = {
     this.setTooltip('Removes from a List of Blobs those which fail to meet a density criteria.');
     this.getFtcJavaInputType = function(inputName) {
       switch (inputName) {
+        case 'MIN_DENSITY':
+        case 'MAX_DENSITY':
+          return 'double';
         case 'BLOBS':
           return 'List<ColorBlobLocatorProcessor.Blob>';
         default:
@@ -1384,6 +1547,9 @@ Blockly.Blocks['colorBlobLocatorProcessorUtil_filterByAspectRatio'] = {
     this.setTooltip('Removes from a List of Blobs those which fail to meet an aspect ratio criteria.');
     this.getFtcJavaInputType = function(inputName) {
       switch (inputName) {
+        case 'MIN_ASPECT_RATIO':
+        case 'MAX_ASPECT_RATIO':
+          return 'double';
         case 'BLOBS':
           return 'List<ColorBlobLocatorProcessor.Blob>';
         default:
@@ -1457,3 +1623,95 @@ Blockly.FtcJava['colorBlobLocatorProcessorUtil_sortByAspectRatio'] = function(bl
   Blockly.FtcJava.generateImport_('ColorBlobLocatorProcessor');
   return 'ColorBlobLocatorProcessor.Util.sortByAspectRatio(' + sortOrder + ', ' + blobs + ');\n';
 };
+
+// Circle
+
+Blockly.Blocks['circle_getProperty_Number'] = {
+  init: function() {
+    var PROPERTY_CHOICES = [
+        ['Radius', 'Radius'],
+        ['X', 'X'],
+        ['Y', 'Y'],
+    ];
+    this.setOutput(true, 'Number');
+    this.appendDummyInput()
+        .appendField(createNonEditableField('Circle'))
+        .appendField('.')
+        .appendField(new Blockly.FieldDropdown(PROPERTY_CHOICES), 'PROP');
+    this.appendValueInput('CIRCLE').setCheck('Circle')
+        .appendField('circle')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.setColour(getPropertyColor);
+    // Assign 'this' to a variable for use in the closures below.
+    var thisBlock = this;
+    var TOOLTIPS = [
+        ['Radius', 'Returns the radius of the Circle.'],
+        ['X', 'Returns the x position of the Circle'],
+        ['Y', 'Returns the y position of the Circle'],
+    ];
+    this.setTooltip(function() {
+      var key = thisBlock.getFieldValue('PROP');
+      for (var i = 0; i < TOOLTIPS.length; i++) {
+        if (TOOLTIPS[i][0] == key) {
+          return TOOLTIPS[i][1];
+        }
+      }
+      return '';
+    });
+    this.getFtcJavaOutputType = function() {
+      return 'float';
+    };
+  }
+};
+
+Blockly.JavaScript['circle_getProperty_Number'] = function(block) {
+  var property = block.getFieldValue('PROP');
+  var circle = Blockly.JavaScript.valueToCode(
+      block, 'CIRCLE', Blockly.JavaScript.ORDER_MEMBER);
+  var code = circle + '.' + property;
+  var blockLabel = 'Circle.' + block.getField('PROP').getText();
+  return wrapJavaScriptCode(code, blockLabel);
+};
+
+Blockly.FtcJava['circle_getProperty_Number'] = function(block) {
+  var property = block.getFieldValue('PROP');
+  var circle = Blockly.FtcJava.valueToCode(
+      block, 'CIRCLE', Blockly.FtcJava.ORDER_MEMBER);
+  var code = circle + '.get' + property + '()';
+  return [code, Blockly.FtcJava.ORDER_FUNCTION_CALL];
+};
+
+Blockly.Blocks['circle_getProperty_Point'] = {
+  init: function() {
+    var PROPERTY_CHOICES = [
+        ['Center', 'Center'],
+    ];
+    this.setOutput(true, 'org.opencv.core.Point');
+    this.appendDummyInput()
+        .appendField(createNonEditableField('Circle'))
+        .appendField('.')
+        .appendField(new Blockly.FieldDropdown(PROPERTY_CHOICES), 'PROP');
+    this.appendValueInput('CIRCLE').setCheck('Circle')
+        .appendField('circle')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.setColour(getPropertyColor);
+    // Assign 'this' to a variable for use in the closures below.
+    var thisBlock = this;
+    var TOOLTIPS = [
+        ['Center', 'Returns the center Point of the Circle.'],
+    ];
+    this.setTooltip(function() {
+      var key = thisBlock.getFieldValue('PROP');
+      for (var i = 0; i < TOOLTIPS.length; i++) {
+        if (TOOLTIPS[i][0] == key) {
+          return TOOLTIPS[i][1];
+        }
+      }
+      return '';
+    });
+  }
+};
+
+Blockly.JavaScript['circle_getProperty_Point'] = Blockly.JavaScript['circle_getProperty_Number'];
+
+Blockly.FtcJava['circle_getProperty_Point'] = Blockly.FtcJava['circle_getProperty_Number'];

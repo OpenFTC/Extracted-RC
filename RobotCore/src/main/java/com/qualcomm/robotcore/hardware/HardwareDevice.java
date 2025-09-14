@@ -53,6 +53,7 @@ public interface HardwareDevice {
     SparkFun,
     MaxBotix,
     LimelightVision,
+    GoBilda
   }
 
   /**

@@ -100,6 +100,29 @@
     <block type="navigation_typedEnum_axis"><field name="AXIS">Y</field></block>
     <block type="navigation_typedEnum_axis"><field name="AXIS">Z</field></block>
   </category>
+  <category name="Blackboard">
+    <block type="blackboard_clear">
+    </block>
+    <block type="blackboard_containsKey">
+      <value name="KEY"><shadow type="text"><field name="TEXT">key</field></shadow></value>
+    </block>
+    <block type="blackboard_get">
+      <value name="KEY"><shadow type="text"><field name="TEXT">key</field></shadow></value>
+    </block>
+    <block type="blackboard_getOrDefault">
+      <value name="KEY"><shadow type="text"><field name="TEXT">key</field></shadow></value>
+    </block>
+    <block type="blackboard_isEmpty">
+    </block>
+    <block type="blackboard_put">
+      <value name="KEY"><shadow type="text"><field name="TEXT">key</field></shadow></value>
+    </block>
+    <block type="blackboard_remove">
+      <value name="KEY"><shadow type="text"><field name="TEXT">key</field></shadow></value>
+    </block>
+    <block type="blackboard_size">
+    </block>
+  </category>
   <category name="Color">
     <block type="color_rgbToHue">
       <value name="RED"><shadow type="math_number"><field name="NUM">255</field></shadow></value>

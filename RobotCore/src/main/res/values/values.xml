@@ -213,6 +213,7 @@
     <string name="configTypePulseWidthDevice">Pulse Width Device</string>
     <string name="configTypeRevTouchSensor">REV Touch Sensor</string>
     <string name="configTypeServo">Servo</string>
+    <string name="configTypeServoFullRange">Full Range Servo</string>
     <string name="configTypeServos">Servos</string>
     <string name="configTypeUnknown">[Unknown]</string>
     <string name="configTypeWebcam">Webcam</string>

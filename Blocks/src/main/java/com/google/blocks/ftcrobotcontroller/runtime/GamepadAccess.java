@@ -127,12 +127,84 @@ class GamepadAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = {Gamepad.class}, methodName = "dpadUpWasPressed")
+  public boolean getDpadUpWasPressed() {
+    try {
+      startBlockExecution(BlockType.GETTER, ".DpadUpWasPressed");
+      if (gamepad != null) {
+        return gamepad.dpadUpWasPressed();
+      }
+      return false;
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(classes = {Gamepad.class}, methodName = "dpadUpWasReleased")
+  public boolean getDpadUpWasReleased() {
+    try {
+      startBlockExecution(BlockType.GETTER, ".DpadUpWasReleased");
+      if (gamepad != null) {
+        return gamepad.dpadUpWasReleased();
+      }
+      return false;
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
   @Block(classes = {Gamepad.class}, fieldName = "dpad_down")
   public boolean getDpadDown() {
     try {
       startBlockExecution(BlockType.GETTER, ".DpadDown");
       if (gamepad != null) {
         return gamepad.dpad_down;
+      }
+      return false;
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(classes = {Gamepad.class}, methodName = "dpadDownWasPressed")
+  public boolean getDpadDownWasPressed() {
+    try {
+      startBlockExecution(BlockType.GETTER, ".DpadDownWasPressed");
+      if (gamepad != null) {
+        return gamepad.dpadDownWasPressed();
+      }
+      return false;
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(classes = {Gamepad.class}, methodName = "dpadDownWasReleased")
+  public boolean getDpadDownWasReleased() {
+    try {
+      startBlockExecution(BlockType.GETTER, ".DpadDownWasReleased");
+      if (gamepad != null) {
+        return gamepad.dpadDownWasReleased();
       }
       return false;
     } catch (Throwable e) {
@@ -163,12 +235,84 @@ class GamepadAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = {Gamepad.class}, methodName = "dpadLeftWasPressed")
+  public boolean getDpadLeftWasPressed() {
+    try {
+      startBlockExecution(BlockType.GETTER, ".DpadLeftWasPressed");
+      if (gamepad != null) {
+        return gamepad.dpadLeftWasPressed();
+      }
+      return false;
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(classes = {Gamepad.class}, methodName = "dpadLeftWasReleased")
+  public boolean getDpadLeftWasReleased() {
+    try {
+      startBlockExecution(BlockType.GETTER, ".DpadLeftWasReleased");
+      if (gamepad != null) {
+        return gamepad.dpadLeftWasReleased();
+      }
+      return false;
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
   @Block(classes = {Gamepad.class}, fieldName = "dpad_right")
   public boolean getDpadRight() {
     try {
       startBlockExecution(BlockType.GETTER, ".DpadRight");
       if (gamepad != null) {
         return gamepad.dpad_right;
+      }
+      return false;
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(classes = {Gamepad.class}, methodName = "dpadRightWasPressed")
+  public boolean getDpadRightWasPressed() {
+    try {
+      startBlockExecution(BlockType.GETTER, ".DpadRightWasPressed");
+      if (gamepad != null) {
+        return gamepad.dpadRightWasPressed();
+      }
+      return false;
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(classes = {Gamepad.class}, methodName = "dpadRightWasReleased")
+  public boolean getDpadRightWasReleased() {
+    try {
+      startBlockExecution(BlockType.GETTER, ".DpadRightWasReleased");
+      if (gamepad != null) {
+        return gamepad.dpadRightWasReleased();
       }
       return false;
     } catch (Throwable e) {
@@ -199,12 +343,84 @@ class GamepadAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = {Gamepad.class}, methodName = "aWasPressed")
+  public boolean getAWasPressed() {
+    try {
+      startBlockExecution(BlockType.GETTER, ".AWasPressed");
+      if (gamepad != null) {
+        return gamepad.aWasPressed();
+      }
+      return false;
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(classes = {Gamepad.class}, methodName = "aWasReleased")
+  public boolean getAWasReleased() {
+    try {
+      startBlockExecution(BlockType.GETTER, ".AWasReleased");
+      if (gamepad != null) {
+        return gamepad.aWasReleased();
+      }
+      return false;
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
   @Block(classes = {Gamepad.class}, fieldName = "b")
   public boolean getB() {
     try {
       startBlockExecution(BlockType.GETTER, ".B");
       if (gamepad != null) {
         return gamepad.b;
+      }
+      return false;
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(classes = {Gamepad.class}, methodName = "bWasPressed")
+  public boolean getBWasPressed() {
+    try {
+      startBlockExecution(BlockType.GETTER, ".BWasPressed");
+      if (gamepad != null) {
+        return gamepad.bWasPressed();
+      }
+      return false;
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(classes = {Gamepad.class}, methodName = "bWasReleased")
+  public boolean getBWasReleased() {
+    try {
+      startBlockExecution(BlockType.GETTER, ".BWasReleased");
+      if (gamepad != null) {
+        return gamepad.bWasReleased();
       }
       return false;
     } catch (Throwable e) {
@@ -235,12 +451,84 @@ class GamepadAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = {Gamepad.class}, methodName = "xWasPressed")
+  public boolean getXWasPressed() {
+    try {
+      startBlockExecution(BlockType.GETTER, ".XWasPressed");
+      if (gamepad != null) {
+        return gamepad.xWasPressed();
+      }
+      return false;
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(classes = {Gamepad.class}, methodName = "xWasReleased")
+  public boolean getXWasReleased() {
+    try {
+      startBlockExecution(BlockType.GETTER, ".XWasReleased");
+      if (gamepad != null) {
+        return gamepad.xWasReleased();
+      }
+      return false;
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
   @Block(classes = {Gamepad.class}, fieldName = "y")
   public boolean getY() {
     try {
       startBlockExecution(BlockType.GETTER, ".Y");
       if (gamepad != null) {
         return gamepad.y;
+      }
+      return false;
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(classes = {Gamepad.class}, methodName = "yWasPressed")
+  public boolean getYWasPressed() {
+    try {
+      startBlockExecution(BlockType.GETTER, ".YWasPressed");
+      if (gamepad != null) {
+        return gamepad.yWasPressed();
+      }
+      return false;
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(classes = {Gamepad.class}, methodName = "yWasReleased")
+  public boolean getYWasReleased() {
+    try {
+      startBlockExecution(BlockType.GETTER, ".YWasReleased");
+      if (gamepad != null) {
+        return gamepad.yWasReleased();
       }
       return false;
     } catch (Throwable e) {
@@ -271,12 +559,84 @@ class GamepadAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = {Gamepad.class}, methodName = "guideWasPressed")
+  public boolean getGuideWasPressed() {
+    try {
+      startBlockExecution(BlockType.GETTER, ".GuideWasPressed");
+      if (gamepad != null) {
+        return gamepad.guideWasPressed();
+      }
+      return false;
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(classes = {Gamepad.class}, methodName = "guideWasReleased")
+  public boolean getGuideWasReleased() {
+    try {
+      startBlockExecution(BlockType.GETTER, ".GuideWasReleased");
+      if (gamepad != null) {
+        return gamepad.guideWasReleased();
+      }
+      return false;
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
   @Block(classes = {Gamepad.class}, fieldName = "start")
   public boolean getStart() {
     try {
       startBlockExecution(BlockType.GETTER, ".Start");
       if (gamepad != null) {
         return gamepad.start;
+      }
+      return false;
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(classes = {Gamepad.class}, methodName = "startWasPressed")
+  public boolean getStartWasPressed() {
+    try {
+      startBlockExecution(BlockType.GETTER, ".StartWasPressed");
+      if (gamepad != null) {
+        return gamepad.startWasPressed();
+      }
+      return false;
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(classes = {Gamepad.class}, methodName = "startWasReleased")
+  public boolean getStartWasReleased() {
+    try {
+      startBlockExecution(BlockType.GETTER, ".StartWasReleased");
+      if (gamepad != null) {
+        return gamepad.startWasReleased();
       }
       return false;
     } catch (Throwable e) {
@@ -307,12 +667,84 @@ class GamepadAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = {Gamepad.class}, methodName = "backWasPressed")
+  public boolean getBackWasPressed() {
+    try {
+      startBlockExecution(BlockType.GETTER, ".BackWasPressed");
+      if (gamepad != null) {
+        return gamepad.backWasPressed();
+      }
+      return false;
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(classes = {Gamepad.class}, methodName = "backWasReleased")
+  public boolean getBackWasReleased() {
+    try {
+      startBlockExecution(BlockType.GETTER, ".BackWasReleased");
+      if (gamepad != null) {
+        return gamepad.backWasReleased();
+      }
+      return false;
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
   @Block(classes = {Gamepad.class}, fieldName = "left_bumper")
   public boolean getLeftBumper() {
     try {
       startBlockExecution(BlockType.GETTER, ".LeftBumper");
       if (gamepad != null) {
         return gamepad.left_bumper;
+      }
+      return false;
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(classes = {Gamepad.class}, methodName = "leftBumperWasPressed")
+  public boolean getLeftBumperWasPressed() {
+    try {
+      startBlockExecution(BlockType.GETTER, ".LeftBumperWasPressed");
+      if (gamepad != null) {
+        return gamepad.leftBumperWasPressed();
+      }
+      return false;
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(classes = {Gamepad.class}, methodName = "leftBumperWasReleased")
+  public boolean getLeftBumperWasReleased() {
+    try {
+      startBlockExecution(BlockType.GETTER, ".LeftBumperWasReleased");
+      if (gamepad != null) {
+        return gamepad.leftBumperWasReleased();
       }
       return false;
     } catch (Throwable e) {
@@ -343,6 +775,42 @@ class GamepadAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = {Gamepad.class}, methodName = "rightBumperWasPressed")
+  public boolean getRightBumperWasPressed() {
+    try {
+      startBlockExecution(BlockType.GETTER, ".RightBumperWasPressed");
+      if (gamepad != null) {
+        return gamepad.rightBumperWasPressed();
+      }
+      return false;
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(classes = {Gamepad.class}, methodName = "rightBumperWasReleased")
+  public boolean getRightBumperWasReleased() {
+    try {
+      startBlockExecution(BlockType.GETTER, ".RightBumperWasReleased");
+      if (gamepad != null) {
+        return gamepad.rightBumperWasReleased();
+      }
+      return false;
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
   @Block(classes = {Gamepad.class}, fieldName = "left_stick_button")
   public boolean getLeftStickButton() {
     try {
@@ -361,12 +829,84 @@ class GamepadAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = {Gamepad.class}, methodName = "leftStickButtonWasPressed")
+  public boolean getLeftStickButtonWasPressed() {
+    try {
+      startBlockExecution(BlockType.GETTER, ".LeftStickButtonWasPressed");
+      if (gamepad != null) {
+        return gamepad.leftStickButtonWasPressed();
+      }
+      return false;
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(classes = {Gamepad.class}, methodName = "leftStickButtonWasReleased")
+  public boolean getLeftStickButtonWasReleased() {
+    try {
+      startBlockExecution(BlockType.GETTER, ".LeftStickButtonWasReleased");
+      if (gamepad != null) {
+        return gamepad.leftStickButtonWasReleased();
+      }
+      return false;
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
   @Block(classes = {Gamepad.class}, fieldName = "right_stick_button")
   public boolean getRightStickButton() {
     try {
       startBlockExecution(BlockType.GETTER, ".RightStickButton");
       if (gamepad != null) {
         return gamepad.right_stick_button;
+      }
+      return false;
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(classes = {Gamepad.class}, methodName = "rightStickButtonWasPressed")
+  public boolean getRightStickButtonWasPressed() {
+    try {
+      startBlockExecution(BlockType.GETTER, ".RightStickButtonWasPressed");
+      if (gamepad != null) {
+        return gamepad.rightStickButtonWasPressed();
+      }
+      return false;
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(classes = {Gamepad.class}, methodName = "rightStickButtonWasReleased")
+  public boolean getRightStickButtonWasReleased() {
+    try {
+      startBlockExecution(BlockType.GETTER, ".RightStickButtonWasReleased");
+      if (gamepad != null) {
+        return gamepad.rightStickButtonWasReleased();
       }
       return false;
     } catch (Throwable e) {
@@ -451,12 +991,84 @@ class GamepadAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = {Gamepad.class}, methodName = "circleWasPressed")
+  public boolean getCircleWasPressed() {
+    try {
+      startBlockExecution(BlockType.GETTER, ".CircleWasPressed");
+      if (gamepad != null) {
+        return gamepad.circleWasPressed();
+      }
+      return false;
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(classes = {Gamepad.class}, methodName = "circleWasReleased")
+  public boolean getCircleWasReleased() {
+    try {
+      startBlockExecution(BlockType.GETTER, ".CircleWasReleased");
+      if (gamepad != null) {
+        return gamepad.circleWasReleased();
+      }
+      return false;
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
   @Block(classes = {Gamepad.class}, fieldName = "cross")
   public boolean getCross() {
     try {
       startBlockExecution(BlockType.GETTER, ".Cross");
       if (gamepad != null) {
         return gamepad.cross;
+      }
+      return false;
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(classes = {Gamepad.class}, methodName = "crossWasPressed")
+  public boolean getCrossWasPressed() {
+    try {
+      startBlockExecution(BlockType.GETTER, ".CrossWasPressed");
+      if (gamepad != null) {
+        return gamepad.crossWasPressed();
+      }
+      return false;
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(classes = {Gamepad.class}, methodName = "crossWasReleased")
+  public boolean getCrossWasReleased() {
+    try {
+      startBlockExecution(BlockType.GETTER, ".CrossWasReleased");
+      if (gamepad != null) {
+        return gamepad.crossWasReleased();
       }
       return false;
     } catch (Throwable e) {
@@ -487,12 +1099,84 @@ class GamepadAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = {Gamepad.class}, methodName = "optionsWasPressed")
+  public boolean getOptionsWasPressed() {
+    try {
+      startBlockExecution(BlockType.GETTER, ".OptionsWasPressed");
+      if (gamepad != null) {
+        return gamepad.optionsWasPressed();
+      }
+      return false;
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(classes = {Gamepad.class}, methodName = "optionsWasReleased")
+  public boolean getOptionsWasReleased() {
+    try {
+      startBlockExecution(BlockType.GETTER, ".OptionsWasReleased");
+      if (gamepad != null) {
+        return gamepad.optionsWasReleased();
+      }
+      return false;
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
   @Block(classes = {Gamepad.class}, fieldName = "ps")
   public boolean getPS() {
     try {
       startBlockExecution(BlockType.GETTER, ".PS");
       if (gamepad != null) {
         return gamepad.ps;
+      }
+      return false;
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(classes = {Gamepad.class}, methodName = "psWasPressed")
+  public boolean getPSWasPressed() {
+    try {
+      startBlockExecution(BlockType.GETTER, ".PSWasPressed");
+      if (gamepad != null) {
+        return gamepad.psWasPressed();
+      }
+      return false;
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(classes = {Gamepad.class}, methodName = "psWasReleased")
+  public boolean getPSWasReleased() {
+    try {
+      startBlockExecution(BlockType.GETTER, ".PSWasReleased");
+      if (gamepad != null) {
+        return gamepad.psWasReleased();
       }
       return false;
     } catch (Throwable e) {
@@ -523,6 +1207,42 @@ class GamepadAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = {Gamepad.class}, methodName = "shareWasPressed")
+  public boolean getShareWasPressed() {
+    try {
+      startBlockExecution(BlockType.GETTER, ".ShareWasPressed");
+      if (gamepad != null) {
+        return gamepad.shareWasPressed();
+      }
+      return false;
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(classes = {Gamepad.class}, methodName = "shareWasReleased")
+  public boolean getShareWasReleased() {
+    try {
+      startBlockExecution(BlockType.GETTER, ".ShareWasReleased");
+      if (gamepad != null) {
+        return gamepad.shareWasReleased();
+      }
+      return false;
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
   @Block(classes = {Gamepad.class}, fieldName = "square")
   public boolean getSquare() {
     try {
@@ -541,12 +1261,84 @@ class GamepadAccess extends Access {
 
   @SuppressWarnings("unused")
   @JavascriptInterface
+  @Block(classes = {Gamepad.class}, methodName = "squareWasPressed")
+  public boolean getSquareWasPressed() {
+    try {
+      startBlockExecution(BlockType.GETTER, ".SquareWasPressed");
+      if (gamepad != null) {
+        return gamepad.squareWasPressed();
+      }
+      return false;
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(classes = {Gamepad.class}, methodName = "squareWasReleased")
+  public boolean getSquareWasReleased() {
+    try {
+      startBlockExecution(BlockType.GETTER, ".SquareWasReleased");
+      if (gamepad != null) {
+        return gamepad.squareWasReleased();
+      }
+      return false;
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
   @Block(classes = {Gamepad.class}, fieldName = "touchpad")
   public boolean getTouchpad() {
     try {
       startBlockExecution(BlockType.GETTER, ".Touchpad");
       if (gamepad != null) {
         return gamepad.touchpad;
+      }
+      return false;
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(classes = {Gamepad.class}, methodName = "touchpadWasPressed")
+  public boolean getTouchpadWasPressed() {
+    try {
+      startBlockExecution(BlockType.GETTER, ".TouchpadWasPressed");
+      if (gamepad != null) {
+        return gamepad.touchpadWasPressed();
+      }
+      return false;
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(classes = {Gamepad.class}, methodName = "touchpadWasReleased")
+  public boolean getTouchpadWasReleased() {
+    try {
+      startBlockExecution(BlockType.GETTER, ".TouchpadWasReleased");
+      if (gamepad != null) {
+        return gamepad.touchpadWasReleased();
       }
       return false;
     } catch (Throwable e) {
@@ -675,6 +1467,59 @@ class GamepadAccess extends Access {
         return gamepad.triangle;
       }
       return false;
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(classes = {Gamepad.class}, methodName = "triangleWasPressed")
+  public boolean getTriangleWasPressed() {
+    try {
+      startBlockExecution(BlockType.GETTER, ".TriangleWasPressed");
+      if (gamepad != null) {
+        return gamepad.triangleWasPressed();
+      }
+      return false;
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(classes = {Gamepad.class}, methodName = "triangleWasReleased")
+  public boolean getTriangleWasReleased() {
+    try {
+      startBlockExecution(BlockType.GETTER, ".TriangleWasReleased");
+      if (gamepad != null) {
+        return gamepad.triangleWasReleased();
+      }
+      return false;
+    } catch (Throwable e) {
+      blocksOpMode.handleFatalException(e);
+      throw new AssertionError("impossible", e);
+    } finally {
+      endBlockExecution();
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @JavascriptInterface
+  @Block(classes = {Gamepad.class}, methodName = "resetEdgeDetection")
+  public void resetEdgeDetection() {
+    try {
+      startBlockExecution(BlockType.FUNCTION, ".resetEdgeDetection");
+      if (gamepad != null) {
+        gamepad.resetEdgeDetection();
+      }
     } catch (Throwable e) {
       blocksOpMode.handleFatalException(e);
       throw new AssertionError("impossible", e);

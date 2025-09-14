@@ -20,6 +20,7 @@ import android.webkit.JavascriptInterface;
 import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.util.SortOrder;
 import java.util.List;
+import org.firstinspires.ftc.vision.opencv.Circle;
 import org.firstinspires.ftc.vision.opencv.ColorBlobLocatorProcessor;
 import org.firstinspires.ftc.vision.opencv.ColorBlobLocatorProcessor.Blob;
 import org.firstinspires.ftc.vision.opencv.ColorBlobLocatorProcessor.BlobCriteria;
@@ -454,6 +455,12 @@ class ColorBlobLocatorAccess extends Access {
           .append("\"AspectRatio\":").append(fixDouble(aspectRatio)) // double
           .append(",")
           .append("\"BoxFit\":").append(rotatedRectToJson(blob.getBoxFit()))
+          .append(",")
+          .append("\"ArcLength\":").append(fixDouble(blob.getArcLength())) // double
+          .append(",")
+          .append("\"Circularity\":").append(fixDouble(blob.getCircularity())) // double
+          .append(",")
+          .append("\"Circle\":").append(circleToJson(blob.getCircle()))
           .append("}");
       delimiter = ",";
     }
@@ -478,6 +485,22 @@ class ColorBlobLocatorAccess extends Access {
         .append("\"boundingRect\":").append(toJson(rotatedRect.boundingRect()))
         .append(",")
         .append("\"points\":").append(toJson(points))
+        .append("}")
+        .toString();
+    return json;
+  }
+
+  private static String circleToJson(Circle circle) {
+    // Circle {"Center":{"x":0.0,"y":0.0},"Radius":0.0}}
+    String json = new StringBuilder()
+        .append("{")
+        .append("\"Center\":").append(toJson(circle.getCenter())) // Point
+        .append(",")
+        .append("\"Radius\":").append(circle.getRadius()) // float
+        .append(",")
+        .append("\"X\":").append(circle.getX()) // float
+        .append(",")
+        .append("\"Y\":").append(circle.getY()) // float
         .append("}")
         .toString();
     return json;
